@@ -123,7 +123,11 @@ body.english .en{display:initial}
 body.hybrid .ko, body.hybrid .en{display:initial}
 body.hybrid .poem-title{display:flex;gap:8px}
 body.hybrid .poem p + p{margin-top:4px}
-@media (prefers-reduced-motion: reduce){#waves,#trail{display:none}}
+
+/* 사용자 모션 최소화 설정 존중 */
+@media (prefers-reduced-motion: reduce){
+  #waves,#trail{display:none}
+}
 </style>
 </head>
 <body class="korean">
@@ -291,11 +295,11 @@ body.hybrid .poem p + p{margin-top:4px}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Stable Interactive Core (Bug-fixed) ===== -->
+<!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Complete Integrated Core ===== -->
 <script>
 /* 모든 초기화 코드를 문서 끝에 둬서 DOM 참조 null 문제 제거 */
 (function(){
-  // --- 디버그 오버레이 (?debug=1)
+  /* ---------- 안전 디버그 오버레이 (?debug=1) ---------- */
   const DBG = new URLSearchParams(location.search).get('debug')==='1';
   function debug(msg){
     if(!DBG) return;
@@ -312,99 +316,117 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   window.addEventListener('error',e=>debug('Error: '+e.message+' @'+e.filename+':'+e.lineno));
 
-  // --- 안전한 localStorage
+  /* ---------- 안전 localStorage ---------- */
   const store = {
     get(k){ try{ return localStorage.getItem(k);}catch{ return null; } },
     set(k,v){ try{ localStorage.setItem(k,v);}catch{} }
   };
 
-  // ===== Lightflow background (waves + trail) — DPR hotfix =====
+  /* ===== Deep Lightflow 2.0 — natural wave & light trail ===== */
   try{
-    const wavesCtx = document.getElementById('waves').getContext('2d',{alpha:true});
-    const trailCtx = document.getElementById('trail').getContext('2d',{alpha:true});
-    let DPR=1, W=0, H=0;
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const waves = document.getElementById('waves');
+    const trail = document.getElementById('trail');
+    const wCtx = waves.getContext('2d', { alpha:true });
+    const tCtx = trail.getContext('2d', { alpha:true });
+
+    let DPR=1, VW=0, VH=0, visible=true;
+    let tt=0; // time
+    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py; // glow pos/target
+
+    const ease = (x)=> x*x*(3-2*x);
+
     function resize(){
       DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
-      W = wavesCtx.canvas.width  = trailCtx.canvas.width  = Math.floor(innerWidth  * DPR);
-      H = wavesCtx.canvas.height = trailCtx.canvas.height = Math.floor(innerHeight * DPR);
-      wavesCtx.setTransform(DPR,0,0,DPR,0,0);
-      trailCtx.setTransform(DPR,0,0,DPR,0,0);
+      VW = waves.width  = trail.width  = Math.floor(innerWidth  * DPR);
+      VH = waves.height = trail.height = Math.floor(innerHeight * DPR);
+      wCtx.setTransform(1,0,0,1,0,0); tCtx.setTransform(1,0,0,1,0,0);
+      wCtx.scale(1/DPR, 1/DPR); tCtx.scale(1/DPR, 1/DPR);
     }
-    resize(); addEventListener('resize', resize, {passive:true});
-    let t=0, px=innerWidth/2, py=innerHeight/2, tx=px, ty=py, visible=true;
+    resize();
+    addEventListener('resize', resize, {passive:true});
     document.addEventListener('visibilitychange', ()=>{ visible=!document.hidden; });
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
-    addEventListener('touchstart',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
-    addEventListener('touchmove', e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
-    (function drawWaves(){
-      if(visible){
-        t+=0.008;
-        wavesCtx.clearRect(0,0,innerWidth,innerHeight);
-        for(let k=0;k<3;k++){
-          const amp=(40+k*16)*(0.86+0.14*Math.cos(t*0.7+k*.2));
-          const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(t*1.2+k)*18;
-          wavesCtx.beginPath();
-          for(let x=0;x<=innerWidth;x+=6){
-            const y=y0+Math.sin(x*freq+t*2+k+Math.sin(t*0.6+k)*.3)*amp;
-            x?wavesCtx.lineTo(x,y):wavesCtx.moveTo(x,y);
-          }
-          const g=wavesCtx.createLinearGradient(0,y0-amp,0,y0+amp);
-          g.addColorStop(0,'rgba(120,170,255,.10)');
-          g.addColorStop(.5,'rgba(230,199,119,.22)');
-          g.addColorStop(1,'rgba(120,170,255,.10)');
-          wavesCtx.strokeStyle=g; wavesCtx.lineWidth=2; wavesCtx.stroke();
-        }
-      }
-      requestAnimationFrame(drawWaves);
-    })();
-    (function drawTrail(){
-      const fade='rgba(0,0,0,.14)';
-      trailCtx.fillStyle=fade; trailCtx.fillRect(0,0,innerWidth,innerHeight);
-      px += (tx-px)*0.15; py += (ty-py)*0.15;
-      const speed = Math.hypot(tx-px, ty-py);
-      const r = 90 + Math.min(speed*160, 240);
-      const g = trailCtx.createRadialGradient(px,py,0, px,py,r);
-      g.addColorStop(0, 'rgba(140,185,255,.36)');
-      g.addColorStop(.55,'rgba(140,185,255,.16)');
-      g.addColorStop(1, 'rgba(140,185,255,0)');
-      trailCtx.fillStyle=g; trailCtx.beginPath(); trailCtx.arc(px,py,r,0,Math.PI*2); trailCtx.fill();
-      requestAnimationFrame(drawTrail);
-    })();
-  }catch(e){ debug('canvas '+e); }
 
-  // ===== Global language toggle (KR/EN/KR+EN)
+    addEventListener('mousemove', e=>{tx=e.clientX; ty=e.clientY;}, {passive:true});
+    addEventListener('touchstart', e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
+    addEventListener('touchmove',  e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
+
+    function goldBreath(base=0.16, depth=0.12, speed=0.16){
+      return base + depth * (0.5 + 0.5*Math.sin(tt*speed));
+    }
+
+    function waveY(x, lane){
+      const s = innerHeight;
+      const drift = tt*(0.9 + lane*0.15);
+      const f1 = 0.0036 + lane*0.0009;
+      const f2 = 0.0071 + lane*0.0007;
+      const a1 = 36  + lane*16;
+      const a2 = 18  + lane*10;
+      const curve = ease((x/innerWidth));
+      const baseY = s*0.28 + lane*110 + (Math.sin(tt*0.7+lane)*20) + (scrollY*0.05)*(1+lane*0.25);
+      return baseY
+           + Math.sin(x*f1 + drift*1.2 + Math.sin(drift*0.7+lane)*0.3) * a1 * (0.9 + curve*0.2)
+           + Math.sin(x*f2 + drift*0.8) * a2;
+    }
+
+    function renderWaves(){
+      wCtx.clearRect(0,0,innerWidth,innerHeight);
+      const breath = goldBreath(0.16, prefersReduced?0.06:0.12, 0.16);
+      const lanes = prefersReduced ? 2 : 4;
+      for(let k=0;k<lanes;k++){
+        const y0 = waveY(0, k);
+        wCtx.beginPath();
+        for(let x=0;x<=innerWidth;x+=6){
+          const y = waveY(x, k);
+          x ? wCtx.lineTo(x,y) : wCtx.moveTo(x,y);
+        }
+        const g = wCtx.createLinearGradient(0, y0-140, 0, y0+140);
+        const goldAlpha = 0.20 + breath*0.6;
+        g.addColorStop(0.00, `rgba(120,170,255,${0.06+breath*0.20})`);
+        g.addColorStop(0.48, `rgba(230,199,119,${goldAlpha})`);
+        g.addColorStop(1.00, `rgba(120,170,255,${0.06+breath*0.20})`);
+        wCtx.strokeStyle = g;
+        wCtx.lineWidth = 2 + k*0.5;
+        wCtx.globalAlpha = 0.85 - k*0.1;
+        wCtx.stroke();
+      }
+      wCtx.globalAlpha = 1;
+    }
+
+    function renderTrail(){
+      const follow = prefersReduced ? 0.10 : 0.15;
+      px += (tx-px)*follow; py += (ty-py)*follow;
+      const speed = Math.hypot(tx-px, ty-py);
+      const r = 100 + Math.min(speed*170, 250);
+      tCtx.fillStyle='rgba(0,0,0,'+(prefersReduced?0.18:0.12)+')';
+      tCtx.fillRect(0,0,innerWidth,innerHeight);
+      const g = tCtx.createRadialGradient(px,py,0, px,py,r);
+      const breath = goldBreath(0.18, 0.10, 0.20);
+      g.addColorStop(0,   `rgba(230,199,119,${0.22 + breath*0.3})`);
+      g.addColorStop(0.5, `rgba(140,185,255,${0.10 + breath*0.2})`);
+      g.addColorStop(1,   'rgba(140,185,255,0)');
+      tCtx.fillStyle=g; tCtx.beginPath(); tCtx.arc(px,py,r,0,Math.PI*2); tCtx.fill();
+    }
+
+    function loop(){
+      if(visible && !prefersReduced){
+        tt += 0.008;
+        renderWaves();
+        renderTrail();
+      }else if(visible && prefersReduced){
+        tt += 0.003;
+        renderWaves();
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }catch(e){ debug('lightflow '+e); }
+
+  /* ===== 언어 전역 토글 + 시(파리의 센느강) 동기화 ===== */
   const koBtn=document.getElementById('koBtn');
   const enBtn=document.getElementById('enBtn');
   const hyBtn=document.getElementById('hyBtn');
 
-  function setLang(lang){
-    try{
-      document.body.classList.remove('korean','english','hybrid');
-      if(lang==='ko') document.body.classList.add('korean');
-      else if(lang==='en') document.body.classList.add('english');
-      else document.body.classList.add('hybrid');
-      [koBtn,enBtn,hyBtn].filter(Boolean).forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false');});
-      const map={ko:koBtn,en:enBtn,hy:hyBtn};
-      if(map[lang]){ map[lang].classList.add('active'); map[lang].setAttribute('aria-pressed','true'); }
-      store.set('dz_lang', lang);
-      updatePoem();
-      syncAccordionLang();
-    }catch(e){ debug('setLang '+e); }
-  }
-  if(koBtn) koBtn.addEventListener('click',()=>setLang('ko'));
-  if(enBtn) enBtn.addEventListener('click',()=>setLang('en'));
-  if(hyBtn) hyBtn.addEventListener('click',()=>setLang('hy'));
-
-  // URL ?lang=ko|en|hy 우선, 없으면 저장값, 없으면 브라우저 언어
-  (function initLang(){
-    try{
-      const urlLang = new URLSearchParams(location.search).get('lang');
-      const saved=store.get('dz_lang');
-      setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
-    }catch(e){ setLang('ko'); }
-  })();
-
-  // ===== Poem local toggle
   const poemKoBtn=document.getElementById('poemKoBtn');
   const poemEnBtn=document.getElementById('poemEnBtn');
   const poemKo=document.querySelector('.poem-ko');
@@ -415,19 +437,60 @@ body.hybrid .poem p + p{margin-top:4px}
     const isHybrid=document.body.classList.contains('hybrid');
     if(isHybrid){
       poemKo.style.display='block'; poemEn.style.display='block';
-      if(poemKoBtn) poemKoBtn.classList.remove('active');
-      if(poemEnBtn) poemEnBtn.classList.remove('active');
+      if(poemKoBtn){poemKoBtn.classList.remove('active');poemKoBtn.setAttribute('aria-pressed','false');}
+      if(poemEnBtn){poemEnBtn.classList.remove('active');poemEnBtn.setAttribute('aria-pressed','false');}
       return;
     }
-    if(poemKoBtn && poemKoBtn.classList.contains('active')){ poemKo.style.display='block'; poemEn.style.display='none'; }
-    else { poemKo.style.display='none'; poemEn.style.display='block'; }
-  }
-  if(poemKoBtn && poemEnBtn){
-    poemKoBtn.addEventListener('click',()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
-    poemEnBtn.addEventListener('click',()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
+    const showKo = poemKoBtn && poemKoBtn.classList.contains('active');
+    poemKo.style.display = showKo ? 'block' : 'none';
+    poemEn.style.display = showKo ? 'none'  : 'block';
+    if(poemKoBtn) poemKoBtn.setAttribute('aria-pressed', showKo?'true':'false');
+    if(poemEnBtn) poemEnBtn.setAttribute('aria-pressed', showKo?'false':'true');
   }
 
-  // ===== Works (5×20) 동적 렌더 + lazy
+  function setLang(lang){
+    try{
+      document.body.classList.remove('korean','english','hybrid');
+      if(lang==='ko') document.body.classList.add('korean');
+      else if(lang==='en') document.body.classList.add('english');
+      else document.body.classList.add('hybrid');
+
+      [koBtn,enBtn,hyBtn].filter(Boolean).forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false');});
+      const map={ko:koBtn,en:enBtn,hy:hyBtn};
+      if(map[lang]){ map[lang].classList.add('active'); map[lang].setAttribute('aria-pressed','true'); }
+
+      // 전역 → 시 로컬 동기화
+      if(lang==='ko'){ if(poemKoBtn&&poemEnBtn){poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');} }
+      else if(lang==='en'){ if(poemKoBtn&&poemEnBtn){poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');} }
+      else { if(poemKoBtn&&poemEnBtn){poemKoBtn.classList.remove('active');poemEnBtn.classList.remove('active');} }
+
+      store.set('dz_lang', lang);
+      updatePoem();
+      if (typeof syncAccordionLang === 'function') syncAccordionLang();
+    }catch(e){ debug('setLang '+e); }
+  }
+  if(koBtn) koBtn.addEventListener('click',()=>setLang('ko'));
+  if(enBtn) enBtn.addEventListener('click',()=>setLang('en'));
+  if(hyBtn) hyBtn.addEventListener('click',()=>setLang('hy'));
+
+  (function initLang(){
+    try{
+      const urlLang = new URLSearchParams(location.search).get('lang');
+      const saved=store.get('dz_lang');
+      setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
+    }catch(e){ setLang('ko'); }
+  })();
+
+  if(poemKoBtn && poemEnBtn){
+    poemKoBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return;
+      poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();
+    });
+    poemEnBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return;
+      poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();
+    });
+  }
+
+  /* ===== Works (5×20) 렌더 + 레이지 ===== */
   const sections=[
     {key:'pray',  title:'우리를 위해 기도해 주세요 — Pray for us'},
     {key:'human', title:'인간 — Human Being'},
@@ -450,7 +513,6 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   sections.forEach(renderPanel);
 
-  // lazy loading + 카드 페이드인
   try{
     const io=new IntersectionObserver(es=>{
       es.forEach(e=>{
@@ -464,7 +526,6 @@ body.hybrid .poem p + p{margin-top:4px}
     document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
   }catch(e){ debug('IntersectionObserver '+e); }
 
-  // 탭 전환
   document.querySelectorAll('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));
@@ -474,7 +535,7 @@ body.hybrid .poem p + p{margin-top:4px}
     });
   });
 
-  // ===== Reports accordion & site-language sync
+  /* ===== Reports accordion & site-language sync ===== */
   function syncAccordionLang(){
     const acc=document.getElementById('dcarAcc'); if(!acc) return;
     const isKo=document.body.classList.contains('korean');
@@ -488,7 +549,7 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   document.querySelectorAll('#dcarAcc .accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
 
-  // ===== Lightbox + Zoom/Pan
+  /* ===== Lightbox + Zoom/Pan ===== */
   (function(){
     const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
     const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
@@ -524,53 +585,96 @@ body.hybrid .poem p + p{margin-top:4px}
     addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') {lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');} if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
   })();
 
-  // ===== Cosmic Resonance (WebAudio, iOS 정책 대응)
+  /* ===== Cosmic Resonance (WebAudio · iOS/모바일 안전재생) ===== */
   (function(){
     const playBtn=document.getElementById('soundBtn');
     const stopBtn=document.getElementById('soundStopBtn');
     if(!playBtn || !stopBtn) return;
+
     let ac=null, nodes=null, soundOn=false;
+
+    async function ensureAudio() {
+      if (!ac) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        ac = new Ctx({ latencyHint: 'interactive' });
+      }
+      if (ac.state === 'suspended') await ac.resume();
+      return ac;
+    }
     function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
     function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
-    function startSound(){
+
+    // 첫 사용자 제스처에서 unlock
+    function unlockOnce(){
+      ensureAudio().catch(()=>{});
+      window.removeEventListener('touchend', unlockOnce);
+      window.removeEventListener('click', unlockOnce);
+    }
+    window.addEventListener('touchend', unlockOnce, { once:true });
+    window.addEventListener('click',    unlockOnce, { once:true });
+
+    async function startSound(){
       try{
-        if(soundOn) return;
-        ac = ac || new (window.AudioContext||window.webkitAudioContext)();
-        if(ac.state==='suspended') ac.resume(); // iOS: 사용자 제스처 직후 resume
-        const base=mkOsc('sine',47.0), baseGain=mkGain(0.08);
-        const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.04);
-        const shimmer1=mkOsc('sine',561), shimmer2=mkOsc('sine',703), shimGain=mkGain(0.006);
-        const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.04); lfo.connect(lfoGain).connect(baseGain.gain);
+        await ensureAudio();
+        if(soundOn || !ac) return;
+
+        // 모바일 볼륨 보정 + 레인지
+        const base=mkOsc('sine',47.0), baseGain=mkGain(0.14);
+        const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.07);
+        const shim1=mkOsc('sine',561), shim2=mkOsc('sine',703), shimGain=mkGain(0.010);
+        const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.06); lfo.connect(lfoGain).connect(baseGain.gain);
         const filter=ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
         const delay=ac.createDelay(6.0); delay.delayTime.value=2.7; const fb=mkGain(0.28); delay.connect(fb).connect(delay);
+
         base.connect(baseGain).connect(filter);
-        sub1.connect(subGain).connect(filter); sub2.connect(subGain).connect(filter);
-        shimmer1.connect(shimGain).connect(filter); shimmer2.connect(shimGain).connect(filter);
-        filter.connect(delay).connect(ac.destination); filter.connect(ac.destination);
-        [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>o.start());
-        filter.frequency.linearRampToValueAtTime(1200, ac.currentTime+5);
-        nodes={base,sub1,sub2,shimmer1,shimmer2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
+        sub1.connect(subGain).connect(filter);  sub2.connect(subGain).connect(filter);
+        shim1.connect(shimGain).connect(filter); shim2.connect(shimGain).connect(filter);
+        filter.connect(delay).connect(ac.destination);
+        filter.connect(ac.destination);
+
+        // 페이드인
+        [baseGain.gain, subGain.gain, shimGain.gain].forEach(g=>{
+          try{ g.setValueAtTime(g.value*0.001, ac.currentTime); g.exponentialRampToValueAtTime(g.value, ac.currentTime+0.8);}catch{}
+        });
+        [base,sub1,sub2,shim1,shim2,lfo].forEach(o=>o.start());
+        filter.frequency.cancelScheduledValues(0);
+        filter.frequency.linearRampToValueAtTime(1200, ac.currentTime + 5);
+
+        nodes={base,sub1,sub2,shim1,shim2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
         soundOn=true; playBtn.disabled=true; stopBtn.disabled=false;
       }catch(e){ debug('sound start '+e); }
     }
+
     function stopSound(){
       try{
-        if(!soundOn || !nodes) return;
-        const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shimmer1,shimmer2,lfo}=nodes;
-        baseGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-        subGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-        shimGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-        filter.frequency.linearRampToValueAtTime(120, ac.currentTime+2.2);
-        setTimeout(()=>{ [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null; },2300);
+        if(!soundOn || !nodes || !ac) return;
+        const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shim1,shim2,lfo}=nodes;
+        const t = ac.currentTime;
+        [baseGain.gain, subGain.gain, shimGain.gain].forEach(g=>{
+          try { g.cancelScheduledValues(0); g.exponentialRampToValueAtTime(0.0001, t + 2.0);} catch {}
+        });
+        try { filter.frequency.linearRampToValueAtTime(120, t + 2.0);} catch {}
+        setTimeout(()=>{ [base,sub1,sub2,shim1,shim2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null; }, 2100);
         soundOn=false; playBtn.disabled=false; stopBtn.disabled=true;
       }catch(e){ debug('sound stop '+e); }
     }
-    playBtn.addEventListener('click', startSound, {passive:true});
-    stopBtn.addEventListener('click',  stopSound,  {passive:true});
+
+    // 탭 전환 대응
+    document.addEventListener('visibilitychange', async ()=>{
+      if (!ac) return;
+      if (document.hidden) { try{ await ac.suspend(); }catch{} }
+      else if (soundOn)    { try{ await ac.resume();   }catch{} }
+    });
+
+    // iOS 확정: click + touchend
+    playBtn.addEventListener('click', startSound);
+    playBtn.addEventListener('touchend', startSound);
+    stopBtn.addEventListener('click',  stopSound);
+    stopBtn.addEventListener('touchend', stopSound);
   })();
 
 })();
 </script>
-<!-- ===== /Stable Core ===== -->
+<!-- ===== /Complete Integrated Core ===== -->
 </body>
 </html>

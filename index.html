@@ -11,20 +11,24 @@
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 <style>
-:root{ --bg:#0b1020; --fg:#e9efff; --gold:#e6c777; --muted:#a6b6e8;
-  --panel:#0f1630; --line:#1b2652; --max:1180px; --h:60px; }
+:root{
+  --bg:#0b1020; --fg:#e9efff; --gold:#e6c777; --muted:#a6b6e8;
+  --panel:#0f1630; --line:#1b2652; --max:1180px; --h:60px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
   background:radial-gradient(1200px 700px at 70% -10%, #19244a 0, #0b1020 40%, #060a18 100%);
   color:var(--fg); font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-  overflow-x:hidden; letter-spacing:.2px; padding-bottom:120px; /* 하단 컨트롤/푸터 겹침 방지 */
+  overflow-x:hidden; letter-spacing:.2px;
+  padding-bottom:140px; /* 하단 컨트롤/푸터 겹침 방지 */
 }
 /* Light layers */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
 #waves{z-index:0;opacity:.33}
 #trail{z-index:1;opacity:.55;mix-blend-mode:screen}
-/* Header */
+
+/* Header: mobile safe */
 header{
   position:fixed;top:0;left:0;right:0;height:auto;z-index:6;
   display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
@@ -38,7 +42,8 @@ nav.primary a:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c
 .lang{display:flex;gap:8px;justify-content:center;width:100%}
 .lang button{all:unset;cursor:pointer;padding:6px 10px;border:1px solid #2a335f;border-radius:8px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
-/* Sync banner */
+
+/* Domain auto-detect banner */
 #detectBanner{
   position:fixed; left:0; right:0; top:calc(56px + env(safe-area-inset-top)); z-index:7;
   display:none; align-items:center; justify-content:center; gap:10px; text-align:center;
@@ -47,11 +52,13 @@ nav.primary a:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c
 #detectBanner b{color:var(--gold)}
 #detectBanner .btn{display:inline-block;margin-left:8px;padding:6px 10px;border:1px solid #3a447a;border-radius:8px}
 #detectBanner .btn:hover{background:#1a2144}
+
 /* Sections */
 main{position:relative;z-index:2}
 section{max-width:var(--max);margin:auto;padding:calc(var(--h) + 28px + env(safe-area-inset-top)) 16px 70px}
 h1,h2{color:var(--gold)}
 .sub{color:var(--muted)}
+
 /* Hero + Poem */
 .hero{min-height:74vh;display:grid;place-items:center;text-align:center}
 .hero h1{font-size:clamp(36px,6vw,66px);margin-bottom:8px}
@@ -64,6 +71,7 @@ h1,h2{color:var(--gold)}
 #poemToggle button.active,#poemToggle button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
 .poem{padding:12px 14px}
 .poem p{margin:4px 0}
+
 /* Tabs & panels */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px}
 .tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem}
@@ -71,6 +79,7 @@ h1,h2{color:var(--gold)}
 .tabpanel{display:none;animation:fade .28s ease}
 .tabpanel.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+
 /* Grid: 5×20 = 100 */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
@@ -85,11 +94,13 @@ h1,h2{color:var(--gold)}
 .card:hover .caption,.card:focus .caption{transform:translateY(0)}
 .note{max-width:var(--max);margin:10px auto 0;padding:10px 14px;border:1px dashed #2a3a78;border-radius:10px;color:#bcd0ff;background:rgba(16,22,48,.35)}
 .note code{background:#121b3d;padding:2px 6px;border-radius:6px}
-/* Reports */
+
+/* Reports (accordion hub) */
 .acc{display:grid;gap:8px}
 .acc details{background:#0f1838;border:1px solid #223;border-radius:10px;padding:0 10px}
 .acc summary{padding:14px 6px;cursor:pointer;color:#cfe0ff;list-style:none;font-weight:600}
 .acc p{padding:0 0 14px}
+
 /* Lightbox */
 #lightbox{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.88);
   opacity:0;pointer-events:none;transition:.26s;z-index:8}
@@ -104,33 +115,57 @@ h1,h2{color:var(--gold)}
 .lb-close{top:14px;right:14px}
 .lb-cap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:rgba(8,16,40,.7);
   border:1px solid #223;border-radius:10px;padding:8px 12px;font-size:.88rem;color:#e9f1ff}
-/* Controls (play/stop) */
+
+/* Controls: 작은 반투명 아이콘 버튼 (링크 가리지 않음) */
 #ctrl{
-  position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);z-index:9;display:flex;gap:10px;flex-wrap:wrap;justify-content:center
+  position:fixed;
+  left:50%;
+  bottom:calc(90px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:9;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+  pointer-events:auto;
 }
 .ctrlbtn{
-  background:rgba(12,19,48,.72);border:1px solid rgba(230,199,119,.35);border-radius:26px;
-  color:#f1f5ff;padding:8px 12px;font-size:.9rem;cursor:pointer;
-  box-shadow:0 0 12px rgba(120,170,255,.25);backdrop-filter:blur(6px)
+  background:rgba(12,19,48,0.45);
+  border:1px solid rgba(230,199,119,0.3);
+  border-radius:50%;
+  color:#f1f5ff;
+  width:40px;
+  height:40px;
+  font-size:0.8rem;
+  cursor:pointer;
+  box-shadow:0 0 8px rgba(120,170,255,0.2);
+  backdrop-filter:blur(6px);
+  transition:all .25s ease;
 }
-.ctrlbtn:hover{background:rgba(12,19,48,.95);color:var(--gold);box-shadow:0 0 18px rgba(243,201,105,.35)}
-.ctrlbtn[disabled]{opacity:.5;cursor:not-allowed}
+.ctrlbtn:hover{
+  background:rgba(20,26,58,0.75);
+  color:var(--gold);
+  box-shadow:0 0 16px rgba(243,201,105,0.35);
+}
+.ctrlbtn[disabled]{opacity:0.4;cursor:not-allowed}
+
 /* Footer */
 footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 64px;background:#090f22}
 .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
 .links a{display:inline-block;color:#cfe0ff;text-decoration:none}
 .links a:hover{color:var(--gold)}
 small{display:block;margin-top:8px;color:#9fb0d8}
-/* Lang display */
+
+/* Bilingual visibility */
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
+
 @media (prefers-reduced-motion: reduce){#waves,#trail{display:none}}
 </style>
 </head>
 <body class="korean">
-<!-- Sync banner -->
+<!-- Bilingual domain/connection banner -->
 <div id="detectBanner" role="status" aria-live="polite">
   <span class="ko"><b>알림</b> · 사이트와 보고서 연결이 아직 동기화 중입니다. 잠시 후 새로고침하거나 <span class="btn" id="bnrReloadKo">즉시 새로고침</span>을 눌러주세요.</span>
   <span class="en"><b>Notice</b> · The site and reports are still syncing. Please refresh shortly, or tap <span class="btn" id="bnrReloadEn">Reload now</span>.</span>
@@ -216,17 +251,17 @@ body.english .en{display:initial}
   <section id="works">
     <h2>Artworks — 작품 아카이브 (100)</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
-      <button class="tab active" data-panel="pray">Ⅰ Pray for Us</button>
-      <button class="tab" data-panel="prayer">Ⅱ Human being</button>
+      <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
+      <button class="tab" data-panel="photopoem">Ⅱ 사진시 · Photo Poems</button>
       <button class="tab" data-panel="rebirth">Ⅲ Rebirth</button>
       <button class="tab" data-panel="exist">Ⅳ Existence</button>
       <button class="tab" data-panel="cosmos">Ⅴ Cosmos</button>
     </div>
-    <div id="panel-pray"    class="tabpanel active"></div>
-    <div id="panel-prayer"  class="tabpanel"></div>
-    <div id="panel-rebirth" class="tabpanel"></div>
-    <div id="panel-exist"   class="tabpanel"></div>
-    <div id="panel-cosmos"  class="tabpanel"></div>
+    <div id="panel-pray"      class="tabpanel active"></div>
+    <div id="panel-photopoem" class="tabpanel"></div>
+    <div id="panel-rebirth"   class="tabpanel"></div>
+    <div id="panel-exist"     class="tabpanel"></div>
+    <div id="panel-cosmos"    class="tabpanel"></div>
     <div class="note">
       <span class="ko">※ 이미지를 <code>works/{섹션키}/{번호}.jpg</code> 경로로 올리면 자동 표시됩니다. (예: <code>works/pray/1.jpg</code>)</span>
       <span class="en">※ Put images at <code>works/{sectionKey}/{index}.jpg</code> and they’ll auto-appear. (e.g., <code>works/pray/1.jpg</code>)</span>
@@ -250,10 +285,10 @@ body.english .en{display:initial}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- Controls: audio play/stop -->
+<!-- Controls: 작은 반투명 아이콘 -->
 <div id="ctrl">
-  <button class="ctrlbtn" id="soundBtn">✨ Play Cosmic Resonance</button>
-  <button class="ctrlbtn" id="soundStopBtn" disabled>🔇 Stop</button>
+  <button class="ctrlbtn" id="soundBtn" title="Play Cosmic Resonance">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" title="Stop Cosmic Resonance" disabled>🔇</button>
 </div>
 
 <footer>
@@ -269,7 +304,7 @@ body.english .en{display:initial}
 </footer>
 
 <script>
-/* ===== Sync banner ===== */
+/* ===== 0) Bilingual + connection banner ===== */
 (function(){
   const githubOrigin = 'https://dungzakcestlavie.github.io';
   const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 3500));
@@ -284,7 +319,7 @@ body.english .en{display:initial}
     });
 })();
 
-/* ===== Global language toggle ===== */
+/* ===== 1) Global language toggle ===== */
 const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn');
 function setLang(lang){
   document.body.classList.toggle('korean', lang==='ko');
@@ -302,7 +337,7 @@ enBtn.addEventListener('click',()=>setLang('en'));
   setLang(sys.startsWith('ko')?'ko':'en');
 })();
 
-/* ===== Poem KR/EN local toggle ===== */
+/* ===== 1-1) Poem local toggle (KR/EN independent) ===== */
 const poemKoBtn=document.getElementById('poemKoBtn');
 const poemEnBtn=document.getElementById('poemEnBtn');
 const poemKo=document.querySelector('.poem-ko');
@@ -320,7 +355,7 @@ if(poemKoBtn && poemEnBtn){
   });
 }
 
-/* ===== Background waves + pointer trail ===== */
+/* ===== 2) Waves + trail ===== */
 const waves=document.getElementById('waves'), w=waves.getContext('2d');
 const trail=document.getElementById('trail'), t=trail.getContext('2d');
 function rs(){waves.width=trail.width=innerWidth; waves.height=trail.height=innerHeight}
@@ -348,13 +383,13 @@ raf(()=>{ if(!vis) return;
 addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
 addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
 
-/* ===== Works (5×20) ===== */
+/* ===== 3) Works (5×20) ===== */
 const sections=[
-  {key:'pray',    title:'Pray for Us'},
-  {key:'prayer',  title:'Human being'},
-  {key:'rebirth', title:'Rebirth'},
-  {key:'exist',   title:'Existence'},
-  {key:'cosmos',  title:'Cosmos'}
+  {key:'pray',      title:'우리를 위해 기도해 주세요 · Pray for Us'},
+  {key:'photopoem', title:'사진시 · Photo Poems'},
+  {key:'rebirth',   title:'Rebirth'},
+  {key:'exist',     title:'Existence'},
+  {key:'cosmos',    title:'Cosmos'}
 ];
 function cardHTML(sec,i){return `
 <article class="card" tabindex="0" data-sec="${sec.key}" data-idx="${i}">
@@ -378,7 +413,7 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active'); observe(key);
 }));
 
-/* ===== Reports (accordion hub) ===== */
+/* ===== 4) Reports (accordion hub) ===== */
 const reports=[
   {id:'DCAR-01-2025',title:'On Light, Memory, and Being',ko:'빛·기억·존재의 상호작용에 대한 예술적 성찰.',en:'Artistic inquiry into the interplay of light, memory, and being.'},
   {id:'DCAR-02-2025',title:'The Restoration of Being',ko:'존재의 회복과 감각의 윤리.',en:'Restoration of being and the ethics of sensation.'},
@@ -397,7 +432,7 @@ acc.innerHTML = reports.map(r=>`
     <p class="en">${r.en}</p>
   </details>`).join('');
 
-/* ===== Lightbox ===== */
+/* ===== 5) Lightbox ===== */
 const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
 const prev=lb.querySelector('.lb-prev'), next=lb.querySelector('.lb-next'), closeBtn=lb.querySelector('.lb-close');
 let cur={key:'pray',i:1};
@@ -413,7 +448,7 @@ closeBtn.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttrib
 lb.addEventListener('click',e=>{if(e.target===lb) closeBtn.click();});
 addEventListener('keydown',e=>{if(!lb.classList.contains('open')) return; if(e.key==='Escape') closeBtn.click(); if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
 
-/* ===== Cosmic Resonance (synthesis) ===== */
+/* ===== 6) Cosmic Resonance (synthesis) ===== */
 const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');
 let ac=null, nodes=null, soundOn=false;
 function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}

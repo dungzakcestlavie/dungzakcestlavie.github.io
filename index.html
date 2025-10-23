@@ -510,6 +510,116 @@ document.addEventListener('DOMContentLoaded', () => {
   btnPlay.addEventListener('click', startSound);
   btnStop.addEventListener('click', stopSound);
 });
+</script> <!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Stable Interactive Core ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ===== Language Toggle ===== */
+  const koBtn=document.getElementById('koBtn');
+  const enBtn=document.getElementById('enBtn');
+  const hyBtn=document.getElementById('hyBtn');
+  function setLang(lang){
+    document.body.classList.remove('korean','english','hybrid');
+    if(lang==='ko') document.body.classList.add('korean');
+    else if(lang==='en') document.body.classList.add('english');
+    else document.body.classList.add('hybrid');
+    [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
+    localStorage.setItem('dz_lang',lang);
+    updatePoem();
+    syncAccordionLang();
+  }
+  if(koBtn) koBtn.onclick=()=>setLang('ko');
+  if(enBtn) enBtn.onclick=()=>setLang('en');
+  if(hyBtn) hyBtn.onclick=()=>setLang('hy');
+  const saved=localStorage.getItem('dz_lang');
+  setLang(saved ? saved : ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
+
+  /* ===== Poem Language Local Toggle ===== */
+  const poemKoBtn=document.getElementById('poemKoBtn');
+  const poemEnBtn=document.getElementById('poemEnBtn');
+  const poemKo=document.querySelector('.poem-ko');
+  const poemEn=document.querySelector('.poem-en');
+  function updatePoem(){
+    if(!poemKo||!poemEn) return;
+    const isHybrid=document.body.classList.contains('hybrid');
+    if(isHybrid){poemKo.style.display='block';poemEn.style.display='block';return;}
+    if(poemKoBtn?.classList.contains('active')){poemKo.style.display='block';poemEn.style.display='none';}
+    else {poemKo.style.display='none';poemEn.style.display='block';}
+  }
+  if(poemKoBtn && poemEnBtn){
+    poemKoBtn.onclick=()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();};
+    poemEnBtn.onclick=()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();};
+  }
+
+  /* ===== DCAR Accordion ===== */
+  function syncAccordionLang(){
+    const acc=document.getElementById('dcarAcc');
+    if(!acc) return;
+    const isKo=document.body.classList.contains('korean');
+    const isHy=document.body.classList.contains('hybrid');
+    acc.querySelectorAll('.accordion-item').forEach(item=>{
+      const ko=item.querySelectorAll('.accordion-content.ko');
+      const en=item.querySelectorAll('.accordion-content.en');
+      if(isHy){ko.forEach(el=>el.style.display='block');en.forEach(el=>el.style.display='block');}
+      else {ko.forEach(el=>el.style.display=isKo?'block':'none');
+            en.forEach(el=>el.style.display=isKo?'none':'block');}
+    });
+  }
+  document.querySelectorAll('#dcarAcc .accordion-header')
+    .forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
+
+  /* ===== Cosmic Resonance Sound ===== */
+  const playBtn=document.getElementById('cosmicPlay');
+  const stopBtn=document.getElementById('cosmicStop');
+  const audio=document.getElementById('cosmicAudio');
+  if(audio && playBtn && stopBtn){
+    playBtn.onclick=()=>{audio.volume=0.4;audio.play();};
+    stopBtn.onclick=()=>{audio.pause();audio.currentTime=0;};
+  }
+
+  /* ===== Works Tabs ===== */
+  const tabs=document.querySelectorAll('.tabbtn');
+  const panels=document.querySelectorAll('.tabpanel');
+  tabs.forEach((t,i)=>{
+    t.addEventListener('click',()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      t.classList.add('active');
+      panels.forEach(p=>p.style.display='none');
+      panels[i].style.display='block';
+    });
+  });
+
+  /* ===== Lightbox Viewer ===== */
+  const imgs=document.querySelectorAll('.gallery img');
+  const lightbox=document.getElementById('lightbox');
+  const lightImg=document.getElementById('lightImg');
+  if(lightbox && lightImg){
+    imgs.forEach(img=>{
+      img.addEventListener('click',()=>{
+        lightImg.src=img.src;
+        lightbox.classList.add('show');
+      });
+    });
+    lightbox.addEventListener('click',()=>lightbox.classList.remove('show'));
+  }
+
+  /* ===== Lazy Loading ===== */
+  const lazyImgs=document.querySelectorAll('img[data-src]');
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const img=e.target;
+        img.src=img.dataset.src;
+        img.removeAttribute('data-src');
+        observer.unobserve(img);
+      }
+    });
+  });
+  lazyImgs.forEach(img=>observer.observe(img));
+
+});
 </script>
+<!-- ===== END of Lightflow Ω.5 Core ===== -->
 </body>
 </html>

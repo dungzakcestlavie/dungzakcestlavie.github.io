@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.6 · Deep Resonance</title>
-<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.6 · Gallery · Aesthetic Reports (DCAR)" />
+<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.6.2</title>
+<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.6.2 · Gallery · Aesthetic Reports (DCAR)" />
 <meta property="og:type" content="website">
-<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.6">
+<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.6.2">
 <meta property="og:description" content="Light · Memory · Being · 100 Works · DCAR Reports">
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
@@ -16,22 +16,22 @@
 html,body{height:100%}
 html{scroll-behavior:smooth}
 body{
-  background:radial-gradient(1200px 700px at 70% -10%,#19244a 0,#0b1020 40%,#060a18 100%);
+  background:radial-gradient(1200px 700px at 70% -10%,#18224a 0,#0b1020 40%,#060a18 100%);
   color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
   overflow-x:hidden;letter-spacing:.2px;padding-bottom:170px
 }
 /* canvases */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
-#waves{z-index:0;opacity:.28}
-#trail{z-index:1;opacity:.55;mix-blend-mode:screen}
+#waves{z-index:0;opacity:.40}
+#trail{z-index:1;opacity:.60;mix-blend-mode:screen}
 
 /* Header */
 header{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
   padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
 .brand{font-weight:900;color:var(--gold);font-size:clamp(16px,5vw,22px);flex:1 1 100%;text-align:center}
 nav.primary{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-nav.primary a{color:var(--fg);text-decoration:none;font-weight:600;padding:6px 10px;border-radius:10px;white-space:nowrap}
-nav.primary a:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c777)}
+nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 10px;border-radius:10px}
+nav.primary button:hover,nav.primary button.active{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c777)}
 .lang{display:flex;gap:8px;justify-content:center;width:100%}
 .lang button{all:unset;cursor:pointer;padding:6px 10px;border:1px solid #2a335f;border-radius:8px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
@@ -55,7 +55,7 @@ h1,h2{color:var(--gold)}
 .poem{padding:12px 14px}
 .poem p{margin:4px 0}
 
-/* Tabs (Works 전용) */
+/* Tabs (Works) */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px}
 .tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
@@ -73,7 +73,7 @@ h1,h2{color:var(--gold)}
 .caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));padding:10px 12px;color:#e9f1ff;font-size:.82rem;transform:translateY(100%);transition:transform .25s;pointer-events:none}
 .card:hover .caption,.card:focus .caption{transform:translateY(0)}
 
-/* Accordion (Reports 전용) */
+/* Accordion (Reports) */
 .accordion{max-width:var(--max);margin:20px auto;border:1px solid #2a3a78;border-radius:12px;overflow:hidden}
 .accordion-item{border-bottom:1px solid #2a3a78}
 .accordion-header{background:#0f1838;color:var(--gold);padding:14px 16px;cursor:pointer;font-weight:700}
@@ -123,7 +123,7 @@ body.hybrid .ko, body.hybrid .en{display:initial}
 body.hybrid .poem-title{display:flex;gap:8px}
 body.hybrid .poem p + p{margin-top:4px}
 
-/* 사용자 모션 최소화 */
+/* 모션 최소화 */
 @media (prefers-reduced-motion: reduce){
   #waves,#trail{display:none}
 }
@@ -136,12 +136,12 @@ body.hybrid .poem p + p{margin-top:4px}
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
-  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.6</div>
+  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.6.2</div>
   <nav class="primary" aria-label="Primary">
-    <a href="#poem">Poem</a>
-    <a href="#bio">Bio</a>
-    <a href="#works">Works</a>
-    <a href="#reports">Reports</a>
+    <button data-target="poem"   class="active">Poem</button>
+    <button data-target="bio">Bio</button>
+    <button data-target="works">Works</button>
+    <button data-target="reports">Reports</button>
   </nav>
   <div class="lang" aria-label="Language">
     <button id="koBtn" class="active" aria-pressed="true">KR</button>
@@ -203,15 +203,15 @@ body.hybrid .poem p + p{margin-top:4px}
   </section>
 
   <!-- Bio -->
-  <section id="bio">
+  <section id="bio" style="display:none">
     <h2 class="ko">작가 소개</h2>
     <h2 class="en">Artist Bio</h2>
     <p class="ko">빛의 철학과 인간의 감정을 화폭에 담는 현대 예술가. DCAR(1–8)로 철학·뇌과학·예술을 융합한다.</p>
     <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR (1–8) series unites philosophy, neuroscience, and art.</p>
   </section>
 
-  <!-- Works: 이미지 아카이브만 노출 -->
-  <section id="works">
+  <!-- Works (이미지 카드만) -->
+  <section id="works" style="display:none">
     <h2>Artworks — 작품 아카이브 (100)</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
       <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 — Pray for us</button>
@@ -231,8 +231,8 @@ body.hybrid .poem p + p{margin-top:4px}
     </div>
   </section>
 
-  <!-- Reports: 미학 보고서만 노출 -->
-  <section id="reports">
+  <!-- Reports (미학 보고서만) -->
+  <section id="reports" style="display:none">
     <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2>
     <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
     <div class="accordion" id="dcarAcc">
@@ -262,11 +262,11 @@ body.hybrid .poem p + p{margin-top:4px}
 
 <!-- Cosmic controls -->
 <div id="ctrl" aria-label="Cosmic Resonance controls">
-  <button class="ctrlbtn" id="soundBtn" title="Play Deep Resonance">✨</button>
-  <button class="ctrlbtn" id="soundStopBtn" title="Stop Deep Resonance" disabled>🔇</button>
+  <button class="ctrlbtn" id="soundBtn" title="Play Prayer Resonance">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" title="Stop" disabled>🔇</button>
 </div>
 
-<!-- Floating mini social bar (SVG icons) -->
+<!-- Floating mini social bar -->
 <div id="socialFab" aria-label="Quick social">
   <a class="sbtn" href="https://naver.me/x95dk3l1" target="_blank" rel="noopener" title="Naver">
     <svg viewBox="0 0 24 24"><path d="M4 4h6l4 6V4h6v16h-6l-4-6v6H4z"/></svg>
@@ -294,10 +294,10 @@ body.hybrid .poem p + p{margin-top:4px}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- ===== Lightflow Ω.6 · Deep Resonance — Integrated Core ===== -->
 <script>
+/* ===== Ω.6.2 Stable Core ===== */
 (function(){
-  /* ---------- Debug overlay (?debug=1) ---------- */
+  /* Debug (optional: ?debug=1) */
   const DBG = new URLSearchParams(location.search).get('debug')==='1';
   function debug(msg){
     if(!DBG) return;
@@ -312,150 +312,137 @@ body.hybrid .poem p + p{margin-top:4px}
     }
     box.textContent = String(msg);
   }
-  window.addEventListener('error',e=>debug('Error: '+e.message+' @'+e.filename+':'+e.lineno));
+  window.addEventListener('error',e=>debug('Error: '+e.message));
 
-  /* ---------- safe localStorage ---------- */
   const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
 
-  /* ===== Lightflow Ω.6 — Natural cosmic glow (radial breath + gentle ripples) ===== */
-  try{
-    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const waves = document.getElementById('waves');
-    const trail = document.getElementById('trail');
-    const wCtx = waves.getContext('2d', { alpha:true });
-    const tCtx = trail.getContext('2d', { alpha:true });
-
-    let DPR=1, VW=0, VH=0, visible=true, tt=0;
-    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
-
-    function resize(){
-      DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
-      VW = waves.width  = trail.width  = Math.floor(innerWidth  * DPR);
-      VH = waves.height = trail.height = Math.floor(innerHeight * DPR);
-      wCtx.setTransform(1,0,0,1,0,0); tCtx.setTransform(1,0,0,1,0,0);
-      wCtx.scale(1/DPR,1/DPR); tCtx.scale(1/DPR,1/DPR);
-    }
-    resize();
-    addEventListener('resize', resize, {passive:true});
-    document.addEventListener('visibilitychange', ()=>{ visible=!document.hidden; });
-
-    addEventListener('mousemove', e=>{tx=e.clientX; ty=e.clientY;}, {passive:true});
-    addEventListener('touchstart', e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
-    addEventListener('touchmove',  e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
-
-    // Simple value-noise (tiny, fast) for shimmer
-    function vnoise(x,y,t){
-      const n = Math.sin(x*0.0023 + y*0.0017 + t*0.15)
-              + Math.sin(x*0.0041 - y*0.0031 + t*0.10)*0.6
-              + Math.sin(-x*0.0037 + y*0.0025 + t*0.07)*0.4;
-      return n/2.0; // -1..1 -> ~-0.5..0.5
-    }
-
-    function renderWaves(){
-      wCtx.clearRect(0,0,innerWidth,innerHeight);
-
-      // three gentle lanes: stardust ripples
-      const lanes = prefersReduced ? 1 : 3;
-      for(let k=0;k<lanes;k++){
-        const baseY = innerHeight*0.28 + k*120 + Math.sin(tt*0.5+k)*16;
-        wCtx.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){
-          const y = baseY
-                  + Math.sin(x*(0.0042+k*0.0009) + tt*(0.8+k*0.15))* (28 + k*12)
-                  + vnoise(x, baseY, tt) * (12 + k*6);
-          x ? wCtx.lineTo(x,y) : wCtx.moveTo(x,y);
-        }
-        const g = wCtx.createLinearGradient(0, baseY-180, 0, baseY+180);
-        g.addColorStop(0,   `rgba(120,170,255,${0.04 + 0.04*Math.sin(tt*0.2+ k)})`);
-        g.addColorStop(0.45,`rgba(230,199,119,${0.18 + 0.10*Math.sin(tt*0.18)})`);
-        g.addColorStop(1,   `rgba(120,170,255,${0.04 + 0.04*Math.cos(tt*0.22+ k)})`);
-        wCtx.strokeStyle = g;
-        wCtx.globalAlpha = 0.88 - k*0.12;
-        wCtx.lineWidth = 1.8 + k*0.6;
-        wCtx.stroke();
-      }
-      wCtx.globalAlpha = 1;
-    }
-
-    function renderTrail(){
-      // slow cosmic breath
-      px += (tx-px)*(prefersReduced?0.08:0.13);
-      py += (ty-py)*(prefersReduced?0.08:0.13);
-      const speed = Math.hypot(tx-px, ty-py);
-      const r = 120 + Math.min(speed*160, 260);
-      tCtx.fillStyle='rgba(0,0,0,'+(prefersReduced?0.18:0.12)+')';
-      tCtx.fillRect(0,0,innerWidth,innerHeight);
-
-      const breath = 0.22 + 0.10*Math.sin(tt*0.2);
-      const g = tCtx.createRadialGradient(px,py,0, px,py,r);
-      g.addColorStop(0,   `rgba(230,199,119,${0.20 + breath})`);
-      g.addColorStop(0.55,`rgba(140,185,255,${0.10 + breath*0.6})`);
-      g.addColorStop(1,   'rgba(140,185,255,0)');
-      tCtx.fillStyle=g; tCtx.beginPath(); tCtx.arc(px,py,r,0,Math.PI*2); tCtx.fill();
-    }
-
-    function loop(){
-      if(!visible) { requestAnimationFrame(loop); return; }
-      tt += prefersReduced ? 0.003 : 0.008;
-      renderWaves();
-      if(!prefersReduced) renderTrail();
-      requestAnimationFrame(loop);
-    }
-    loop();
-  }catch(e){ debug('lightflow '+e); }
-
-  /* ===== Language + Poem sync ===== */
-  const koBtn=document.getElementById('koBtn');
-  const enBtn=document.getElementById('enBtn');
-  const hyBtn=document.getElementById('hyBtn');
-  const poemKoBtn=document.getElementById('poemKoBtn');
-  const poemEnBtn=document.getElementById('poemEnBtn');
-  const poemKo=document.querySelector('.poem-ko');
-  const poemEn=document.querySelector('.poem-en');
-
-  function updatePoem(){
-    if(!poemKo||!poemEn) return;
-    const hy = document.body.classList.contains('hybrid');
-    if(hy){
-      poemKo.style.display='block'; poemEn.style.display='block';
-      if(poemKoBtn){poemKoBtn.classList.remove('active');poemKoBtn.setAttribute('aria-pressed','false');}
-      if(poemEnBtn){poemEnBtn.classList.remove('active');poemEnBtn.setAttribute('aria-pressed','false');}
-    }else{
-      const showKo = poemKoBtn && poemKoBtn.classList.contains('active');
-      poemKo.style.display = showKo ? 'block':'none';
-      poemEn.style.display = showKo ? 'none' :'block';
-      if(poemKoBtn) poemKoBtn.setAttribute('aria-pressed', showKo?'true':'false');
-      if(poemEnBtn) poemEnBtn.setAttribute('aria-pressed', showKo?'false':'true');
-    }
+  /* ---------- Section switch (Poem / Bio / Works / Reports) ---------- */
+  function showSection(id){
+    document.querySelectorAll('main > section').forEach(s=>s.style.display='none');
+    document.getElementById(id).style.display='block';
+    document.querySelectorAll('nav.primary button').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
   }
+  document.querySelectorAll('nav.primary button').forEach(b=>{
+    b.addEventListener('click',()=>showSection(b.dataset.target));
+  });
+
+  /* ---------- Language global toggle ---------- */
+  const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn'), hyBtn=document.getElementById('hyBtn');
   function setLang(lang){
     document.body.classList.remove('korean','english','hybrid');
-    if(lang==='ko') document.body.classList.add('korean');
-    else if(lang==='en') document.body.classList.add('english');
-    else document.body.classList.add('hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>{ if(!b) return; b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang])?.classList.add('active');
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang])?.setAttribute('aria-pressed','true');
-    if(lang==='ko'){poemKoBtn?.classList.add('active');poemEnBtn?.classList.remove('active');}
-    else if(lang==='en'){poemEnBtn?.classList.add('active');poemKoBtn?.classList.remove('active');}
-    else {poemKoBtn?.classList.remove('active');poemEnBtn?.classList.remove('active');}
+    if(lang==='ko') document.body.classList.add('korean'); else
+    if(lang==='en') document.body.classList.add('english'); else document.body.classList.add('hybrid');
+    [koBtn,enBtn,hyBtn].forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false')});
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).setAttribute('aria-pressed','true');
     store.set('dz_lang', lang);
     updatePoem();
-    if(typeof syncAccordionLang==='function') syncAccordionLang();
+    syncAccordionLang();
   }
-  koBtn?.addEventListener('click',()=>setLang('ko'));
-  enBtn?.addEventListener('click',()=>setLang('en'));
-  hyBtn?.addEventListener('click',()=>setLang('hy'));
-  poemKoBtn?.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemKoBtn.classList.add('active');poemEnBtn?.classList.remove('active');updatePoem(); });
-  poemEnBtn?.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemEnBtn.classList.add('active');poemKoBtn?.classList.remove('active');updatePoem(); });
-
+  koBtn.addEventListener('click',()=>setLang('ko'));
+  enBtn.addEventListener('click',()=>setLang('en'));
+  hyBtn.addEventListener('click',()=>setLang('hy'));
   (function initLang(){
-    const urlLang = new URLSearchParams(location.search).get('lang');
+    const urlLang=new URLSearchParams(location.search).get('lang');
     const saved=store.get('dz_lang');
     setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
   })();
 
-  /* ===== Works (5×20) only image cards ===== */
+  /* ---------- Poem local toggle ---------- */
+  const poemKoBtn=document.getElementById('poemKoBtn');
+  const poemEnBtn=document.getElementById('poemEnBtn');
+  const poemKo=document.querySelector('.poem-ko');
+  const poemEn=document.querySelector('.poem-en');
+  function updatePoem(){
+    const isHybrid=document.body.classList.contains('hybrid');
+    if(isHybrid){poemKo.style.display='block';poemEn.style.display='block';poemKoBtn.classList.remove('active');poemEnBtn.classList.remove('active');return;}
+    if(poemKoBtn.classList.contains('active')){poemKo.style.display='block';poemEn.style.display='none';}
+    else{poemKo.style.display='none';poemEn.style.display='block';}
+  }
+  poemKoBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
+  poemEnBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
+
+  /* ---------- Waves: Gentle Cosmic Water (sharper but subtle) ---------- */
+  try{
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const waves = document.getElementById('waves');
+    const trail = document.getElementById('trail');
+    const W = waves.getContext('2d',{alpha:true});
+    const T = trail.getContext('2d',{alpha:true});
+    let DPR=1, vw=0, vh=0, t=0, visible=true;
+    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
+
+    const ease = x=>x*x*(3-2*x);
+    function resize(){
+      DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
+      vw=waves.width=trail.width=Math.floor(innerWidth*DPR);
+      vh=waves.height=trail.height=Math.floor(innerHeight*DPR);
+      W.setTransform(1,0,0,1,0,0); T.setTransform(1,0,0,1,0,0);
+      W.scale(1/DPR,1/DPR); T.scale(1/DPR,1/DPR);
+    }
+    resize(); addEventListener('resize',resize,{passive:true});
+    document.addEventListener('visibilitychange',()=>visible=!document.hidden);
+
+    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+    addEventListener('touchstart',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+
+    function breath(base,depth,speed){return base+depth*(0.5+0.5*Math.sin(t*speed));}
+    function waveLaneY(x,k){
+      const f1=0.0032+k*0.0008, f2=0.0066+k*0.0007;
+      const a1=28+k*14, a2=16+k*9;
+      const drift=t*(0.8+k*0.18);
+      const base=innerHeight*0.30+k*110 + Math.sin(t*0.5+k)*14 + (scrollY*0.04)*(1+k*0.2);
+      const curve = (0.9 + ease(x/innerWidth)*0.2);
+      return base + Math.sin(x*f1+drift*1.2+Math.sin(drift*0.7+k)*.3)*a1*curve + Math.sin(x*f2+drift*.9)*a2;
+    }
+    function drawWaves(){
+      W.clearRect(0,0,innerWidth,innerHeight);
+      const lanes = prefersReduced?2:4;
+      const halo = breath(0.06,0.06,0.15);
+      for(let k=0;k<lanes;k++){
+        const y0=waveLaneY(0,k);
+        W.beginPath();
+        for(let x=0;x<=innerWidth;x+=6){
+          const y=waveLaneY(x,k);
+          x?W.lineTo(x,y):W.moveTo(x,y);
+        }
+        const g=W.createLinearGradient(0,y0-140,0,y0+140);
+        g.addColorStop(0,`rgba(140,185,255,${0.05+halo*0.20})`);
+        g.addColorStop(.5,`rgba(230,199,119,${0.22+halo*0.55})`);
+        g.addColorStop(1,`rgba(140,185,255,${0.05+halo*0.20})`);
+        W.strokeStyle=g;
+        W.lineWidth=1.2 + k*0.45;
+        W.globalAlpha=0.85 - k*0.1;
+        W.shadowBlur=24; W.shadowColor='#9fc6ff22';
+        W.stroke();
+      }
+      W.globalAlpha=1; W.shadowBlur=0;
+    }
+    function drawTrail(){
+      px+=(tx-px)*(prefersReduced?0.10:0.15);
+      py+=(ty-py)*(prefersReduced?0.10:0.15);
+      const sp=Math.hypot(tx-px,ty-py);
+      const r=100+Math.min(sp*170,260);
+      T.fillStyle=`rgba(0,0,0,${prefersReduced?0.18:0.12})`;
+      T.fillRect(0,0,innerWidth,innerHeight);
+      const g=T.createRadialGradient(px,py,0,px,py,r);
+      const b=breath(0.18,0.10,0.20);
+      g.addColorStop(0,`rgba(230,199,119,${0.20+b*0.30})`);
+      g.addColorStop(.55,`rgba(140,185,255,${0.10+b*0.18})`);
+      g.addColorStop(1,'rgba(140,185,255,0)');
+      T.fillStyle=g; T.beginPath(); T.arc(px,py,r,0,Math.PI*2); T.fill();
+    }
+    (function loop(){
+      if(visible){
+        t+=prefersReduced?0.003:0.008;
+        drawWaves(); if(!prefersReduced) drawTrail();
+      }
+      requestAnimationFrame(loop);
+    })();
+  }catch(e){debug('waves '+e)}
+
+  /* ---------- Works render (images only) ---------- */
   const sections=[
     {key:'pray',  title:'우리를 위해 기도해 주세요 — Pray for us'},
     {key:'human', title:'인간 — Human Being'},
@@ -464,11 +451,11 @@ body.hybrid .poem p + p{margin-top:4px}
     {key:'cosmos',title:'빛의 초의식 — The Metaconsciousness of Light'}
   ];
   function cardHTML(sec,i){
+    const src=`works/${sec.key}/${i}.jpg`; // 폴더/파일 소문자 권장
     return `
     <article class="card" tabindex="0" data-sec="${sec.key}" data-idx="${i}">
-      <img loading="lazy" data-src="works/${sec.key}/${i}.jpg" alt="${sec.title} ${i}">
+      <img loading="lazy" data-src="${src}" alt="${sec.title} ${i}">
       <div class="caption">${sec.title} · ${i}</div>
-      <div class="meta">${sec.title} · ${i} · 2025 · Mixed Media · 90×90cm</div>
     </article>`;
   }
   function renderPanel(sec){
@@ -478,31 +465,31 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   sections.forEach(renderPanel);
 
-  // Lazy load + fade-in
+  /* lazy + fade-in */
   try{
     const io=new IntersectionObserver(es=>{
       es.forEach(e=>{
         if(e.isIntersecting){
           const img=e.target; if(img.dataset.src){ img.src=img.dataset.src; img.removeAttribute('data-src'); }
-          img.closest('.card')?.classList.add('visible');
+          const card=img.closest('.card'); if(card) card.classList.add('visible');
           io.unobserve(img);
         }
       });
     },{rootMargin:'220px'});
     document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
-  }catch(e){ debug('IntersectionObserver '+e); }
+  }catch{}
 
-  // Tab switch
+  /* Works 탭 */
   document.querySelectorAll('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
       document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
-      document.getElementById('panel-'+b.dataset.panel)?.classList.add('active');
+      const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active');
     });
   });
 
-  /* ===== Reports accordion only ===== */
+  /* Reports accordion + lang sync */
   function syncAccordionLang(){
     const acc=document.getElementById('dcarAcc'); if(!acc) return;
     const isKo=document.body.classList.contains('korean');
@@ -516,7 +503,7 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   document.querySelectorAll('#dcarAcc .accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
 
-  /* ===== Lightbox + Zoom/Pan ===== */
+  /* Lightbox */
   (function(){
     const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
     const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
@@ -540,9 +527,9 @@ body.hybrid .poem p + p{margin-top:4px}
     });
     lb.addEventListener('click',e=>{ if(e.target===lb) { lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); }});
     function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
-    btnPrev?.addEventListener('click',()=>step(-1));
-    btnNext?.addEventListener('click',()=>step(1));
-    btnClose?.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
+    btnPrev.addEventListener('click',()=>step(-1));
+    btnNext.addEventListener('click',()=>step(1));
+    btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
     lbImg.addEventListener('mousedown',e=>{ if(zoom===1) return; dragging=true; sx=e.clientX-imgX; sy=e.clientY-imgY; lbImg.style.cursor='grabbing';});
     window.addEventListener('mousemove',e=>{ if(!dragging) return; imgX=e.clientX-sx; imgY=e.clientY-sy; apply();});
     window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; if(zoom>1) lbImg.style.cursor='grab'; }});
@@ -552,120 +539,80 @@ body.hybrid .poem p + p{margin-top:4px}
     addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') {lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');} if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
   })();
 
-  /* ===== Deep Resonance — Schumann/Theta LFO + 62/124 Hz, 432/528 shimmer ===== */
+  /* Prayer Resonance (gentle & safe) */
   (function(){
     const playBtn=document.getElementById('soundBtn');
     const stopBtn=document.getElementById('soundStopBtn');
-    if(!playBtn || !stopBtn) return;
+    if(!playBtn||!stopBtn) return;
 
-    let ac=null, nodes=null, soundOn=false;
-
-    async function ensureAudio() {
-      if (!ac) {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        ac = new Ctx({ latencyHint: 'interactive' });
-      }
-      if (ac.state === 'suspended') await ac.resume();
+    let ac=null, nodes=null, on=false;
+    async function ensureAudio(){
+      if(!ac){ const C=(window.AudioContext||window.webkitAudioContext); ac=new C({latencyHint:'interactive'}); }
+      if(ac.state==='suspended') await ac.resume();
       return ac;
     }
-    function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
-    function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
+    function g(v){const n=ac.createGain(); n.gain.value=v; return n;}
+    function o(type,f){const n=ac.createOscillator(); n.type=type; n.frequency.value=f; return n;}
 
-    // Unlock on first gesture (iOS)
-    function unlockOnce(){
-      ensureAudio().catch(()=>{});
-      window.removeEventListener('touchend', unlockOnce);
-      window.removeEventListener('click', unlockOnce);
+    const unlock=async()=>{ try{ await ensureAudio(); }catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock); };
+    window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
+
+    async function start(){
+      if(on) return;
+      await ensureAudio();
+      /* Core tones */
+      const base=g(0.14), sub=g(0.05), mid=g(0.07), shimmer=g(0.010);
+      const low=o('sine',54);    // 편안한 저베이스
+      const lowOct=o('sine',108);// 옥타브 보강
+      const veryLow=o('sine',27);// 아주 미세한 근저
+      const ch432=o('sine',432), ch528=o('sine',528); // 희미한 잔빛
+      const lfo1=o('sine',7.83), lfo2=o('sine',5.5);
+
+      /* Routing */
+      const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=850; lp.Q.value=0.8;
+      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.6;
+
+      /* LFO → 베이스 게인 */
+      const lfoG1=g(0.08), lfoG2=g(0.06);
+      lfo1.connect(lfoG1).connect(base.gain);
+      lfo2.connect(lfoG2).connect(base.gain);
+
+      low.connect(base).connect(bp).connect(lp);
+      lowOct.connect(mid).connect(bp);
+      veryLow.connect(sub).connect(bp);
+      ch432.connect(shimmer).connect(lp);
+      ch528.connect(shimmer).connect(lp);
+      lp.connect(ac.destination);
+      bp.connect(ac.destination);
+
+      [low,lowOct,veryLow,ch432,ch528,lfo1,lfo2].forEach(x=>x.start());
+
+      /* soft fade-in */
+      [base.gain,sub.gain,mid.gain,shimmer.gain].forEach(gain=>{
+        const target=gain.value; try{gain.setValueAtTime(target*0.001,ac.currentTime); gain.exponentialRampToValueAtTime(target,ac.currentTime+1.2);}catch{}
+      });
+
+      nodes={low,lowOct,veryLow,ch432,ch528,lfo1,lfo2,base,sub,mid,shimmer,lp,bp};
+      on=true; playBtn.disabled=true; stopBtn.disabled=false;
     }
-    window.addEventListener('touchend', unlockOnce, { once:true });
-    window.addEventListener('click',    unlockOnce, { once:true });
-
-    async function startSound(){
-      try{
-        await ensureAudio();
-        if(soundOn || !ac) return;
-
-        // Nodes
-        const master = mkGain(0.6);
-        const comp = ac.createDynamicsCompressor(); // soft limiter
-        comp.threshold.value = -18; comp.knee.value=28; comp.ratio.value=6; comp.attack.value=0.02; comp.release.value=0.25;
-        master.connect(comp).connect(ac.destination);
-
-        // Base tones
-        const base62 = mkOsc('sine', 62.0), g62 = mkGain(0.10);
-        const harm124= mkOsc('sine',124.0), g124= mkGain(0.06);
-
-        // Shimmer (very low level)
-        const sh432 = mkOsc('sine',432.0), g432 = mkGain(0.012);
-        const sh528 = mkOsc('sine',528.0), g528 = mkGain(0.010);
-
-        // LFOs
-        const lfoSchumann = mkOsc('sine', 7.83); // amplitude breath
-        const lfoTheta    = mkOsc('sine', 5.0);  // gentle tremolo
-        const lfoGainA = mkGain(0.08);  // depth for base
-        const lfoGainB = mkGain(0.05);  // depth for shimmer
-
-        // Filter & echo
-        const biq = ac.createBiquadFilter(); biq.type='lowpass'; biq.frequency.value=900; biq.Q.value=0.7;
-        const delay = ac.createDelay(6.0); delay.delayTime.value=2.6;
-        const fb = mkGain(0.22); delay.connect(fb).connect(delay);
-
-        // Wiring
-        lfoSchumann.connect(lfoGainA).connect(g62.gain);
-        lfoTheta.connect(lfoGainA).connect(g124.gain);
-        lfoTheta.connect(lfoGainB).connect(g432.gain);
-        lfoSchumann.connect(lfoGainB).connect(g528.gain);
-
-        base62.connect(g62).connect(biq);
-        harm124.connect(g124).connect(biq);
-        sh432.connect(g432).connect(biq);
-        sh528.connect(g528).connect(biq);
-
-        biq.connect(delay).connect(master);
-        biq.connect(master);
-
-        // Start + fade in
-        [base62,harm124,sh432,sh528,lfoSchumann,lfoTheta].forEach(o=>o.start());
-        const t=ac.currentTime;
-        [g62.gain, g124.gain, g432.gain, g528.gain].forEach(g=>{
-          try{ const target=g.value; g.setValueAtTime(Math.max(0.0001,target*0.01), t); g.exponentialRampToValueAtTime(target, t+1.8);}catch{}
-        });
-        try{ biq.frequency.cancelScheduledValues(t); biq.frequency.linearRampToValueAtTime(1400, t+6.0);}catch{}
-
-        nodes={base62,harm124,sh432,sh528,lfoSchumann,lfoTheta,g62,g124,g432,g528,biq,delay,fb,master,comp};
-        soundOn=true; playBtn.disabled=true; stopBtn.disabled=false;
-      }catch(e){ debug('sound start '+e); }
+    function stop(){
+      if(!on||!nodes||!ac) return;
+      const {low,lowOct,veryLow,ch432,ch528,lfo1,lfo2,base,sub,mid,shimmer,lp}=nodes;
+      const t=ac.currentTime;
+      [base.gain,sub.gain,mid.gain,shimmer.gain].forEach(gain=>{ try{gain.cancelScheduledValues(0); gain.exponentialRampToValueAtTime(0.0001,t+1.8);}catch{} });
+      try{ lp.frequency.linearRampToValueAtTime(120,t+1.8);}catch{}
+      setTimeout(()=>{[low,lowOct,veryLow,ch432,ch528,lfo1,lfo2].forEach(o=>{try{o.stop()}catch{}}); nodes=null;},1900);
+      on=false; playBtn.disabled=false; stopBtn.disabled=true;
     }
 
-    function stopSound(){
-      try{
-        if(!soundOn || !nodes || !ac) return;
-        const {g62,g124,g432,g528,biq,base62,harm124,sh432,sh528,lfoSchumann,lfoTheta}=nodes;
-        const t=ac.currentTime;
-        [g62.gain,g124.gain,g432.gain,g528.gain].forEach(g=>{
-          try{ g.cancelScheduledValues(t); g.exponentialRampToValueAtTime(0.0001, t+1.6);}catch{}
-        });
-        try{ biq.frequency.linearRampToValueAtTime(180, t+1.6);}catch{}
-        setTimeout(()=>{ [base62,harm124,sh432,sh528,lfoSchumann,lfoTheta].forEach(o=>{try{o.stop()}catch{}}); nodes=null; },1700);
-        soundOn=false; playBtn.disabled=false; stopBtn.disabled=true;
-      }catch(e){ debug('sound stop '+e); }
-    }
-
-    // visibility
-    document.addEventListener('visibilitychange', async ()=>{
-      if (!ac) return;
-      if (document.hidden) { try{ await ac.suspend(); }catch{} }
-      else if (soundOn)    { try{ await ac.resume();   }catch{} }
-    });
-
-    playBtn.addEventListener('click', startSound);
-    playBtn.addEventListener('touchend', startSound);
-    stopBtn.addEventListener('click',  stopSound);
-    stopBtn.addEventListener('touchend', stopSound);
+    document.addEventListener('visibilitychange',async()=>{ if(!ac) return; if(document.hidden) try{await ac.suspend()}catch{}; else if(on) try{await ac.resume()}catch{}; });
+    playBtn.addEventListener('click',start); playBtn.addEventListener('touchend',start);
+    stopBtn.addEventListener('click',stop);  stopBtn.addEventListener('touchend',stop);
   })();
 
+  /* 초기 섹션: Poem */
+  showSection('poem');
 })();
 </script>
-<!-- ===== /Lightflow Ω.6 ===== -->
 </body>
 </html>

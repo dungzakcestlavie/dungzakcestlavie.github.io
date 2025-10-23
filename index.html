@@ -89,12 +89,7 @@ footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:
 .links a:hover{color:#cbe0ff}
 small{display:block;margin-top:6px;color:#9fb0d8}
 
-/* tiny right floating icons */
-.fab{position:fixed;right:12px;bottom:calc(110px + env(safe-area-inset-bottom));z-index:8;display:flex;flex-direction:column;gap:8px}
-.sbtn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(12,19,48,.35);border:1px solid rgba(230,199,119,.35);backdrop-filter:blur(6px);font-size:16px;text-decoration:none;color:#cfe0ff}
-.sbtn:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c777)}
-
-/* center bottom resonance buttons + tiny fft bar */
+/* center bottom resonance + tiny fft bar */
 #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:8}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18)}
 .ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
@@ -179,7 +174,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     <p class="note">※ 이미지를 <code>works/{섹션키}/{번호}.jpg</code>로 올리면 자동 표시됩니다. (예: <code>works/pray/1.jpg</code>)</p>
   </section>
 
-  <!-- Reports (DCAR 전용) -->
+  <!-- Reports (DCAR 01–08 전부) -->
   <section id="reports" style="display:none">
     <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
     <div id="dcarAcc" class="accordion">
@@ -194,21 +189,49 @@ body.hybrid .ko,body.hybrid .en{display:initial}
         <div class="accordion-header">DCAR-02-2025 · 기억의 윤리 · The Ethics of Memory</div>
         <div class="accordion-content">
           <p class="ko">기억의 구성과 공존의 책임.</p>
-          <p class="en">The construction of memory and responsibility for coexistence.</p>
+          <p class="en">Construction of memory and responsibility for coexistence.</p>
         </div>
       </div>
       <div class="accordion-item">
         <div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 · The Rebirth of Mind</div>
         <div class="accordion-content">
           <p class="ko">지각의 진화와 의식의 확장.</p>
-          <p class="en">Evolution of perception and the widening of consciousness.</p>
+          <p class="en">Evolution of perception and broadening consciousness.</p>
         </div>
       </div>
       <div class="accordion-item">
         <div class="accordion-header">DCAR-04-2025 · 빛의 상흔 · The Scars of Light</div>
         <div class="accordion-content">
           <p class="ko">상흔의 미학과 존엄.</p>
-          <p class="en">The aesthetics and dignity of scars.</p>
+          <p class="en">Aesthetics and dignity of scars.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">DCAR-05-2025 · 공존의 기억 · Memory for Coexistence</div>
+        <div class="accordion-content">
+          <p class="ko">공명과 연대의 기억 장치.</p>
+          <p class="en">Mnemonics of resonance and solidarity.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">DCAR-06-2025 · 감각의 윤무 · The Round of Senses</div>
+        <div class="accordion-content">
+          <p class="ko">감각의 회로와 신성한 반복.</p>
+          <p class="en">Circuits of senses and sacred repetition.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">DCAR-07-2025 · 빛의 기도 · The Prayer of Light</div>
+        <div class="accordion-content">
+          <p class="ko">저주파 공명과 내적 평온.</p>
+          <p class="en">Low-frequency resonance and inner calm.</p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">DCAR-08-2025 · 초의식의 장 · The Field of Metaconsciousness</div>
+        <div class="accordion-content">
+          <p class="ko">초의식적 공존을 향한 서사.</p>
+          <p class="en">Narratives toward metaconscious coexistence.</p>
         </div>
       </div>
     </div>
@@ -220,15 +243,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 <div id="ctrl" aria-label="Prayer Resonance controls">
   <button class="ctrlbtn" id="soundBtn" title="Play Prayer Resonance">✨</button>
   <button class="ctrlbtn" id="soundStopBtn" title="Stop" disabled>🔇</button>
-</div>
-
-<!-- floating right mini social -->
-<div class="fab" aria-label="Quick social">
-  <a class="sbtn" href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener" title="Flickr">📸</a>
-  <a class="sbtn" href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener" title="Instagram">📷</a>
-  <a class="sbtn" href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener" title="YouTube">▶️</a>
-  <a class="sbtn" href="https://naver.me/x95dk3l1" target="_blank" rel="noopener" title="Naver Info">🧭</a>
-  <a class="sbtn" href="mailto:dungzakcestlavie@gmail.com" title="Email">✉️</a>
 </div>
 
 <footer>
@@ -252,16 +266,15 @@ body.hybrid .ko,body.hybrid .en{display:initial}
   const $$ = (s,sc)=> Array.from((sc||document).querySelectorAll(s));
   const store={get(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 
-  /* ---------- Section switching (Poem/Works/Reports) ---------- */
+  /* Section switching */
   function showSection(id){
     ['poem','works','reports'].forEach(x=>{ const el = document.getElementById(x); el.style.display = (x===id)?'block':'none'; });
     $$('nav.primary button').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
-    if(id==='works'){/* nothing */} if(id==='reports'){/* nothing */ }
   }
   $$('nav.primary button').forEach(b=> b.addEventListener('click', ()=> showSection(b.dataset.target)));
   showSection('poem');
 
-  /* ---------- Language (KR/EN/KR+EN) ---------- */
+  /* Language */
   const koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
   function setLang(lang){
     document.body.classList.remove('korean','english','hybrid');
@@ -275,7 +288,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
   koBtn.onclick=()=>setLang('ko'); enBtn.onclick=()=>setLang('en'); hyBtn.onclick=()=>setLang('hy');
   setLang(store.get('dz_lang','ko'));
 
-  /* ---------- Background: 30s hue cycle + finger-follow glow ---------- */
+  /* Background: 30s hue cycle + finger-follow glow */
   try{
     const waves = $('#waves').getContext('2d',{alpha:true});
     const trail = $('#trail').getContext('2d',{alpha:true});
@@ -309,10 +322,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 
     function frame(now){
       if(!visible){ requestAnimationFrame(frame); return; }
-      const dt = (now - t0)/1000; // seconds
-      t0 = now;
-
-      // Hue cycle 30s (200→260→45→200)
       const T = (now/1000)%30;
       const seg = T/30;
       const hue = (seg<.5)? 200 + (260-200)*(seg/.5)
@@ -352,7 +361,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     requestAnimationFrame(frame);
   }catch(e){console.warn('canvas init error',e)}
 
-  /* ---------- Works: 이미지 전용 렌더 + lazy ---------- */
+  /* Works: 이미지 전용 렌더 + lazy */
   const SECTIONS=[
     {key:'pray',title:'Pray for Us'},
     {key:'human',title:'Human Being'},
@@ -367,7 +376,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     const host = document.getElementById('panel-'+key);
     const N=20;
     host.innerHTML = `<div class="grid">${Array.from({length:N},(_,k)=>cardHTML(key,k+1)).join('')}</div>`;
-    // lazy
     try{
       const io=new IntersectionObserver(es=>{
         es.forEach(e=>{
@@ -392,10 +400,10 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     });
   });
 
-  /* ---------- Reports accordion ---------- */
+  /* Reports accordion */
   $$('#dcarAcc .accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
 
-  /* ---------- Prayer Resonance v3 (stereo + shimmer + gentle reverb + FFT) ---------- */
+  /* Prayer Resonance v3 */
   (function(){
     const btn=$('#soundBtn'), stop=$('#soundStopBtn'), bar=$('#fftBar span');
     if(!btn||!stop||!bar) return;
@@ -405,7 +413,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     function G(v){const g=ac.createGain();g.gain.value=v;return g;}
     function O(type,f){const o=ac.createOscillator();o.type=type;o.frequency.value=f;return o;}
 
-    // simple reverb IR
     function createIR(len=1.8,decay=2.8){
       const sr=ac.sampleRate, n=sr*len, buf=ac.createBuffer(2,n,sr);
       for(let ch=0; ch<2; ch++){
@@ -419,7 +426,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
       if(!analyser){rafId=requestAnimationFrame(drawFFT);return;}
       const arr=new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteTimeDomainData(arr);
-      // simple energy
       let avg=0; for(let i=0;i<arr.length;i++){ avg+=Math.abs(arr[i]-128); } avg/=arr.length;
       const w=Math.min(180,Math.max(10,avg*2.2));
       bar.style.width=w+'px';
@@ -435,15 +441,14 @@ body.hybrid .ko,body.hybrid .en{display:initial}
       const low = O('sine',62), low2=O('sine',124), floor=O('sine',31);
       const ch1 = O('sine',432), ch2 = O('sine',528);
 
-      const lfo1=O('sine',7.83), lfo2=O('sine',5.0); // 슈만 + θ
-      const lpg=G(0.08), lpg2=G(0.06); // LFO depth
+      const lfo1=O('sine',7.83), lfo2=O('sine',5.0);
+      const lpg=G(0.08), lpg2=G(0.06);
       lfo1.connect(lpg).connect(base.gain);
       lfo2.connect(lpg2).connect(base.gain);
 
       const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=0.8;
       const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
 
-      // reverb
       const conv=ac.createConvolver(); conv.buffer=createIR();
       const wet=G(0.25), dry=G(0.85);
 
@@ -463,25 +468,12 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 
       [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
 
-      // gentle fade in
       [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
         const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2);}catch{}
       });
 
-      // stereo slow drift
-      (function panLoop(){
-        if(!ac || !pan) return;
-        panPhase += 0.012; // ~5초 주기
-        try{ pan.pan.value = Math.sin(panPhase)*0.35; }catch{}
-        if(on) requestAnimationFrame(panLoop);
-      })();
-
-      // couple cutoff with background hue cycle (breathing)
-      (function filterBreath(){
-        if(!ac) return;
-        try{ lp.frequency.setTargetAtTime(700 + Math.sin(ac.currentTime*0.3)*250, ac.currentTime, 0.3); }catch{}
-        if(on) setTimeout(filterBreath,160);
-      })();
+      (function panLoop(){ if(!ac||!pan) return; panPhase += 0.012; try{ pan.pan.value = Math.sin(panPhase)*0.35; }catch{} if(on) requestAnimationFrame(panLoop); })();
+      (function filterBreath(){ if(!ac) return; try{ lp.frequency.setTargetAtTime(700 + Math.sin(ac.currentTime*0.3)*250, ac.currentTime, 0.3); }catch{} if(on) setTimeout(filterBreath,160); })();
 
       nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};
       on=true; btn.disabled=true; stop.disabled=false;
@@ -498,7 +490,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
       cancelAnimationFrame(rafId); $('#fftBar span').style.width='0px';
     }
 
-    // iOS unlock
     const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock);}
     window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
 

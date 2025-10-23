@@ -8,8 +8,9 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.4">
 <meta property="og:description" content="Light · Memory · Being · 100 Works · DCAR Reports">
-<meta property="og:url" content="https://dungzak.art">
+<meta property="og:url" content="https://dungzakcestlavie.github.io">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+
 <style>
 :root{
   --bg:#0b1020; --fg:#e9efff; --gold:#e6c777; --muted:#a6b6e8;
@@ -22,12 +23,14 @@ body{
   color:var(--fg); font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
   overflow-x:hidden; letter-spacing:.2px;
 }
-/* Global light layers */
+
+/* glow canvases */
 #waves{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.33}
 #trail{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.55;mix-blend-mode:screen}
-/* Header: mobile safe */
+
+/* header */
 header{
-  position:fixed;top:0;left:0;right:0;height:auto;z-index:6;
+  position:fixed;top:0;left:0;right:0;z-index:6;
   display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
   padding:calc(8px + env(safe-area-inset-top)) 12px 10px;
   background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)
@@ -39,7 +42,8 @@ nav.primary a:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c
 .lang{display:flex;gap:8px;justify-content:center;width:100%}
 .lang button{all:unset;cursor:pointer;padding:6px 10px;border:1px solid #2a335f;border-radius:8px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
-/* Domain auto-detect banner */
+
+/* banner */
 #detectBanner{
   position:fixed; left:0; right:0; top:calc(56px + env(safe-area-inset-top)); z-index:7;
   display:none; align-items:center; justify-content:center; gap:10px; text-align:center;
@@ -48,71 +52,70 @@ nav.primary a:hover{color:#0a1230;background:linear-gradient(180deg,#f7e4a5,#e6c
 #detectBanner b{color:var(--gold)}
 #detectBanner .btn{display:inline-block;margin-left:8px;padding:6px 10px;border:1px solid #3a447a;border-radius:8px}
 #detectBanner .btn:hover{background:#1a2144}
-/* Sections */
+
+/* sections */
 main{position:relative;z-index:2}
 section{max-width:var(--max);margin:auto;padding:calc(var(--h) + 28px + env(safe-area-inset-top)) 16px 70px}
 h1,h2{color:var(--gold)}
 .sub{color:var(--muted)}
-/* Hero */
+
+/* hero */
 .hero{min-height:74vh;display:grid;place-items:center;text-align:center}
 .hero h1{font-size:clamp(36px,6vw,66px);margin-bottom:8px}
 .hero p{opacity:.92}
-/* Tabs & panels */
+
+/* tabs & grid */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px}
 .tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
 .tabpanel{display:none;animation:fade .28s ease}
 .tabpanel.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-/* Grid: 5×20 = 100 */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
-.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:160px}
 .card img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;filter:brightness(1.03)}
 .card .meta{font-size:.85rem;color:#cfe0ff;padding:8px 10px;border-top:1px solid #213064}
 .caption{
-  position:absolute;left:0;right:0;bottom:0;
-  background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));
+  position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));
   padding:10px 12px;color:#e9f1ff;font-size:.82rem;transform:translateY(100%);transition:transform .25s;pointer-events:none
 }
 .card:hover .caption,.card:focus .caption{transform:translateY(0)}
 .note{max-width:var(--max);margin:10px auto 0;padding:10px 14px;border:1px dashed #2a3a78;border-radius:10px;color:#bcd0ff;background:rgba(16,22,48,.35)}
 .note code{background:#121b3d;padding:2px 6px;border-radius:6px}
-/* Reports (accordion hub) */
+
+/* accordion */
 .acc{display:grid;gap:8px}
 .acc details{background:#0f1838;border:1px solid #223;border-radius:10px;padding:0 10px}
 .acc summary{padding:14px 6px;cursor:pointer;color:#cfe0ff;list-style:none;font-weight:600}
 .acc p{padding:0 0 14px}
-/* Lightbox */
+
+/* lightbox */
 #lightbox{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.88);
   opacity:0;pointer-events:none;transition:.26s;z-index:8}
 #lightbox.open{opacity:1;pointer-events:auto}
 #lightbox img{max-width:92vw;max-height:88vh;border:2px solid var(--gold);border-radius:10px}
-.lb-btn,.lb-close{
-  position:fixed;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
-  background:rgba(15,20,40,.6);border:1px solid #333;color:#fff;cursor:pointer;user-select:none
-}
+.lb-btn,.lb-close{position:fixed;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(15,20,40,.6);border:1px solid #333;color:#fff;cursor:pointer;user-select:none}
 .lb-prev{left:14px;top:50%;transform:translateY(-50%)}
 .lb-next{right:14px;top:50%;transform:translateY(-50%)}
 .lb-close{top:14px;right:14px}
 .lb-cap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:rgba(8,16,40,.7);
   border:1px solid #223;border-radius:10px;padding:8px 12px;font-size:.88rem;color:#e9f1ff}
-/* Controls */
-#ctrl{
-  position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);z-index:9;display:flex;gap:10px;flex-wrap:wrap;justify-content:center
-}
-.ctrlbtn{
-  background:rgba(12,19,48,.72);border:1px solid rgba(230,199,119,.35);border-radius:26px;
-  color:#f1f5ff;padding:8px 12px;font-size:.9rem;cursor:pointer;
-  box-shadow:0 0 12px rgba(120,170,255,.25);backdrop-filter:blur(6px)
-}
+
+/* control buttons */
+#ctrl{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);z-index:9;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ctrlbtn{background:rgba(12,19,48,.72);border:1px solid rgba(230,199,119,.35);border-radius:26px;
+  color:#f1f5ff;padding:8px 12px;font-size:.9rem;cursor:pointer;box-shadow:0 0 12px rgba(120,170,255,.25);backdrop-filter:blur(6px)}
 .ctrlbtn:hover{background:rgba(12,19,48,.95);color:var(--gold);box-shadow:0 0 18px rgba(243,201,105,.35)}
 .ctrlbtn[disabled]{opacity:.5;cursor:not-allowed}
 footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:40px 12px;background:#090f22}
 .links a{display:inline-block;margin:0 10px;color:#cfe0ff;text-decoration:none}
 .links a:hover{color:var(--gold)}
 small{display:block;margin-top:8px;color:#9fb0d8}
+
+/* bilingual toggling */
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
@@ -120,13 +123,14 @@ body.english .en{display:initial}
 </style>
 </head>
 <body class="korean">
-<!-- Bilingual domain/connection banner -->
+
+<!-- sync banner -->
 <div id="detectBanner" role="status" aria-live="polite">
   <span class="ko"><b>알림</b> · 사이트와 보고서 연결이 아직 동기화 중입니다. 잠시 후 새로고침하거나 <span class="btn" id="bnrReloadKo">즉시 새로고침</span>을 눌러주세요.</span>
   <span class="en"><b>Notice</b> · The site and reports are still syncing. Please refresh shortly, or tap <span class="btn" id="bnrReloadEn">Reload now</span>.</span>
 </div>
 
-<!-- Light layers -->
+<!-- canvas glows -->
 <canvas id="waves" aria-hidden="true"></canvas>
 <canvas id="trail" aria-hidden="true"></canvas>
 
@@ -163,7 +167,7 @@ body.english .en{display:initial}
     <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR (1–8) series unites philosophy, neuroscience, and art.</p>
   </section>
 
-  <!-- Works: 5 섹션 × 각 20 -->
+  <!-- Works -->
   <section id="works">
     <h2>Artworks — 작품 아카이브 (100)</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
@@ -184,7 +188,7 @@ body.english .en{display:initial}
     </div>
   </section>
 
-  <!-- Reports (DCAR 1–8) -->
+  <!-- Reports -->
   <section id="reports">
     <h2 class="ko">미학 보고서 (DCAR 1–8)</h2>
     <h2 class="en">Aesthetic Reports (DCAR 1–8)</h2>
@@ -201,7 +205,7 @@ body.english .en{display:initial}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- Controls: audio play/stop -->
+<!-- Audio Controls -->
 <div id="ctrl">
   <button class="ctrlbtn" id="soundBtn">✨ Play Cosmic Resonance</button>
   <button class="ctrlbtn" id="soundStopBtn" disabled>🔇 Stop</button>
@@ -220,12 +224,11 @@ body.english .en{display:initial}
 </footer>
 
 <script>
-/* ===== 0) Bilingual + domain/report auto-detect banner ===== */
+/* 0) sync banner */
 (function(){
-  const githubOrigin = 'https://dungzakcestlavie.github.io';
+  const origin = location.origin;
   const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 3500));
-  Promise.race([fetch(githubOrigin, {method:'HEAD',mode:'no-cors'}), timeout])
-    .then(()=>{/* ok */})
+  Promise.race([fetch(origin, {method:'HEAD',mode:'no-cors'}), timeout])
     .catch(()=>{
       const b=document.getElementById('detectBanner');
       b.style.display='flex';
@@ -235,7 +238,7 @@ body.english .en{display:initial}
     });
 })();
 
-/* ===== 1) Language toggle ===== */
+/* 1) language toggle */
 const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn');
 function setLang(lang){
   document.body.classList.toggle('korean', lang==='ko');
@@ -253,7 +256,7 @@ enBtn.addEventListener('click',()=>setLang('en'));
   setLang(sys.startsWith('ko')?'ko':'en');
 })();
 
-/* ===== 2) Background waves + pointer trail ===== */
+/* 2) canvases: waves & pointer glow */
 const waves=document.getElementById('waves'), w=waves.getContext('2d');
 const trail=document.getElementById('trail'), t=trail.getContext('2d');
 function rs(){waves.width=trail.width=innerWidth; waves.height=trail.height=innerHeight}
@@ -281,7 +284,7 @@ raf(()=>{ if(!vis) return;
 addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
 addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
 
-/* ===== 3) Works (5×20) ===== */
+/* 3) works tabs + lazy load */
 const sections=[
   {key:'light', title:'Light & Memory'},
   {key:'prayer',title:'Human Prayer'},
@@ -300,18 +303,16 @@ function renderPanel(sec){
   p.innerHTML=`<div class="grid">${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>`;
 }
 sections.forEach(renderPanel);
-/* lazy load */
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target,src=img.getAttribute('data-src');if(src){img.src=src;img.removeAttribute('data-src')} io.unobserve(img)}})},{rootMargin:'250px'});
 function observe(key){document.querySelectorAll(`#panel-${key} img[data-src]`).forEach(img=>io.observe(img))}
 observe('light');
-/* tabs */
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
   document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
   const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active'); observe(key);
 }));
 
-/* ===== 4) Reports (accordion hub) ===== */
+/* 4) reports */
 const reports=[
   {id:'DCAR-01-2025',title:'On Light, Memory, and Being',ko:'빛·기억·존재의 상호작용에 대한 예술적 성찰.',en:'Artistic inquiry into the interplay of light, memory, and being.'},
   {id:'DCAR-02-2025',title:'The Restoration of Being',ko:'존재의 회복과 감각의 윤리.',en:'Restoration of being and the ethics of sensation.'},
@@ -322,15 +323,14 @@ const reports=[
   {id:'DCAR-07-2025',title:'The Scars of Light',ko:'빛의 상흔과 감각의 존엄.',en:'Scars of light and the dignity of sensation.'},
   {id:'DCAR-08-2025',title:'Toward the Human Prayer',ko:'우리 시대의 기도와 공존의 윤리.',en:'Prayer of our age & an ethics of coexistence.'}
 ];
-const acc=document.getElementById('reportsAcc');
-acc.innerHTML = reports.map(r=>`
+document.getElementById('reportsAcc').innerHTML = reports.map(r=>`
   <details>
     <summary><b>${r.id}</b> · ${r.title}</summary>
     <p class="ko">${r.ko}</p>
     <p class="en">${r.en}</p>
   </details>`).join('');
 
-/* ===== 5) Lightbox (click → big; next/prev) ===== */
+/* 5) lightbox */
 const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
 const prev=lb.querySelector('.lb-prev'), next=lb.querySelector('.lb-next'), closeBtn=lb.querySelector('.lb-close');
 let cur={key:'light',i:1};
@@ -346,53 +346,28 @@ closeBtn.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttrib
 lb.addEventListener('click',e=>{if(e.target===lb) closeBtn.click();});
 addEventListener('keydown',e=>{if(!lb.classList.contains('open')) return; if(e.key==='Escape') closeBtn.click(); if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
 
-/* ===== 6) Cosmic Resonance Sound (original synthesis) ===== */
+/* 6) audio synth */
 const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');
 let ac=null, nodes=null, soundOn=false;
 function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
 function mkOsc(type,freq){const o=ac.createOscillator(); o.type=type; o.frequency.value=freq; return o;}
-
 async function startSound(){
   if(soundOn) return;
   ac = ac || new (window.AudioContext||window.webkitAudioContext)();
-
-  // Deep base
-  const base = mkOsc('sine', 47.0);
-  const baseGain = mkGain(0.08);
-
-  // Sub-harmonic pair (gentle beating)
-  const sub1 = mkOsc('sine', 31.3);
-  const sub2 = mkOsc('sine', 62.7);
-  const subGain = mkGain(0.04);
-
-  // Shimmer partials (very subtle overtones)
-  const shim1 = mkOsc('sine', 561);
-  const shim2 = mkOsc('sine', 703);
-  const shimGain = mkGain(0.006);
-
-  // Slow-breath LFO on base gain
-  const lfo = mkOsc('sine', 0.055);
-  const lfoGain = mkGain(0.04);
+  const base = mkOsc('sine', 47.0), baseGain = mkGain(0.08);
+  const sub1 = mkOsc('sine', 31.3), sub2 = mkOsc('sine', 62.7), subGain = mkGain(0.04);
+  const shim1 = mkOsc('sine', 561),  shim2 = mkOsc('sine', 703),  shimGain = mkGain(0.006);
+  const lfo = mkOsc('sine', 0.055),  lfoGain = mkGain(0.04);
   lfo.connect(lfoGain).connect(baseGain.gain);
-
-  // Low-pass + soft echo (tail)
   const filter = ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
   const delay = ac.createDelay(6.0); delay.delayTime.value=2.7;
   const fb = mkGain(0.28); delay.connect(fb).connect(delay);
-
-  // Wire
   base.connect(baseGain).connect(filter);
-  sub1.connect(subGain).connect(filter);
-  sub2.connect(subGain).connect(filter);
-  shim1.connect(shimGain).connect(filter);
-  shim2.connect(shimGain).connect(filter);
-  filter.connect(delay).connect(ac.destination);
-  filter.connect(ac.destination);
-
-  // Start & gentle open
+  sub1.connect(subGain).connect(filter); sub2.connect(subGain).connect(filter);
+  shim1.connect(shimGain).connect(filter); shim2.connect(shimGain).connect(filter);
+  filter.connect(delay).connect(ac.destination); filter.connect(ac.destination);
   [base, sub1, sub2, shim1, shim2, lfo].forEach(o=>o.start());
   filter.frequency.linearRampToValueAtTime(1200, ac.currentTime + 5);
-
   nodes={base,sub1,sub2,shim1,shim2,lfo,baseGain,subGain,shimGain,lfoGain,filter,delay,fb};
   soundOn=true; btnPlay.disabled=true; btnStop.disabled=false;
 }
@@ -409,7 +384,7 @@ function stopSound(){
 btnPlay.addEventListener('click', startSound);
 btnStop.addEventListener('click', stopSound);
 
-/* start observing initial panel */
+/* start observing initial images */
 document.querySelectorAll('#panel-light img[data-src]').forEach(img=>io.observe(img));
 </script>
 </body>

@@ -10,7 +10,6 @@
 <meta property="og:description" content="Light · Memory · Being · 100 Works · DCAR Reports">
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
-
 <style>
 :root{
   --bg:#0b1020;--fg:#e9efff;--gold:#e6c777;--muted:#a6b6e8;
@@ -21,8 +20,9 @@ html,body{height:100%}
 body{
   background:radial-gradient(1200px 700px at 70% -10%,#19244a 0,#0b1020 40%,#060a18 100%);
   color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-  overflow-x:hidden;letter-spacing:.2px;padding-bottom:140px;
+  overflow-x:hidden;letter-spacing:.2px;padding-bottom:160px;
 }
+/* Light layers */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
 #waves{z-index:0;opacity:.33}
 #trail{z-index:1;opacity:.55;mix-blend-mode:screen}
@@ -32,7 +32,7 @@ header{
   position:fixed;top:0;left:0;right:0;z-index:6;
   display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
   padding:calc(8px + env(safe-area-inset-top)) 12px 10px;
-  background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)
 }
 .brand{font-weight:900;color:var(--gold);font-size:clamp(16px,5vw,22px);flex:1 1 100%;text-align:center}
 nav.primary{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
@@ -77,7 +77,7 @@ h1,h2{color:var(--gold)}
 .card img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;filter:brightness(1.03)}
 .card .meta{font-size:.85rem;color:#cfe0ff;padding:8px 10px;border-top:1px solid #213064}
 .caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));padding:10px 12px;color:#e9f1ff;font-size:.82rem;transform:translateY(100%);transition:transform .25s;pointer-events:none}
-.card:hover .caption{transform:translateY(0)}
+.card:hover .caption,.card:focus .caption{transform:translateY(0)}
 
 /* Accordion (Reports) */
 .accordion{max-width:var(--max);margin:20px auto;border:1px solid #2a3a78;border-radius:12px;overflow:hidden}
@@ -86,152 +86,428 @@ h1,h2{color:var(--gold)}
 .accordion-content{display:none;background:#0b1020;padding:12px 16px;color:#cfe0ff}
 .accordion-item.active .accordion-content{display:block}
 
-/* Cosmic Resonance Controls (투명 + 링크 방해 없음) */
-#ctrl{
-  position:fixed;
-  left:50%;
-  bottom:calc(90px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);
-  z-index:9;
-  display:flex;
-  gap:8px;
-  pointer-events:none;
+/* Lightbox + Zoom */
+#lightbox{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.88);
+  opacity:0;pointer-events:none;transition:.26s;z-index:8}
+#lightbox.open{opacity:1;pointer-events:auto}
+#lightbox .frame{position:relative;max-width:92vw;max-height:88vh;overflow:hidden;border:2px solid var(--gold);border-radius:10px}
+#lightbox img{display:block;max-width:100%;max-height:100%;transform-origin:center center;cursor:zoom-in}
+#lightbox img.zoomed{cursor:grab}
+.lb-btn,.lb-close{
+  position:fixed;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(15,20,40,.6);border:1px solid #333;color:#fff;cursor:pointer;user-select:none
 }
-.ctrlbtn{
-  width:36px;height:36px;
-  border-radius:50%;
-  border:1px solid rgba(230,199,119,.25);
-  background:rgba(12,19,48,.35);
-  color:#f1f6ff;
-  box-shadow:0 0 8px rgba(120,170,255,.2);
-  backdrop-filter:blur(6px);
-  cursor:pointer;
-  pointer-events:auto;
-  transition:all .25s ease;
-}
-.ctrlbtn:hover{
-  background:rgba(22,29,58,.6);
-  color:var(--gold);
-  box-shadow:0 0 14px rgba(243,201,105,.3);
-}
-.ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
+.lb-prev{left:14px;top:50%;transform:translateY(-50%)}
+.lb-next{right:14px;top:50%;transform:translateY(-50%)}
+.lb-close{top:14px;right:14px}
+.lb-cap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:rgba(8,16,40,.7);
+  border:1px solid #223;border-radius:10px;padding:8px 12px;font-size:.88rem;color:#e9f1ff}
 
 /* Footer */
-footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 64px;background:#090f22}
+footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 86px;background:#090f22}
 .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
 .links a{color:#cfe0ff;text-decoration:none}
-.links a:hover{color:var(--gold)}
+.links a:hover{color:#cbe0ff}
 small{display:block;margin-top:8px;color:#9fb0d8}
+
+/* Cosmic controls: small & transparent, do NOT cover footer links */
+#ctrl{
+  position:fixed;left:50%;
+  bottom:calc(110px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:7; /* below lightbox(8), above content */
+  display:flex;gap:8px;pointer-events:auto
+}
+.ctrlbtn{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(230,199,119,.35);
+  background:rgba(12,19,48,.35);
+  color:#fff;cursor:pointer;
+  box-shadow:0 0 8px rgba(120,170,255,.18);
+  backdrop-filter:blur(6px);
+  transition:all .25s ease; opacity:.9
+}
+.ctrlbtn:hover{background:rgba(20,26,58,.65);color:var(--gold);box-shadow:0 0 14px rgba(243,201,105,.32)}
+.ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
 
 /* Language visibility */
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
+@media (prefers-reduced-motion: reduce){#waves,#trail{display:none}}
 </style>
 </head>
-
 <body class="korean">
-<canvas id="waves"></canvas>
-<canvas id="trail"></canvas>
+
+<!-- Light layers -->
+<canvas id="waves" aria-hidden="true"></canvas>
+<canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
   <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.5</div>
-  <nav class="primary">
-    <a href="#poem">Poem</a><a href="#bio">Bio</a><a href="#works">Works</a><a href="#reports">Reports</a>
+  <nav class="primary" aria-label="Primary">
+    <a href="#poem">Poem</a>
+    <a href="#bio">Bio</a>
+    <a href="#works">Works</a>
+    <a href="#reports">Reports</a>
   </nav>
-  <div class="lang"><button id="koBtn" class="active">KR</button><button id="enBtn">EN</button></div>
+  <div class="lang" aria-label="Language">
+    <button id="koBtn" class="active" aria-pressed="true">KR</button>
+    <button id="enBtn" aria-pressed="false">EN</button>
+  </div>
 </header>
 
 <main>
-<section class="hero" id="poem">
-  <div>
-    <h1 class="ko">빛 · 기억 · 존재</h1>
-    <h1 class="en">Light · Memory · Being</h1>
-    <p class="ko">등작과 루메라의 지휘로 — 등작 DUNGZAK CESTLAVIE</p>
-    <p class="en">Conducted by DUNGZAK and Lumera — DUNGZAK CESTLAVIE</p>
-    <div class="poem-wrap">
-      <div class="poem-head">
-        <div class="poem-title">〈파리의 센느강〉 / The Seine of Paris</div>
-        <div id="poemToggle"><button id="poemKoBtn" class="active">KR</button><button id="poemEnBtn">EN</button></div>
-      </div>
-      <div class="poem">
-        <div class="poem-ko">
-          <p>센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
-          <p>소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
-          <p>빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
-          <p>바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
-          <p>꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
-          <p>사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
-          <p>아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
-          <p>그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
-          <p>샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
-          <p>구경하던 이들마저 사랑의 입맞춤을 의식한다.</p>
-          <p>흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어 멈춤 속에 영원을 새긴다.</p>
+  <!-- Hero + Poem -->
+  <section class="hero" id="poem">
+    <div>
+      <h1 class="ko">빛 · 기억 · 존재</h1>
+      <h1 class="en">Light · Memory · Being</h1>
+
+      <p class="ko">등작과 루메라의 지휘로 — 등작 DUNGZAK CESTLAVIE</p>
+      <p class="en">Conducted by DUNGZAK and Lumera — DUNGZAK CESTLAVIE</p>
+
+      <div class="poem-wrap" id="poemWrap">
+        <div class="poem-head">
+          <div class="poem-title">
+            <span class="ko">〈파리의 센느강〉</span>
+            <span class="en">The Seine of Paris</span>
+          </div>
+          <div id="poemToggle" role="tablist" aria-label="Poem language">
+            <button id="poemKoBtn" class="active" aria-pressed="true">KR</button>
+            <button id="poemEnBtn" aria-pressed="false">EN</button>
+          </div>
         </div>
-        <div class="poem-en" style="display:none">
-          <p>Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
-          <p>People who live with humble dreams gather to dance.</p>
-          <p>Their circling steps weave harmonies upon the rhythm of their feet,</p>
-          <p>As violins scatter blue and golden light, laughing in brilliance.</p>
-          <p>Dreaming women and men clasp hands, breathe the scent of humanity, and yield to the rhythm.</p>
-          <p>The tree where Adam and Eve’s star-prints fall like tears,</p>
-          <p>and in that scene a crescent moon spills a lovely white smile.</p>
-          <p>Sharak, sharak— as the dance expands, even onlookers sway with love’s gentle kiss.</p>
-          <p>Within the layered flow of time, they become a taxidermy of the soul, inscribing eternity in stillness.</p>
+        <div class="poem" aria-live="polite">
+          <div class="poem-ko">
+            <p>센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
+            <p>소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
+            <p>빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
+            <p>바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
+            <p>꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
+            <p>사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
+            <p>아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
+            <p>그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
+            <p>샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
+            <p>구경하던 이들마저 사랑의 입맞춤을 의식한다.</p>
+            <p>흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어 멈춤 속에 영원을 새긴다.</p>
+          </div>
+          <div class="poem-en" style="display:none">
+            <p>Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
+            <p>People who live with humble dreams gather to dance.</p>
+            <p>Their circling steps weave harmonies upon the rhythm of their feet,</p>
+            <p>as violins scatter blue and golden light, laughing in brilliance.</p>
+            <p>Dreaming women and men clasp hands, breathe the scent of humanity, and yield to the swift rhythm.</p>
+            <p>A tree where Adam and Eve’s star-prints fall like tears—</p>
+            <p>and in that scene a crescent moon spills a lovely white smile.</p>
+            <p>Sharak, sharak— as the figure of the dance expands,</p>
+            <p>even onlookers sway their shoulders and hips, aware of love’s gentle kiss.</p>
+            <p>Within the layered flow of time, they become a taxidermy of the soul, inscribing eternity in stillness.</p>
+          </div>
         </div>
       </div>
     </div>
-</section>
+  </section>
 
-<section id="bio">
-  <h2 class="ko">작가 소개</h2><h2 class="en">Artist Bio</h2>
-  <p class="ko">빛의 철학과 인간의 감정을 화폭에 담는 현대 예술가. DCAR(1–8)로 철학·뇌과학·예술을 융합한다.</p>
-  <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR series unites philosophy, neuroscience, and art.</p>
-</section>
+  <!-- Bio -->
+  <section id="bio">
+    <h2 class="ko">작가 소개</h2>
+    <h2 class="en">Artist Bio</h2>
+    <p class="ko">빛의 철학과 인간의 감정을 화폭에 담는 현대 예술가. DCAR(1–8)로 철학·뇌과학·예술을 융합한다.</p>
+    <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR (1–8) series unites philosophy, neuroscience, and art.</p>
+  </section>
 
-<section id="works">
-  <h2>Artworks — 작품 아카이브 (100)</h2>
-  <div class="tabs"><button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button><button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button><button class="tab" data-panel="rebirth">Ⅲ Rebirth</button><button class="tab" data-panel="exist">Ⅳ Existence</button><button class="tab" data-panel="cosmos">Ⅴ Cosmos</button></div>
-  <div id="panel-pray" class="tabpanel active"></div>
-  <div id="panel-human" class="tabpanel"></div>
-  <div id="panel-rebirth" class="tabpanel"></div>
-  <div id="panel-exist" class="tabpanel"></div>
-  <div id="panel-cosmos" class="tabpanel"></div>
-</section>
+  <!-- Works -->
+  <section id="works">
+    <h2>Artworks — 작품 아카이브 (100)</h2>
+    <div class="tabs" role="tablist" aria-label="Art Sections">
+      <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
+      <button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
+      <button class="tab" data-panel="rebirth">Ⅲ Rebirth</button>
+      <button class="tab" data-panel="exist">Ⅳ Existence</button>
+      <button class="tab" data-panel="cosmos">Ⅴ Cosmos</button>
+    </div>
+    <div id="panel-pray" class="tabpanel active"></div>
+    <div id="panel-human" class="tabpanel"></div>
+    <div id="panel-rebirth" class="tabpanel"></div>
+    <div id="panel-exist" class="tabpanel"></div>
+    <div id="panel-cosmos" class="tabpanel"></div>
+    <div class="note">
+      <span class="ko">※ 이미지를 <code>works/{섹션키}/{번호}.jpg</code> 경로로 올리면 자동 표시됩니다. (예: <code>works/pray/1.jpg</code>)</span>
+      <span class="en">※ Put images at <code>works/{sectionKey}/{index}.jpg</code> and they’ll auto-appear. (e.g., <code>works/pray/1.jpg</code>)</span>
+    </div>
+  </section>
 
-<section id="reports">
-  <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2><h2 class="en">Aesthetic Reports (DCAR Series)</h2>
-  <div class="accordion">
-    <div class="accordion-item"><div class="accordion-header">DCAR-01-2025 · 존재의 회복 · The Restoration of Being</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-02-2025 · 기억의 윤리 · The Ethics of Memory</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 · The Rebirth of Mind</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-04-2025 · 빛의 상흔 · The Scars of Light</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-05-2025 · 빛의 초의식 · The Metaconsciousness of Light</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-06-2025 · 존재의 기도 · The Prayer of Being</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-07-2025 · 시간의 기억 · The Memory of Time</div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-08-2025 · 존재의 회향 · The Return of Being</div></div>
-  </div>
-</section>
+  <!-- Reports -->
+  <section id="reports">
+    <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2>
+    <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+    <div class="accordion" id="dcarAcc">
+      <div class="accordion-item"><div class="accordion-header">DCAR-01-2025 · 존재의 회복 · The Restoration of Being</div><div class="accordion-content ko">존재의 회복과 감각의 윤리.</div><div class="accordion-content en">Restoration of being and the ethics of sensation.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-02-2025 · 기억의 윤리 · The Ethics of Memory</div><div class="accordion-content ko">기억의 구성과 공존의 책임.</div><div class="accordion-content en">The construction of memory and responsibility for coexistence.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 · The Rebirth of Mind</div><div class="accordion-content ko">지각의 진화와 의식의 확장.</div><div class="accordion-content en">Evolution of perception and the widening of consciousness.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-04-2025 · 빛의 상흔 · The Scars of Light</div><div class="accordion-content ko">상흔의 미학과 존엄.</div><div class="accordion-content en">The aesthetics and dignity of scars.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-05-2025 · 빛의 초의식 · The Metaconsciousness of Light</div><div class="accordion-content ko">예술의 기도와 공명.</div><div class="accordion-content en">Prayer of art and resonance.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-06-2025 · 존재의 기도 · The Prayer of Being</div><div class="accordion-content ko">우리 시대의 간구와 응답.</div><div class="accordion-content en">Supplication and response in our age.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-07-2025 · 시간의 기억 · The Memory of Time</div><div class="accordion-content ko">시간의 층위와 회상.</div><div class="accordion-content en">Strata of time and recollection.</div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-08-2025 · 존재의 회향 · The Return of Being</div><div class="accordion-content ko">귀환과 상호감응.</div><div class="accordion-content en">Return and mutual attunement.</div></div>
+    </div>
+  </section>
 </main>
 
 <footer>
   <div class="links">
-    <a href="https://www.flickr.com/photos/dungzak" target="_blank">📸 Flickr</a>
-    <a href="https://naver.me/x95dk3l1" target="_blank">🧭 Naver Info</a>
-    <a href="https://instagram.com/dungzakcestlavie" target="_blank">📷 Instagram</a>
-    <a href="https://youtube.com/@dungzakcestlavie" target="_blank">▶️ YouTube</a>
+    <a href="https://www.flickr.com/photos/dungzak" target="_blank" rel="noopener">📸 Flickr</a>
+    <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">🧭 Naver Info</a>
+    <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">📷 Instagram</a>
+    <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">▶️ YouTube</a>
     <a href="mailto:dungzakcestlavie@gmail.com">✉️ Email</a>
   </div>
   <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE · 등작과 루메라의 지휘로</small>
   <small class="en">© 2025 DUNGZAK CESTLAVIE · Conducted by DUNGZAK and Lumera</small>
 </footer>
 
-<!-- Cosmic Resonance controls -->
-<div id="ctrl">
+<!-- Cosmic controls (small, transparent, not covering footer links) -->
+<div id="ctrl" aria-label="Cosmic Resonance controls">
   <button class="ctrlbtn" id="soundBtn" title="Play Cosmic Resonance">✨</button>
   <button class="ctrlbtn" id="soundStopBtn" title="Stop Cosmic Resonance" disabled>🔇</button>
 </div>
 
+<!-- Lightbox -->
+<div id="lightbox" aria-hidden="true">
+  <div class="lb-btn lb-prev" aria-label="Previous">❮</div>
+  <div class="frame"><img alt="Artwork view"></div>
+  <div class="lb-btn lb-next" aria-label="Next">❯</div>
+  <div class="lb-close" aria-label="Close">✕</div>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
 <script>
-/* ===== Language toggle ===== */
-const koBtn=document.getElementById('koBtn
+/* ===== Global language toggle ===== */
+const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn');
+function setLang(lang){
+  document.body.classList.toggle('korean', lang==='ko');
+  document.body.classList.toggle('english', lang==='en');
+  koBtn.classList.toggle('active', lang==='ko'); koBtn.setAttribute('aria-pressed', lang==='ko');
+  enBtn.classList.toggle('active', lang==='en'); enBtn.setAttribute('aria-pressed', lang==='en');
+  localStorage.setItem('dz_lang', lang);
+}
+koBtn.addEventListener('click',()=>setLang('ko'));
+enBtn.addEventListener('click',()=>setLang('en'));
+(function initLang(){
+  const saved=localStorage.getItem('dz_lang');
+  if(saved){setLang(saved);} else { setLang((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'); }
+})();
+
+/* ===== Poem local toggle (KR/EN) ===== */
+const poemKoBtn=document.getElementById('poemKoBtn');
+const poemEnBtn=document.getElementById('poemEnBtn');
+const poemKo=document.querySelector('.poem-ko');
+const poemEn=document.querySelector('.poem-en');
+poemKoBtn.addEventListener('click',()=>{
+  poemKoBtn.classList.add('active'); poemKoBtn.setAttribute('aria-pressed','true');
+  poemEnBtn.classList.remove('active'); poemEnBtn.setAttribute('aria-pressed','false');
+  poemKo.style.display='block'; poemEn.style.display='none';
+});
+poemEnBtn.addEventListener('click',()=>{
+  poemEnBtn.classList.add('active'); poemEnBtn.setAttribute('aria-pressed','true');
+  poemKoBtn.classList.remove('active'); poemKoBtn.setAttribute('aria-pressed','false');
+  poemKo.style.display='none'; poemEn.style.display='block';
+});
+
+/* ===== Lightflow (waves + trail) ===== */
+const waves=document.getElementById('waves').getContext('2d');
+const trail=document.getElementById('trail').getContext('2d');
+function rs(){waves.canvas.width=trail.canvas.width=innerWidth;waves.canvas.height=trail.canvas.height=innerHeight}
+rs(); addEventListener('resize',rs);
+let tt=0,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,vis=true;
+document.addEventListener('visibilitychange',()=>{vis=!document.hidden});
+(function drawWaves(){
+  if(vis){tt+=.008; waves.clearRect(0,0,innerWidth,innerHeight);
+    for(let k=0;k<3;k++){
+      const amp=(40+k*16)*(0.86+0.14*Math.cos(tt*0.7+k*.2));
+      const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(tt*1.2+k)*18;
+      waves.beginPath();
+      for(let x=0;x<=innerWidth;x+=6){
+        const y=y0+Math.sin(x*freq + tt*2 + k + Math.sin(tt*0.6+k)*.3)*amp;
+        x?waves.lineTo(x,y):waves.moveTo(x,y);
+      }
+      const g=waves.createLinearGradient(0,y0-amp,0,y0+amp);
+      g.addColorStop(0,'rgba(120,170,255,.08)'); g.addColorStop(.5,'rgba(217,182,93,.18)'); g.addColorStop(1,'rgba(120,170,255,.08)');
+      waves.strokeStyle=g; waves.lineWidth=2; waves.stroke();
+    }
+  }
+  requestAnimationFrame(drawWaves);
+})();
+addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+(function drawTrail(){
+  const dx=(tx-px)*.15, dy=(ty-py)*.15; px+=dx; py+=dy;
+  trail.fillStyle='rgba(0,0,0,.12)'; trail.fillRect(0,0,innerWidth,innerHeight);
+  const r=90+Math.min(Math.hypot(dx,dy)*140,220);
+  const g=trail.createRadialGradient(px,py,0,px,py,r);
+  g.addColorStop(0,'rgba(120,170,255,.30)'); g.addColorStop(1,'rgba(120,170,255,0)');
+  trail.fillStyle=g; trail.beginPath(); trail.arc(px,py,r,0,Math.PI*2); trail.fill();
+  requestAnimationFrame(drawTrail);
+})();
+
+/* ===== Works (5×20) ===== */
+const sections=[
+  {key:'pray',  title:'우리를 위해 기도해 주세요 · Pray for Us'},
+  {key:'human', title:'인간 · Human Being'},
+  {key:'rebirth',title:'Rebirth'},
+  {key:'exist', title:'Existence'},
+  {key:'cosmos',title:'Cosmos'}
+];
+function cardHTML(sec,i){
+  return `
+  <article class="card" tabindex="0" data-sec="${sec.key}" data-idx="${i}">
+    <img loading="lazy" data-src="works/${sec.key}/${i}.jpg" alt="${sec.title} ${i}">
+    <div class="caption">${sec.title} · ${i}</div>
+    <div class="meta">${sec.title} · ${i} · 2025 · Mixed Media · 90×90cm</div>
+  </article>`;
+}
+function renderPanel(sec){
+  const p=document.getElementById('panel-'+sec.key);
+  p.innerHTML=\`<div class="grid">\${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>\`;
+}
+sections.forEach(renderPanel);
+
+/* lazy */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      const img=e.target; img.src=img.dataset.src; img.removeAttribute('data-src');
+      img.closest('.card').classList.add('visible'); io.unobserve(img);
+    }
+  });
+},{rootMargin:'220px'});
+document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+  const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active');
+}));
+
+/* ===== Reports accordion & site-language sync ===== */
+const acc=document.getElementById('dcarAcc');
+function syncAccordionLang(){
+  const isKo=document.body.classList.contains('korean');
+  acc.querySelectorAll('.accordion-item').forEach(item=>{
+    item.querySelectorAll('.accordion-content.ko').forEach(el=>el.style.display=isKo?'block':'none');
+    item.querySelectorAll('.accordion-content.en').forEach(el=>el.style.display=isKo?'none':'block');
+  });
+}
+syncAccordionLang();
+document.getElementById('koBtn').addEventListener('click',syncAccordionLang);
+document.getElementById('enBtn').addEventListener('click',syncAccordionLang);
+acc.querySelectorAll('.accordion-header').forEach(h=>{
+  h.addEventListener('click',()=>h.parentElement.classList.toggle('active'));
+});
+
+/* ===== Lightbox + Instant open + Zoom/Pan ===== */
+const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
+const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
+let cur={key:'pray',i:1}; let zoom=1, imgX=0, imgY=0, dragging=false, startX=0, startY=0;
+
+function openLightbox(key,i){
+  cur={key,i};
+  const src=`works/${key}/${i}.jpg`;
+  lbImg.classList.remove('zoomed');
+  lbImg.style.transform='translate(0px,0px) scale(1)';
+  zoom=1; imgX=0; imgY=0;
+  lbImg.src=src; cap.textContent=`${key} · ${i}`;
+  lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
+}
+
+document.addEventListener('click',e=>{
+  const card=e.target.closest('.card'); if(!card) return;
+  openLightbox(card.dataset.sec, parseInt(card.dataset.idx,10));
+});
+
+/* zoom toggle on image click */
+lbImg.addEventListener('click',()=>{
+  if(zoom===1){
+    zoom=2; lbImg.classList.add('zoomed'); lbImg.style.cursor='grab';
+  }else{
+    zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';
+  }
+  applyTransform();
+});
+function applyTransform(){ lbImg.style.transform=`translate(${imgX}px,${imgY}px) scale(${zoom})`; }
+
+/* drag when zoomed */
+lbImg.addEventListener('mousedown',e=>{
+  if(zoom===1) return;
+  dragging=true; startX=e.clientX - imgX; startY=e.clientY - imgY; lbImg.style.cursor='grabbing';
+});
+window.addEventListener('mousemove',e=>{
+  if(!dragging) return;
+  imgX=e.clientX - startX; imgY=e.clientY - startY; applyTransform();
+});
+window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; lbImg.style.cursor='grab'; }});
+
+/* touch drag */
+lbImg.addEventListener('touchstart',e=>{
+  if(zoom===1) return;
+  const t=e.touches[0]; dragging=true; startX=t.clientX - imgX; startY=t.clientY - imgY;
+},{passive:true});
+lbImg.addEventListener('touchmove',e=>{
+  if(!dragging) return;
+  const t=e.touches[0]; imgX=t.clientX - startX; imgY=t.clientY - startY; applyTransform();
+},{passive:true});
+lbImg.addEventListener('touchend',()=>{dragging=false});
+
+/* navigation */
+function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
+btnPrev.addEventListener('click',()=>step(-1));
+btnNext.addEventListener('click',()=>step(1));
+btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
+lb.addEventListener('click',e=>{if(e.target===lb) btnClose.click();});
+addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='Escape') btnClose.click();
+  if(e.key==='ArrowLeft') step(-1);
+  if(e.key==='ArrowRight') step(1);
+});
+
+/* ===== Cosmic Resonance (small, transparent) ===== */
+const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');
+let ac=null, nodes=null, soundOn=false;
+function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
+function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
+function startSound(){
+  if(soundOn) return;
+  ac=new (window.AudioContext||window.webkitAudioContext)();
+  const base=mkOsc('sine',47.0), baseGain=mkGain(0.08);
+  const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.04);
+  const shimmer1=mkOsc('sine',561), shimmer2=mkOsc('sine',703), shimGain=mkGain(0.006);
+  const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.04); lfo.connect(lfoGain).connect(baseGain.gain);
+  const filter=ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
+  const delay=ac.createDelay(6.0); delay.delayTime.value=2.7; const fb=mkGain(0.28); delay.connect(fb).connect(delay);
+  base.connect(baseGain).connect(filter);
+  sub1.connect(subGain).connect(filter); sub2.connect(subGain).connect(filter);
+  shimmer1.connect(shimGain).connect(filter); shimmer2.connect(shimGain).connect(filter);
+  filter.connect(delay).connect(ac.destination); filter.connect(ac.destination);
+  [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>o.start());
+  filter.frequency.linearRampToValueAtTime(1200, ac.currentTime+5);
+  nodes={base,sub1,sub2,shimmer1,shimmer2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
+  soundOn=true; btnPlay.disabled=true; btnStop.disabled=false;
+}
+function stopSound(){
+  if(!soundOn || !nodes) return;
+  const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shimmer1,shimmer2,lfo}=nodes;
+  baseGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+  subGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+  shimGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+  filter.frequency.linearRampToValueAtTime(120, ac.currentTime+2.2);
+  setTimeout(()=>{[base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null;},2300);
+  soundOn=false; btnPlay.disabled=false; btnStop.disabled=true;
+}
+btnPlay.addEventListener('click', startSound);
+btnStop.addEventListener('click', stopSound);
+</script>
+</body>
+</html>

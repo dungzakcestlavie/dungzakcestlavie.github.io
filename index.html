@@ -311,10 +311,6 @@ function setLang(lang){
 koBtn.addEventListener('click',()=>setLang('ko'));
 enBtn.addEventListener('click',()=>setLang('en'));
 hyBtn.addEventListener('click',()=>setLang('hy'));
-(function initLang(){
-  const saved=localStorage.getItem('dz_lang');
-  setLang(saved ? saved : ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
-})();
 
 /* ===== Poem local toggle (KR/EN) — hybrid 모드에서는 두 버전 모두 표시 ===== */
 const poemKoBtn=document.getElementById('poemKoBtn');
@@ -421,19 +417,29 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active');
 }));
 
-/* ===== Reports accordion & site-language sync ===== */
-const acc=document.getElementById('dcarAcc');
+/* ===== Reports accordion & site-language sync (SAFE) ===== */
 function syncAccordionLang(){
-  const isKo=document.body.classList.contains('korean');
-  const isHy=document.body.classList.contains('hybrid');
-  acc.querySelectorAll('.accordion-item').forEach(item=>{
+  const accEl = document.getElementById('dcarAcc');  // 매 호출마다 안전 조회
+  if(!accEl) return;
+  const isKo = document.body.classList.contains('korean');
+  const isHy = document.body.classList.contains('hybrid');
+  accEl.querySelectorAll('.accordion-item').forEach(item=>{
     const ko=item.querySelectorAll('.accordion-content.ko');
     const en=item.querySelectorAll('.accordion-content.en');
-    if(isHy){ko.forEach(el=>el.style.display='block');en.forEach(el=>el.style.display='block');}
-    else {ko.forEach(el=>el.style.display=isKo?'block':'none');en.forEach(el=>el.style.display=isKo?'none':'block');}
+    if(isHy){
+      ko.forEach(el=>el.style.display='block');
+      en.forEach(el=>el.style.display='block');
+    }else{
+      ko.forEach(el=>el.style.display=isKo?'block':'none');
+      en.forEach(el=>el.style.display=isKo?'none':'block');
+    }
   });
 }
-acc.querySelectorAll('.accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
+/* 아코디언 헤더 리스너 */
+function bindAccordion(){
+  document.querySelectorAll('#dcarAcc .accordion-header')
+    .forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
+}
 
 /* ===== Lightbox + Zoom/Pan ===== */
 const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
@@ -506,8 +512,18 @@ function stopSound(){
 }
 btnPlay.addEventListener('click', startSound);
 btnStop.addEventListener('click', stopSound);
+
+/* ===== Safe boot after DOM ready ===== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // 언어 상태 초기화 (저장값 있으면 사용)
+  const saved=localStorage.getItem('dz_lang');
+  setLang(saved ? saved : ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
+  // 아코디언 리스너 바인딩 및 언어 동기화
+  bindAccordion();
+  syncAccordionLang();
+  // 시 영역 한 번 동기화
+  updatePoem();
+});
 </script>
 </body>
-
-  
 </html>

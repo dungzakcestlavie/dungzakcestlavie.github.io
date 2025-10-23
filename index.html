@@ -11,29 +11,22 @@
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 <style>
-:root{
-  --bg:#0b1020;--fg:#e9efff;--gold:#e6c777;--muted:#a6b6e8;
-  --panel:#0f1630;--line:#1b2652;--max:1180px;--h:60px;
-}
+:root{--bg:#0b1020;--fg:#e9efff;--gold:#e6c777;--muted:#a6b6e8;--panel:#0f1630;--line:#1b2652;--max:1180px;--h:60px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
   background:radial-gradient(1200px 700px at 70% -10%,#19244a 0,#0b1020 40%,#060a18 100%);
   color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-  overflow-x:hidden;letter-spacing:.2px;padding-bottom:160px;
+  overflow-x:hidden;letter-spacing:.2px;padding-bottom:170px
 }
-/* Light layers */
+/* canvases */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
 #waves{z-index:0;opacity:.33}
 #trail{z-index:1;opacity:.55;mix-blend-mode:screen}
 
 /* Header */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:6;
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
-  padding:calc(8px + env(safe-area-inset-top)) 12px 10px;
-  background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)
-}
+header{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 10px;background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
 .brand{font-weight:900;color:var(--gold);font-size:clamp(16px,5vw,22px);flex:1 1 100%;text-align:center}
 nav.primary{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
 nav.primary a{color:var(--fg);text-decoration:none;font-weight:600;padding:6px 10px;border-radius:10px;white-space:nowrap}
@@ -87,53 +80,45 @@ h1,h2{color:var(--gold)}
 .accordion-item.active .accordion-content{display:block}
 
 /* Lightbox + Zoom */
-#lightbox{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.88);
-  opacity:0;pointer-events:none;transition:.26s;z-index:8}
+#lightbox{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:.26s;z-index:8}
 #lightbox.open{opacity:1;pointer-events:auto}
 #lightbox .frame{position:relative;max-width:92vw;max-height:88vh;overflow:hidden;border:2px solid var(--gold);border-radius:10px}
 #lightbox img{display:block;max-width:100%;max-height:100%;transform-origin:center center;cursor:zoom-in}
 #lightbox img.zoomed{cursor:grab}
-.lb-btn,.lb-close{
-  position:fixed;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
-  background:rgba(15,20,40,.6);border:1px solid #333;color:#fff;cursor:pointer;user-select:none
-}
+.lb-btn,.lb-close{position:fixed;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(15,20,40,.6);border:1px solid #333;color:#fff;cursor:pointer;user-select:none}
 .lb-prev{left:14px;top:50%;transform:translateY(-50%)}
 .lb-next{right:14px;top:50%;transform:translateY(-50%)}
 .lb-close{top:14px;right:14px}
-.lb-cap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:rgba(8,16,40,.7);
-  border:1px solid #223;border-radius:10px;padding:8px 12px;font-size:.88rem;color:#e9f1ff}
+.lb-cap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:92vw;background:rgba(8,16,40,.7);border:1px solid #223;border-radius:10px;padding:8px 12px;font-size:.88rem;color:#e9f1ff}
 
 /* Footer */
-footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 86px;background:#090f22}
+footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 96px;background:#090f22}
 .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
 .links a{color:#cfe0ff;text-decoration:none}
 .links a:hover{color:#cbe0ff}
 small{display:block;margin-top:8px;color:#9fb0d8}
 
-/* Cosmic controls: small & transparent, do NOT cover footer links */
-#ctrl{
-  position:fixed;left:50%;
-  bottom:calc(110px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);
-  z-index:7; /* below lightbox(8), above content */
-  display:flex;gap:8px;pointer-events:auto
-}
-.ctrlbtn{
-  width:36px;height:36px;border-radius:50%;
-  border:1px solid rgba(230,199,119,.35);
-  background:rgba(12,19,48,.35);
-  color:#fff;cursor:pointer;
-  box-shadow:0 0 8px rgba(120,170,255,.18);
-  backdrop-filter:blur(6px);
-  transition:all .25s ease; opacity:.9
-}
+/* Cosmic controls: small & transparent (won’t cover footer links) */
+#ctrl{position:fixed;left:50%;bottom:calc(115px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:7;display:flex;gap:8px}
+.ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.35);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18);backdrop-filter:blur(6px);transition:all .25s ease;opacity:.9}
 .ctrlbtn:hover{background:rgba(20,26,58,.65);color:var(--gold);box-shadow:0 0 14px rgba(243,201,105,.32)}
 .ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* Floating social mini bar */
+#socialFab{position:fixed;right:12px;bottom:calc(118px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:7}
+.sbtn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(12,19,48,.35);border:1px solid rgba(230,199,119,.35);backdrop-filter:blur(6px)}
+.sbtn svg{width:18px;height:18px;fill:#cfe0ff;opacity:.95}
+.sbtn:hover svg{fill:var(--gold)}
 
 /* Language visibility */
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
+/* NEW: hybrid (KR+EN both) */
+body.hybrid .ko, body.hybrid .en{display:initial}
+body.hybrid .poem-title{display:flex;gap:8px}
+body.hybrid .poem p + p{margin-top:4px}
+
 @media (prefers-reduced-motion: reduce){#waves,#trail{display:none}}
 </style>
 </head>
@@ -154,6 +139,7 @@ body.english .en{display:initial}
   <div class="lang" aria-label="Language">
     <button id="koBtn" class="active" aria-pressed="true">KR</button>
     <button id="enBtn" aria-pressed="false">EN</button>
+    <button id="hyBtn" aria-pressed="false">KR+EN</button>
   </div>
 </header>
 
@@ -267,10 +253,29 @@ body.english .en{display:initial}
   <small class="en">© 2025 DUNGZAK CESTLAVIE · Conducted by DUNGZAK and Lumera</small>
 </footer>
 
-<!-- Cosmic controls (small, transparent, not covering footer links) -->
+<!-- Cosmic controls -->
 <div id="ctrl" aria-label="Cosmic Resonance controls">
   <button class="ctrlbtn" id="soundBtn" title="Play Cosmic Resonance">✨</button>
   <button class="ctrlbtn" id="soundStopBtn" title="Stop Cosmic Resonance" disabled>🔇</button>
+</div>
+
+<!-- Floating mini social bar (SVG icons) -->
+<div id="socialFab" aria-label="Quick social">
+  <a class="sbtn" href="https://naver.me/x95dk3l1" target="_blank" rel="noopener" title="Naver">
+    <svg viewBox="0 0 24 24"><path d="M4 4h6l4 6V4h6v16h-6l-4-6v6H4z"/></svg>
+  </a>
+  <a class="sbtn" href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener" title="Instagram">
+    <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6.5-.8a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0zM12 9a3 3 0 110 6 3 3 0 010-6z"/></svg>
+  </a>
+  <a class="sbtn" href="https://www.flickr.com/photos/dungzak" target="_blank" rel="noopener" title="Flickr">
+    <svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/></svg>
+  </a>
+  <a class="sbtn" href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener" title="YouTube">
+    <svg viewBox="0 0 24 24"><path d="M23 12s0-3.6-.46-5.24a3 3 0 00-2.12-2.12C18.74 4 12 4 12 4s-6.74 0-8.42.64A3 3 0 001.46 6.76C1 8.4 1 12 1 12s0 3.6.46 5.24a3 3 0 002.12 2.12C5.26 20 12 20 12 20s6.74 0 8.42-.64a3 3 0 002.12-2.12C23 15.6 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/></svg>
+  </a>
+  <a class="sbtn" href="mailto:dungzakcestlavie@gmail.com" title="Email">
+    <svg viewBox="0 0 24 24"><path d="M2 6h20v12H2z"/><path d="M2 6l10 7L22 6" fill="none" stroke="#cfe0ff" stroke-width="1.4"/></svg>
+  </a>
 </div>
 
 <!-- Lightbox -->
@@ -283,39 +288,44 @@ body.english .en{display:initial}
 </div>
 
 <script>
-/* ===== Global language toggle ===== */
-const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn');
+/* ===== Global language toggle (KR / EN / KR+EN) ===== */
+const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn'), hyBtn=document.getElementById('hyBtn');
 function setLang(lang){
-  document.body.classList.toggle('korean', lang==='ko');
-  document.body.classList.toggle('english', lang==='en');
-  koBtn.classList.toggle('active', lang==='ko'); koBtn.setAttribute('aria-pressed', lang==='ko');
-  enBtn.classList.toggle('active', lang==='en'); enBtn.setAttribute('aria-pressed', lang==='en');
+  document.body.classList.remove('korean','english','hybrid');
+  if(lang==='ko') document.body.classList.add('korean');
+  else if(lang==='en') document.body.classList.add('english');
+  else document.body.classList.add('hybrid');
+  [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
+  ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
+  koBtn.setAttribute('aria-pressed', lang==='ko'); enBtn.setAttribute('aria-pressed', lang==='en'); hyBtn.setAttribute('aria-pressed', lang==='hy');
   localStorage.setItem('dz_lang', lang);
+  syncAccordionLang();
 }
 koBtn.addEventListener('click',()=>setLang('ko'));
 enBtn.addEventListener('click',()=>setLang('en'));
+hyBtn.addEventListener('click',()=>setLang('hy'));
 (function initLang(){
   const saved=localStorage.getItem('dz_lang');
   if(saved){setLang(saved);} else { setLang((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'); }
 })();
 
-/* ===== Poem local toggle (KR/EN) ===== */
+/* ===== Poem local toggle (KR/EN) — hybrid 모드에서는 두 버전 모두 표시 ===== */
 const poemKoBtn=document.getElementById('poemKoBtn');
 const poemEnBtn=document.getElementById('poemEnBtn');
 const poemKo=document.querySelector('.poem-ko');
 const poemEn=document.querySelector('.poem-en');
-poemKoBtn.addEventListener('click',()=>{
-  poemKoBtn.classList.add('active'); poemKoBtn.setAttribute('aria-pressed','true');
-  poemEnBtn.classList.remove('active'); poemEnBtn.setAttribute('aria-pressed','false');
-  poemKo.style.display='block'; poemEn.style.display='none';
-});
-poemEnBtn.addEventListener('click',()=>{
-  poemEnBtn.classList.add('active'); poemEnBtn.setAttribute('aria-pressed','true');
-  poemKoBtn.classList.remove('active'); poemKoBtn.setAttribute('aria-pressed','false');
-  poemKo.style.display='none'; poemEn.style.display='block';
-});
+function updatePoem(){
+  const isHybrid=document.body.classList.contains('hybrid');
+  if(isHybrid){poemKo.style.display='block';poemEn.style.display='block';poemKoBtn.classList.remove('active');poemEnBtn.classList.remove('active');return;}
+  if(poemKoBtn.classList.contains('active')){poemKo.style.display='block';poemEn.style.display='none';}
+  else {poemKo.style.display='none';poemEn.style.display='block';}
+}
+poemKoBtn.addEventListener('click',()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
+poemEnBtn.addEventListener('click',()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
+[koBtn,enBtn,hyBtn].forEach(b=>b.addEventListener('click',updatePoem));
+updatePoem();
 
-/* ===== Lightflow (waves + trail) ===== */
+/* ===== Lightflow background (waves + trail) ===== */
 const waves=document.getElementById('waves').getContext('2d');
 const trail=document.getElementById('trail').getContext('2d');
 function rs(){waves.canvas.width=trail.canvas.width=innerWidth;waves.canvas.height=trail.canvas.height=innerHeight}
@@ -373,7 +383,7 @@ function renderPanel(sec){
 }
 sections.forEach(renderPanel);
 
-/* lazy */
+/* lazy loading */
 const io=new IntersectionObserver(es=>{
   es.forEach(e=>{
     if(e.isIntersecting){
@@ -395,19 +405,18 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
 const acc=document.getElementById('dcarAcc');
 function syncAccordionLang(){
   const isKo=document.body.classList.contains('korean');
+  const isHy=document.body.classList.contains('hybrid');
   acc.querySelectorAll('.accordion-item').forEach(item=>{
-    item.querySelectorAll('.accordion-content.ko').forEach(el=>el.style.display=isKo?'block':'none');
-    item.querySelectorAll('.accordion-content.en').forEach(el=>el.style.display=isKo?'none':'block');
+    const ko=item.querySelectorAll('.accordion-content.ko');
+    const en=item.querySelectorAll('.accordion-content.en');
+    if(isHy){ko.forEach(el=>el.style.display='block');en.forEach(el=>el.style.display='block');}
+    else {ko.forEach(el=>el.style.display=isKo?'block':'none');en.forEach(el=>el.style.display=isKo?'none':'block');}
   });
 }
+acc.querySelectorAll('.accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
 syncAccordionLang();
-document.getElementById('koBtn').addEventListener('click',syncAccordionLang);
-document.getElementById('enBtn').addEventListener('click',syncAccordionLang);
-acc.querySelectorAll('.accordion-header').forEach(h=>{
-  h.addEventListener('click',()=>h.parentElement.classList.toggle('active'));
-});
 
-/* ===== Lightbox + Instant open + Zoom/Pan ===== */
+/* ===== Lightbox + Zoom/Pan ===== */
 const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
 const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
 let cur={key:'pray',i:1}; let zoom=1, imgX=0, imgY=0, dragging=false, startX=0, startY=0;
@@ -421,57 +430,28 @@ function openLightbox(key,i){
   lbImg.src=src; cap.textContent=`${key} · ${i}`;
   lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
 }
-
 document.addEventListener('click',e=>{
   const card=e.target.closest('.card'); if(!card) return;
   openLightbox(card.dataset.sec, parseInt(card.dataset.idx,10));
 });
-
-/* zoom toggle on image click */
 lbImg.addEventListener('click',()=>{
-  if(zoom===1){
-    zoom=2; lbImg.classList.add('zoomed'); lbImg.style.cursor='grab';
-  }else{
-    zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';
-  }
+  if(zoom===1){zoom=2; lbImg.classList.add('zoomed'); lbImg.style.cursor='grab';}
+  else {zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';}
   applyTransform();
 });
 function applyTransform(){ lbImg.style.transform=`translate(${imgX}px,${imgY}px) scale(${zoom})`; }
-
-/* drag when zoomed */
-lbImg.addEventListener('mousedown',e=>{
-  if(zoom===1) return;
-  dragging=true; startX=e.clientX - imgX; startY=e.clientY - imgY; lbImg.style.cursor='grabbing';
-});
-window.addEventListener('mousemove',e=>{
-  if(!dragging) return;
-  imgX=e.clientX - startX; imgY=e.clientY - startY; applyTransform();
-});
+lbImg.addEventListener('mousedown',e=>{ if(zoom===1) return; dragging=true; startX=e.clientX - imgX; startY=e.clientY - imgY; lbImg.style.cursor='grabbing';});
+window.addEventListener('mousemove',e=>{ if(!dragging) return; imgX=e.clientX - startX; imgY=e.clientY - startY; applyTransform();});
 window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; lbImg.style.cursor='grab'; }});
-
-/* touch drag */
-lbImg.addEventListener('touchstart',e=>{
-  if(zoom===1) return;
-  const t=e.touches[0]; dragging=true; startX=t.clientX - imgX; startY=t.clientY - imgY;
-},{passive:true});
-lbImg.addEventListener('touchmove',e=>{
-  if(!dragging) return;
-  const t=e.touches[0]; imgX=t.clientX - startX; imgY=t.clientY - startY; applyTransform();
-},{passive:true});
+lbImg.addEventListener('touchstart',e=>{ if(zoom===1) return; const t=e.touches[0]; dragging=true; startX=t.clientX - imgX; startY=t.clientY - imgY;},{passive:true});
+lbImg.addEventListener('touchmove',e=>{ if(!dragging) return; const t=e.touches[0]; imgX=t.clientX - startX; imgY=t.clientY - startY; applyTransform();},{passive:true});
 lbImg.addEventListener('touchend',()=>{dragging=false});
-
-/* navigation */
 function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
 btnPrev.addEventListener('click',()=>step(-1));
 btnNext.addEventListener('click',()=>step(1));
 btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
 lb.addEventListener('click',e=>{if(e.target===lb) btnClose.click();});
-addEventListener('keydown',e=>{
-  if(!lb.classList.contains('open')) return;
-  if(e.key==='Escape') btnClose.click();
-  if(e.key==='ArrowLeft') step(-1);
-  if(e.key==='ArrowRight') step(1);
-});
+addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') btnClose.click(); if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
 
 /* ===== Cosmic Resonance (small, transparent) ===== */
 const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');

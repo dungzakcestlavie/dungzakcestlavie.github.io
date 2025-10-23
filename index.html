@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.5</title>
-<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.5 · Gallery · Aesthetic Reports (DCAR)" />
+<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.6 · Deep Resonance</title>
+<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.6 · Gallery · Aesthetic Reports (DCAR)" />
 <meta property="og:type" content="website">
-<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.5">
+<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.6">
 <meta property="og:description" content="Light · Memory · Being · 100 Works · DCAR Reports">
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
@@ -22,7 +22,7 @@ body{
 }
 /* canvases */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
-#waves{z-index:0;opacity:.33}
+#waves{z-index:0;opacity:.28}
 #trail{z-index:1;opacity:.55;mix-blend-mode:screen}
 
 /* Header */
@@ -55,7 +55,7 @@ h1,h2{color:var(--gold)}
 .poem{padding:12px 14px}
 .poem p{margin:4px 0}
 
-/* Tabs */
+/* Tabs (Works 전용) */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px}
 .tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
@@ -69,12 +69,11 @@ h1,h2{color:var(--gold)}
 .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
 .card.visible{opacity:1;transform:translateY(0)}
 .card img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;filter:brightness(1.03)}
-/* 이미지 전용 그리드 */
 .card .meta{display:none}
 .caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));padding:10px 12px;color:#e9f1ff;font-size:.82rem;transform:translateY(100%);transition:transform .25s;pointer-events:none}
 .card:hover .caption,.card:focus .caption{transform:translateY(0)}
 
-/* Accordion (Reports) */
+/* Accordion (Reports 전용) */
 .accordion{max-width:var(--max);margin:20px auto;border:1px solid #2a3a78;border-radius:12px;overflow:hidden}
 .accordion-item{border-bottom:1px solid #2a3a78}
 .accordion-header{background:#0f1838;color:var(--gold);padding:14px 16px;cursor:pointer;font-weight:700}
@@ -124,7 +123,7 @@ body.hybrid .ko, body.hybrid .en{display:initial}
 body.hybrid .poem-title{display:flex;gap:8px}
 body.hybrid .poem p + p{margin-top:4px}
 
-/* 사용자 모션 최소화 설정 존중 */
+/* 사용자 모션 최소화 */
 @media (prefers-reduced-motion: reduce){
   #waves,#trail{display:none}
 }
@@ -137,7 +136,7 @@ body.hybrid .poem p + p{margin-top:4px}
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
-  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.5</div>
+  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.6</div>
   <nav class="primary" aria-label="Primary">
     <a href="#poem">Poem</a>
     <a href="#bio">Bio</a>
@@ -211,7 +210,7 @@ body.hybrid .poem p + p{margin-top:4px}
     <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR (1–8) series unites philosophy, neuroscience, and art.</p>
   </section>
 
-  <!-- Works -->
+  <!-- Works: 이미지 아카이브만 노출 -->
   <section id="works">
     <h2>Artworks — 작품 아카이브 (100)</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
@@ -232,7 +231,7 @@ body.hybrid .poem p + p{margin-top:4px}
     </div>
   </section>
 
-  <!-- Reports -->
+  <!-- Reports: 미학 보고서만 노출 -->
   <section id="reports">
     <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2>
     <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -263,8 +262,8 @@ body.hybrid .poem p + p{margin-top:4px}
 
 <!-- Cosmic controls -->
 <div id="ctrl" aria-label="Cosmic Resonance controls">
-  <button class="ctrlbtn" id="soundBtn" title="Play Cosmic Resonance">✨</button>
-  <button class="ctrlbtn" id="soundStopBtn" title="Stop Cosmic Resonance" disabled>🔇</button>
+  <button class="ctrlbtn" id="soundBtn" title="Play Deep Resonance">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" title="Stop Deep Resonance" disabled>🔇</button>
 </div>
 
 <!-- Floating mini social bar (SVG icons) -->
@@ -295,11 +294,10 @@ body.hybrid .poem p + p{margin-top:4px}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Complete Integrated Core ===== -->
+<!-- ===== Lightflow Ω.6 · Deep Resonance — Integrated Core ===== -->
 <script>
-/* 모든 초기화 코드를 문서 끝에 둬서 DOM 참조 null 문제 제거 */
 (function(){
-  /* ---------- 안전 디버그 오버레이 (?debug=1) ---------- */
+  /* ---------- Debug overlay (?debug=1) ---------- */
   const DBG = new URLSearchParams(location.search).get('debug')==='1';
   function debug(msg){
     if(!DBG) return;
@@ -316,13 +314,10 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   window.addEventListener('error',e=>debug('Error: '+e.message+' @'+e.filename+':'+e.lineno));
 
-  /* ---------- 안전 localStorage ---------- */
-  const store = {
-    get(k){ try{ return localStorage.getItem(k);}catch{ return null; } },
-    set(k,v){ try{ localStorage.setItem(k,v);}catch{} }
-  };
+  /* ---------- safe localStorage ---------- */
+  const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
 
-  /* ===== Deep Lightflow 2.0 — natural wave & light trail ===== */
+  /* ===== Lightflow Ω.6 — Natural cosmic glow (radial breath + gentle ripples) ===== */
   try{
     const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const waves = document.getElementById('waves');
@@ -330,18 +325,15 @@ body.hybrid .poem p + p{margin-top:4px}
     const wCtx = waves.getContext('2d', { alpha:true });
     const tCtx = trail.getContext('2d', { alpha:true });
 
-    let DPR=1, VW=0, VH=0, visible=true;
-    let tt=0; // time
-    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py; // glow pos/target
-
-    const ease = (x)=> x*x*(3-2*x);
+    let DPR=1, VW=0, VH=0, visible=true, tt=0;
+    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
 
     function resize(){
       DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
       VW = waves.width  = trail.width  = Math.floor(innerWidth  * DPR);
       VH = waves.height = trail.height = Math.floor(innerHeight * DPR);
       wCtx.setTransform(1,0,0,1,0,0); tCtx.setTransform(1,0,0,1,0,0);
-      wCtx.scale(1/DPR, 1/DPR); tCtx.scale(1/DPR, 1/DPR);
+      wCtx.scale(1/DPR,1/DPR); tCtx.scale(1/DPR,1/DPR);
     }
     resize();
     addEventListener('resize', resize, {passive:true});
@@ -351,146 +343,119 @@ body.hybrid .poem p + p{margin-top:4px}
     addEventListener('touchstart', e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
     addEventListener('touchmove',  e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY;}, {passive:true});
 
-    function goldBreath(base=0.16, depth=0.12, speed=0.16){
-      return base + depth * (0.5 + 0.5*Math.sin(tt*speed));
-    }
-
-    function waveY(x, lane){
-      const s = innerHeight;
-      const drift = tt*(0.9 + lane*0.15);
-      const f1 = 0.0036 + lane*0.0009;
-      const f2 = 0.0071 + lane*0.0007;
-      const a1 = 36  + lane*16;
-      const a2 = 18  + lane*10;
-      const curve = ease((x/innerWidth));
-      const baseY = s*0.28 + lane*110 + (Math.sin(tt*0.7+lane)*20) + (scrollY*0.05)*(1+lane*0.25);
-      return baseY
-           + Math.sin(x*f1 + drift*1.2 + Math.sin(drift*0.7+lane)*0.3) * a1 * (0.9 + curve*0.2)
-           + Math.sin(x*f2 + drift*0.8) * a2;
+    // Simple value-noise (tiny, fast) for shimmer
+    function vnoise(x,y,t){
+      const n = Math.sin(x*0.0023 + y*0.0017 + t*0.15)
+              + Math.sin(x*0.0041 - y*0.0031 + t*0.10)*0.6
+              + Math.sin(-x*0.0037 + y*0.0025 + t*0.07)*0.4;
+      return n/2.0; // -1..1 -> ~-0.5..0.5
     }
 
     function renderWaves(){
       wCtx.clearRect(0,0,innerWidth,innerHeight);
-      const breath = goldBreath(0.16, prefersReduced?0.06:0.12, 0.16);
-      const lanes = prefersReduced ? 2 : 4;
+
+      // three gentle lanes: stardust ripples
+      const lanes = prefersReduced ? 1 : 3;
       for(let k=0;k<lanes;k++){
-        const y0 = waveY(0, k);
+        const baseY = innerHeight*0.28 + k*120 + Math.sin(tt*0.5+k)*16;
         wCtx.beginPath();
         for(let x=0;x<=innerWidth;x+=6){
-          const y = waveY(x, k);
+          const y = baseY
+                  + Math.sin(x*(0.0042+k*0.0009) + tt*(0.8+k*0.15))* (28 + k*12)
+                  + vnoise(x, baseY, tt) * (12 + k*6);
           x ? wCtx.lineTo(x,y) : wCtx.moveTo(x,y);
         }
-        const g = wCtx.createLinearGradient(0, y0-140, 0, y0+140);
-        const goldAlpha = 0.20 + breath*0.6;
-        g.addColorStop(0.00, `rgba(120,170,255,${0.06+breath*0.20})`);
-        g.addColorStop(0.48, `rgba(230,199,119,${goldAlpha})`);
-        g.addColorStop(1.00, `rgba(120,170,255,${0.06+breath*0.20})`);
+        const g = wCtx.createLinearGradient(0, baseY-180, 0, baseY+180);
+        g.addColorStop(0,   `rgba(120,170,255,${0.04 + 0.04*Math.sin(tt*0.2+ k)})`);
+        g.addColorStop(0.45,`rgba(230,199,119,${0.18 + 0.10*Math.sin(tt*0.18)})`);
+        g.addColorStop(1,   `rgba(120,170,255,${0.04 + 0.04*Math.cos(tt*0.22+ k)})`);
         wCtx.strokeStyle = g;
-        wCtx.lineWidth = 2 + k*0.5;
-        wCtx.globalAlpha = 0.85 - k*0.1;
+        wCtx.globalAlpha = 0.88 - k*0.12;
+        wCtx.lineWidth = 1.8 + k*0.6;
         wCtx.stroke();
       }
       wCtx.globalAlpha = 1;
     }
 
     function renderTrail(){
-      const follow = prefersReduced ? 0.10 : 0.15;
-      px += (tx-px)*follow; py += (ty-py)*follow;
+      // slow cosmic breath
+      px += (tx-px)*(prefersReduced?0.08:0.13);
+      py += (ty-py)*(prefersReduced?0.08:0.13);
       const speed = Math.hypot(tx-px, ty-py);
-      const r = 100 + Math.min(speed*170, 250);
+      const r = 120 + Math.min(speed*160, 260);
       tCtx.fillStyle='rgba(0,0,0,'+(prefersReduced?0.18:0.12)+')';
       tCtx.fillRect(0,0,innerWidth,innerHeight);
+
+      const breath = 0.22 + 0.10*Math.sin(tt*0.2);
       const g = tCtx.createRadialGradient(px,py,0, px,py,r);
-      const breath = goldBreath(0.18, 0.10, 0.20);
-      g.addColorStop(0,   `rgba(230,199,119,${0.22 + breath*0.3})`);
-      g.addColorStop(0.5, `rgba(140,185,255,${0.10 + breath*0.2})`);
+      g.addColorStop(0,   `rgba(230,199,119,${0.20 + breath})`);
+      g.addColorStop(0.55,`rgba(140,185,255,${0.10 + breath*0.6})`);
       g.addColorStop(1,   'rgba(140,185,255,0)');
       tCtx.fillStyle=g; tCtx.beginPath(); tCtx.arc(px,py,r,0,Math.PI*2); tCtx.fill();
     }
 
     function loop(){
-      if(visible && !prefersReduced){
-        tt += 0.008;
-        renderWaves();
-        renderTrail();
-      }else if(visible && prefersReduced){
-        tt += 0.003;
-        renderWaves();
-      }
+      if(!visible) { requestAnimationFrame(loop); return; }
+      tt += prefersReduced ? 0.003 : 0.008;
+      renderWaves();
+      if(!prefersReduced) renderTrail();
       requestAnimationFrame(loop);
     }
     loop();
   }catch(e){ debug('lightflow '+e); }
 
-  /* ===== 언어 전역 토글 + 시(파리의 센느강) 동기화 ===== */
+  /* ===== Language + Poem sync ===== */
   const koBtn=document.getElementById('koBtn');
   const enBtn=document.getElementById('enBtn');
   const hyBtn=document.getElementById('hyBtn');
-
   const poemKoBtn=document.getElementById('poemKoBtn');
   const poemEnBtn=document.getElementById('poemEnBtn');
   const poemKo=document.querySelector('.poem-ko');
   const poemEn=document.querySelector('.poem-en');
 
   function updatePoem(){
-    if(!poemKo || !poemEn) return;
-    const isHybrid=document.body.classList.contains('hybrid');
-    if(isHybrid){
+    if(!poemKo||!poemEn) return;
+    const hy = document.body.classList.contains('hybrid');
+    if(hy){
       poemKo.style.display='block'; poemEn.style.display='block';
       if(poemKoBtn){poemKoBtn.classList.remove('active');poemKoBtn.setAttribute('aria-pressed','false');}
       if(poemEnBtn){poemEnBtn.classList.remove('active');poemEnBtn.setAttribute('aria-pressed','false');}
-      return;
+    }else{
+      const showKo = poemKoBtn && poemKoBtn.classList.contains('active');
+      poemKo.style.display = showKo ? 'block':'none';
+      poemEn.style.display = showKo ? 'none' :'block';
+      if(poemKoBtn) poemKoBtn.setAttribute('aria-pressed', showKo?'true':'false');
+      if(poemEnBtn) poemEnBtn.setAttribute('aria-pressed', showKo?'false':'true');
     }
-    const showKo = poemKoBtn && poemKoBtn.classList.contains('active');
-    poemKo.style.display = showKo ? 'block' : 'none';
-    poemEn.style.display = showKo ? 'none'  : 'block';
-    if(poemKoBtn) poemKoBtn.setAttribute('aria-pressed', showKo?'true':'false');
-    if(poemEnBtn) poemEnBtn.setAttribute('aria-pressed', showKo?'false':'true');
   }
-
   function setLang(lang){
-    try{
-      document.body.classList.remove('korean','english','hybrid');
-      if(lang==='ko') document.body.classList.add('korean');
-      else if(lang==='en') document.body.classList.add('english');
-      else document.body.classList.add('hybrid');
-
-      [koBtn,enBtn,hyBtn].filter(Boolean).forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false');});
-      const map={ko:koBtn,en:enBtn,hy:hyBtn};
-      if(map[lang]){ map[lang].classList.add('active'); map[lang].setAttribute('aria-pressed','true'); }
-
-      // 전역 → 시 로컬 동기화
-      if(lang==='ko'){ if(poemKoBtn&&poemEnBtn){poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');} }
-      else if(lang==='en'){ if(poemKoBtn&&poemEnBtn){poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');} }
-      else { if(poemKoBtn&&poemEnBtn){poemKoBtn.classList.remove('active');poemEnBtn.classList.remove('active');} }
-
-      store.set('dz_lang', lang);
-      updatePoem();
-      if (typeof syncAccordionLang === 'function') syncAccordionLang();
-    }catch(e){ debug('setLang '+e); }
+    document.body.classList.remove('korean','english','hybrid');
+    if(lang==='ko') document.body.classList.add('korean');
+    else if(lang==='en') document.body.classList.add('english');
+    else document.body.classList.add('hybrid');
+    [koBtn,enBtn,hyBtn].forEach(b=>{ if(!b) return; b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang])?.classList.add('active');
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang])?.setAttribute('aria-pressed','true');
+    if(lang==='ko'){poemKoBtn?.classList.add('active');poemEnBtn?.classList.remove('active');}
+    else if(lang==='en'){poemEnBtn?.classList.add('active');poemKoBtn?.classList.remove('active');}
+    else {poemKoBtn?.classList.remove('active');poemEnBtn?.classList.remove('active');}
+    store.set('dz_lang', lang);
+    updatePoem();
+    if(typeof syncAccordionLang==='function') syncAccordionLang();
   }
-  if(koBtn) koBtn.addEventListener('click',()=>setLang('ko'));
-  if(enBtn) enBtn.addEventListener('click',()=>setLang('en'));
-  if(hyBtn) hyBtn.addEventListener('click',()=>setLang('hy'));
+  koBtn?.addEventListener('click',()=>setLang('ko'));
+  enBtn?.addEventListener('click',()=>setLang('en'));
+  hyBtn?.addEventListener('click',()=>setLang('hy'));
+  poemKoBtn?.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemKoBtn.classList.add('active');poemEnBtn?.classList.remove('active');updatePoem(); });
+  poemEnBtn?.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return; poemEnBtn.classList.add('active');poemKoBtn?.classList.remove('active');updatePoem(); });
 
   (function initLang(){
-    try{
-      const urlLang = new URLSearchParams(location.search).get('lang');
-      const saved=store.get('dz_lang');
-      setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
-    }catch(e){ setLang('ko'); }
+    const urlLang = new URLSearchParams(location.search).get('lang');
+    const saved=store.get('dz_lang');
+    setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
   })();
 
-  if(poemKoBtn && poemEnBtn){
-    poemKoBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return;
-      poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();
-    });
-    poemEnBtn.addEventListener('click',()=>{ if(document.body.classList.contains('hybrid')) return;
-      poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();
-    });
-  }
-
-  /* ===== Works (5×20) 렌더 + 레이지 ===== */
+  /* ===== Works (5×20) only image cards ===== */
   const sections=[
     {key:'pray',  title:'우리를 위해 기도해 주세요 — Pray for us'},
     {key:'human', title:'인간 — Human Being'},
@@ -513,12 +478,13 @@ body.hybrid .poem p + p{margin-top:4px}
   }
   sections.forEach(renderPanel);
 
+  // Lazy load + fade-in
   try{
     const io=new IntersectionObserver(es=>{
       es.forEach(e=>{
         if(e.isIntersecting){
           const img=e.target; if(img.dataset.src){ img.src=img.dataset.src; img.removeAttribute('data-src'); }
-          const card=img.closest('.card'); if(card) card.classList.add('visible');
+          img.closest('.card')?.classList.add('visible');
           io.unobserve(img);
         }
       });
@@ -526,16 +492,17 @@ body.hybrid .poem p + p{margin-top:4px}
     document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
   }catch(e){ debug('IntersectionObserver '+e); }
 
+  // Tab switch
   document.querySelectorAll('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
       document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
-      const key=b.dataset.panel; const panel=document.getElementById('panel-'+key); if(panel) panel.classList.add('active');
+      document.getElementById('panel-'+b.dataset.panel)?.classList.add('active');
     });
   });
 
-  /* ===== Reports accordion & site-language sync ===== */
+  /* ===== Reports accordion only ===== */
   function syncAccordionLang(){
     const acc=document.getElementById('dcarAcc'); if(!acc) return;
     const isKo=document.body.classList.contains('korean');
@@ -573,9 +540,9 @@ body.hybrid .poem p + p{margin-top:4px}
     });
     lb.addEventListener('click',e=>{ if(e.target===lb) { lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); }});
     function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
-    if(btnPrev) btnPrev.addEventListener('click',()=>step(-1));
-    if(btnNext) btnNext.addEventListener('click',()=>step(1));
-    if(btnClose) btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
+    btnPrev?.addEventListener('click',()=>step(-1));
+    btnNext?.addEventListener('click',()=>step(1));
+    btnClose?.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
     lbImg.addEventListener('mousedown',e=>{ if(zoom===1) return; dragging=true; sx=e.clientX-imgX; sy=e.clientY-imgY; lbImg.style.cursor='grabbing';});
     window.addEventListener('mousemove',e=>{ if(!dragging) return; imgX=e.clientX-sx; imgY=e.clientY-sy; apply();});
     window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; if(zoom>1) lbImg.style.cursor='grab'; }});
@@ -585,7 +552,7 @@ body.hybrid .poem p + p{margin-top:4px}
     addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') {lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');} if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
   })();
 
-  /* ===== Cosmic Resonance (WebAudio · iOS/모바일 안전재생) ===== */
+  /* ===== Deep Resonance — Schumann/Theta LFO + 62/124 Hz, 432/528 shimmer ===== */
   (function(){
     const playBtn=document.getElementById('soundBtn');
     const stopBtn=document.getElementById('soundStopBtn');
@@ -604,7 +571,7 @@ body.hybrid .poem p + p{margin-top:4px}
     function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
     function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
 
-    // 첫 사용자 제스처에서 unlock
+    // Unlock on first gesture (iOS)
     function unlockOnce(){
       ensureAudio().catch(()=>{});
       window.removeEventListener('touchend', unlockOnce);
@@ -618,29 +585,54 @@ body.hybrid .poem p + p{margin-top:4px}
         await ensureAudio();
         if(soundOn || !ac) return;
 
-        // 모바일 볼륨 보정 + 레인지
-        const base=mkOsc('sine',47.0), baseGain=mkGain(0.14);
-        const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.07);
-        const shim1=mkOsc('sine',561), shim2=mkOsc('sine',703), shimGain=mkGain(0.010);
-        const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.06); lfo.connect(lfoGain).connect(baseGain.gain);
-        const filter=ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
-        const delay=ac.createDelay(6.0); delay.delayTime.value=2.7; const fb=mkGain(0.28); delay.connect(fb).connect(delay);
+        // Nodes
+        const master = mkGain(0.6);
+        const comp = ac.createDynamicsCompressor(); // soft limiter
+        comp.threshold.value = -18; comp.knee.value=28; comp.ratio.value=6; comp.attack.value=0.02; comp.release.value=0.25;
+        master.connect(comp).connect(ac.destination);
 
-        base.connect(baseGain).connect(filter);
-        sub1.connect(subGain).connect(filter);  sub2.connect(subGain).connect(filter);
-        shim1.connect(shimGain).connect(filter); shim2.connect(shimGain).connect(filter);
-        filter.connect(delay).connect(ac.destination);
-        filter.connect(ac.destination);
+        // Base tones
+        const base62 = mkOsc('sine', 62.0), g62 = mkGain(0.10);
+        const harm124= mkOsc('sine',124.0), g124= mkGain(0.06);
 
-        // 페이드인
-        [baseGain.gain, subGain.gain, shimGain.gain].forEach(g=>{
-          try{ g.setValueAtTime(g.value*0.001, ac.currentTime); g.exponentialRampToValueAtTime(g.value, ac.currentTime+0.8);}catch{}
+        // Shimmer (very low level)
+        const sh432 = mkOsc('sine',432.0), g432 = mkGain(0.012);
+        const sh528 = mkOsc('sine',528.0), g528 = mkGain(0.010);
+
+        // LFOs
+        const lfoSchumann = mkOsc('sine', 7.83); // amplitude breath
+        const lfoTheta    = mkOsc('sine', 5.0);  // gentle tremolo
+        const lfoGainA = mkGain(0.08);  // depth for base
+        const lfoGainB = mkGain(0.05);  // depth for shimmer
+
+        // Filter & echo
+        const biq = ac.createBiquadFilter(); biq.type='lowpass'; biq.frequency.value=900; biq.Q.value=0.7;
+        const delay = ac.createDelay(6.0); delay.delayTime.value=2.6;
+        const fb = mkGain(0.22); delay.connect(fb).connect(delay);
+
+        // Wiring
+        lfoSchumann.connect(lfoGainA).connect(g62.gain);
+        lfoTheta.connect(lfoGainA).connect(g124.gain);
+        lfoTheta.connect(lfoGainB).connect(g432.gain);
+        lfoSchumann.connect(lfoGainB).connect(g528.gain);
+
+        base62.connect(g62).connect(biq);
+        harm124.connect(g124).connect(biq);
+        sh432.connect(g432).connect(biq);
+        sh528.connect(g528).connect(biq);
+
+        biq.connect(delay).connect(master);
+        biq.connect(master);
+
+        // Start + fade in
+        [base62,harm124,sh432,sh528,lfoSchumann,lfoTheta].forEach(o=>o.start());
+        const t=ac.currentTime;
+        [g62.gain, g124.gain, g432.gain, g528.gain].forEach(g=>{
+          try{ const target=g.value; g.setValueAtTime(Math.max(0.0001,target*0.01), t); g.exponentialRampToValueAtTime(target, t+1.8);}catch{}
         });
-        [base,sub1,sub2,shim1,shim2,lfo].forEach(o=>o.start());
-        filter.frequency.cancelScheduledValues(0);
-        filter.frequency.linearRampToValueAtTime(1200, ac.currentTime + 5);
+        try{ biq.frequency.cancelScheduledValues(t); biq.frequency.linearRampToValueAtTime(1400, t+6.0);}catch{}
 
-        nodes={base,sub1,sub2,shim1,shim2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
+        nodes={base62,harm124,sh432,sh528,lfoSchumann,lfoTheta,g62,g124,g432,g528,biq,delay,fb,master,comp};
         soundOn=true; playBtn.disabled=true; stopBtn.disabled=false;
       }catch(e){ debug('sound start '+e); }
     }
@@ -648,25 +640,24 @@ body.hybrid .poem p + p{margin-top:4px}
     function stopSound(){
       try{
         if(!soundOn || !nodes || !ac) return;
-        const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shim1,shim2,lfo}=nodes;
-        const t = ac.currentTime;
-        [baseGain.gain, subGain.gain, shimGain.gain].forEach(g=>{
-          try { g.cancelScheduledValues(0); g.exponentialRampToValueAtTime(0.0001, t + 2.0);} catch {}
+        const {g62,g124,g432,g528,biq,base62,harm124,sh432,sh528,lfoSchumann,lfoTheta}=nodes;
+        const t=ac.currentTime;
+        [g62.gain,g124.gain,g432.gain,g528.gain].forEach(g=>{
+          try{ g.cancelScheduledValues(t); g.exponentialRampToValueAtTime(0.0001, t+1.6);}catch{}
         });
-        try { filter.frequency.linearRampToValueAtTime(120, t + 2.0);} catch {}
-        setTimeout(()=>{ [base,sub1,sub2,shim1,shim2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null; }, 2100);
+        try{ biq.frequency.linearRampToValueAtTime(180, t+1.6);}catch{}
+        setTimeout(()=>{ [base62,harm124,sh432,sh528,lfoSchumann,lfoTheta].forEach(o=>{try{o.stop()}catch{}}); nodes=null; },1700);
         soundOn=false; playBtn.disabled=false; stopBtn.disabled=true;
       }catch(e){ debug('sound stop '+e); }
     }
 
-    // 탭 전환 대응
+    // visibility
     document.addEventListener('visibilitychange', async ()=>{
       if (!ac) return;
       if (document.hidden) { try{ await ac.suspend(); }catch{} }
       else if (soundOn)    { try{ await ac.resume();   }catch{} }
     });
 
-    // iOS 확정: click + touchend
     playBtn.addEventListener('click', startSound);
     playBtn.addEventListener('touchend', startSound);
     stopBtn.addEventListener('click',  stopSound);
@@ -675,6 +666,6 @@ body.hybrid .poem p + p{margin-top:4px}
 
 })();
 </script>
-<!-- ===== /Complete Integrated Core ===== -->
+<!-- ===== /Lightflow Ω.6 ===== -->
 </body>
 </html>

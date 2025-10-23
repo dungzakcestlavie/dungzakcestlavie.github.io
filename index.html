@@ -57,7 +57,7 @@ h1,h2{color:var(--gold)}
 
 /* Tabs */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px}
-.tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem}
+.tab{padding:9px 14px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
 .tabpanel{display:none;animation:fade .28s ease}
 .tabpanel.active{display:block}
@@ -211,11 +211,11 @@ body.hybrid .poem p + p{margin-top:4px}
   <section id="works">
     <h2>Artworks — 작품 아카이브 (100)</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
-      <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-      <button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-      <button class="tab" data-panel="rebirth">Ⅲ Rebirth</button>
-      <button class="tab" data-panel="exist">Ⅳ Existence</button>
-      <button class="tab" data-panel="cosmos">Ⅴ Cosmos</button>
+      <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 — Pray for us</button>
+      <button class="tab" data-panel="human">Ⅱ 인간 — Human Being</button>
+      <button class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 — Rebirth of Mind</button>
+      <button class="tab" data-panel="exist">Ⅳ 존재의 회복 — The Restoration of Being</button>
+      <button class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 — The Metaconsciousness of Light</button>
     </div>
     <div id="panel-pray" class="tabpanel active"></div>
     <div id="panel-human" class="tabpanel"></div>
@@ -291,106 +291,149 @@ body.hybrid .poem p + p{margin-top:4px}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
+<!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Stable Interactive Core (Bug-fixed) ===== -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  /* ===== Global language toggle (KR / EN / KR+EN) ===== */
-  const koBtn=document.getElementById('koBtn'), enBtn=document.getElementById('enBtn'), hyBtn=document.getElementById('hyBtn');
-  function setLang(lang){
-    document.body.classList.remove('korean','english','hybrid');
-    if(lang==='ko') document.body.classList.add('korean');
-    else if(lang==='en') document.body.classList.add('english');
-    else document.body.classList.add('hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
-    koBtn.setAttribute('aria-pressed', lang==='ko');
-    enBtn.setAttribute('aria-pressed', lang==='en');
-    hyBtn.setAttribute('aria-pressed', lang==='hy');
-    localStorage.setItem('dz_lang', lang);
-    updatePoem();
-    syncAccordionLang();
+/* 모든 초기화 코드를 문서 끝에 둬서 DOM 참조 null 문제 제거 */
+(function(){
+  // --- 디버그 오버레이 (?debug=1)
+  const DBG = new URLSearchParams(location.search).get('debug')==='1';
+  function debug(msg){
+    if(!DBG) return;
+    let box = document.getElementById('dz_debug');
+    if(!box){
+      box = document.createElement('div');
+      box.id='dz_debug';
+      Object.assign(box.style,{position:'fixed',zIndex:9999,top:'10px',right:'10px',maxWidth:'80vw',
+        background:'rgba(0,0,0,.8)',color:'#fff',padding:'8px 10px',font:'12px/1.4 ui-monospace,monospace',
+        border:'1px solid #f66',borderRadius:'8px',whiteSpace:'pre-wrap'});
+      document.body.appendChild(box);
+    }
+    box.textContent = String(msg);
   }
-  koBtn.addEventListener('click',()=>setLang('ko'));
-  enBtn.addEventListener('click',()=>setLang('en'));
-  hyBtn.addEventListener('click',()=>setLang('hy'));
+  window.addEventListener('error',e=>debug('Error: '+e.message+' @'+e.filename+':'+e.lineno));
+
+  // --- 안전한 localStorage
+  const store = {
+    get(k){ try{ return localStorage.getItem(k);}catch{ return null; } },
+    set(k,v){ try{ localStorage.setItem(k,v);}catch{} }
+  };
+
+  // ===== Lightflow background (waves + trail) — DPR hotfix =====
+  try{
+    const wavesCtx = document.getElementById('waves').getContext('2d',{alpha:true});
+    const trailCtx = document.getElementById('trail').getContext('2d',{alpha:true});
+    let DPR=1, W=0, H=0;
+    function resize(){
+      DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
+      W = wavesCtx.canvas.width  = trailCtx.canvas.width  = Math.floor(innerWidth  * DPR);
+      H = wavesCtx.canvas.height = trailCtx.canvas.height = Math.floor(innerHeight * DPR);
+      wavesCtx.setTransform(DPR,0,0,DPR,0,0);
+      trailCtx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    resize(); addEventListener('resize', resize, {passive:true});
+    let t=0, px=innerWidth/2, py=innerHeight/2, tx=px, ty=py, visible=true;
+    document.addEventListener('visibilitychange', ()=>{ visible=!document.hidden; });
+    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+    addEventListener('touchstart',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
+    addEventListener('touchmove', e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
+    (function drawWaves(){
+      if(visible){
+        t+=0.008;
+        wavesCtx.clearRect(0,0,innerWidth,innerHeight);
+        for(let k=0;k<3;k++){
+          const amp=(40+k*16)*(0.86+0.14*Math.cos(t*0.7+k*.2));
+          const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(t*1.2+k)*18;
+          wavesCtx.beginPath();
+          for(let x=0;x<=innerWidth;x+=6){
+            const y=y0+Math.sin(x*freq+t*2+k+Math.sin(t*0.6+k)*.3)*amp;
+            x?wavesCtx.lineTo(x,y):wavesCtx.moveTo(x,y);
+          }
+          const g=wavesCtx.createLinearGradient(0,y0-amp,0,y0+amp);
+          g.addColorStop(0,'rgba(120,170,255,.10)');
+          g.addColorStop(.5,'rgba(230,199,119,.22)');
+          g.addColorStop(1,'rgba(120,170,255,.10)');
+          wavesCtx.strokeStyle=g; wavesCtx.lineWidth=2; wavesCtx.stroke();
+        }
+      }
+      requestAnimationFrame(drawWaves);
+    })();
+    (function drawTrail(){
+      const fade='rgba(0,0,0,.14)';
+      trailCtx.fillStyle=fade; trailCtx.fillRect(0,0,innerWidth,innerHeight);
+      px += (tx-px)*0.15; py += (ty-py)*0.15;
+      const speed = Math.hypot(tx-px, ty-py);
+      const r = 90 + Math.min(speed*160, 240);
+      const g = trailCtx.createRadialGradient(px,py,0, px,py,r);
+      g.addColorStop(0, 'rgba(140,185,255,.36)');
+      g.addColorStop(.55,'rgba(140,185,255,.16)');
+      g.addColorStop(1, 'rgba(140,185,255,0)');
+      trailCtx.fillStyle=g; trailCtx.beginPath(); trailCtx.arc(px,py,r,0,Math.PI*2); trailCtx.fill();
+      requestAnimationFrame(drawTrail);
+    })();
+  }catch(e){ debug('canvas '+e); }
+
+  // ===== Global language toggle (KR/EN/KR+EN)
+  const koBtn=document.getElementById('koBtn');
+  const enBtn=document.getElementById('enBtn');
+  const hyBtn=document.getElementById('hyBtn');
+
+  function setLang(lang){
+    try{
+      document.body.classList.remove('korean','english','hybrid');
+      if(lang==='ko') document.body.classList.add('korean');
+      else if(lang==='en') document.body.classList.add('english');
+      else document.body.classList.add('hybrid');
+      [koBtn,enBtn,hyBtn].filter(Boolean).forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false');});
+      const map={ko:koBtn,en:enBtn,hy:hyBtn};
+      if(map[lang]){ map[lang].classList.add('active'); map[lang].setAttribute('aria-pressed','true'); }
+      store.set('dz_lang', lang);
+      updatePoem();
+      syncAccordionLang();
+    }catch(e){ debug('setLang '+e); }
+  }
+  if(koBtn) koBtn.addEventListener('click',()=>setLang('ko'));
+  if(enBtn) enBtn.addEventListener('click',()=>setLang('en'));
+  if(hyBtn) hyBtn.addEventListener('click',()=>setLang('hy'));
+
+  // URL ?lang=ko|en|hy 우선, 없으면 저장값, 없으면 브라우저 언어
   (function initLang(){
-    const saved=localStorage.getItem('dz_lang');
-    setLang(saved ? saved : ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
+    try{
+      const urlLang = new URLSearchParams(location.search).get('lang');
+      const saved=store.get('dz_lang');
+      setLang(urlLang || saved || ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
+    }catch(e){ setLang('ko'); }
   })();
 
-  /* ===== Poem local toggle (KR/EN) — hybrid 모드에서는 두 버전 모두 표시 ===== */
+  // ===== Poem local toggle
   const poemKoBtn=document.getElementById('poemKoBtn');
   const poemEnBtn=document.getElementById('poemEnBtn');
   const poemKo=document.querySelector('.poem-ko');
   const poemEn=document.querySelector('.poem-en');
+
   function updatePoem(){
+    if(!poemKo || !poemEn) return;
     const isHybrid=document.body.classList.contains('hybrid');
-    if(isHybrid){poemKo.style.display='block';poemEn.style.display='block';poemKoBtn.classList.remove('active');poemEnBtn.classList.remove('active');return;}
-    if(poemKoBtn.classList.contains('active')){poemKo.style.display='block';poemEn.style.display='none';}
-    else {poemKo.style.display='none';poemEn.style.display='block';}
-  }
-  poemKoBtn.addEventListener('click',()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
-  poemEnBtn.addEventListener('click',()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
-
-  /* ===== Lightflow background (waves + trail) — DPR hotfix ===== */
-  const wavesCtx = document.getElementById('waves').getContext('2d', {alpha:true});
-  const trailCtx = document.getElementById('trail').getContext('2d', {alpha:true});
-  let DPR=1, W=0, H=0;
-  function resize(){
-    DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
-    W = wavesCtx.canvas.width  = trailCtx.canvas.width  = Math.floor(innerWidth  * DPR);
-    H = wavesCtx.canvas.height = trailCtx.canvas.height = Math.floor(innerHeight * DPR);
-    wavesCtx.setTransform(DPR,0,0,DPR,0,0);
-    trailCtx.setTransform(DPR,0,0,DPR,0,0);
-  }
-  resize();
-  addEventListener('resize', resize, {passive:true});
-  let t=0, px=innerWidth/2, py=innerHeight/2, tx=px, ty=py, visible=true;
-  document.addEventListener('visibilitychange', ()=>{ visible=!document.hidden; });
-  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
-  addEventListener('touchstart',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
-  addEventListener('touchmove', e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
-  (function drawWaves(){
-    if(visible){
-      t+=0.008;
-      wavesCtx.clearRect(0,0,innerWidth,innerHeight);
-      for(let k=0;k<3;k++){
-        const amp=(40+k*16)*(0.86+0.14*Math.cos(t*0.7+k*.2));
-        const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(t*1.2+k)*18;
-        wavesCtx.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){
-          const y=y0+Math.sin(x*freq+t*2+k+Math.sin(t*0.6+k)*.3)*amp;
-          x?wavesCtx.lineTo(x,y):wavesCtx.moveTo(x,y);
-        }
-        const g=wavesCtx.createLinearGradient(0,y0-amp,0,y0+amp);
-        g.addColorStop(0,'rgba(120,170,255,.10)');
-        g.addColorStop(.5,'rgba(230,199,119,.22)');
-        g.addColorStop(1,'rgba(120,170,255,.10)');
-        wavesCtx.strokeStyle=g; wavesCtx.lineWidth=2; wavesCtx.stroke();
-      }
+    if(isHybrid){
+      poemKo.style.display='block'; poemEn.style.display='block';
+      if(poemKoBtn) poemKoBtn.classList.remove('active');
+      if(poemEnBtn) poemEnBtn.classList.remove('active');
+      return;
     }
-    requestAnimationFrame(drawWaves);
-  })();
-  (function drawTrail(){
-    trailCtx.fillStyle='rgba(0,0,0,.14)';
-    trailCtx.fillRect(0,0,innerWidth,innerHeight);
-    px += (tx-px)*0.15; py += (ty-py)*0.15;
-    const speed = Math.hypot(tx-px, ty-py);
-    const r = 90 + Math.min(speed*160, 240);
-    const g = trailCtx.createRadialGradient(px,py,0, px,py,r);
-    g.addColorStop(0, 'rgba(140,185,255,.36)');
-    g.addColorStop(.55,'rgba(140,185,255,.16)');
-    g.addColorStop(1, 'rgba(140,185,255,0)');
-    trailCtx.fillStyle=g; trailCtx.beginPath(); trailCtx.arc(px,py,r,0,Math.PI*2); trailCtx.fill();
-    requestAnimationFrame(drawTrail);
-  })();
+    if(poemKoBtn && poemKoBtn.classList.contains('active')){ poemKo.style.display='block'; poemEn.style.display='none'; }
+    else { poemKo.style.display='none'; poemEn.style.display='block'; }
+  }
+  if(poemKoBtn && poemEnBtn){
+    poemKoBtn.addEventListener('click',()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
+    poemEnBtn.addEventListener('click',()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
+  }
 
-  /* ===== Works (5×20) ===== */
+  // ===== Works (5×20) 동적 렌더 + lazy
   const sections=[
-    {key:'pray',  title:'우리를 위해 기도해 주세요 · Pray for Us'},
-    {key:'human', title:'인간 · Human Being'},
-    {key:'rebirth',title:'Rebirth'},
-    {key:'exist', title:'Existence'},
-    {key:'cosmos',title:'Cosmos'}
+    {key:'pray',  title:'우리를 위해 기도해 주세요 — Pray for us'},
+    {key:'human', title:'인간 — Human Being'},
+    {key:'rebirth',title:'정신의 재탄생 — Rebirth of Mind'},
+    {key:'exist', title:'존재의 회복 — The Restoration of Being'},
+    {key:'cosmos',title:'빛의 초의식 — The Metaconsciousness of Light'}
   ];
   function cardHTML(sec,i){
     return `
@@ -402,224 +445,132 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function renderPanel(sec){
     const p=document.getElementById('panel-'+sec.key);
-    p.innerHTML=\`<div class="grid">\${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>\`;
+    if(!p) return;
+    p.innerHTML=`<div class="grid">${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>`;
   }
   sections.forEach(renderPanel);
-  /* lazy loading */
-  const io=new IntersectionObserver(es=>{
-    es.forEach(e=>{
-      if(e.isIntersecting){
-        const img=e.target; img.src=img.dataset.src; img.removeAttribute('data-src');
-        img.closest('.card').classList.add('visible'); io.unobserve(img);
-      }
-    });
-  },{rootMargin:'220px'});
-  document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
-  /* tabs */
-  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
-    const key=b.dataset.panel; document.getElementById('panel-'+key).classList.add('active');
-  }));
 
-  /* ===== Reports accordion & site-language sync ===== */
-  function syncAccordionLang(){
-    const acc=document.getElementById('dcarAcc');
-    if(!acc) return;
-    const isKo=document.body.classList.contains('korean');
-    const isHy=document.body.classList.contains('hybrid');
-    acc.querySelectorAll('.accordion-item').forEach(item=>{
-      const ko=item.querySelectorAll('.accordion-content.ko');
-      const en=item.querySelectorAll('.accordion-content.en');
-      if(isHy){ko.forEach(el=>el.style.display='block');en.forEach(el=>el.style.display='block');}
-      else {ko.forEach(el=>el.style.display=isKo?'block':'none');en.forEach(el=>el.style.display=isKo?'none':'block');}
-    });
-  }
-  document.querySelectorAll('#dcarAcc .accordion-header')
-    .forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
-
-  /* ===== Lightbox + Zoom/Pan ===== */
-  const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
-  const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
-  let cur={key:'pray',i:1}; let zoom=1, imgX=0, imgY=0, dragging=false, startX=0, startY=0;
-  function openLightbox(key,i){
-    cur={key,i};
-    const src=`works/${key}/${i}.jpg`;
-    lbImg.classList.remove('zoomed');
-    lbImg.style.transform='translate(0px,0px) scale(1)';
-    zoom=1; imgX=0; imgY=0;
-    lbImg.src=src; cap.textContent=`${key} · ${i}`;
-    lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
-  }
-  document.addEventListener('click',e=>{
-    const card=e.target.closest('.card'); if(!card) return;
-    openLightbox(card.dataset.sec, parseInt(card.dataset.idx,10));
-  });
-  lbImg.addEventListener('click',()=>{
-    if(zoom===1){zoom=2; lbImg.classList.add('zoomed'); lbImg.style.cursor='grab';}
-    else {zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';}
-    applyTransform();
-  });
-  function applyTransform(){ lbImg.style.transform=`translate(${imgX}px,${imgY}px) scale(${zoom})`; }
-  lbImg.addEventListener('mousedown',e=>{ if(zoom===1) return; dragging=true; startX=e.clientX - imgX; startY=e.clientY - imgY; lbImg.style.cursor='grabbing';});
-  window.addEventListener('mousemove',e=>{ if(!dragging) return; imgX=e.clientX - startX; imgY=e.clientY - startY; applyTransform();});
-  window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; lbImg.style.cursor='grab'; }});
-  lbImg.addEventListener('touchstart',e=>{ if(zoom===1) return; const t=e.touches[0]; dragging=true; startX=t.clientX - imgX; startY=t.clientY - imgY;},{passive:true});
-  lbImg.addEventListener('touchmove',e=>{ if(!dragging) return; const t=e.touches[0]; imgX=t.clientX - startX; imgY=t.clientY - startY; applyTransform();},{passive:true});
-  lbImg.addEventListener('touchend',()=>{dragging=false});
-  function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
-  btnPrev.addEventListener('click',()=>step(-1));
-  btnNext.addEventListener('click',()=>step(1));
-  btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
-  lb.addEventListener('click',e=>{if(e.target===lb) btnClose.click();});
-  addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') btnClose.click(); if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
-
-  /* ===== Cosmic Resonance (small, transparent) ===== */
-  const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');
-  let ac=null, nodes=null, soundOn=false;
-  function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
-  function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
-  function startSound(){
-    if(soundOn) return;
-    ac=new (window.AudioContext||window.webkitAudioContext)();
-    const base=mkOsc('sine',47.0), baseGain=mkGain(0.08);
-    const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.04);
-    const shimmer1=mkOsc('sine',561), shimmer2=mkOsc('sine',703), shimGain=mkGain(0.006);
-    const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.04); lfo.connect(lfoGain).connect(baseGain.gain);
-    const filter=ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
-    const delay=ac.createDelay(6.0); delay.delayTime.value=2.7; const fb=mkGain(0.28); delay.connect(fb).connect(delay);
-    base.connect(baseGain).connect(filter);
-    sub1.connect(subGain).connect(filter); sub2.connect(subGain).connect(filter);
-    shimmer1.connect(shimGain).connect(filter); shimmer2.connect(shimGain).connect(filter);
-    filter.connect(delay).connect(ac.destination); filter.connect(ac.destination);
-    [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>o.start());
-    filter.frequency.linearRampToValueAtTime(1200, ac.currentTime+5);
-    nodes={base,sub1,sub2,shimmer1,shimmer2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
-    soundOn=true; btnPlay.disabled=true; btnStop.disabled=false;
-  }
-  function stopSound(){
-    if(!soundOn || !nodes) return;
-    const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shimmer1,shimmer2,lfo}=nodes;
-    baseGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-    subGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-    shimGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
-    filter.frequency.linearRampToValueAtTime(120, ac.currentTime+2.2);
-    setTimeout(()=>{[base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null;},2300);
-    soundOn=false; btnPlay.disabled=false; btnStop.disabled=true;
-  }
-  btnPlay.addEventListener('click', startSound);
-  btnStop.addEventListener('click', stopSound);
-});
-</script> <!-- ===== DUNGZAK CESTLAVIE · Lightflow Ω.5 — Stable Interactive Core ===== -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  /* ===== Language Toggle ===== */
-  const koBtn=document.getElementById('koBtn');
-  const enBtn=document.getElementById('enBtn');
-  const hyBtn=document.getElementById('hyBtn');
-  function setLang(lang){
-    document.body.classList.remove('korean','english','hybrid');
-    if(lang==='ko') document.body.classList.add('korean');
-    else if(lang==='en') document.body.classList.add('english');
-    else document.body.classList.add('hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
-    localStorage.setItem('dz_lang',lang);
-    updatePoem();
-    syncAccordionLang();
-  }
-  if(koBtn) koBtn.onclick=()=>setLang('ko');
-  if(enBtn) enBtn.onclick=()=>setLang('en');
-  if(hyBtn) hyBtn.onclick=()=>setLang('hy');
-  const saved=localStorage.getItem('dz_lang');
-  setLang(saved ? saved : ((navigator.language||'en').toLowerCase().startsWith('ko')?'ko':'en'));
-
-  /* ===== Poem Language Local Toggle ===== */
-  const poemKoBtn=document.getElementById('poemKoBtn');
-  const poemEnBtn=document.getElementById('poemEnBtn');
-  const poemKo=document.querySelector('.poem-ko');
-  const poemEn=document.querySelector('.poem-en');
-  function updatePoem(){
-    if(!poemKo||!poemEn) return;
-    const isHybrid=document.body.classList.contains('hybrid');
-    if(isHybrid){poemKo.style.display='block';poemEn.style.display='block';return;}
-    if(poemKoBtn?.classList.contains('active')){poemKo.style.display='block';poemEn.style.display='none';}
-    else {poemKo.style.display='none';poemEn.style.display='block';}
-  }
-  if(poemKoBtn && poemEnBtn){
-    poemKoBtn.onclick=()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();};
-    poemEnBtn.onclick=()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();};
-  }
-
-  /* ===== DCAR Accordion ===== */
-  function syncAccordionLang(){
-    const acc=document.getElementById('dcarAcc');
-    if(!acc) return;
-    const isKo=document.body.classList.contains('korean');
-    const isHy=document.body.classList.contains('hybrid');
-    acc.querySelectorAll('.accordion-item').forEach(item=>{
-      const ko=item.querySelectorAll('.accordion-content.ko');
-      const en=item.querySelectorAll('.accordion-content.en');
-      if(isHy){ko.forEach(el=>el.style.display='block');en.forEach(el=>el.style.display='block');}
-      else {ko.forEach(el=>el.style.display=isKo?'block':'none');
-            en.forEach(el=>el.style.display=isKo?'none':'block');}
-    });
-  }
-  document.querySelectorAll('#dcarAcc .accordion-header')
-    .forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
-
-  /* ===== Cosmic Resonance Sound ===== */
-  const playBtn=document.getElementById('cosmicPlay');
-  const stopBtn=document.getElementById('cosmicStop');
-  const audio=document.getElementById('cosmicAudio');
-  if(audio && playBtn && stopBtn){
-    playBtn.onclick=()=>{audio.volume=0.4;audio.play();};
-    stopBtn.onclick=()=>{audio.pause();audio.currentTime=0;};
-  }
-
-  /* ===== Works Tabs ===== */
-  const tabs=document.querySelectorAll('.tabbtn');
-  const panels=document.querySelectorAll('.tabpanel');
-  tabs.forEach((t,i)=>{
-    t.addEventListener('click',()=>{
-      tabs.forEach(b=>b.classList.remove('active'));
-      t.classList.add('active');
-      panels.forEach(p=>p.style.display='none');
-      panels[i].style.display='block';
-    });
-  });
-
-  /* ===== Lightbox Viewer ===== */
-  const imgs=document.querySelectorAll('.gallery img');
-  const lightbox=document.getElementById('lightbox');
-  const lightImg=document.getElementById('lightImg');
-  if(lightbox && lightImg){
-    imgs.forEach(img=>{
-      img.addEventListener('click',()=>{
-        lightImg.src=img.src;
-        lightbox.classList.add('show');
+  // lazy loading + 카드 페이드인
+  try{
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{
+        if(e.isIntersecting){
+          const img=e.target; if(img.dataset.src){ img.src=img.dataset.src; img.removeAttribute('data-src'); }
+          const card=img.closest('.card'); if(card) card.classList.add('visible');
+          io.unobserve(img);
+        }
       });
-    });
-    lightbox.addEventListener('click',()=>lightbox.classList.remove('show'));
-  }
+    },{rootMargin:'220px'});
+    document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
+  }catch(e){ debug('IntersectionObserver '+e); }
 
-  /* ===== Lazy Loading ===== */
-  const lazyImgs=document.querySelectorAll('img[data-src]');
-  const observer=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        const img=e.target;
-        img.src=img.dataset.src;
-        img.removeAttribute('data-src');
-        observer.unobserve(img);
-      }
+  // 탭 전환
+  document.querySelectorAll('.tabs .tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+      const key=b.dataset.panel; const panel=document.getElementById('panel-'+key); if(panel) panel.classList.add('active');
     });
   });
-  lazyImgs.forEach(img=>observer.observe(img));
 
-});
+  // ===== Reports accordion & site-language sync
+  function syncAccordionLang(){
+    const acc=document.getElementById('dcarAcc'); if(!acc) return;
+    const isKo=document.body.classList.contains('korean');
+    const isHy=document.body.classList.contains('hybrid');
+    acc.querySelectorAll('.accordion-item').forEach(item=>{
+      const ko=item.querySelectorAll('.accordion-content.ko');
+      const en=item.querySelectorAll('.accordion-content.en');
+      if(isHy){ ko.forEach(el=>el.style.display='block'); en.forEach(el=>el.style.display='block'); }
+      else { ko.forEach(el=>el.style.display=isKo?'block':'none'); en.forEach(el=>el.style.display=isKo?'none':'block'); }
+    });
+  }
+  document.querySelectorAll('#dcarAcc .accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
+
+  // ===== Lightbox + Zoom/Pan
+  (function(){
+    const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
+    const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
+    if(!lb || !lbImg) return;
+    let cur={key:'pray',i:1}; let zoom=1, imgX=0, imgY=0, dragging=false, sx=0, sy=0;
+    function apply(){ lbImg.style.transform=`translate(${imgX}px,${imgY}px) scale(${zoom})`; }
+    function openLightbox(key,i){
+      cur={key,i}; zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';
+      lbImg.style.transform='translate(0px,0px) scale(1)';
+      lbImg.src=`works/${key}/${i}.jpg`; cap.textContent=`${key} · ${i}`;
+      lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
+    }
+    document.addEventListener('click',e=>{
+      const card=e.target.closest('.card'); if(!card) return;
+      openLightbox(card.dataset.sec, parseInt(card.dataset.idx,10));
+    });
+    lbImg.addEventListener('click',()=>{
+      if(zoom===1){zoom=2; lbImg.classList.add('zoomed'); lbImg.style.cursor='grab';}
+      else {zoom=1; imgX=imgY=0; lbImg.classList.remove('zoomed'); lbImg.style.cursor='zoom-in';}
+      apply();
+    });
+    lb.addEventListener('click',e=>{ if(e.target===lb) { lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); }});
+    function step(d){ let i=cur.i+d; if(i<1) i=20; if(i>20) i=1; openLightbox(cur.key,i); }
+    if(btnPrev) btnPrev.addEventListener('click',()=>step(-1));
+    if(btnNext) btnNext.addEventListener('click',()=>step(1));
+    if(btnClose) btnClose.addEventListener('click',()=>{lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');});
+    lbImg.addEventListener('mousedown',e=>{ if(zoom===1) return; dragging=true; sx=e.clientX-imgX; sy=e.clientY-imgY; lbImg.style.cursor='grabbing';});
+    window.addEventListener('mousemove',e=>{ if(!dragging) return; imgX=e.clientX-sx; imgY=e.clientY-sy; apply();});
+    window.addEventListener('mouseup',()=>{ if(dragging){ dragging=false; if(zoom>1) lbImg.style.cursor='grab'; }});
+    lbImg.addEventListener('touchstart',e=>{ if(zoom===1) return; const t=e.touches[0]; dragging=true; sx=t.clientX-imgX; sy=t.clientY-imgY;},{passive:true});
+    lbImg.addEventListener('touchmove',e=>{ if(!dragging) return; const t=e.touches[0]; imgX=t.clientX-sx; imgY=t.clientY-sy; apply();},{passive:true});
+    lbImg.addEventListener('touchend',()=>{ dragging=false; });
+    addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.key==='Escape') {lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');} if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1);});
+  })();
+
+  // ===== Cosmic Resonance (WebAudio, iOS 정책 대응)
+  (function(){
+    const playBtn=document.getElementById('soundBtn');
+    const stopBtn=document.getElementById('soundStopBtn');
+    if(!playBtn || !stopBtn) return;
+    let ac=null, nodes=null, soundOn=false;
+    function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
+    function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
+    function startSound(){
+      try{
+        if(soundOn) return;
+        ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+        if(ac.state==='suspended') ac.resume(); // iOS: 사용자 제스처 직후 resume
+        const base=mkOsc('sine',47.0), baseGain=mkGain(0.08);
+        const sub1=mkOsc('sine',31.3), sub2=mkOsc('sine',62.7), subGain=mkGain(0.04);
+        const shimmer1=mkOsc('sine',561), shimmer2=mkOsc('sine',703), shimGain=mkGain(0.006);
+        const lfo=mkOsc('sine',0.055), lfoGain=mkGain(0.04); lfo.connect(lfoGain).connect(baseGain.gain);
+        const filter=ac.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=650; filter.Q.value=0.9;
+        const delay=ac.createDelay(6.0); delay.delayTime.value=2.7; const fb=mkGain(0.28); delay.connect(fb).connect(delay);
+        base.connect(baseGain).connect(filter);
+        sub1.connect(subGain).connect(filter); sub2.connect(subGain).connect(filter);
+        shimmer1.connect(shimGain).connect(filter); shimmer2.connect(shimGain).connect(filter);
+        filter.connect(delay).connect(ac.destination); filter.connect(ac.destination);
+        [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>o.start());
+        filter.frequency.linearRampToValueAtTime(1200, ac.currentTime+5);
+        nodes={base,sub1,sub2,shimmer1,shimmer2,lfo,baseGain,subGain,shimGain,filter,delay,fb};
+        soundOn=true; playBtn.disabled=true; stopBtn.disabled=false;
+      }catch(e){ debug('sound start '+e); }
+    }
+    function stopSound(){
+      try{
+        if(!soundOn || !nodes) return;
+        const {baseGain,subGain,shimGain,filter,base,sub1,sub2,shimmer1,shimmer2,lfo}=nodes;
+        baseGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+        subGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+        shimGain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+2.2);
+        filter.frequency.linearRampToValueAtTime(120, ac.currentTime+2.2);
+        setTimeout(()=>{ [base,sub1,sub2,shimmer1,shimmer2,lfo].forEach(o=>{try{o.stop()}catch{}}); nodes=null; },2300);
+        soundOn=false; playBtn.disabled=false; stopBtn.disabled=true;
+      }catch(e){ debug('sound stop '+e); }
+    }
+    playBtn.addEventListener('click', startSound, {passive:true});
+    stopBtn.addEventListener('click',  stopSound,  {passive:true});
+  })();
+
+})();
 </script>
-<!-- ===== END of Lightflow Ω.5 Core ===== -->
+<!-- ===== /Stable Core ===== -->
 </body>
 </html>

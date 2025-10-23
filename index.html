@@ -10,6 +10,7 @@
 <meta property="og:description" content="Light · Memory · Being · 100 Works · DCAR Reports">
 <meta property="og:url" content="https://dungzak.art">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+
 <style>
 :root{
   --bg:#0b1020;--fg:#e9efff;--gold:#e6c777;--muted:#a6b6e8;
@@ -27,10 +28,12 @@ body{
 #trail{z-index:1;opacity:.55;mix-blend-mode:screen}
 
 /* Header */
-header{position:fixed;top:0;left:0;right:0;z-index:6;
-display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
-padding:calc(8px+env(safe-area-inset-top)) 12px 10px;
-background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+header{
+  position:fixed;top:0;left:0;right:0;z-index:6;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 10px;
+  background:rgba(10,14,28,.70);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);
+}
 .brand{font-weight:900;color:var(--gold);font-size:clamp(16px,5vw,22px);flex:1 1 100%;text-align:center}
 nav.primary{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
 nav.primary a{color:var(--fg);text-decoration:none;font-weight:600;padding:6px 10px;border-radius:10px;white-space:nowrap}
@@ -83,6 +86,36 @@ h1,h2{color:var(--gold)}
 .accordion-content{display:none;background:#0b1020;padding:12px 16px;color:#cfe0ff}
 .accordion-item.active .accordion-content{display:block}
 
+/* Cosmic Resonance Controls (투명 + 링크 방해 없음) */
+#ctrl{
+  position:fixed;
+  left:50%;
+  bottom:calc(90px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:9;
+  display:flex;
+  gap:8px;
+  pointer-events:none;
+}
+.ctrlbtn{
+  width:36px;height:36px;
+  border-radius:50%;
+  border:1px solid rgba(230,199,119,.25);
+  background:rgba(12,19,48,.35);
+  color:#f1f6ff;
+  box-shadow:0 0 8px rgba(120,170,255,.2);
+  backdrop-filter:blur(6px);
+  cursor:pointer;
+  pointer-events:auto;
+  transition:all .25s ease;
+}
+.ctrlbtn:hover{
+  background:rgba(22,29,58,.6);
+  color:var(--gold);
+  box-shadow:0 0 14px rgba(243,201,105,.3);
+}
+.ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
+
 /* Footer */
 footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px 12px 64px;background:#090f22}
 .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
@@ -90,30 +123,23 @@ footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px
 .links a:hover{color:var(--gold)}
 small{display:block;margin-top:8px;color:#9fb0d8}
 
-/* Language */
+/* Language visibility */
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
 </style>
 </head>
-<body class="korean">
 
-<!-- Light layers -->
-<canvas id="waves" aria-hidden="true"></canvas>
-<canvas id="trail" aria-hidden="true"></canvas>
+<body class="korean">
+<canvas id="waves"></canvas>
+<canvas id="trail"></canvas>
 
 <header>
   <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.5</div>
   <nav class="primary">
-    <a href="#poem">Poem</a>
-    <a href="#bio">Bio</a>
-    <a href="#works">Works</a>
-    <a href="#reports">Reports</a>
+    <a href="#poem">Poem</a><a href="#bio">Bio</a><a href="#works">Works</a><a href="#reports">Reports</a>
   </nav>
-  <div class="lang">
-    <button id="koBtn" class="active">KR</button>
-    <button id="enBtn">EN</button>
-  </div>
+  <div class="lang"><button id="koBtn" class="active">KR</button><button id="enBtn">EN</button></div>
 </header>
 
 <main>
@@ -122,15 +148,11 @@ body.english .en{display:initial}
     <h1 class="ko">빛 · 기억 · 존재</h1>
     <h1 class="en">Light · Memory · Being</h1>
     <p class="ko">등작과 루메라의 지휘로 — 등작 DUNGZAK CESTLAVIE</p>
-    <p class="en">Conducted by DUNGZAK & Lumera — DUNGZAK CESTLAVIE</p>
-
+    <p class="en">Conducted by DUNGZAK and Lumera — DUNGZAK CESTLAVIE</p>
     <div class="poem-wrap">
       <div class="poem-head">
         <div class="poem-title">〈파리의 센느강〉 / The Seine of Paris</div>
-        <div id="poemToggle">
-          <button id="poemKoBtn" class="active">KR</button>
-          <button id="poemEnBtn">EN</button>
-        </div>
+        <div id="poemToggle"><button id="poemKoBtn" class="active">KR</button><button id="poemEnBtn">EN</button></div>
       </div>
       <div class="poem">
         <div class="poem-ko">
@@ -147,13 +169,14 @@ body.english .en{display:initial}
           <p>흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어 멈춤 속에 영원을 새긴다.</p>
         </div>
         <div class="poem-en" style="display:none">
-          <p>Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow —</p>
+          <p>Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
           <p>People who live with humble dreams gather to dance.</p>
           <p>Their circling steps weave harmonies upon the rhythm of their feet,</p>
           <p>As violins scatter blue and golden light, laughing in brilliance.</p>
-          <p>Dreaming women and men clasp hands, breathing the scent of humanity, surrendering to the swift rhythm.</p>
-          <p>The tree where Adam and Eve’s star-prints fall like tears, and in that scene a crescent moon spills a lovely white smile.</p>
-          <p>Sharak, sharak — as the figure of the dance expands, even onlookers sway aware of love’s gentle kiss.</p>
+          <p>Dreaming women and men clasp hands, breathe the scent of humanity, and yield to the rhythm.</p>
+          <p>The tree where Adam and Eve’s star-prints fall like tears,</p>
+          <p>and in that scene a crescent moon spills a lovely white smile.</p>
+          <p>Sharak, sharak— as the dance expands, even onlookers sway with love’s gentle kiss.</p>
           <p>Within the layered flow of time, they become a taxidermy of the soul, inscribing eternity in stillness.</p>
         </div>
       </div>
@@ -161,21 +184,14 @@ body.english .en{display:initial}
 </section>
 
 <section id="bio">
-  <h2 class="ko">작가 소개</h2>
-  <h2 class="en">Artist Bio</h2>
+  <h2 class="ko">작가 소개</h2><h2 class="en">Artist Bio</h2>
   <p class="ko">빛의 철학과 인간의 감정을 화폭에 담는 현대 예술가. DCAR(1–8)로 철학·뇌과학·예술을 융합한다.</p>
   <p class="en">A contemporary artist exploring the philosophy of light and human feeling. The DCAR series unites philosophy, neuroscience, and art.</p>
 </section>
 
 <section id="works">
   <h2>Artworks — 작품 아카이브 (100)</h2>
-  <div class="tabs">
-    <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-    <button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-    <button class="tab" data-panel="rebirth">Ⅲ Rebirth</button>
-    <button class="tab" data-panel="exist">Ⅳ Existence</button>
-    <button class="tab" data-panel="cosmos">Ⅴ Cosmos</button>
-  </div>
+  <div class="tabs"><button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button><button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button><button class="tab" data-panel="rebirth">Ⅲ Rebirth</button><button class="tab" data-panel="exist">Ⅳ Existence</button><button class="tab" data-panel="cosmos">Ⅴ Cosmos</button></div>
   <div id="panel-pray" class="tabpanel active"></div>
   <div id="panel-human" class="tabpanel"></div>
   <div id="panel-rebirth" class="tabpanel"></div>
@@ -184,17 +200,16 @@ body.english .en{display:initial}
 </section>
 
 <section id="reports">
-  <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2>
-  <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+  <h2 class="ko">미학 보고서 (DCAR 시리즈)</h2><h2 class="en">Aesthetic Reports (DCAR Series)</h2>
   <div class="accordion">
-    <div class="accordion-item"><div class="accordion-header">DCAR-01-2025 · 존재의 회복 The Restoration of Being</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-02-2025 · 기억의 윤리 The Ethics of Memory</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 The Rebirth of Mind</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-04-2025 · 빛의 상흔 The Scars of Light</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-05-2025 · 빛의 초의식 The Metaconsciousness of Light</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-06-2025 · 존재의 기도 The Prayer of Being</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-07-2025 · 시간의 기억 The Memory of Time</div><div class="accordion-content"></div></div>
-    <div class="accordion-item"><div class="accordion-header">DCAR-08-2025 · 존재의 회향 The Return of Being</div><div class="accordion-content"></div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-01-2025 · 존재의 회복 · The Restoration of Being</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-02-2025 · 기억의 윤리 · The Ethics of Memory</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 · The Rebirth of Mind</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-04-2025 · 빛의 상흔 · The Scars of Light</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-05-2025 · 빛의 초의식 · The Metaconsciousness of Light</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-06-2025 · 존재의 기도 · The Prayer of Being</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-07-2025 · 시간의 기억 · The Memory of Time</div></div>
+    <div class="accordion-item"><div class="accordion-header">DCAR-08-2025 · 존재의 회향 · The Return of Being</div></div>
   </div>
 </section>
 </main>
@@ -208,7 +223,7 @@ body.english .en{display:initial}
     <a href="mailto:dungzakcestlavie@gmail.com">✉️ Email</a>
   </div>
   <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE · 등작과 루메라의 지휘로</small>
-  <small class="en">© 2025 DUNGZAK CESTLAVIE · Conducted by DUNGZAK & Lumera</small>
+  <small class="en">© 2025 DUNGZAK CESTLAVIE · Conducted by DUNGZAK and Lumera</small>
 </footer>
 
 <!-- Cosmic Resonance controls -->
@@ -219,145 +234,4 @@ body.english .en{display:initial}
 
 <script>
 /* ===== Language toggle ===== */
-const koBtn=document.getElementById('koBtn'),enBtn=document.getElementById('enBtn');
-function setLang(l){document.body.classList.toggle('korean',l==='ko');document.body.classList.toggle('english',l==='en');
-koBtn.classList.toggle('active',l==='ko');enBtn.classList.toggle('active',l==='en');localStorage.setItem('dz_lang',l);}
-koBtn.onclick=()=>setLang('ko');enBtn.onclick=()=>setLang('en');
-const savedLang=localStorage.getItem('dz_lang');if(savedLang){setLang(savedLang);}else{setLang(navigator.language
-
-/* ===== Language toggle (continued) ===== */
-const savedLang=localStorage.getItem('dz_lang');
-if(savedLang){setLang(savedLang);}else{setLang(navigator.language.startsWith('ko')?'ko':'en');}
-
-/* ===== Poem toggle ===== */
-const poemKoBtn=document.getElementById('poemKoBtn'),
-      poemEnBtn=document.getElementById('poemEnBtn'),
-      poemKo=document.querySelector('.poem-ko'),
-      poemEn=document.querySelector('.poem-en');
-poemKoBtn.onclick=()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');
-  poemKo.style.display='block';poemEn.style.display='none';};
-poemEnBtn.onclick=()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');
-  poemKo.style.display='none';poemEn.style.display='block';};
-
-/* ===== Lightflow (waves + trail) ===== */
-const waves=document.getElementById('waves').getContext('2d');
-const trail=document.getElementById('trail').getContext('2d');
-function rs(){waves.canvas.width=trail.canvas.width=innerWidth;
-  waves.canvas.height=trail.canvas.height=innerHeight;}
-rs();addEventListener('resize',rs);
-let t=0,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py;
-function anim(){
-  t+=.008;waves.clearRect(0,0,innerWidth,innerHeight);
-  for(let k=0;k<3;k++){
-    const amp=(40+k*16)*(0.86+0.14*Math.cos(t*0.7+k*.2));
-    const freq=.006+k*.0025,y0=innerHeight*.3+k*110+Math.sin(t*1.2+k)*18;
-    waves.beginPath();
-    for(let x=0;x<=innerWidth;x+=6){
-      const y=y0+Math.sin(x*freq+t*2+k+Math.sin(t*0.6+k)*.3)*amp;
-      x?waves.lineTo(x,y):waves.moveTo(x,y);
-    }
-    const g=waves.createLinearGradient(0,y0-amp,0,y0+amp);
-    g.addColorStop(0,'rgba(120,170,255,.08)');
-    g.addColorStop(.5,'rgba(217,182,93,.18)');
-    g.addColorStop(1,'rgba(120,170,255,.08)');
-    waves.strokeStyle=g;waves.lineWidth=2;waves.stroke();
-  }
-  requestAnimationFrame(anim);
-}
-anim();
-addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY});
-function animTrail(){
-  const dx=(tx-px)*.15,dy=(ty-py)*.15;px+=dx;py+=dy;
-  trail.fillStyle='rgba(0,0,0,.12)';trail.fillRect(0,0,innerWidth,innerHeight);
-  const r=90+Math.min(Math.hypot(dx,dy)*140,220);
-  const g=trail.createRadialGradient(px,py,0,px,py,r);
-  g.addColorStop(0,'rgba(120,170,255,.30)');
-  g.addColorStop(1,'rgba(120,170,255,0)');
-  trail.fillStyle=g;trail.beginPath();trail.arc(px,py,r,0,Math.PI*2);
-  trail.fill();requestAnimationFrame(animTrail);
-}
-animTrail();
-
-/* ===== Works (5×20 grid) ===== */
-const sections=[
-  {key:'pray',title:'우리를 위해 기도해 주세요 · Pray for Us'},
-  {key:'human',title:'인간 · Human Being'},
-  {key:'rebirth',title:'Rebirth'},
-  {key:'exist',title:'Existence'},
-  {key:'cosmos',title:'Cosmos'}
-];
-function cardHTML(sec,i){
-  return `<article class="card" data-sec="${sec.key}" data-idx="${i}">
-  <img data-src="works/${sec.key}/${i}.jpg" alt="${sec.title} ${i}">
-  <div class="caption">${sec.title} · ${i}</div>
-  <div class="meta">${sec.title} · ${i} · 2025 · Mixed Media · 90×90cm</div>
-  </article>`;
-}
-sections.forEach(sec=>{
-  const panel=document.getElementById('panel-'+sec.key);
-  panel.innerHTML=`<div class="grid">${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>`;
-});
-const io=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting){
-    const img=e.target;img.src=img.dataset.src;
-    img.closest('.card').classList.add('visible');io.unobserve(img);
-  }
-}),{rootMargin:'200px'});
-document.querySelectorAll('img[data-src]').forEach(img=>io.observe(img));
-
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+b.dataset.panel).classList.add('active');
-});
-
-/* ===== Accordion (DCAR Series) ===== */
-document.querySelectorAll('.accordion-header').forEach(h=>{
-  h.onclick=()=>{
-    const item=h.parentElement;
-    item.classList.toggle('active');
-  };
-});
-
-/* ===== Lightbox ===== */
-const lb=document.getElementById('lightbox'),
-      lbImg=lb.querySelector('img'),
-      cap=document.getElementById('lbCap');
-let cur={key:'pray',i:1};
-document.addEventListener('click',e=>{
-  const c=e.target.closest('.card');if(!c)return;
-  cur.key=c.dataset.sec;cur.i=+c.dataset.idx;
-  lbImg.src=`works/${cur.key}/${cur.i}.jpg`;
-  cap.textContent=`${cur.key} · ${cur.i}`;
-  lb.classList.add('open');
-});
-lb.addEventListener('click',e=>{
-  if(e.target===lb)lb.classList.remove('open');
-});
-
-/* ===== Cosmic Resonance ===== */
-const btnPlay=document.getElementById('soundBtn'),
-      btnStop=document.getElementById('soundStopBtn');
-let ac,soundOn=false;
-function mkGain(v){const g=ac.createGain();g.gain.value=v;return g;}
-function mkOsc(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o;}
-function startSound(){
-  if(soundOn)return;
-  ac=new AudioContext();
-  const base=mkOsc('sine',47),sub=mkOsc('sine',31.3),sub2=mkOsc('sine',62.7);
-  const gainB=mkGain(0.08),gainS=mkGain(0.04);
-  base.connect(gainB).connect(ac.destination);
-  sub.connect(gainS).connect(ac.destination);
-  sub2.connect(gainS).connect(ac.destination);
-  base.start();sub.start();sub2.start();
-  soundOn=true;btnPlay.disabled=true;btnStop.disabled=false;
-}
-function stopSound(){
-  if(!soundOn)return;
-  ac.close();soundOn=false;btnPlay.disabled=false;btnStop.disabled=true;
-}
-btnPlay.onclick=startSound;btnStop.onclick=stopSound;
-</script>
-</body>
-</html>
+const koBtn=document.getElementById('koBtn

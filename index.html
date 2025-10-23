@@ -69,7 +69,7 @@ h1,h2{color:var(--gold)}
 .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
 .card.visible{opacity:1;transform:translateY(0)}
 .card img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;filter:brightness(1.03)}
-/* 이미지 전용 그리드: meta 숨김, 캡션은 호버 시 */
+/* 이미지 전용 그리드 */
 .card .meta{display:none}
 .caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(12,19,48,0),rgba(12,19,48,.86));padding:10px 12px;color:#e9f1ff;font-size:.82rem;transform:translateY(100%);transition:transform .25s;pointer-events:none}
 .card:hover .caption,.card:focus .caption{transform:translateY(0)}
@@ -100,7 +100,7 @@ footer{border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:48px
 .links a:hover{color:#cbe0ff}
 small{display:block;margin-top:8px;color:#9fb0d8}
 
-/* Cosmic controls: small & transparent (won’t cover footer links) */
+/* Cosmic controls */
 #ctrl{position:fixed;left:50%;bottom:calc(115px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:7;display:flex;gap:8px}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.35);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18);backdrop-filter:blur(6px);transition:all .25s ease;opacity:.9}
 .ctrlbtn:hover{background:rgba(20,26,58,.65);color:var(--gold);box-shadow:0 0 14px rgba(243,201,105,.32)}
@@ -120,11 +120,9 @@ small{display:block;margin-top:8px;color:#9fb0d8}
 .en,.ko{display:none}
 body.korean .ko{display:initial}
 body.english .en{display:initial}
-/* hybrid (KR+EN both) */
 body.hybrid .ko, body.hybrid .en{display:initial}
 body.hybrid .poem-title{display:flex;gap:8px}
 body.hybrid .poem p + p{margin-top:4px}
-
 @media (prefers-reduced-motion: reduce){#waves,#trail{display:none}}
 </style>
 </head>
@@ -332,39 +330,56 @@ function updatePoem(){
 poemKoBtn.addEventListener('click',()=>{poemKoBtn.classList.add('active');poemEnBtn.classList.remove('active');updatePoem();});
 poemEnBtn.addEventListener('click',()=>{poemEnBtn.classList.add('active');poemKoBtn.classList.remove('active');updatePoem();});
 
-/* ===== Lightflow background (waves + trail) ===== */
-const waves=document.getElementById('waves').getContext('2d');
-const trail=document.getElementById('trail').getContext('2d');
-function rs(){waves.canvas.width=trail.canvas.width=innerWidth;waves.canvas.height=trail.canvas.height=innerHeight}
-rs(); addEventListener('resize',rs);
-let tt=0,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,vis=true;
-document.addEventListener('visibilitychange',()=>{vis=!document.hidden});
+/* ===== Lightflow background (waves + trail) — DPR hotfix ===== */
+const wavesCtx = document.getElementById('waves').getContext('2d', {alpha:true});
+const trailCtx = document.getElementById('trail').getContext('2d', {alpha:true});
+let DPR=1, W=0, H=0;
+function resize(){
+  DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
+  W = wavesCtx.canvas.width  = trailCtx.canvas.width  = Math.floor(innerWidth  * DPR);
+  H = wavesCtx.canvas.height = trailCtx.canvas.height = Math.floor(innerHeight * DPR);
+  wavesCtx.setTransform(DPR,0,0,DPR,0,0);
+  trailCtx.setTransform(DPR,0,0,DPR,0,0);
+}
+resize();
+addEventListener('resize', resize, {passive:true});
+let t=0, px=innerWidth/2, py=innerHeight/2, tx=px, ty=py, visible=true;
+document.addEventListener('visibilitychange', ()=>{ visible=!document.hidden; });
+addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+addEventListener('touchstart',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
+addEventListener('touchmove', e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY;},{passive:true});
 (function drawWaves(){
-  if(vis){tt+=.008; waves.clearRect(0,0,innerWidth,innerHeight);
+  if(visible){
+    t+=0.008;
+    wavesCtx.clearRect(0,0,innerWidth,innerHeight);
     for(let k=0;k<3;k++){
-      const amp=(40+k*16)*(0.86+0.14*Math.cos(tt*0.7+k*.2));
-      const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(tt*1.2+k)*18;
-      waves.beginPath();
+      const amp=(40+k*16)*(0.86+0.14*Math.cos(t*0.7+k*.2));
+      const freq=.006+k*.0025, y0=innerHeight*.3+k*110+Math.sin(t*1.2+k)*18;
+      wavesCtx.beginPath();
       for(let x=0;x<=innerWidth;x+=6){
-        const y=y0+Math.sin(x*freq + tt*2 + k + Math.sin(tt*0.6+k)*.3)*amp;
-        x?waves.lineTo(x,y):waves.moveTo(x,y);
+        const y=y0+Math.sin(x*freq+t*2+k+Math.sin(t*0.6+k)*.3)*amp;
+        x?wavesCtx.lineTo(x,y):wavesCtx.moveTo(x,y);
       }
-      const g=waves.createLinearGradient(0,y0-amp,0,y0+amp);
-      g.addColorStop(0,'rgba(120,170,255,.08)'); g.addColorStop(.5,'rgba(217,182,93,.18)'); g.addColorStop(1,'rgba(120,170,255,.08)');
-      waves.strokeStyle=g; waves.lineWidth=2; waves.stroke();
+      const g=wavesCtx.createLinearGradient(0,y0-amp,0,y0+amp);
+      g.addColorStop(0,'rgba(120,170,255,.10)');
+      g.addColorStop(.5,'rgba(230,199,119,.22)');
+      g.addColorStop(1,'rgba(120,170,255,.10)');
+      wavesCtx.strokeStyle=g; wavesCtx.lineWidth=2; wavesCtx.stroke();
     }
   }
   requestAnimationFrame(drawWaves);
 })();
-addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
 (function drawTrail(){
-  const dx=(tx-px)*.15, dy=(ty-py)*.15; px+=dx; py+=dy;
-  trail.fillStyle='rgba(0,0,0,.12)'; trail.fillRect(0,0,innerWidth,innerHeight);
-  const r=90+Math.min(Math.hypot(dx,dy)*140,220);
-  const g=trail.createRadialGradient(px,py,0,px,py,r);
-  g.addColorStop(0,'rgba(120,170,255,.30)'); g.addColorStop(1,'rgba(120,170,255,0)');
-  trail.fillStyle=g; trail.beginPath(); trail.arc(px,py,r,0,Math.PI*2); trail.fill();
+  trailCtx.fillStyle='rgba(0,0,0,.14)';
+  trailCtx.fillRect(0,0,innerWidth,innerHeight);
+  px += (tx-px)*0.15; py += (ty-py)*0.15;
+  const speed = Math.hypot(tx-px, ty-py);
+  const r = 90 + Math.min(speed*160, 240);
+  const g = trailCtx.createRadialGradient(px,py,0, px,py,r);
+  g.addColorStop(0, 'rgba(140,185,255,.36)');
+  g.addColorStop(.55,'rgba(140,185,255,.16)');
+  g.addColorStop(1, 'rgba(140,185,255,0)');
+  trailCtx.fillStyle=g; trailCtx.beginPath(); trailCtx.arc(px,py,r,0,Math.PI*2); trailCtx.fill();
   requestAnimationFrame(drawTrail);
 })();
 
@@ -389,7 +404,6 @@ function renderPanel(sec){
   p.innerHTML=\`<div class="grid">\${Array.from({length:20},(_,i)=>cardHTML(sec,i+1)).join('')}</div>\`;
 }
 sections.forEach(renderPanel);
-
 /* lazy loading */
 const io=new IntersectionObserver(es=>{
   es.forEach(e=>{
@@ -400,7 +414,6 @@ const io=new IntersectionObserver(es=>{
   });
 },{rootMargin:'220px'});
 document.querySelectorAll('img[loading][data-src]').forEach(img=>io.observe(img));
-
 /* tabs */
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
@@ -426,7 +439,6 @@ acc.querySelectorAll('.accordion-header').forEach(h=>h.addEventListener('click',
 const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), cap=document.getElementById('lbCap');
 const btnPrev=lb.querySelector('.lb-prev'), btnNext=lb.querySelector('.lb-next'), btnClose=lb.querySelector('.lb-close');
 let cur={key:'pray',i:1}; let zoom=1, imgX=0, imgY=0, dragging=false, startX=0, startY=0;
-
 function openLightbox(key,i){
   cur={key,i};
   const src=`works/${key}/${i}.jpg`;
@@ -463,7 +475,7 @@ addEventListener('keydown',e=>{ if(!lb.classList.contains('open')) return; if(e.
 const btnPlay=document.getElementById('soundBtn'), btnStop=document.getElementById('soundStopBtn');
 let ac=null, nodes=null, soundOn=false;
 function mkGain(v){const g=ac.createGain(); g.gain.value=v; return g;}
-function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency=value=f; return o;}
+function mkOsc(type,f){const o=ac.createOscillator(); o.type=type; o.frequency.value=f; return o;}
 function startSound(){
   if(soundOn) return;
   ac=new (window.AudioContext||window.webkitAudioContext)();
@@ -496,4 +508,6 @@ btnPlay.addEventListener('click', startSound);
 btnStop.addEventListener('click', stopSound);
 </script>
 </body>
+
+  
 </html>

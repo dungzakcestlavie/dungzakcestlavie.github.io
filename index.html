@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.7.1</title>
-<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.7.1 · Gallery · Aesthetic Reports (DCAR)" />
-<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.7.1" />
+<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.7.2</title>
+<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.7.2 · Gallery · Aesthetic Reports (DCAR)" />
+<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.7.2" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
@@ -70,7 +70,7 @@ h2{margin-bottom:12px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .55s,transform .55s,box-shadow .6s}
 .card.visible{opacity:1;transform:translateY(0)}
 .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
-.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;filter:brightness(1.02)}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 .card .caption{display:none} /* Works는 이미지 전용 */
 
 .note{margin-top:6px;text-align:center;color:#aecdff;opacity:.85}
@@ -81,6 +81,19 @@ h2{margin-bottom:12px}
 .accordion-header{background:#0f1838;color:var(--gold);padding:14px 16px;cursor:pointer;font-weight:700}
 .accordion-content{display:none;background:#0b1020;padding:12px 16px;color:#cfe0ff}
 .accordion-item.active .accordion-content{display:block}
+
+/* Lightbox */
+#lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:opacity .25s}
+#lightbox.on{opacity:1;pointer-events:auto}
+.lb-stage{position:relative;max-width:96vw;max-height:90vh;overflow:hidden;border:2px solid var(--gold);border-radius:12px;background:#000}
+#lbImg{display:block;max-width:100%;max-height:90vh;cursor:zoom-in;transform:translate(0,0) scale(1);transition:transform .2s ease}
+.lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
+.lb-arrow:hover{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
+.lb-prev{left:-60px} .lb-next{right:-60px}
+@media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
+.lb-close{position:absolute;top:-56px;right:0;width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;cursor:pointer}
+.lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
 
 /* footer central links */
 footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 96px}
@@ -113,7 +126,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
-  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.7.1</div>
+  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.7.2</div>
   <nav class="primary" aria-label="Primary">
     <button data-target="poem" class="active">Poem</button>
     <button data-target="works">Works</button>
@@ -136,53 +149,38 @@ body.hybrid .ko,body.hybrid .en{display:initial}
       <p class="en">Conducted by DUNGZAK and Lumera — DUNGZAK CESTLAVIE</p>
 
       <div class="poemwrap">
-        <!-- 제목/작가 -->
         <p class="ko" style="font-weight:700">〈파리의 센느강〉</p>
         <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
         <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
         <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
 
-        <!-- 본문 — 한영 1:1 -->
         <div class="poem">
           <p class="ko">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
           <p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
-
           <p class="ko">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
           <p class="en">People who live with humble dreams gather to dance.</p>
-
           <p class="ko">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
           <p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
-
           <p class="ko">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
           <p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
-
           <p class="ko">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
           <p class="en">Dreaming women and dreaming men clasp hands,</p>
-
           <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
           <p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
-
           <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
           <p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
-
           <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
           <p class="en">In that scene, the crescent moon releases a tender white smile.</p>
-
           <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
           <p class="en">Sharak, sharak— as the rhythm of dance expands,</p>
-
           <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p>
           <p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
-
           <p class="ko">사랑의 입맞춤을 의식한다.</p>
           <p class="en">Becoming aware of love’s gentle kiss.</p>
-
           <p class="ko">흘러감 속에 포개진 순간,</p>
           <p class="en">Within the flowing overlap of time,</p>
-
           <p class="ko">그들은 영혼의 박제가 되어,</p>
           <p class="en">They become taxidermies of the soul,</p>
-
           <p class="ko">멈춤 속에 영원을 새긴다.</p>
           <p class="en">Inscribing eternity into stillness.</p>
         </div>
@@ -272,6 +270,18 @@ body.hybrid .ko,body.hybrid .en{display:initial}
   </section>
 </main>
 
+<!-- Lightbox -->
+<div id="lightbox" aria-hidden="true">
+  <div class="lb-stage">
+    <img id="lbImg" alt="Artwork view">
+    <div class="lb-caption" id="lbCap"></div>
+    <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">◀</button>
+    <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">▶</button>
+  </div>
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <div class="lb-meta" id="lbMeta"></div>
+</div>
+
 <!-- center bottom resonance + tiny fft -->
 <div id="fftBar" aria-hidden="true"><span></span></div>
 <div id="ctrl" aria-label="Prayer Resonance controls">
@@ -293,7 +303,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 
 <script>
 /* =======================
-   Lightflow Ω.7.1 — Core
+   Lightflow Ω.7.2 — Core
    ======================= */
 (function(){
   const $ = (s,sc)=> (sc||document).querySelector(s);
@@ -327,7 +337,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     const waves = $('#waves').getContext('2d',{alpha:true});
     const trail = $('#trail').getContext('2d',{alpha:true});
     let DPR=1,W=0,H=0,visible=true;
-    let t0=performance.now(), px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
+    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
 
     function resize(){
       DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
@@ -356,8 +366,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
 
     function frame(now){
       if(!visible){ requestAnimationFrame(frame); return; }
-      const T = (now/1000)%30;
-      const seg = T/30;
+      const T = (now/1000)%30, seg = T/30;
       const hue = (seg<.5)? 200 + (260-200)*(seg/.5)
                  : (seg<.75)? 260 + (45-260)*((seg-.5)/.25)
                  : 45  + (200-45) * ((seg-.75)/.25);
@@ -404,7 +413,11 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     {key:'cosmos',title:'Metaconsciousness of Light'}
   ];
   function cardHTML(sec,i){
-    return `<article class="card"><img loading="lazy" data-src="works/${sec}/${i}.jpg" alt="${sec} ${i}"><div class="caption"></div></article>`;
+    const alt = `${sec} ${i}`;
+    return `<article class="card" data-sec="${sec}" data-id="${i}">
+      <img loading="lazy" data-src="works/${sec}/${i}.jpg" alt="${alt}">
+      <div class="caption"></div>
+    </article>`;
   }
   function renderPanel(key){
     const host = document.getElementById('panel-'+key);
@@ -435,9 +448,145 @@ body.hybrid .ko,body.hybrid .en{display:initial}
   });
 
   /* Reports accordion */
-  $$('#dcarAcc .accordion-header').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('active')));
+  $$('#dcarAcc .accordion-header').forEach(h=>{
+    const item = h.parentElement;
+    h.addEventListener('click',()=> item.classList.toggle('active'));
+  });
 
-  /* Prayer Resonance v3 */
+  /* -------- Lightbox: click → open, arrows, wheel-zoom, dblclick-zoom, drag-pan, swipe -------- */
+  (function(){
+    const lb = $('#lightbox'), img = $('#lbImg'), cap = $('#lbCap');
+    const prevBtn = $('#lbPrev'), nextBtn = $('#lbNext'), closeBtn = $('#lbClose'), meta = $('#lbMeta');
+    let currentList = []; // {src, alt}
+    let idx = 0;
+    let zoom=1, ox=0, oy=0, sx=0, sy=0, dragging=false;
+
+    function gatherCurrentList(){
+      const activePanel = $('.tabpanel.active') || $('#panel-pray');
+      currentList = $$('.card img', activePanel).map(el=>{
+        const src = el.getAttribute('src') || el.getAttribute('data-src');
+        return {src, alt: el.getAttribute('alt')||''};
+      }).filter(o=>o.src);
+    }
+
+    function openAt(i){
+      if(!currentList.length) return;
+      idx = (i+currentList.length)%currentList.length;
+      const {src, alt} = currentList[idx];
+      img.src = src; img.alt = alt;
+      cap.textContent = alt.replace(/_/g,' ');
+      meta.textContent = `${idx+1} / ${currentList.length}`;
+      zoom=1; ox=oy=0; applyTransform();
+      lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
+    }
+
+    function close(){
+      lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
+    }
+
+    function prev(){ openAt(idx-1); }
+    function next(){ openAt(idx+1); }
+
+    function applyTransform(){ img.style.transform = `translate(${ox}px,${oy}px) scale(${zoom})`; img.style.cursor = zoom>1?'grab':'zoom-in'; }
+
+    // grid click
+    document.addEventListener('click', e=>{
+      const card = e.target.closest('.card');
+      if(!card) return;
+      const activePanel = card.closest('.tabpanel'); // ensure scope
+      if(activePanel && !activePanel.classList.contains('active')) return;
+      gatherCurrentList();
+      const images = $$('.card img', activePanel);
+      const clicked = card.querySelector('img');
+      const i = images.findIndex(el=>(el.getAttribute('src')||el.getAttribute('data-src')) === (clicked.getAttribute('src')||clicked.getAttribute('data-src')));
+      openAt(Math.max(0,i));
+    });
+
+    // controls
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    closeBtn.addEventListener('click', close);
+    lb.addEventListener('click', (e)=>{ if(e.target===lb) close(); });
+
+    // keyboard
+    window.addEventListener('keydown', (e)=>{
+      if(lb.classList.contains('on')){
+        if(e.key==='Escape') close();
+        else if(e.key==='ArrowLeft') prev();
+        else if(e.key==='ArrowRight') next();
+        else if(e.key==='+' || (e.key==='=' && e.shiftKey)) { zoom=Math.min(zoom*1.25,5); applyTransform(); }
+        else if(e.key==='-') { zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0;} applyTransform(); }
+      }
+    });
+
+    // wheel zoom
+    lb.addEventListener('wheel', (e)=>{
+      if(!lb.classList.contains('on')) return;
+      e.preventDefault();
+      const delta = e.deltaY>0 ? 0.9 : 1.1;
+      const prevZoom = zoom;
+      zoom = Math.min(5, Math.max(1, zoom*delta));
+      if(zoom===1){ ox=oy=0; }
+      else{
+        // zoom pivot to cursor
+        const rect = img.getBoundingClientRect();
+        const cx = e.clientX - rect.left - rect.width/2 - ox;
+        const cy = e.clientY - rect.top  - rect.height/2 - oy;
+        ox -= cx*(zoom/prevZoom - 1);
+        oy -= cy*(zoom/prevZoom - 1);
+      }
+      applyTransform();
+    }, {passive:false});
+
+    // double click / double tap zoom
+    let lastTap=0;
+    img.addEventListener('click', (e)=>{
+      const now = performance.now();
+      if(now-lastTap < 300){
+        // double
+        zoom = (zoom===1)? 2 : 1;
+        if(zoom===1){ox=oy=0;}
+        applyTransform();
+      }
+      lastTap = now;
+    });
+
+    // drag pan
+    img.addEventListener('mousedown', e=>{
+      if(zoom===1) return;
+      dragging=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing';
+    });
+    window.addEventListener('mousemove', e=>{
+      if(!dragging) return; ox=e.clientX-sx; oy=e.clientY-sy; applyTransform();
+    });
+    window.addEventListener('mouseup', ()=>{ dragging=false; if(zoom>1) img.style.cursor='grab'; });
+
+    // touch swipe & pan
+    let touchStartX=0,touchStartY=0;
+    lb.addEventListener('touchstart', e=>{
+      if(e.touches.length===1){
+        touchStartX=e.touches[0].clientX;
+        touchStartY=e.touches[0].clientY;
+        if(zoom>1){ dragging=true; sx=touchStartX-ox; sy=touchStartY-oy; }
+      }
+    }, {passive:true});
+    lb.addEventListener('touchmove', e=>{
+      if(e.touches.length!==1) return;
+      const x=e.touches[0].clientX, y=e.touches[0].clientY;
+      if(dragging && zoom>1){ ox=x-sx; oy=y-sy; applyTransform(); }
+    }, {passive:true});
+    lb.addEventListener('touchend', e=>{
+      if(zoom===1){
+        const dx = (e.changedTouches?.[0]?.clientX||0) - touchStartX;
+        const dy = (e.changedTouches?.[0]?.clientY||0) - touchStartY;
+        if(Math.abs(dx) > 60 && Math.abs(dy) < 80){ dx>0 ? prev() : next(); }
+      }
+      dragging=false;
+    });
+
+  })();
+
+  /* Prayer Resonance v3 (stereo + shimmer + tiny FFT) */
   (function(){
     const btn=$('#soundBtn'), stop=$('#soundStopBtn'), bar=$('#fftBar span');
     if(!btn||!stop||!bar) return;
@@ -448,7 +597,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     function O(type,f){const o=ac.createOscillator();o.type=type;o.frequency.value=f;return o;}
 
     function createIR(len=1.8,decay=2.8){
-      const sr=ac.sampleRate, n=sr*len, buf=ac.createBuffer(2,n,sr);
+      const sr=ac.sampleRate, n=Math.floor(sr*len), buf=ac.createBuffer(2,n,sr);
       for(let ch=0; ch<2; ch++){
         const data=buf.getChannelData(ch);
         for(let i=0;i<n;i++){ data[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay); }

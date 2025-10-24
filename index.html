@@ -9,7 +9,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 
 <style>
 :root{
@@ -109,11 +109,11 @@ small{display:block;margin-top:6px;color:#9fb0d8}
 #fftBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden}
 #fftBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9}
 
-/* language visibility */
-.en,.ko{display:none}
-body.korean .ko{display:initial}
-body.english .en{display:initial}
-body.hybrid .ko,body.hybrid .en{display:initial}
+/* language visibility — 기본은 보이게, 모드에서만 숨김 */
+.en, .ko { display: inherit; }
+body.korean .en { display: none; }
+body.english .ko { display: none; }
+body.hybrid .ko, body.hybrid .en { display: inherit; }
 
 /* motion reduce */
 @media(prefers-reduced-motion:reduce){#waves,#trail{display:none}}
@@ -478,10 +478,7 @@ body.hybrid .ko,body.hybrid .en{display:initial}
       lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
     }
 
-    function close(){
-      lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
-    }
-
+    function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); }
     function prev(){ openAt(idx-1); }
     function next(){ openAt(idx+1); }
 
@@ -541,7 +538,6 @@ body.hybrid .ko,body.hybrid .en{display:initial}
     img.addEventListener('click', (e)=>{
       const now = performance.now();
       if(now-lastTap < 300){
-        // double
         zoom = (zoom===1)? 2 : 1;
         if(zoom===1){ox=oy=0;}
         applyTransform();

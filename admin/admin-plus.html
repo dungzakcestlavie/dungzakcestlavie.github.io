@@ -446,6 +446,128 @@ function init(){
   setInterval(bindHard,1200); // 추가 보강 루프
 }
 window.addEventListener('load',init);
+<!-- ===== Ω.11.6 — Tabs+Save+Link Fix & Health ===== -->
+<style>
+  .clickable,[data-act],[data-sec],[data-rid]{cursor:pointer}
+</style>
+<script>
+(function(){
+
+  /* ---------- 0) 안전 이중 바인딩: click + mousedown (iOS 터치 충돌 제거) ---------- */
+  function bindAbsolute(){
+    document.querySelectorAll('[data-act],[data-sec],[data-rid]').forEach(el=>{
+      if(el.__bound) return; el.__bound = true;
+      ['mousedown','click'].forEach(ev=>{
+        el.addEventListener(ev, e=>{
+          e.preventDefault(); e.stopPropagation();
+          const act = el.dataset.act, sec = el.dataset.sec, rid = el.dataset.rid;
+          if (act) return doAct(act);
+          if (sec) return window.selectSection?.(sec, el);
+          if (rid) return window.openReport?.(rid, el);
+        }, {passive:false});
+      });
+      el.setAttribute('role','button'); el.setAttribute('tabindex','0');
+      el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }});
+    });
+  }
+  const mo = new MutationObserver(bindAbsolute);
+  window.addEventListener('load', bindAbsolute);
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  setInterval(bindAbsolute, 800);
+
+  /* ---------- 1) 액션 라우터 (오류 메시지 강화) ---------- */
+  function doAct(a){
+    const map = {
+      save:    ()=>window.saveCfg?.(),
+      logout:  ()=>window.logout?.(),
+      test:    ()=>window.testConn?.(),
+      touch:   ()=>safeTouch(),
+      diag:    ()=>window.diag?.(),
+      upload:  ()=>window.uploadArtwork?.(window.currentSection),
+      meta:    ()=>window.updateArtwork?.(window.currentSection),
+      replace: ()=>window.replaceImage?.(window.currentSection),
+      delete:  ()=>window.deleteArtwork?.(window.currentSection),
+      qsave:   ()=>window.quickSave?.(),
+      qrebuild:()=>window.rebuildReportTabs?.(),
+      openSite:()=>openSite(),
+      health:  ()=>healthCheck()
+    };
+    if(!map[a]) return window.say?.('⚠️ 알 수 없는 동작: '+a, true);
+    map[a]();
+  }
+
+  /* ---------- 2) 저장/캐시 실패 원인 친절 표기 ---------- */
+  const _gh = window.gh;
+  window.gh = async function(method, path, body, isJson=true){
+    try{
+      return await _gh(method, path, body, isJson);
+    }catch(e){
+      const msg = (e&&e.message)||'Unknown';
+      if(/401/.test(msg)) window.say?.('🔑 401 Unauthorized — 토큰 만료/권한 부족(repo) 확인', true);
+      else if(/403/.test(msg)) window.say?.('⛔ 403 Forbidden — repo 또는 pages:builds 권한 필요', true);
+      else if(/404/.test(msg)) window.say?.('📦 404 Not Found — Owner/Repo/Branch 입력 확인', true);
+      else if(/409/.test(msg)) window.say?.('🔁 409 Conflict — SHA 불일치. 자동 재시도/다시 시도', true);
+      else window.say?.('⚠️ GitHub 오류: '+msg, true);
+      throw e;
+    }
+  };
+
+  /* ---------- 3) Cache Bust 선검사 + 실행 ---------- */
+  async function safeTouch(){
+    const owner = localStorage.getItem('owner')||'';
+    const repo  = localStorage.getItem('repo')||'';
+    const token = localStorage.getItem('token')||'';
+    const branch= localStorage.getItem('branch')||'main';
+    if(!owner||!repo||!token){
+      return window.say?.('⚠️ Owner/Repo/Token/Branch 저장 후 실행하세요', true);
+    }
+    try{ await window.touchPages?.(); }catch(e){ /* 위 gh 패치가 안내함 */ }
+  }
+
+  /* ---------- 4) 사이트 열기: 현재 환경에 맞춰 자동 계산 ---------- */
+  function computeBase(){
+    // 커스텀 도메인(CNAME) / 사용자 페이지(repo: {user}.github.io) / 프로젝트 페이지 대응
+    const loc = window.location;
+    const path = loc.pathname.replace(/\/admin\/.*$/,'/'); // /admin/... → /
+    return loc.origin + path;
+  }
+  function openSite(){ window.open(computeBase(), '_blank', 'noopener'); }
+
+  /* ---------- 5) 원클릭 진단: Health 버튼(임시) ---------- */
+  async function healthCheck(){
+    try{
+      const owner = localStorage.getItem('owner')||'';
+      const repo  = localStorage.getItem('repo')||'';
+      const token = localStorage.getItem('token')||'';
+      if(!owner||!repo||!token){ window.say?.('⚠️ 설정 누락 — Owner/Repo/Token 확인', true); return; }
+      await window.gh('GET', `repos/${owner}/${repo}`);
+      window.say?.('✅ Repo 접근 OK');
+      // 쓰기 권한 테스트 (dry-run용 .health 파일)
+      const stamp = new Date().toISOString();
+      await window.putFile('data/.health', btoa('ok '+stamp), 'health check');
+      window.say?.('✅ 쓰기 권한 OK (.health)');
+      // 사이트 가시성
+      fetch(computeBase()+'?_health='+Date.now(), {mode:'no-cors'}).then(()=>window.say?.('🌐 사이트 접근 OK')).catch(()=>window.say?.('🌐 사이트 응답 없음(무시 가능)'));
+      alert('✅ Health OK\n- Repo 접근/쓰기 확인\n- 사이트 열기 버튼도 정상 동작해야 합니다.');
+    }catch(e){
+      window.say?.('❌ Health 실패: '+(e.message||e), true);
+      alert('❌ Health 실패:\n'+(e.message||e));
+    }
+  }
+
+  // 유틸 영역에 Health 버튼이 없다면 하나 추가(선택)
+  const util = document.getElementById('utilButtons');
+  if(util && !util.querySelector('[data-act="health"]')){
+    const b = document.createElement('button');
+    b.textContent='연결 진단 · Health';
+    b.setAttribute('data-act','health');
+    b.className='btn-ghost';
+    util.appendChild(b);
+  }
+
+})();
+</script>
+<!-- ===== /Ω.11.6 ===== -->
 </script>
 </body>
 </html>

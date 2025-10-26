@@ -3,25 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>✨ Lightflow Admin Ω.10.2 — DUNGZAK CESTLAVIE · Lumera (KR·EN · High Readability)</title>
+<title>✨ Lightflow Admin Ω.11 — DUNGZAK CESTLAVIE · Lumera (KR·EN · Final One-File)</title>
 <meta name="color-scheme" content="dark light">
 <style>
-/* ===== High Readability Theme (brighter contrast) ===== */
+/* ===== High Readability Cosmic Theme ===== */
 :root{
-  --bg:#0a1124;       /* brighter than 0x070c1a */
-  --panel:#0f1a36;    /* brighter than 0x0b1020 */
-  --soft:#162447;
-  --fg:#f2f6ff;       /* brighter text */
-  --muted:#b9c6e5;
-  --accent:#f2d48a;   /* brighter gold */
-  --bad:#ff6b6b;
-  --good:#7ef0a9;
-  --line:#223561;
-  --line2:#2b4478;
-  --chip:#0f234a;
+  --bg:#0a1124; --panel:#0f1a36; --soft:#162447;
+  --fg:#f2f6ff; --muted:#b9c6e5; --accent:#f2d48a;
+  --bad:#ff6b6b; --good:#7ef0a9; --line:#223561; --line2:#2b4478; --chip:#0f234a;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,Segoe UI,Roboto,Pretendard,sans-serif;font-size:16px;line-height:1.4}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,Segoe UI,Roboto,Pretendard,sans-serif;font-size:16px;line-height:1.42;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,rgba(12,20,40,.95),rgba(12,20,40,.0));backdrop-filter:blur(6px);padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
 h1{margin:0;font-size:1.16rem;color:var(--accent);font-weight:800;letter-spacing:.1px}
 .container{max-width:980px;margin:0 auto;padding:0 14px 110px}
@@ -32,15 +24,16 @@ input,select,textarea,button{width:100%;padding:13px 14px;border-radius:12px;bor
 textarea{min-height:130px;resize:none}
 button{background:var(--accent);color:#000;font-weight:800;border:none;cursor:pointer;touch-action:manipulation}
 button:disabled{opacity:.6;cursor:not-allowed}
+button:active{opacity:.88;transform:scale(.985);transition:.08s}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap}
 .btn-ghost{background:var(--chip);color:var(--fg);border:1px solid var(--line2)}
 .btn-bad{background:var(--bad);color:#000}
 .btn-good{background:var(--good);color:#002b14}
 .small{font-size:12.5px;color:var(--muted)}
-kbd{background:#0e2145;border:1px solid #234; border-radius:6px;padding:2px 6px}
+kbd{background:#0e2145;border:1px solid #234;border-radius:6px;padding:2px 6px}
 
 /* Tabs */
-.tabs{display:flex;overflow:auto;gap:8px;padding-bottom:6px;pointer-events:auto;position:relative;z-index:1;-webkit-overflow-scrolling:touch}
+.tabs{display:flex;overflow:auto;gap:8px;padding-bottom:6px;pointer-events:auto;position:relative;z-index:2;-webkit-overflow-scrolling:touch}
 .tabs button{flex:0 0 auto;background:#112454;color:#e7efff;border:1px solid var(--line2);border-radius:999px;padding:10px 14px;font-size:14px}
 .tabs button.active{background:var(--accent);color:#000}
 
@@ -80,7 +73,7 @@ kbd{background:#0e2145;border:1px solid #234; border-radius:6px;padding:2px 6px}
 </head>
 <body>
 <div class="header">
-  <h1>✨ Lightflow Admin Ω.10.2 <span class="small" style="margin-left:8px;color:#e7efff">Hardened Final · Cache & Archive Fix · Gallery Stable · KR·EN</span></h1>
+  <h1>✨ Lightflow Admin Ω.11 <span class="small" style="margin-left:8px;color:#e7efff">Final · Unkillable Binder · Cache & Gallery Fix · KR·EN</span></h1>
 </div>
 
 <div class="container">
@@ -88,10 +81,10 @@ kbd{background:#0e2145;border:1px solid #234; border-radius:6px;padding:2px 6px}
   <div class="card">
     <h3>0) GitHub 연결 · Connection</h3>
     <div class="grid grid-2">
-      <input id="owner" placeholder="GitHub Owner / 소유자 (예: dungzakcestlavie)">
-      <input id="repo" placeholder="Repository / 저장소 (예: dungzakcestlavie.github.io)">
+      <input id="owner"  placeholder="GitHub Owner / 소유자 (예: dungzakcestlavie)">
+      <input id="repo"   placeholder="Repository / 저장소 (예: dungzakcestlavie.github.io)">
       <input id="branch" placeholder="Branch / 브랜치 (예: main)" value="main">
-      <input id="token" placeholder="Personal Access Token (권한: repo · pages:builds 권장)">
+      <input id="token"  placeholder="Personal Access Token (권한: repo · pages:builds 권장)">
     </div>
     <div class="btn-row" style="margin-top:8px" id="connButtons">
       <button type="button" data-act="save">저장(로컬) · Save (Local)</button>
@@ -108,7 +101,7 @@ kbd{background:#0e2145;border:1px solid #234; border-radius:6px;padding:2px 6px}
     <h3>1) 작품 아카이브 · Artworks (Ⅰ–Ⅴ)</h3>
     <div class="tabs" id="workTabs"></div>
     <div id="workForm"></div>
-    <div class="small">JSON: <code>/data/artworks.json</code> · 이미지: <code>/img/{section}/</code> · Images saved per section</div>
+    <div class="small">JSON: <code>/data/artworks.json</code> · 이미지: <code>/img/{section}/</code></div>
     <div class="gallery" id="workGallery"></div>
   </div>
 
@@ -152,59 +145,46 @@ kbd{background:#0e2145;border:1px solid #234; border-radius:6px;padding:2px 6px}
 <div id="toast" class="toast"></div>
 
 <script>
-/* ===== Utility / 공통 ===== */
+/* ===== Utils & State ===== */
 const SECTIONS=[
-  {id:'light',  label:'Ⅰ Light & Memory / 빛과 기억'},
-  {id:'human',  label:'Ⅱ Human Being / 인간'},
-  {id:'rebirth',label:'Ⅲ Rebirth of Mind / 마음의 재생'},
-  {id:'restore',label:'Ⅳ Restoration of Being / 존재의 복원'},
-  {id:'meta',   label:'Ⅴ Metaconsciousness of Light / 빛의 초의식'}
+ {id:'light',label:'Ⅰ Light & Memory / 빛과 기억'},
+ {id:'human',label:'Ⅱ Human Being / 인간'},
+ {id:'rebirth',label:'Ⅲ Rebirth of Mind / 마음의 재생'},
+ {id:'restore',label:'Ⅳ Restoration of Being / 존재의 복원'},
+ {id:'meta',label:'Ⅴ Metaconsciousness of Light / 빛의 초의식'}
 ];
 const DCAR_IDS=Array.from({length:8},(_,i)=>`dcar${String(i+1).padStart(2,'0')}`);
 const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
-const say=(m,isErr=false)=>{const t=$("#toast"); t.textContent=m; t.style.borderColor=isErr?'#ff6b6b':'#2b4478'; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600)};
+const say=(m,err=false)=>{const t=$("#toast"); t.textContent=m; t.style.borderColor=err?'#ff6b6b':'#2b4478'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600)};
 
 const cfg=k=>localStorage.getItem(k)||''; const setcfg=(k,v)=>localStorage.setItem(k,v);
 function saveCfg(){['owner','repo','branch','token'].forEach(id=>setcfg(id,$('#'+id).value.trim()));say('✅ 저장 · Saved (Local)')}
 function logout(){localStorage.removeItem('token');say('🔒 토큰 삭제 · Token cleared')}
-function b64utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
-function f2b64(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result.split(',')[1]); fr.onerror=rej; fr.readAsDataURL(file); }); }
+function b64utf8(str){return btoa(unescape(encodeURIComponent(str)));}
+function f2b64(file){return new Promise((res,rej)=>{const fr=new FileReader(); fr.onload=()=>res(fr.result.split(',')[1]); fr.onerror=rej; fr.readAsDataURL(file);});}
 
-/* ===== GitHub API (Safari 강화 fetch 옵션) ===== */
+/* ===== GitHub API (Safari 강화) ===== */
 async function gh(method,path,body,isJson=true){
-  const token=cfg('token'); if(!token) throw new Error('토큰 없음 / Missing token — 저장(로컬) 먼저');
+  const token=cfg('token'); if(!token) throw new Error('토큰 없음 / Missing token');
   const res=await fetch(`https://api.github.com/${path}`,{
     method,
     headers:{'Accept':'application/vnd.github+json','Authorization':`token ${token}`},
     body: body?(isJson?JSON.stringify(body):body):null,
-    cache:'no-store', mode:'cors', redirect:'follow', referrerPolicy:'no-referrer', credentials:'omit', keepalive:true
+    cache:'no-store',mode:'cors',redirect:'follow',referrerPolicy:'no-referrer',credentials:'omit',keepalive:true
   });
-  if(!res.ok){
-    const text = await res.text().catch(()=>String(res.status));
-    console.warn('GitHub Error', res.status, text);
-    throw new Error(`GitHub ${res.status}: ${text.slice(0,400)}`);
-  }
+  if(!res.ok){const txt=await res.text().catch(()=>String(res.status)); console.warn('GitHub',res.status,txt); throw new Error(`GitHub ${res.status}: ${txt.slice(0,400)}`);}
   return res.json();
 }
 async function getContent(path){
   const o=cfg('owner'), r=cfg('repo'), b=cfg('branch')||'main';
-  try{
-    const x=await gh('GET',`repos/${o}/${r}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(b)}`);
-    const c=x.content?atob(x.content.replace(/\n/g,'')):null;
-    return {sha:x.sha,content:c,exists:true};
-  }catch(e){ return {sha:null,content:null,exists:false}; }
+  try{const x=await gh('GET',`repos/${o}/${r}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(b)}`); const c=x.content?atob(x.content.replace(/\n/g,'')):null; return {sha:x.sha,content:c,exists:true};}
+  catch(e){return{sha:null,content:null,exists:false};}
 }
-async function putFile(path,base64,message){
+async function putFile(path,b64,message){
   const o=cfg('owner'), r=cfg('repo'), b=cfg('branch')||'main';
-  let prev=await getContent(path);
-  const body={message:message||`Update ${path}`,content:base64,branch:b}; if(prev.exists) body.sha=prev.sha;
+  let prev=await getContent(path); const body={message:message||`Update ${path}`,content:b64,branch:b}; if(prev.exists) body.sha=prev.sha;
   try{ return await gh('PUT',`repos/${o}/${r}/contents/${encodeURIComponent(path)}`,body); }
-  catch(e){
-    // SHA mismatch → get latest SHA then retry
-    prev=await getContent(path);
-    if(prev.exists) body.sha=prev.sha; else delete body.sha;
-    return await gh('PUT',`repos/${o}/${r}/contents/${encodeURIComponent(path)}`,body);
-  }
+  catch(e){ prev=await getContent(path); if(prev.exists) body.sha=prev.sha; else delete body.sha; return gh('PUT',`repos/${o}/${r}/contents/${encodeURIComponent(path)}`,body); }
 }
 async function delFile(path,message){
   const o=cfg('owner'), r=cfg('repo'), b=cfg('branch')||'main';
@@ -213,56 +193,43 @@ async function delFile(path,message){
 }
 async function testConn(){
   const sp=$("#spinTest"); if(sp) sp.style.display='inline-block';
-  try{ await gh('GET',`repos/${cfg('owner')}/${cfg('repo')}`); say('✅ 연결 성공 · Connected'); }
-  catch(e){ say('⚠️ 연결 실패 · '+e.message, true); }
-  finally{ if(sp) sp.style.display='none'; }
+  try{await gh('GET',`repos/${cfg('owner')}/${cfg('repo')}`); say('✅ 연결 성공 · Connected');}
+  catch(e){say('⚠️ 연결 실패 · '+e.message,true);}
+  finally{if(sp) sp.style.display='none';}
 }
 
-/* ===== Cache Bust: 3+1 Trigger (.touch, .pages-touch, .ping + pages/builds) ===== */
+/* ===== Cache Bust (3+1 Trigger) ===== */
 async function touchPages(){
+  const owner=cfg('owner'), repo=cfg('repo'), tok=cfg('token');
+  if(!owner||!repo||!tok){say('⚠️ Owner/Repo/Token 저장 필요 · Save first',true); return;}
   const sp=$("#spinTouch"); if(sp) sp.style.display='inline-block';
-  const owner=cfg('owner'), repo=cfg('repo');
   try{
     const stamp=new Date().toISOString(), msg=`touch ${stamp}`;
     await putFile('data/.touch',       b64utf8('touched '+stamp),     msg+' [.touch]');
     await putFile('data/.pages-touch', b64utf8('pages-touch '+stamp), msg+' [.pages-touch]');
     await putFile('data/.ping',        b64utf8('ping '+stamp),        msg+' [.ping]');
-    try{
-      await gh('POST', `repos/${owner}/${repo}/pages/builds`, {}); // may 403 if pages:builds missing → allowed
-      say('🚀 캐시 커밋 + Pages 빌드 요청 완료 · Cache + Build requested');
-    }catch(e2){
-      say('✅ 캐시 커밋 완료 · Build req skipped: '+String(e2.message).slice(0,90));
-    }
-  }catch(e){ say('⚠️ 캐시 무효화 실패 · '+e.message, true); }
+    try{ await gh('POST', `repos/${owner}/${repo}/pages/builds`, {}); say('🚀 캐시 커밋 + Pages 빌드 요청 완료 · Cache + Build requested'); }
+    catch(e2){ say('✅ 캐시 커밋 완료 · Build req skipped: '+String(e2.message).slice(0,90)); }
+    alert('✅ GitHub Pages 캐시 무효화가 요청되었습니다.\n반영이 늦으면 Safari 강새로고침을 해주세요.');
+  }catch(e){ say('⚠️ 캐시 무효화 실패 · '+e.message,true); alert('⚠️ Cache Bust failed:\n'+e.message); }
   finally{ if(sp) sp.style.display='none'; }
 }
-async function diag(){
-  try{
-    const stamp=new Date().toISOString();
-    await putFile('data/.diag', b64utf8('diag '+stamp), 'diag '+stamp);
-    say('🩺 PING OK — repo 쓰기 권한 정상 / write OK');
-  }catch(e){ say('🩺 PING 실패 · '+e.message,true); }
-}
+async function diag(){ try{await putFile('data/.diag', b64utf8('diag '+new Date().toISOString()), 'diag ping'); say('🩺 PING OK — write 권한 정상');}catch(e){say('🩺 PING 실패 · '+e.message,true);} }
 
-/* ===== Artworks / 작품 아카이브 ===== */
+/* ===== Artworks ===== */
 let artworks={light:[],human:[],rebirth:[],restore:[],meta:[]};
 const ART_JSON='data/artworks.json';
 let currentSection='light';
 
 function buildWorkTabs(){
   const tabs=$("#workTabs");
-  tabs.innerHTML = SECTIONS.map((s,i)=>(
-    `<button type="button" data-sec="${s.id}" class="${i===0?'active':''}">${s.label}</button>`
-  )).join('');
+  tabs.innerHTML=SECTIONS.map((s,i)=>`<button type="button" data-sec="${s.id}" class="${i===0?'active':''}">${s.label}</button>`).join('');
 }
 function selectSection(sec,btn){
   currentSection=sec;
   $$('#workTabs button').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  renderWorkForm(sec);
-  renderGallery();
-  // focus aid
-  btn?.scrollIntoView({block:'nearest', inline:'nearest', behavior:'smooth'});
+  renderWorkForm(sec); renderGallery(); btn?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});
 }
 function renderWorkForm(sec){
   $("#workForm").innerHTML=`
@@ -275,7 +242,7 @@ function renderWorkForm(sec){
         <div class="kv"><label>Medium / 재료</label><input id="w-medium" placeholder="Acrylic on Canvas"></div>
         <div class="kv"><label>Size / 규격</label><input id="w-size" placeholder="120x90 cm"></div>
         <div class="kv"><label>Image / 이미지</label><input id="w-file" type="file" accept="image/*"></div>
-        <div id="drop" class="drop">📥 드롭 또는 탭하여 선택 · Drop or tap to select (iPhone → Photos)</div>
+        <div id="drop" class="drop">📥 드롭 또는 탭하여 선택 · Drop or tap to select</div>
         <img id="w-prev" class="preview" style="display:none">
         <div class="btn-row" style="margin-top:8px" id="workButtons">
           <button type="button" data-act="upload">📤 이미지 업로드 + JSON · Upload</button>
@@ -285,136 +252,87 @@ function renderWorkForm(sec){
         </div>
       </div>
       <div class="card">
-        <div class="kv"><label>검색 / Search</label><input id="w-q" placeholder="ID/제목 검색 Search by ID/Title…" oninput="renderGallery()"></div>
-        <div class="small">섹션: <b>${sec}</b> · 총 <b id="w-count">0</b>개 / total</div>
+        <div class="kv"><label>검색 / Search</label><input id="w-q" placeholder="ID/제목 검색 Search…" oninput="renderGallery()"></div>
+        <div class="small">섹션: <b>${sec}</b> · 총 <b id="w-count">0</b>개</div>
       </div>
     </div>`;
-  // file preview
-  $("#w-file").addEventListener('change',e=>{
-    const f=e.target.files?.[0]; if(!f) return;
-    const p=$("#w-prev"); p.src=URL.createObjectURL(f); p.style.display='block';
-  });
-  // dropzone
-  const dz=$("#drop");
-  const setDrag=on=>dz.classList.toggle('drag',on);
+  // preview
+  $("#w-file").addEventListener('change',e=>{const f=e.target.files?.[0]; if(!f) return; const p=$("#w-prev"); p.src=URL.createObjectURL(f); p.style.display='block';});
+  // drop
+  const dz=$("#drop"); const setDrag=x=>dz.classList.toggle('drag',x);
   dz.addEventListener('click',()=>$("#w-file").click());
-  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault(); setDrag(true)}));
-  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault(); setDrag(false)}));
-  dz.addEventListener('drop',e=>{
-    const file=e.dataTransfer?.files?.[0]; if(!file) return;
-    const input=$("#w-file"); const dt=new DataTransfer(); dt.items.add(file); input.files=dt.files;
-    const p=$("#w-prev"); p.src=URL.createObjectURL(file); p.style.display='block';
-  });
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();setDrag(true)}));
+  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();setDrag(false)}));
+  dz.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0]; if(!f) return; const dt=new DataTransfer(); dt.items.add(f); $("#w-file").files=dt.files; const p=$("#w-prev"); p.src=URL.createObjectURL(f); p.style.display='block';});
 }
 function idxById(sec,id){return (artworks[sec]||[]).findIndex(x=>x.id===id)}
 async function loadArtworks(){
-  try{
-    const r=await getContent(ART_JSON);
-    if(r.exists){ try{artworks=JSON.parse(r.content)||artworks}catch{}; say('✅ artworks.json 로드 · loaded');}
-    else{ say('ℹ️ artworks.json 없음 · will create on save'); }
-    renderGallery();
-  }catch(e){ say('⚠️ 작품 로드 실패 · '+e.message,true); }
+  try{const r=await getContent(ART_JSON); if(r.exists){try{artworks=JSON.parse(r.content)||artworks}catch{}; say('✅ artworks.json 로드');} else say('ℹ️ artworks.json 없음 — 저장 시 생성'); renderGallery();}
+  catch(e){say('⚠️ 작품 로드 실패 · '+e.message,true);}
 }
 function renderGallery(){
-  const box=$("#workGallery"); if(!box) return;
-  box.innerHTML='';
-  const sec=currentSection;
-  const q=($("#w-q")?.value||'').toLowerCase();
+  const box=$("#workGallery"); if(!box) return; box.innerHTML='';
+  const sec=currentSection; const q=($("#w-q")?.value||'').toLowerCase();
   const arr=(artworks[sec]||[]).filter(a=>`${a.id} ${a.title}`.toLowerCase().includes(q));
   $("#w-count")?.textContent=(artworks[sec]||[]).length||0;
   arr.forEach(a=>{
     const card=document.createElement('div'); card.className='cardThumb';
-    card.innerHTML=`
-      <button type="button" class="del" title="삭제 Delete" aria-label="delete">×</button>
-      <img src="${a.image||''}" alt="">
-      <div class="cap">${a.id}${a.title?` · ${a.title}`:''}</div>`;
+    card.innerHTML=`<button type="button" class="del" aria-label="delete">×</button><img src="${a.image||''}" alt=""><div class="cap">${a.id}${a.title?` · ${a.title}`:''}</div>`;
     card.querySelector('.del').onclick=async (e)=>{e.stopPropagation(); $("#w-id").value=a.id; await deleteArtwork(sec);};
     card.onclick=()=>{ $("#w-id").value=a.id||''; $("#w-title").value=a.title||''; $("#w-year").value=a.year||''; $("#w-medium").value=a.medium||''; $("#w-size").value=a.size||''; const p=$("#w-prev"); if(a.image){p.src=a.image; p.style.display='block'} else p.style.display='none'; window.scrollTo({top:$("#workForm").offsetTop-60,behavior:'smooth'}); };
     box.appendChild(card);
   });
 }
-async function saveArtworksJson(){ await putFile(ART_JSON, b64utf8(JSON.stringify(artworks,null,2)), 'Update artworks.json'); say('💾 저장 완료 · Saved'); }
+async function saveArtworksJson(){ await putFile(ART_JSON,b64utf8(JSON.stringify(artworks,null,2)),'Update artworks.json'); say('💾 저장 완료 · Saved'); }
 async function uploadArtwork(sec){
   try{
-    const f=$("#w-file").files[0], id=$("#w-id").value.trim(); if(!id){say('ID 입력 필요 · Enter ID');return}
+    const f=$("#w-file").files[0], id=$("#w-id").value.trim(); if(!id){say('ID 입력 필요',true);return}
     let url=(artworks[sec].find(x=>x.id===id)||{}).image||'';
-    if(f){
-      const b=await f2b64(f);
-      const name=(id.replace(/\s+/g,'_')||'image')+(f.name.match(/\.\w+$/)?.[0]||'.jpg');
-      const path=`img/${sec}/${name}`;
-      await putFile(path,b,`Add ${path}`);
-      url=`/${path}`;
-    }
+    if(f){const b=await f2b64(f); const name=(id.replace(/\s+/g,'_')||'image')+(f.name.match(/\.\w+$/)?.[0]||'.jpg'); const path=`img/${sec}/${name}`; await putFile(path,b,`Add ${path}`); url=`/${path}`;}
     const e={id,title:$("#w-title").value.trim(),year:$("#w-year").value.trim(),medium:$("#w-medium").value.trim(),size:$("#w-size").value.trim(),image:url};
     const i=idxById(sec,id); if(i>=0) artworks[sec][i]=e; else artworks[sec].push(e);
-    await saveArtworksJson(); renderGallery(); say('✅ 작품 저장 완료 · Artwork saved');
-  }catch(err){ say('⚠️ 업로드 실패 · '+err.message,true); }
+    await saveArtworksJson(); renderGallery(); say('✅ 작품 저장 완료');
+  }catch(err){say('⚠️ 업로드 실패 · '+err.message,true);}
 }
 async function updateArtwork(sec){
-  const id=$("#w-id").value.trim(); const i=idxById(sec,id); if(i<0){say('목록에 없음 · Not found');return}
+  const id=$("#w-id").value.trim(); const i=idxById(sec,id); if(i<0){say('목록에 없음',true);return}
   Object.assign(artworks[sec][i],{title:$("#w-title").value.trim(),year:$("#w-year").value.trim(),medium:$("#w-medium").value.trim(),size:$("#w-size").value.trim()});
-  await saveArtworksJson(); renderGallery(); say('✏️ 메타 저장 · Meta saved');
+  await saveArtworksJson(); renderGallery(); say('✏️ 메타 저장 완료');
 }
 async function replaceImage(sec){
-  try{
-    const id=$("#w-id").value.trim(), i=idxById(sec,id); if(i<0){say('목록에 없음 · Not found');return}
-    const f=$("#w-file").files[0]; if(!f){say('이미지 선택 · Choose image');return}
+  try{const id=$("#w-id").value.trim(), i=idxById(sec,id); if(i<0){say('목록에 없음',true);return}
+    const f=$("#w-file").files[0]; if(!f){say('이미지 선택',true);return}
     const b=await f2b64(f); const name=(id.replace(/\s+/g,'_')||'image')+(f.name.match(/\.\w+$/)?.[0]||'.jpg'); const path=`img/${sec}/${name}`;
     await putFile(path,b,`Replace ${path}`); artworks[sec][i].image=`/${path}`;
-    await saveArtworksJson(); renderGallery(); say('🖼 교체 완료 · Replaced');
-  }catch(err){ say('⚠️ 이미지 교체 실패 · '+err.message,true); }
+    await saveArtworksJson(); renderGallery(); say('🖼 교체 완료');
+  }catch(err){say('⚠️ 이미지 교체 실패 · '+err.message,true);}
 }
 async function deleteArtwork(sec){
-  try{
-    const id=$("#w-id").value.trim(), i=idxById(sec,id); if(i<0){say('목록에 없음 · Not found');return}
-    const u=artworks[sec][i].image||''; if(u.startsWith('/img/')){ try{await delFile(u.slice(1),`Delete ${u}`)}catch{} }
-    artworks[sec].splice(i,1);
-    await saveArtworksJson(); renderGallery(); say('🗑 삭제 완료 · Deleted');
-  }catch(err){ say('⚠️ 삭제 실패 · '+err.message,true); }
+  try{const id=$("#w-id").value.trim(), i=idxById(sec,id); if(i<0){say('목록에 없음',true);return}
+    const u=artworks[sec][i].image||''; if(u.startsWith('/img/')){try{await delFile(u.slice(1),`Delete ${u}`)}catch{}}
+    artworks[sec].splice(i,1); await saveArtworksJson(); renderGallery(); say('🗑 삭제 완료');
+  }catch(err){say('⚠️ 삭제 실패 · '+err.message,true);}
 }
 
-/* ===== Reports / 미학 보고서 ===== */
-let reports={}; const REP_JSON='data/reports.json';
-const SUMMARY_LIMIT=1000;
-function mdToHtml(md){
-  const esc = s => s.replace(/[&<>]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
-  return esc(md).split(/\n{2,}/).map(block=>{
-    if(/^#{1,6}\s/.test(block)) return '<h3>'+block.replace(/^#{1,6}\s*/,'')+'</h3>';
-    return '<p>'+block.replace(/\n/g,'<br>')+'</p>';
-  }).join('');
-}
+/* ===== Reports ===== */
+let reports={}; const REP_JSON='data/reports.json'; const SUMMARY_LIMIT=1000;
+function mdToHtml(md){ const esc=s=>s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); return esc(md).split(/\n{2,}/).map(b=>/^#{1,6}\s/.test(b)?'<h3>'+b.replace(/^#{1,6}\s*/,'')+'</h3>':'<p>'+b.replace(/\n/g,'<br>')+'</p>').join(''); }
 function initQuickBox(){
-  const sel=$("#quick-id"); sel.innerHTML='';
-  DCAR_IDS.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=id.toUpperCase();sel.appendChild(o)});
-  $("#quick-text").addEventListener('input',()=>{
-    $("#qpv").innerHTML = mdToHtml($("#quick-text").value);
-    if($("#quick-auto").value!=='on') return;
-    clearTimeout(window.__qs); window.__qs=setTimeout(quickSave,1500);
-  });
+  const sel=$("#quick-id"); sel.innerHTML=''; DCAR_IDS.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=id.toUpperCase();sel.appendChild(o)});
+  $("#quick-text").addEventListener('input',()=>{ $("#qpv").innerHTML=mdToHtml($("#quick-text").value); if($("#quick-auto").value!=='on') return; clearTimeout(window.__qs); window.__qs=setTimeout(quickSave,1500); });
 }
 async function loadReports(){
-  try{
-    const r=await getContent(REP_JSON);
-    if(r.exists){ try{reports=JSON.parse(r.content)||{}}catch{reports={}}; say('✅ reports.json 로드 · loaded'); }
-    else{ reports={}; say('ℹ️ reports.json 없음 · will create'); }
-    rebuildReportTabs();
-  }catch(e){ say('⚠️ 보고서 로드 실패 · '+e.message,true); }
+  try{const r=await getContent(REP_JSON); if(r.exists){try{reports=JSON.parse(r.content)||{}}catch{reports={}}; say('✅ reports.json 로드');} else {reports={}; say('ℹ️ reports.json 없음 — 저장 시 생성');} rebuildReportTabs();}
+  catch(e){say('⚠️ 보고서 로드 실패 · '+e.message,true);}
 }
 function rebuildReportTabs(){
   const tabs=$("#reportTabs"); tabs.innerHTML='';
-  DCAR_IDS.forEach(id=>{
-    const b=document.createElement('button');
-    b.type='button'; b.dataset.rid=id;
-    b.textContent=id.toUpperCase()+(reports[id]?' •':'');
-    b.title=reports[id]?'Saved':'Empty';
-    tabs.appendChild(b);
-  });
-  const first=tabs.querySelector('button'); if(first) openReport(first.dataset.rid, first);
+  DCAR_IDS.forEach(id=>{const b=document.createElement('button'); b.type='button'; b.dataset.rid=id; b.textContent=id.toUpperCase()+(reports[id]?' •':''); b.title=reports[id]?'Saved':'Empty'; tabs.appendChild(b);});
+  const first=tabs.querySelector('button'); if(first) openReport(first.dataset.rid,first);
 }
 function openReport(id,btn){
   $$('#reportTabs button').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
-  const d=reports[id]||{};
-  const pdf=`/reports/${id.toUpperCase()}.pdf`, md=`/reports/${id.toUpperCase()}.md`;
+  const d=reports[id]||{}; const pdf=`/reports/${id.toUpperCase()}.pdf`, md=`/reports/${id.toUpperCase()}.md`;
   $("#reportForm").innerHTML=`
     <div class="grid grid-2">
       <div class="card">
@@ -424,14 +342,14 @@ function openReport(id,btn){
         <div class="kv"><label>Series</label><input id="r-series" value="${d.series||'Aesthetic Reports'}"></div>
         <div class="kv"><label>Year</label><input id="r-year" value="${d.year||''}" placeholder="2025"></div>
         <div class="kv"><label>PDF</label><input id="r-pdf" type="file" accept=".pdf"></div>
-        <div class="btn-row" style="margin-top:6px" id="reportMetaBtns">
+        <div class="btn-row" style="margin-top:6px">
           <button type="button" data-act="pdf">📤 PDF 업로드 · Upload</button>
           <button type="button" class="btn-ghost" data-act="open">🔗 PDF 열기 · Open</button>
         </div>
       </div>
       <div class="card">
         <textarea id="r-text" placeholder="본문 붙여넣기 (한/영 무제한) · Paste full text (KR/EN, unlimited)">${d.text||''}</textarea>
-        <div class="btn-row" style="margin-top:6px" id="reportTextBtns">
+        <div class="btn-row" style="margin-top:6px">
           <button type="button" data-act="saveTxt">📝 텍스트 저장(.md 전문 + JSON 요약) · Save Text</button>
           <button type="button" class="btn-ghost" data-act="saveMeta">✏️ 메타만 저장(JSON) · Save Meta</button>
           <button type="button" class="btn-bad" data-act="delete">🗑 전체 삭제 · Delete</button>
@@ -440,21 +358,17 @@ function openReport(id,btn){
         <div class="previewBox" id="rpv">${mdToHtml(d.text||'')}</div>
       </div>
     </div>`;
-  $("#r-text").addEventListener('input',e=>{
-    $("#r-count").textContent=e.target.value.length.toLocaleString();
-    $("#rpv").innerHTML = mdToHtml(e.target.value);
-  });
+  $("#r-text").addEventListener('input',e=>{ $("#r-count").textContent=e.target.value.length.toLocaleString(); $("#rpv").innerHTML=mdToHtml(e.target.value); });
 }
 async function quickSave(){
   try{
-    const id=$("#quick-id").value; const txt=$("#quick-text").value.trim();
-    if(!txt){say('내용이 비어있어요 · Empty');return}
+    const id=$("#quick-id").value, txt=$("#quick-text").value.trim(); if(!txt){say('내용이 비어있어요',true);return}
     const fm=['---',`report_id: ${id.toUpperCase()}`,'---',''].join('\n');
     await putFile(`reports/${id.toUpperCase()}.md`, b64utf8(fm+txt+'\n'), `Save ${id.toUpperCase()}.md`);
-    const short=txt.slice(0, 1000);
+    const short=txt.slice(0,SUMMARY_LIMIT);
     reports[id]={...(reports[id]||{id}), titleEN:reports[id]?.titleEN||'', titleKO:reports[id]?.titleKO||'', series:reports[id]?.series||'Aesthetic Reports', year:reports[id]?.year||'', text:txt, textShort:short, textUrl:`/reports/${id.toUpperCase()}.md`, textChars:txt.length, updatedAt:new Date().toISOString()};
-    await saveReportsJson(); rebuildReportTabs(); say('✅ 붙여넣기 저장 완료 · Saved');
-  }catch(e){ say('⚠️ 보고서 저장 실패 · '+e.message,true); }
+    await saveReportsJson(); rebuildReportTabs(); say('✅ 붙여넣기 저장 완료');
+  }catch(e){say('⚠️ 보고서 저장 실패 · '+e.message,true);}
 }
 function curRid(){return $("#r-id").value}
 async function saveReportsJson(){ await putFile(REP_JSON, b64utf8(JSON.stringify(reports,null,2)), 'Update reports.json'); }
@@ -464,76 +378,74 @@ async function saveReportText(){
     const meta={titleEN:$("#r-en").value.trim(),titleKO:$("#r-ko").value.trim(),series:$("#r-series").value.trim()||'Aesthetic Reports',year:$("#r-year").value.trim()};
     const fm=['---',`report_id: ${id.toUpperCase()}`,`title_en: "${meta.titleEN||''}"`,`title_ko: "${meta.titleKO||''}"`,`year: "${meta.year||''}"`,'---',''].join('\n');
     await putFile(`reports/${id.toUpperCase()}.md`, b64utf8(fm+txt+'\n'), `Save ${id.toUpperCase()}.md`);
-    const short=txt.slice(0, 1000);
+    const short=txt.slice(0,SUMMARY_LIMIT);
     reports[id]={...(reports[id]||{id}),...meta,text:txt,textShort:short,textUrl:`/reports/${id.toUpperCase()}.md`,textChars:txt.length,updatedAt:new Date().toISOString()};
-    await saveReportsJson(); rebuildReportTabs(); say('✅ 텍스트 저장 완료 · Saved');
-  }catch(e){ say('⚠️ 텍스트 저장 실패 · '+e.message,true); }
+    await saveReportsJson(); rebuildReportTabs(); say('✅ 텍스트 저장 완료');
+  }catch(e){say('⚠️ 텍스트 저장 실패 · '+e.message,true);}
 }
 async function saveReportMeta(){
-  try{
-    const id=curRid(); if(!reports[id]) reports[id]={id};
+  try{const id=curRid(); if(!reports[id]) reports[id]={id};
     Object.assign(reports[id],{titleEN:$("#r-en").value.trim(),titleKO:$("#r-ko").value.trim(),series:$("#r-series").value.trim()||'Aesthetic Reports',year:$("#r-year").value.trim(),updatedAt:new Date().toISOString()});
-    await saveReportsJson(); rebuildReportTabs(); say('✏️ 메타 저장 · Saved');
-  }catch(e){ say('⚠️ 메타 저장 실패 · '+e.message,true); }
+    await saveReportsJson(); rebuildReportTabs(); say('✏️ 메타 저장 완료');
+  }catch(e){say('⚠️ 메타 저장 실패 · '+e.message,true);}
 }
 async function uploadReportPDF(){
-  try{
-    const id=curRid(); const f=$("#r-pdf").files[0]; if(!f){say('PDF 선택 · Choose PDF');return}
+  try{const id=curRid(); const f=$("#r-pdf").files[0]; if(!f){say('PDF 선택',true);return}
     await putFile(`reports/${id.toUpperCase()}.pdf`, await f2b64(f), `Add ${id.toUpperCase()}.pdf`);
-    if(!reports[id]) reports[id]={id};
-    reports[id].pdfUrl=`/reports/${id.toUpperCase()}.pdf`; reports[id].updatedAt=new Date().toISOString();
-    await saveReportsJson(); say('✅ PDF 업로드 완료 · PDF uploaded');
-  }catch(e){ say('⚠️ PDF 업로드 실패 · '+e.message,true); }
+    if(!reports[id]) reports[id]={id}; reports[id].pdfUrl=`/reports/${id.toUpperCase()}.pdf`; reports[id].updatedAt=new Date().toISOString();
+    await saveReportsJson(); say('✅ PDF 업로드 완료');
+  }catch(e){say('⚠️ PDF 업로드 실패 · '+e.message,true);}
 }
 async function deleteReportAll(){
-  try{
-    const id=curRid();
-    try{await delFile(`reports/${id.toUpperCase()}.md`,'delete md')}catch{}
-    try{await delFile(`reports/${id.toUpperCase()}.pdf`,'delete pdf')}catch{}
-    delete reports[id]; await saveReportsJson(); rebuildReportTabs(); say('🗑 삭제 완료 · Deleted');
-  }catch(e){ say('⚠️ 삭제 실패 · '+e.message,true); }
+  try{const id=curRid(); try{await delFile(`reports/${id.toUpperCase()}.md`,'delete md')}catch{} try{await delFile(`reports/${id.toUpperCase()}.pdf`,'delete pdf')}catch{} delete reports[id]; await saveReportsJson(); rebuildReportTabs(); say('🗑 삭제 완료');}
+  catch(e){say('⚠️ 삭제 실패 · '+e.message,true);}
 }
 
-/* ===== Global Event Router (click + touchstart + pointerup) ===== */
-function __route(ev){
-  const t = ev.target.closest('[data-sec],[data-act],[data-rid]');
-  if(!t) return;
-  ev.preventDefault?.();
-
-  if (t.dataset.sec) return selectSection(t.dataset.sec, t);
-
-  switch (t.dataset.act) {
-    case 'save':    return saveCfg();
-    case 'logout':  return logout();
-    case 'test':    return testConn();
-    case 'touch':   return touchPages();
-    case 'diag':    return diag();
-    case 'upload':  return uploadArtwork(currentSection);
-    case 'meta':    return updateArtwork(currentSection);
-    case 'replace': return replaceImage(currentSection);
-    case 'delete':  return deleteArtwork(currentSection);
-    case 'qsave':   return quickSave();
-    case 'qrebuild':return rebuildReportTabs();
-    case 'openSite':return window.open('https://dungzak.art','_blank');
-  }
-  if (t.dataset.rid) return openReport(t.dataset.rid, t);
+/* ===== Unkillable Binder (iOS 확정 동작) ===== */
+function bindHard(){
+  // 모든 data-* 대상에 click + touchend + pointerdown 바인딩
+  document.querySelectorAll('[data-act],[data-sec],[data-rid]').forEach(el=>{
+    if(el.__lfBound) return; el.__lfBound=true;
+    ['click','touchend','pointerdown'].forEach(ev=>{
+      el.addEventListener(ev,e=>{
+        e.preventDefault(); e.stopPropagation();
+        const a=el.dataset.act, s=el.dataset.sec, r=el.dataset.rid;
+        if(a){
+          const map={ save:saveCfg, logout:logout, test:testConn, touch:touchPages, diag:diag,
+                      upload:()=>uploadArtwork(currentSection), meta:()=>updateArtwork(currentSection),
+                      replace:()=>replaceImage(currentSection), delete:()=>deleteArtwork(currentSection),
+                      qsave:quickSave, qrebuild:rebuildReportTabs, openSite:()=>window.open('https://dungzak.art','_blank') };
+          return map[a]?.();
+        }
+        if(s) return selectSection(s,el);
+        if(r) return openReport(r,el);
+      },{passive:false});
+    });
+    el.setAttribute('tabindex','0');
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
+    });
+  });
 }
-['click','touchstart','pointerup'].forEach(ev=>{
-  document.addEventListener(ev, __route, {passive:false});
-});
 
 /* ===== Init ===== */
+function buildWorkUI(){ buildWorkTabs(); selectSection('light',$('#workTabs button[data-sec="light"]')); }
+function buildReportUI(){ initQuickBox(); loadReports().catch(e=>say('⚠️ 보고서 로드 실패 · '+e.message,true)); }
+
 function init(){
-  // restore config
   ['owner','repo','branch','token'].forEach(id=>{const v=cfg(id); if(v) $('#'+id).value=v;});
-  // build tabs & default
-  buildWorkTabs(); selectSection('light', $('#workTabs button[data-sec="light"]'));
-  // data load
+  buildWorkUI();
   loadArtworks().catch(e=>say('⚠️ 작품 로드 실패 · '+e.message,true));
-  initQuickBox(); loadReports().catch(e=>say('⚠️ 보고서 로드 실패 · '+e.message,true));
+  buildReportUI();
   $("#qpv").innerHTML='';
+
+  // 바인딩 및 감시
+  bindHard();
+  const mo=new MutationObserver(bindHard);
+  mo.observe(document.body,{childList:true,subtree:true});
+  setInterval(bindHard,1200); // 추가 보강 루프
 }
-window.addEventListener('load', init);
+window.addEventListener('load',init);
 </script>
 </body>
 </html>

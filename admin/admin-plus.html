@@ -3,38 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lightflow Admin Ω.5 — DUNGZAK CESTLAVIE</title>
+<title>Lightflow Admin Ω.6 — DUNGZAK CESTLAVIE</title>
 <style>
-:root{--bg:#070c1a;--panel:#0b1020;--soft:#11182b;--fg:#e9eef7;--muted:#a9b2c7;--accent:#cdb37a;--bad:#ff6b6b;--good:#79e39e}
+:root{
+  --bg:#070c1a; --panel:#0b1020; --soft:#11182b; --fg:#e9eef7;
+  --muted:#a9b2c7; --accent:#cdb37a; --bad:#ff6b6b; --good:#79e39e;
+  --line:#1b2540; --line2:#22304f;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,Segoe UI,Roboto,Pretendard,sans-serif}
 .header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0a0f1f,transparent);padding:.9rem 1rem}
 h1{margin:0;font-size:1.12rem;color:var(--accent);font-weight:800}
-.container{max-width:900px;margin:0 auto;padding:0 10px 92px}
-.card{background:var(--panel);border:1px solid #1b2540;border-radius:14px;padding:14px;margin:10px 0}
+.container{max-width:900px;margin:0 auto;padding:0 12px 92px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
 .card h3{margin:6px 0 12px;font-size:1.02rem;color:#f2d9a2}
 .grid{display:grid;grid-template-columns:1fr;gap:10px}
-input,select,textarea,button{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #233058;background:var(--soft);color:var(--fg);font-size:16px}
+input,select,textarea,button{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--soft);color:var(--fg);font-size:16px}
 textarea{min-height:120px;resize:none}
-button{background:var(--accent);color:#000;font-weight:800;border:none}
+button{background:var(--accent);color:#000;font-weight:800;border:none;cursor:pointer}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap}
-.btn-ghost{background:#10182c;color:var(--fg);border:1px solid #22304f}
+.btn-ghost{background:#10182c;color:var(--fg);border:1px solid var(--line2)}
 .btn-bad{background:var(--bad);color:#000}
 .btn-good{background:var(--good);color:#033a1d}
 .small{font-size:12px;color:var(--muted)}
 .tabs{display:flex;overflow:auto;gap:6px;padding-bottom:6px}
-.tabs button{flex:0 0 auto;background:#0c1224;color:var(--fg);border:1px solid #22304f;border-radius:999px;padding:10px 12px;font-size:14px}
+.tabs button{flex:0 0 auto;background:#0c1224;color:var(--fg);border:1px solid var(--line2);border-radius:999px;padding:10px 12px;font-size:14px}
 .tabs button.active{background:var(--accent);color:#000}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center}
 .kv label{font-size:14px;color:#9db0d1}
-.preview{width:100%;max-height:260px;object-fit:contain;border-radius:10px;border:1px solid #22304f;background:#0b1223}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#0b1223;border:1px solid #22304f;color:var(--fg);padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:999;opacity:0;pointer-events:none;transition:opacity .25s}
+.preview{width:100%;max-height:260px;object-fit:contain;border-radius:10px;border:1px solid var(--line2);background:#0b1223}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#0b1223;border:1px solid var(--line2);color:var(--fg);padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:999;opacity:0;pointer-events:none;transition:opacity .25s}
 .toast.show{opacity:1}
-@media(min-width:640px){.grid-2{grid-template-columns:1fr 1fr}}
+.previewBox{border:1px dashed var(--line2);border-radius:12px;padding:12px;background:#0a1428;overflow:auto;max-height:360px}
+.previewBox h1,.previewBox h2,.previewBox h3{margin:.3em 0 .2em}
+.previewBox p{margin:.35em 0;line-height:1.45}
+@media(min-width:820px){.grid-2{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<div class="header"><h1>✨ Lightflow Admin Ω.5 <span class="small" style="margin-left:8px;color:#c9d4ff">iPhone Ready · Auto-Sync · MD Full / JSON Summary</span></h1></div>
+<div class="header"><h1>✨ Lightflow Admin Ω.6 <span class="small" style="margin-left:8px;color:#c9d4ff">Clean Visual · Paste → Save → Preview</span></h1></div>
 
 <div class="container">
   <!-- 0) 연결 -->
@@ -66,32 +73,26 @@ button{background:var(--accent);color:#000;font-weight:800;border:none}
     <div class="small">JSON: <code>/data/artworks.json</code> · 이미지: <code>/img/{section}/</code></div>
   </div>
 
-  <!-- 2) 미학 보고서 — 붙여넣기 우선 -->
+  <!-- 2) 미학 보고서 — 붙여넣기 / 자동저장 / 미리보기 -->
   <div class="card">
     <h3>2) 미학 보고서 · Aesthetic Reports</h3>
 
-    <!-- 빠른 붙여넣기 박스 -->
+    <!-- 빠른 붙여넣기 -->
     <div class="card" style="background:#0a142a">
       <div class="grid grid-2">
-        <div class="kv"><label>Report</label>
-          <select id="quick-id"></select>
-        </div>
+        <div class="kv"><label>Report</label><select id="quick-id"></select></div>
         <div class="kv"><label>Auto Save</label>
-          <select id="quick-auto">
-            <option value="on" selected>ON (붙여넣기 후 1.5초 저장)</option>
-            <option value="off">OFF (버튼 저장)</option>
-          </select>
+          <select id="quick-auto"><option value="on" selected>ON (붙여넣기 후 1.5초 저장)</option><option value="off">OFF (버튼 저장)</option></select>
         </div>
       </div>
-      <textarea id="quick-text" placeholder="여기에 DCAR 본문(한/영 무제한)을 그대로 붙여넣으세요. 저장 시 DCAR-XX.md로 전문이 기록되고, reports.json에는 1,000자 요약만 저장됩니다."></textarea>
+      <textarea id="quick-text" placeholder="여기에 DCAR 본문(한·영 무제한)을 붙여넣으세요. 저장 시 DCAR-XX.md로 전체가 저장되고, reports.json에는 요약 1,000자만 저장됩니다."></textarea>
       <div class="btn-row" style="margin-top:6px">
         <button onclick="quickSave()">📝 붙여넣기 저장(.md 전문 + JSON 요약)</button>
         <button class="btn-ghost" onclick="rebuildReportTabs()">🔁 버튼 재생성</button>
       </div>
-      <div class="small">텍스트: <code>/reports/DCAR-XX.md</code> (전문) · JSON: <code>/data/reports.json</code> (요약 1,000자)</div>
     </div>
 
-    <!-- 탭 & 상세 폼 -->
+    <!-- 탭 + 상세/미리보기 -->
     <div class="tabs" id="reportTabs" style="margin-top:6px"></div>
     <div id="reportForm"></div>
   </div>
@@ -100,7 +101,7 @@ button{background:var(--accent);color:#000;font-weight:800;border:none}
   <div class="card">
     <h3>3) 유틸</h3>
     <div class="btn-row">
-      <button onclick="touchPages()">GitHub Pages 캐시 무효화 (dummy commit)</button>
+      <button onclick="touchPages()">GitHub Pages 캐시 무효화</button>
       <button class="btn-ghost" onclick="window.open('https://dungzak.art','_blank')">사이트 열기</button>
     </div>
   </div>
@@ -111,7 +112,7 @@ button{background:var(--accent);color:#000;font-weight:800;border:none}
 <div id="toast" class="toast"></div>
 
 <script>
-/* ===== 공통 설정 & GitHub API (자동 SHA 동기화/재시도) ===== */
+/* ===== 공통: GitHub API + 자동 SHA 동기화 ===== */
 const SECTIONS=[{id:'light',label:'Ⅰ Light & Memory'},{id:'human',label:'Ⅱ Human Being'},{id:'rebirth',label:'Ⅲ Rebirth of Mind'},{id:'restore',label:'Ⅳ Restoration of Being'},{id:'meta',label:'Ⅴ Metaconsciousness of Light'}];
 const DCAR_IDS=Array.from({length:8},(_,i)=>`dcar${String(i+1).padStart(2,'0')}`);
 
@@ -234,24 +235,37 @@ async function deleteArtwork(sec){
   artworks[sec].splice(i,1); await saveArtworksJson(); refreshList(sec); say('🗑 삭제 완료')
 }
 
-/* ===== 2) 미학 보고서 : 붙여넣기 → 버튼 자동 생성 / MD 전문 + JSON 요약 ===== */
+/* ===== 2) 미학 보고서: 붙여넣기 → 저장 → 미리보기 ===== */
 let reports={}; const REP_JSON='data/reports.json';
-const SUMMARY_LIMIT = 1000; // JSON에는 1000자 요약만 저장
+const SUMMARY_LIMIT=1000; // JSON에는 1000자 요약만 저장
+
+function mdToHtml(md){
+  // 아주 가벼운 미리보기 렌더러 (제목/빈줄/줄바꿈 처리)
+  const esc = s => s.replace(/[&<>]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
+  return esc(md)
+    .split(/\n{2,}/).map(block=>{
+      if(/^#{1,3}\s/.test(block)) return '<h3>'+block.replace(/^#{1,3}\s*/,'')+'</h3>';
+      return '<p>'+block.replace(/\n/g,'<br>')+'</p>';
+    }).join('');
+}
 
 function initQuickBox(){
   const sel=$("#quick-id"); sel.innerHTML='';
   DCAR_IDS.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=id.toUpperCase();sel.appendChild(o)});
   $("#quick-text").addEventListener('input',()=>{
+    $("#qpv").innerHTML = mdToHtml($("#quick-text").value);
     if($("#quick-auto").value!=='on') return;
     clearTimeout(window.__qs); window.__qs=setTimeout(quickSave,1500);
   });
 }
+
 async function loadReports(){
   const r=await getContent(REP_JSON);
   if(r.exists){try{reports=JSON.parse(r.content)||{}}catch{reports={}};say('✅ reports.json 로드')}
   else{reports={}; say('ℹ️ reports.json 없음 → 생성 예정')}
   rebuildReportTabs();
 }
+
 function rebuildReportTabs(){
   const tabs=$("#reportTabs"); tabs.innerHTML='';
   DCAR_IDS.forEach(id=>{
@@ -265,6 +279,7 @@ function rebuildReportTabs(){
   });
   if(tabs.children.length) openReport(DCAR_IDS[0],tabs.children[0]);
 }
+
 function openReport(id,btn){
   $$("#reportTabs button").forEach(x=>x.classList.remove('active')); btn.classList.add('active');
   const d=reports[id]||{};
@@ -277,23 +292,27 @@ function openReport(id,btn){
         <div class="kv"><label>Title (KO)</label><input id="r-ko" value="${d.titleKO||''}" placeholder="빛, 기억, 존재에 관하여"></div>
         <div class="kv"><label>Series</label><input id="r-series" value="${d.series||'Aesthetic Reports'}"></div>
         <div class="kv"><label>Year</label><input id="r-year" value="${d.year||''}" placeholder="2025"></div>
-      </div>
-      <div class="card">
         <div class="kv"><label>PDF</label><input id="r-pdf" type="file" accept=".pdf"></div>
-        <div class="btn-row" style="margin-bottom:6px">
+        <div class="btn-row" style="margin-top:6px">
           <button onclick="uploadReportPDF()">📤 PDF 업로드</button>
           <button class="btn-ghost" onclick="window.open('${pdf}','_blank')">🔗 PDF 열기</button>
         </div>
-        <textarea id="r-text" placeholder="여기에 본문(한/영 무제한)을 붙여넣을 수 있습니다.">${d.text||''}</textarea>
+      </div>
+      <div class="card">
+        <textarea id="r-text" placeholder="여기에 본문(한·영 무제한)을 붙여넣을 수 있습니다.">${d.text||''}</textarea>
         <div class="btn-row" style="margin-top:6px">
           <button onclick="saveReportText()">📝 텍스트 저장(.md 전문 + JSON 요약)</button>
           <button class="btn-ghost" onclick="saveReportMeta()">✏️ 메타만 저장(JSON)</button>
           <button class="btn-bad" onclick="deleteReportAll()">🗑 전체 삭제</button>
         </div>
         <div class="small">.md: <code>${md}</code> · 글자수: <b id="r-count">${(d.text||'').length.toLocaleString()}</b> · 마지막: ${d.updatedAt||'-'}</div>
+        <div class="previewBox" id="rpv">${mdToHtml(d.text||'')}</div>
       </div>
     </div>`;
-  $("#r-text").addEventListener('input',e=>$("#r-count").textContent=e.target.value.length.toLocaleString());
+  $("#r-text").addEventListener('input',e=>{
+    $("#r-count").textContent=e.target.value.length.toLocaleString();
+    $("#rpv").innerHTML = mdToHtml(e.target.value);
+  });
 }
 
 /* 빠른 붙여넣기 저장 */
@@ -304,11 +323,10 @@ async function quickSave(){
   await putFile(`reports/${id.toUpperCase()}.md`,btoa(unescape(encodeURIComponent(fm+txt+'\n'))),`Save ${id.toUpperCase()}.md`);
   const short = txt.slice(0, SUMMARY_LIMIT);
   reports[id]={...(reports[id]||{id}), titleEN:reports[id]?.titleEN||'', titleKO:reports[id]?.titleKO||'', series:reports[id]?.series||'Aesthetic Reports', year:reports[id]?.year||'', text:txt, textShort:short, textUrl:`/reports/${id.toUpperCase()}.md`, textChars:txt.length, updatedAt:new Date().toISOString()};
-  await saveReportsJson();
-  rebuildReportTabs(); say('✅ 붙여넣기 저장 완료');
+  await saveReportsJson(); rebuildReportTabs(); say('✅ 붙여넣기 저장 완료');
 }
 
-/* 상세 폼 동작 */
+/* 상세 저장/삭제 */
 function curRid(){return $("#r-id").value}
 async function saveReportsJson(){await putFile(REP_JSON,btoa(unescape(encodeURIComponent(JSON.stringify(reports,null,2)))),'Update reports.json');}
 async function saveReportText(){
@@ -342,6 +360,8 @@ async function deleteReportAll(){
 function init(){
   ['owner','repo','branch','token'].forEach(id=>{const v=cfg(id); if(v) $('#'+id).value=v;});
   buildWorkUI(); initQuickBox(); loadArtworks().catch(()=>{}); loadReports().catch(()=>{});
+  // 빠른붙여넣기 미리보기 박스
+  const qpv=document.createElement('div'); qpv.id='qpv'; qpv.className='previewBox'; qpv.style.marginTop='8px'; $("#quick-text").insertAdjacentElement('afterend', qpv);
 }
 window.addEventListener('load',init);
 </script>

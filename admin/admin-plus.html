@@ -3,185 +3,441 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lightflow Admin Ω.1 — DUNGZAK CESTLAVIE</title>
+<title>Lightflow Admin Ω.2 — DUNGZAK CESTLAVIE</title>
 <style>
 :root{
-  --bg:#070c1a; --fg:#e6e6e6; --accent:#c6a86d; --soft:#1b2233;
+  --bg:#070c1a; --panel:#0b1020; --soft:#11182b; --fg:#e9eef7;
+  --muted:#a9b2c7; --accent:#cdb37a; --warn:#ffdd57; --bad:#ff6b6b; --good:#7bed9f;
 }
-body{
-  background:var(--bg); color:var(--fg); font-family:-apple-system, "Pretendard", sans-serif;
-  margin:0; padding:0; text-align:center;
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,Segoe UI,Roboto,Pretendard,sans-serif}
+.header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0a0f1f,transparent);padding:.9rem 1rem}
+h1{margin:0;font-size:1.1rem;color:var(--accent);font-weight:700;letter-spacing:.2px}
+.container{max-width:820px;margin:0 auto;padding:0 10px 80px}
+.card{background:var(--panel);border:1px solid #1b2540;border-radius:14px;padding:14px;margin:10px 0}
+.card h3{margin:4px 0 12px;font-size:1.0rem;color:#f2d9a2}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+input,select,textarea,button{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #233058;background:var(--soft);color:var(--fg);font-size:16px}
+textarea{min-height:110px}
+button{background:var(--accent);color:#000;font-weight:700;border:none}
+.btn-row{display:flex;gap:8px}
+.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700}
+.btn-ghost{background:#10182c;color:var(--fg);border:1px solid #22304f}
+.btn-bad{background:var(--bad);color:#000}
+.btn-good{background:var(--good);color:#033a1d}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#12203e;border:1px solid #223252;color:var(--muted);font-size:12px}
+.tabs{display:flex;overflow:auto;gap:6px;padding-bottom:6px}
+.tabs button{flex:0 0 auto;background:#0c1224;color:var(--fg);border:1px solid #22304f;border-radius:999px;padding:10px 12px;font-size:14px}
+.tabs button.active{background:var(--accent);color:#000}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center}
+.kv label{font-size:14px;color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+hr{border:0;height:1px;background:#1a2442;margin:12px 0}
+.row{display:flex;gap:8px}
+.row > *{flex:1}
+.preview{width:100%;max-height:260px;object-fit:contain;border-radius:10px;border:1px solid #22304f;background:#0b1223}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#0b1223;border:1px solid #22304f;color:var(--fg);padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:999}
+footer{padding:30px 14px;color:#8ea0c8;text-align:center}
+@media(min-width:640px){
+  .grid-2{grid-template-columns:1fr 1fr}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
 }
-h1{color:var(--accent); font-weight:600; font-size:1.4rem; margin:1rem 0;}
-section{padding:1rem; border-bottom:1px solid #222;}
-input,textarea,button,select{
-  width:90%; max-width:400px; margin:6px auto; padding:10px;
-  background:var(--soft); border:none; color:var(--fg); border-radius:6px;
-  display:block; font-size:0.9rem;
-}
-button{background:var(--accent); color:#000; font-weight:600; cursor:pointer;}
-.tabs{display:flex; flex-wrap:wrap; justify-content:center; gap:4px; margin-bottom:1rem;}
-.tabs button{flex:1 1 auto; background:#111; color:var(--fg); border:1px solid #222;}
-.tabs button.active{background:var(--accent); color:#000;}
-.card{background:#0b0f18; margin:8px auto; padding:12px; border-radius:8px; max-width:450px;}
-img.preview{max-width:100%; border-radius:4px; margin-top:6px;}
-label{font-size:0.8rem; color:#aaa;}
-hr{border:0; height:1px; background:#222; margin:20px 0;}
-footer{font-size:0.7rem; color:#666; padding:1rem;}
 </style>
 </head>
 <body>
-<h1>✨ Lightflow Admin Ω.1</h1>
+<div class="header">
+  <h1>✨ Lightflow Admin Ω.2 <span class="badge">iPhone-Ready</span></h1>
+</div>
+<div class="container">
 
-<section>
-  <h3>GitHub 연결</h3>
-  <input id="repo" placeholder="Repository (예: dungzakcestlavie.github.io)">
-  <input id="branch" placeholder="Branch (예: main)">
-  <input id="token" placeholder="Personal Access Token">
-  <button onclick="saveConfig()">🔐 연결정보 저장</button>
-  <button onclick="clearConfig()">❌ 토큰삭제</button>
-</section>
+  <!-- 0. 연결 -->
+  <div class="card" id="connect">
+    <h3>0) GitHub 연결 · Connection</h3>
+    <div class="grid grid-2">
+      <input id="owner" placeholder="GitHub Owner (예: dungzakcestlavie)">
+      <input id="repo" placeholder="Repository (예: dungzakcestlavie.github.io)">
+      <input id="branch" placeholder="Branch (예: main)" value="main">
+      <input id="token" placeholder="Personal Access Token (repo 권한)">
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn" onclick="saveConfig()">저장(로컬)</button>
+      <button class="btn btn-ghost" onclick="logout()">로그아웃/토큰삭제</button>
+      <button class="btn btn-good" onclick="testConn()">연결 테스트</button>
+    </div>
+    <div class="small" style="margin-top:6px">토큰은 이 브라우저의 <b>localStorage</b>에만 저장됩니다.</div>
+  </div>
 
-<section>
-  <h3>Ⅰ–Ⅴ 작품 아카이브 업로드</h3>
-  <div class="tabs" id="workTabs"></div>
-  <div id="workForm"></div>
-</section>
+  <!-- 1. 작품 아카이브 -->
+  <div class="card">
+    <h3>1) 작품 아카이브 · Artworks (Ⅰ–Ⅴ)</h3>
+    <div class="tabs" id="workTabs"></div>
+    <div id="workForm"></div>
+    <div class="btn-row" style="margin-top:6px">
+      <button class="btn btn-ghost" onclick="loadArtworks()">목록 불러오기</button>
+      <button class="btn" onclick="saveArtworksJson()">artworks.json 저장</button>
+    </div>
+    <div class="small">JSON 경로: <code>/data/artworks.json</code> · 이미지 경로: <code>/img/{section}/</code></div>
+  </div>
 
-<section>
-  <h3>DCAR 1–8 미학 보고서 업로드</h3>
-  <div id="reportContainer"></div>
-</section>
+  <!-- 2. 미학 보고서 -->
+  <div class="card">
+    <h3>2) 미학 보고서 · Aesthetic Reports (DCAR 1–8)</h3>
+    <div class="tabs" id="reportTabs"></div>
+    <div id="reportForm"></div>
+    <div class="btn-row" style="margin-top:6px">
+      <button class="btn btn-ghost" onclick="loadReports()">목록 불러오기</button>
+      <button class="btn" onclick="saveReportsJson()">reports.json 저장</button>
+    </div>
+    <div class="small">JSON 경로: <code>/data/reports.json</code> · 파일 경로: <code>/reports/</code></div>
+  </div>
 
-<footer>© 2025 등작 燈酌 DUNGZAK CESTLAVIE · Orchestrated with Lumera</footer>
+  <!-- 3. 유틸 -->
+  <div class="card">
+    <h3>3) 빠른 유틸</h3>
+    <div class="row">
+      <button class="btn" onclick="purgeCache()">GitHub Pages 캐시 무효화 트릭 (dummy commit)</button>
+      <button class="btn btn-ghost" onclick="openNewTab('https://dungzak.art')">사이트 열기</button>
+    </div>
+  </div>
+
+  <footer>© 2025 등작 燈酌 DUNGZAK CESTLAVIE · Orchestrated with Lumera — Light, Memory, and Being.</footer>
+</div>
+
+<div id="toast" class="toast" style="display:none"></div>
 
 <script>
-const sections=[
-  {id:'light', name:'Ⅰ Light & Memory'},
-  {id:'human', name:'Ⅱ Human Being'},
-  {id:'rebirth', name:'Ⅲ Rebirth of Mind'},
-  {id:'restoration', name:'Ⅳ Restoration of Being'},
-  {id:'meta', name:'Ⅴ Metaconsciousness of Light'}
+/* ===============================
+   0) 공통 설정 / GitHub API 헬퍼
+   =============================== */
+const SECTIONS = [
+  { id:'light',  label:'Ⅰ Light & Memory' },
+  { id:'human',  label:'Ⅱ Human Being' },
+  { id:'rebirth',label:'Ⅲ Rebirth of Mind' },
+  { id:'restore',label:'Ⅳ Restoration of Being' },
+  { id:'meta',   label:'Ⅴ Metaconsciousness of Light' },
 ];
-const repoEl=document.getElementById('repo');
-const branchEl=document.getElementById('branch');
-const tokenEl=document.getElementById('token');
+
+const $ = (q)=>document.querySelector(q);
+const $$ = (q)=>document.querySelectorAll(q);
+const toast = (msg)=>{ const t=$("#toast"); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2000); };
+
+function cfg(k){ return localStorage.getItem(k)||''; }
+function setcfg(k,v){ localStorage.setItem(k,v); }
 
 function saveConfig(){
-  localStorage.setItem('repo',repoEl.value);
-  localStorage.setItem('branch',branchEl.value);
-  localStorage.setItem('token',tokenEl.value);
-  alert('✅ 저장되었습니다');
+  ['owner','repo','branch','token'].forEach(id=>setcfg(id,$('#'+id).value.trim()));
+  toast('✅ 연결정보 저장');
 }
-function clearConfig(){
-  localStorage.clear();
-  alert('🔒 토큰 및 설정이 삭제되었습니다');
-}
-window.onload=()=>{
-  repoEl.value=localStorage.getItem('repo')||'';
-  branchEl.value=localStorage.getItem('branch')||'';
-  tokenEl.value=localStorage.getItem('token')||'';
-  buildWorkTabs(); buildReports();
-};
+function logout(){ localStorage.removeItem('token'); toast('🔒 토큰 삭제 완료'); }
+function testConn(){ gh('GET', `repos/${cfg('owner')}/${cfg('repo')}`).then(()=>toast('✅ 연결 성공')).catch(()=>toast('⚠️ 연결 실패 — 입력값 확인')); }
+function openNewTab(url){ window.open(url,'_blank'); }
 
-function buildWorkTabs(){
-  const tabWrap=document.getElementById('workTabs');
-  const formWrap=document.getElementById('workForm');
-  sections.forEach((s,i)=>{
-    const b=document.createElement('button');
-    b.textContent=s.name;
-    if(i===0)b.classList.add('active');
-    b.onclick=()=>{
-      document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      renderWorkForm(s.id,s.name);
-    };
-    tabWrap.appendChild(b);
+async function gh(method, path, body, isJson=true){
+  const token = cfg('token'); if(!token) throw new Error('Missing token');
+  const res = await fetch(`https://api.github.com/${path}`,{
+    method,
+    headers:{
+      'Accept':'application/vnd.github+json',
+      'Authorization':`token ${token}`
+    },
+    body: body ? (isJson ? JSON.stringify(body) : body) : null
   });
-  renderWorkForm(sections[0].id,sections[0].name);
+  if(!res.ok){ const txt=await res.text(); throw new Error(`GitHub ${res.status}: ${txt}`); }
+  return res.json();
 }
-
-function renderWorkForm(id,name){
-  const el=document.getElementById('workForm');
-  el.innerHTML=`
-  <div class="card">
-    <h4>${name}</h4>
-    <input id="artId" placeholder="Artwork ID (예: ${id}-01)">
-    <input id="artTitle" placeholder="Title (예: Pray for Us)">
-    <input id="artYear" placeholder="Year (예: 2025)">
-    <input id="artMedium" placeholder="Medium (예: Acrylic on Canvas)">
-    <input id="artSize" placeholder="Size (예: 162.2×130.3 cm)">
-    <input id="artImage" type="file" accept="image/*">
-    <textarea id="artDesc" placeholder="설명 (선택)"></textarea>
-    <button onclick="uploadArtwork('${id}')">📤 업로드</button>
-    <button onclick="deleteArtwork('${id}')">🗑 삭제</button>
-  </div>`;
+async function getContent(path){
+  const {owner,repo,branch} = {owner:cfg('owner'), repo:cfg('repo'), branch:cfg('branch')||'main'};
+  try{
+    const r = await gh('GET', `repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch)}`);
+    const content = r.content ? atob(r.content.replace(/\n/g,'')) : null;
+    return { sha:r.sha, content, exists:true };
+  }catch(e){ return { sha:null, content:null, exists:false }; }
 }
-
-async function uploadArtwork(sectionId){
-  const repo=localStorage.getItem('repo');
-  const branch=localStorage.getItem('branch');
-  const token=localStorage.getItem('token');
-  const file=document.getElementById('artImage').files[0];
-  if(!repo||!branch||!token){alert('⚠️ GitHub 연결정보를 입력하세요');return;}
-  if(!file){alert('이미지를 선택하세요');return;}
-  const reader=new FileReader();
-  reader.onload=async()=>{
-    const content=reader.result.split(',')[1];
-    const path=`img/${sectionId}/${file.name}`;
-    await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
-      method:'PUT',
-      headers:{Authorization:`token ${token}`,'Content-Type':'application/json'},
-      body:JSON.stringify({message:`Add ${path}`,content:content,branch:branch})
-    });
-    alert(`✅ ${sectionId} 업로드 완료`);
-  };
-  reader.readAsDataURL(file);
+async function putFile(path, base64Content, message){
+  const {owner,repo,branch} = {owner:cfg('owner'), repo:cfg('repo'), branch:cfg('branch')||'main'};
+  const prev = await getContent(path);
+  return gh('PUT', `repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+    message: message || `Update ${path}`,
+    content: base64Content,
+    sha: prev.exists ? prev.sha : undefined,
+    branch
+  });
 }
-
-async function deleteArtwork(sectionId){
-  alert(`🗑 ${sectionId} 작품 삭제 기능은 다음 버전에서 완성됩니다`);
+async function deleteFile(path, message){
+  const {owner,repo,branch} = {owner:cfg('owner'), repo:cfg('repo'), branch:cfg('branch')||'main'};
+  const prev = await getContent(path);
+  if(!prev.exists){ toast('이미 파일이 없습니다'); return; }
+  return gh('DELETE', `repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+    message: message || `Delete ${path}`,
+    sha: prev.sha,
+    branch
+  });
 }
+function fileToBase64(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result.split(',')[1]); fr.onerror=rej; fr.readAsDataURL(file); }); }
 
-function buildReports(){
-  const c=document.getElementById('reportContainer');
-  for(let i=1;i<=8;i++){
-    const div=document.createElement('div');
-    div.className='card';
-    div.innerHTML=`
-      <h4>DCAR-${String(i).padStart(2,'0')}</h4>
-      <input id="rTitle${i}" placeholder="Report Title">
-      <textarea id="rText${i}" placeholder="보고서 내용 또는 요약"></textarea>
-      <input id="rFile${i}" type="file" accept=".pdf,.txt,.docx">
-      <button onclick="uploadReport(${i})">📤 업로드</button>
-      <button onclick="deleteReport(${i})">🗑 삭제</button>`;
-    c.appendChild(div);
+/* ===============================
+   1) 작품 아카이브 (JSON + 이미지)
+   =============================== */
+let artworks = { light:[], human:[], rebirth:[], restore:[], meta:[] };
+const ARTWORKS_JSON = 'data/artworks.json';
+
+function buildWorkUI(){
+  const tabs = $("#workTabs");
+  tabs.innerHTML='';
+  SECTIONS.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.textContent=s.label;
+    b.onclick=()=>selectSection(s.id,b);
+    if(i===0) b.classList.add('active');
+    tabs.appendChild(b);
+  });
+  renderWorkForm(SECTIONS[0].id);
+}
+function selectSection(id,btn){
+  $$("#workTabs button").forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+  renderWorkForm(id);
+}
+function renderWorkForm(sec){
+  const el=$("#workForm");
+  el.innerHTML = `
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="kv"><label>Section</label><input value="${sec}" disabled></div>
+        <div class="kv"><label>Artwork ID</label><input id="w-id" placeholder="예: ${sec}-01"></div>
+        <div class="kv"><label>Title</label><input id="w-title" placeholder="작품 제목"></div>
+        <div class="kv"><label>Year</label><input id="w-year" placeholder="2025"></div>
+        <div class="kv"><label>Medium</label><input id="w-medium" placeholder="Acrylic on Canvas"></div>
+        <div class="kv"><label>Size</label><input id="w-size" placeholder="162.2×130.3 cm"></div>
+        <div class="kv"><label>Image</label><input id="w-file" type="file" accept="image/*"></div>
+        <img id="w-preview" class="preview" style="display:none">
+        <div class="btn-row">
+          <button class="btn" onclick="uploadArtwork('${sec}')">📤 업로드/저장</button>
+          <button class="btn btn-ghost" onclick="updateArtwork('${sec}')">✏️ 메타만 수정</button>
+          <button class="btn btn-bad" onclick="deleteArtwork('${sec}')">🗑 삭제</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="kv"><label>목록</label><select id="w-list" onchange="fillFromList('${sec}')"></select></div>
+        <div class="btn-row"><button class="btn btn-ghost" onclick="refreshList('${sec}')">섹션 목록 새로고침</button></div>
+        <div class="small">이 섹션의 JSON 항목 수: <b id="w-count">0</b></div>
+      </div>
+    </div>`;
+  $("#w-file").addEventListener('change',ev=>{
+    const f=ev.target.files?.[0]; if(!f) return;
+    const url=URL.createObjectURL(f); const p=$("#w-preview"); p.src=url; p.style.display='block';
+  });
+  refreshList(sec);
+}
+function findIndexById(sec,id){ return (artworks[sec]||[]).findIndex(x=>x.id===id); }
+
+async function loadArtworks(){
+  const r=await getContent(ARTWORKS_JSON);
+  if(r.exists){
+    try{ artworks = JSON.parse(r.content); }catch{ artworks = { light:[],human:[],rebirth:[],restore:[],meta:[] }; }
+    toast('✅ artworks.json 로드 완료');
+    // 현재 보이는 섹션 목록 업데이트
+    const active = [...$$("#workTabs button")].find(b=>b.classList.contains('active'));
+    if(active){ refreshList(active.textContent.startsWith('Ⅰ')?'light':
+                          active.textContent.startsWith('Ⅱ')?'human':
+                          active.textContent.startsWith('Ⅲ')?'rebirth':
+                          active.textContent.startsWith('Ⅳ')?'restore':'meta'); }
+  }else{
+    toast('ℹ️ artworks.json이 없어 새로 생성됩니다');
   }
 }
-
-async function uploadReport(i){
-  const repo=localStorage.getItem('repo');
-  const branch=localStorage.getItem('branch');
-  const token=localStorage.getItem('token');
-  const file=document.getElementById(`rFile${i}`).files[0];
-  if(!file){alert('파일을 선택하세요');return;}
-  const reader=new FileReader();
-  reader.onload=async()=>{
-    const content=reader.result.split(',')[1];
-    const path=`reports/DCAR-${String(i).padStart(2,'0')}-${file.name}`;
-    await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
-      method:'PUT',
-      headers:{Authorization:`token ${token}`,'Content-Type':'application/json'},
-      body:JSON.stringify({message:`Add ${path}`,content:content,branch:branch})
-    });
-    alert(`✅ DCAR-${i} 업로드 완료`);
+async function saveArtworksJson(){
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(artworks,null,2))));
+  await putFile(ARTWORKS_JSON,b64,'Update artworks.json');
+  toast('💾 artworks.json 저장 완료');
+}
+function refreshList(sec){
+  const list=$("#w-list"); list.innerHTML='';
+  (artworks[sec]||[]).forEach(a=>{
+    const opt=document.createElement('option'); opt.value=a.id; opt.textContent=`${a.id} — ${a.title||''}`;
+    list.appendChild(opt);
+  });
+  $("#w-count").textContent = artworks[sec]?.length||0;
+}
+function fillFromList(sec){
+  const id=$("#w-list").value; const a=(artworks[sec]||[]).find(x=>x.id===id);
+  if(!a) return;
+  $("#w-id").value=a.id||''; $("#w-title").value=a.title||''; $("#w-year").value=a.year||'';
+  $("#w-medium").value=a.medium||''; $("#w-size").value=a.size||'';
+  // 미리보기
+  const p=$("#w-preview"); if(a.image){ p.src=a.image; p.style.display='block'; } else { p.style.display='none'; }
+}
+async function uploadArtwork(sec){
+  // 1) 이미지 업로드
+  const file=$("#w-file").files[0];
+  const id=$("#w-id").value.trim(); if(!id){ toast('⚠️ Artwork ID를 입력하세요'); return; }
+  let imageUrl;
+  if(file){
+    const b64 = await fileToBase64(file);
+    const safeName = file.name.replace(/\s+/g,'_');
+    const imgPath = `img/${sec}/${safeName}`;
+    await putFile(imgPath,b64,`Add ${imgPath}`);
+    imageUrl = `/${imgPath}`;
+  }
+  // 2) JSON 업데이트(삽입 또는 갱신)
+  const entry = {
+    id,
+    title: $("#w-title").value.trim(),
+    year: $("#w-year").value.trim(),
+    medium: $("#w-medium").value.trim(),
+    size: $("#w-size").value.trim(),
+    image: imageUrl || (artworks[sec].find(x=>x.id===id)?.image||'')
   };
-  reader.readAsDataURL(file);
+  const idx = findIndexById(sec,id);
+  if(idx>=0) artworks[sec][idx]=entry; else artworks[sec].push(entry);
+  await saveArtworksJson();
+  refreshList(sec);
+  toast('✅ 작품 저장 완료');
+}
+async function updateArtwork(sec){
+  const id=$("#w-id").value.trim(); if(!id){ toast('ID를 선택/입력하세요'); return; }
+  const idx = findIndexById(sec,id); if(idx<0){ toast('목록에 없음 — 먼저 업로드하세요'); return; }
+  Object.assign(artworks[sec][idx],{
+    title: $("#w-title").value.trim(),
+    year: $("#w-year").value.trim(),
+    medium: $("#w-medium").value.trim(),
+    size: $("#w-size").value.trim()
+  });
+  await saveArtworksJson();
+  toast('✏️ 메타데이터 수정 완료');
+}
+async function deleteArtwork(sec){
+  const id=$("#w-id").value.trim(); if(!id){ toast('ID를 입력하세요'); return; }
+  const idx = findIndexById(sec,id); if(idx<0){ toast('목록에 없음'); return; }
+  // 이미지 파일도 가능한 경우 삭제 시도 (URL이 내부 경로일 때만)
+  const url = artworks[sec][idx].image||'';
+  if(url.startsWith('/img/')){ try{ await deleteFile(url.replace(/^\//,''), `Delete ${url}`); }catch{} }
+  artworks[sec].splice(idx,1);
+  await saveArtworksJson();
+  refreshList(sec);
+  toast('🗑 작품 삭제 완료');
 }
 
-function deleteReport(i){
-  alert(`🗑 DCAR-${i} 삭제 기능은 다음 버전에서 완성됩니다`);
+/* ===============================
+   2) 미학 보고서 (DCAR 1–8)
+   =============================== */
+let reports = {}; // { dcar01:{id,titleEN,titleKO,year,series,pdf,text} ... }
+const REPORTS_JSON = 'data/reports.json';
+const DCAR_IDS = Array.from({length:8},(_,i)=>`dcar${String(i+1).padStart(2,'0')}`);
+
+function buildReportUI(){
+  const tabs=$("#reportTabs"); tabs.innerHTML='';
+  DCAR_IDS.forEach((rid,i)=>{
+    const b=document.createElement('button');
+    b.textContent=rid.toUpperCase();
+    b.onclick=()=>selectReport(rid,b);
+    if(i===0) b.classList.add('active');
+    tabs.appendChild(b);
+  });
+  renderReportForm(DCAR_IDS[0]);
 }
+function selectReport(rid,btn){ $$("#reportTabs button").forEach(x=>x.classList.remove('active')); btn.classList.add('active'); renderReportForm(rid); }
+function renderReportForm(rid){
+  const data = reports[rid]||{};
+  $("#reportForm").innerHTML=`
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="kv"><label>Report ID</label><input id="r-id" value="${rid}" disabled></div>
+        <div class="kv"><label>Title (EN)</label><input id="r-en" placeholder="On Light, Memory, and Being" value="${data.titleEN||''}"></div>
+        <div class="kv"><label>Title (KO)</label><input id="r-ko" placeholder="빛, 기억, 존재에 관하여" value="${data.titleKO||''}"></div>
+        <div class="kv"><label>Series</label><input id="r-series" placeholder="Aesthetic Reports" value="${data.series||'Aesthetic Reports'}"></div>
+        <div class="kv"><label>Year</label><input id="r-year" placeholder="2025" value="${data.year||''}"></div>
+      </div>
+      <div class="card">
+        <div class="kv"><label>PDF</label><input id="r-pdf" type="file" accept=".pdf"></div>
+        <textarea id="r-text" placeholder="요약 또는 본문 (선택)">${data.text||''}</textarea>
+        <div class="btn-row">
+          <button class="btn" onclick="uploadReport()">📤 업로드/저장</button>
+          <button class="btn btn-ghost" onclick="updateReport()">✏️ 메타만 수정</button>
+          <button class="btn btn-bad" onclick="deleteReport()">🗑 삭제</button>
+        </div>
+        <div class="small">PDF 경로: <code>/reports/${rid.toUpperCase()}.pdf</code></div>
+      </div>
+    </div>`;
+}
+async function loadReports(){
+  const r=await getContent(REPORTS_JSON);
+  if(r.exists){ try{ reports = JSON.parse(r.content)||{}; }catch{ reports={}; } toast('✅ reports.json 로드 완료'); }
+  else{ toast('ℹ️ reports.json이 없어 새로 생성됩니다'); }
+  // 화면 갱신
+  const activeBtn=[...$$("#reportTabs button")].find(b=>b.classList.contains('active'));
+  const activeId=activeBtn?activeBtn.textContent.toLowerCase():DCAR_IDS[0];
+  renderReportForm(activeId);
+}
+async function saveReportsJson(){
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(reports,null,2))));
+  await putFile(REPORTS_JSON,b64,'Update reports.json');
+  toast('💾 reports.json 저장 완료');
+}
+async function uploadReport(){
+  const rid=$("#r-id").value; const pdf=$("#r-pdf").files[0];
+  if(pdf){ // 파일 업로드
+    const b64 = await fileToBase64(pdf);
+    await putFile(`reports/${rid.toUpperCase()}.pdf`, b64, `Add ${rid.toUpperCase()}.pdf`);
+  }
+  // JSON 업데이트
+  reports[rid] = {
+    id: rid,
+    titleEN: $("#r-en").value.trim(),
+    titleKO: $("#r-ko").value.trim(),
+    series: $("#r-series").value.trim(),
+    year: $("#r-year").value.trim(),
+    text: $("#r-text").value
+  };
+  await saveReportsJson();
+  toast('✅ 보고서 저장 완료');
+}
+async function updateReport(){
+  const rid=$("#r-id").value;
+  if(!reports[rid]) reports[rid]={ id:rid };
+  Object.assign(reports[rid],{
+    titleEN: $("#r-en").value.trim(),
+    titleKO: $("#r-ko").value.trim(),
+    series: $("#r-series").value.trim(),
+    year: $("#r-year").value.trim(),
+    text: $("#r-text").value
+  });
+  await saveReportsJson();
+  toast('✏️ 보고서 메타 수정 완료');
+}
+async function deleteReport(){
+  const rid=$("#r-id").value;
+  // PDF 삭제 시도
+  try{ await deleteFile(`reports/${rid.toUpperCase()}.pdf`, `Delete ${rid.toUpperCase()}.pdf`);}catch{}
+  delete reports[rid];
+  await saveReportsJson();
+  toast('🗑 보고서 삭제 완료');
+}
+
+/* ===============================
+   3) 기타
+   =============================== */
+async function purgeCache(){
+  // 더미 타임스탬프 파일 갱신 → Pages 캐시 무효화 트릭
+  const path = 'data/.pages-touch';
+  const b64 = btoa(`touched: ${new Date().toISOString()}`);
+  await putFile(path,b64,'Touch pages cache');
+  toast('🚀 캐시 무효화 commit 완료');
+}
+
+/* ===============================
+   Init
+   =============================== */
+function init(){
+  // restore cfg
+  ['owner','repo','branch','token'].forEach(id=>{ const v=cfg(id); if(v) $('#'+id).value=v; });
+  buildWorkUI();
+  buildReportUI();
+  // 최초 로드 시 JSON 시도
+  loadArtworks().catch(()=>{});
+  loadReports().catch(()=>{});
+}
+window.addEventListener('load', init);
 </script>
 </body>
 </html>

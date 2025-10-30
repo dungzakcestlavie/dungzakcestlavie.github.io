@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Lightflow Admin Ω.15 — One-File Unified (Artworks+Reports+Index)</title>
+<meta name="theme-color" content="#070c1a" />
+<style>
+:root{
+  --bg:#070c1a;--panel:#0b1020;--soft:#101838;--fg:#e8edf8;
+  --muted:#9fb0ce;--accent:#d4b97a;--ok:#20c997;--bad:#ff6b6b;--warn:#ffaf45;
+  --bd:#1e2744;--r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Helvetica,Arial}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(7,12,26,.9),rgba(7,12,26,.6));backdrop-filter:blur(6px);border-bottom:1px solid var(--bd)}
+h1{margin:0;padding:14px 16px;font-size:18px;color:var(--accent)}
+main{max-width:980px;margin:0 auto;padding:14px}
+section.card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin:10px 0}
+h2{margin:0 0 8px 0;font-size:16px;color:var(--accent)}
+label{display:block;margin:8px 0 4px 0;color:var(--muted);font-size:13px}
+input,select,textarea{width:100%;background:#0e1530;color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+textarea{min-height:220px;resize:vertical;white-space:pre-wrap}
+.row{display:grid;gap:10px}
+.row.cols2{grid-template-columns:1fr 1fr}
+.row.cols3{grid-template-columns:1fr 1fr 1fr}
+button{cursor:pointer;font-weight:700;border:none;border-radius:12px;padding:11px 14px}
+.btn{background:#1a2344;color:#cfe0ff;border:1px solid var(--bd)}
+.btn-ok{background:var(--ok);color:#001a12}
+.btn-ghost{background:#0c1738;color:#cfe0ff;border:1px solid var(--bd)}
+.btn-bad{background:var(--bad);color:#1d0000}
+.btn-warn{background:var(--warn);color:#2a1200}
+.small{font-size:12px;color:var(--muted)}
+hr.sep{border:none;border-top:1px dashed var(--bd);margin:12px 0}
+kbd{background:#121b36;border:1px solid var(--bd);border-radius:6px;padding:0 6px;color:#9db4ff}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;border:1px solid var(--bd);background:#0f1836;color:#cfe0ff}
+.grid2{display:grid;gap:10px}
+@media(min-width:880px){ .grid2{grid-template-columns:1fr 1fr} }
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0b122c;border:1px solid var(--bd);color:#eaf4ff;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);display:none}
+.toast.show{display:block;animation:f .2s ease-out}
+@keyframes f{from{opacity:.3;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.flex{display:flex;gap:8px;flex-wrap:wrap}
+a.inline{color:#bcd3ff;text-decoration:none;border-bottom:1px dotted #3552a8}
+footer{opacity:.7;margin:16px 0 40px 0;font-size:12px}
+</style>
+</head>
+<body>
+<header><h1>등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Admin Ω.15 — Unified</h1></header>
+<main>
+
+<!-- SETTINGS -->
+<section class="card" id="sec-settings">
+  <h2>1) Settings · 연결</h2>
+  <div class="row cols2">
+    <div>
+      <label>Owner</label>
+      <input id="owner" placeholder="dungzakcestlavie" />
+    </div>
+    <div>
+      <label>Repository</label>
+      <input id="repo" placeholder="dungzakcestlavie.github.io" />
+    </div>
+  </div>
+  <div class="row cols2">
+    <div>
+      <label>Branch</label>
+      <input id="branch" value="main" />
+    </div>
+    <div>
+      <label>Personal Access Token (PAT) <span class="small">로컬 저장만</span></label>
+      <input id="token" placeholder="ghp_… 혹은 github_pat_…" />
+    </div>
+  </div>
+  <div class="flex" style="margin-top:8px">
+    <button class="btn-ok" id="btnSaveLocal">저장(로컬)</button>
+    <button class="btn" id="btnTest">연결 테스트</button>
+    <button class="btn-ghost" id="btnBust">GitHub Pages 캐시 무효화</button>
+    <button class="btn-bad" id="btnLogout">로그아웃/토큰삭제</button>
+  </div>
+  <div class="small" id="connState" style="margin-top:8px">상태: -</div>
+</section>
+
+<!-- REPORTS -->
+<section class="card" id="sec-reports">
+  <h2>2) 미학 보고서 · Aesthetic Reports (DCAR01–08)</h2>
+
+  <div class="row cols3">
+    <div>
+      <label>Report</label>
+      <select id="reportId">
+        <option>DCAR01</option>
+        <option>DCAR02</option>
+        <option>DCAR03</option>
+        <option>DCAR04</option>
+        <option>DCAR05</option>
+        <option>DCAR06</option>
+        <option>DCAR07</option>
+        <option>DCAR08</option>
+      </select>
+    </div>
+    <div>
+      <label>Auto Save</label>
+      <select id="autoMode">
+        <option value="paste">ON (붙여넣기 저장)</option>
+        <option value="off">OFF</option>
+      </select>
+    </div>
+    <div>
+      <label>파일 경로(참고)</label>
+      <input id="reportPath" class="mono" readonly />
+    </div>
+  </div>
+
+  <label>여기에 DCAR 본문(한/영 무제한)을 붙여넣고 <b>Save Paste</b> 클릭</label>
+  <textarea id="reportText" placeholder="등작 燈酌 DUNGZAK CESTLAVIE — DCAR 본문 전체를 여기에 붙여넣으세요. (KR/EN, unlimited)"></textarea>
+
+  <div class="flex" style="margin-top:8px">
+    <button class="btn-warn" id="btnPreview">미리보기(요약)</button>
+    <button class="btn-ok" id="btnSaveReport">붙여넣기 저장 · Save Paste (.md + JSON)</button>
+    <button class="btn-bad" id="btnDeleteReport">보고서 삭제</button>
+    <button class="btn" id="btnReloadTabs">버튼 재생성 · Rebuild Tabs</button>
+  </div>
+
+  <hr class="sep" />
+  <details>
+    <summary class="badge">동작 설명</summary>
+    <div class="small" style="margin-top:6px">
+      • 본문은 <span class="mono">/reports/DCARXX.md</span>로 저장합니다.<br/>
+      • 1,000자 요약 및 메타는 <span class="mono">/data/reports.json</span>에 반영합니다.<br/>
+      • 파일이 이미 있으면 자동으로 SHA를 조회하여 업데이트(409 충돌 방지).<br/>
+      • 삭제는 <span class="mono">DCARXX.md</span>와 <span class="mono">reports.json</span>에서 해당 항목을 제거합니다.<br/>
+      • 모든 요청은 GitHub REST <span class="mono">/repos/:owner/:repo/contents/:path</span> API 사용.
+    </div>
+  </details>
+</section>
+
+<!-- INDEX UTIL -->
+<section class="card">
+  <h2>3) Index/Health</h2>
+  <div class="flex">
+    <button class="btn" id="btnTouchIndex">index.html 저장시간 갱신(Touch)</button>
+    <a class="inline" id="siteLink" target="_blank" href="/">공식 사이트 열기</a>
+  </div>
+</section>
+
+<footer class="small">
+  Owner: <span id="fOwner" class="mono"></span> · Repo: <span id="fRepo" class="mono"></span> · Branch: <span id="fBranch" class="mono"></span><br/>
+  Token은 이 브라우저의 <span class="mono">localStorage</span>에만 저장됩니다.
+</footer>
+
+<div id="toast" class="toast">-</div>
+
+</main>
+
+<script>
+/* ========= Core Utilities ========= */
+const $ = (q)=>document.querySelector(q);
+const showToast = (msg)=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2200); };
+
+const LSKEY = "lightflow_admin_v15";
+function saveLocal(){
+  const data = {
+    owner: $("#owner").value.trim(),
+    repo: $("#repo").value.trim(),
+    branch: $("#branch").value.trim(),
+    token: $("#token").value.trim()
+  };
+  localStorage.setItem(LSKEY, JSON.stringify(data));
+  $("#fOwner").textContent = data.owner; $("#fRepo").textContent=data.repo; $("#fBranch").textContent=data.branch;
+  showToast("로컬 저장 완료");
+}
+function loadLocal(){
+  const raw = localStorage.getItem(LSKEY);
+  if(!raw) return;
+  try{
+    const d = JSON.parse(raw);
+    $("#owner").value=d.owner||"";
+    $("#repo").value=d.repo||"";
+    $("#branch").value=d.branch||"main";
+    $("#token").value=d.token||"";
+    $("#fOwner").textContent=d.owner||""; $("#fRepo").textContent=d.repo||""; $("#fBranch").textContent=d.branch||"";
+  }catch(e){}
+}
+
+/* ========= GitHub API ========= */
+function ghBase(){ return `https://api.github.com/repos/${owner()}/${repo()}/contents`; }
+function owner(){ return $("#owner").value.trim(); }
+function repo(){ return $("#repo").value.trim(); }
+function branch(){ return $("#branch").value.trim() || "main"; }
+function token(){ return $("#token").value.trim(); }
+
+async function ghGet(path){
+  const url = `${ghBase()}/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch())}`;
+  const r = await fetch(url,{headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"}});
+  if(r.status===404) return null;
+  if(!r.ok){ throw new Error(`GET ${path} ${r.status}`); }
+  return r.json();
+}
+
+async function ghPut(path, contentText, message){
+  // check existence to get SHA (prevents 409)
+  const cur = await ghGet(path); // may be null
+  const body = {
+    message: message || `update ${path}`,
+    content: btoa(unescape(encodeURIComponent(contentText))),
+    branch: branch()
+  };
+  if(cur && cur.sha) body.sha = cur.sha;
+
+  const url = `${ghBase()}/${encodeURIComponent(path)}`;
+  const r = await fetch(url,{
+    method:"PUT",
+    headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"},
+    body: JSON.stringify(body)
+  });
+  if(!r.ok){
+    const j = await r.json().catch(()=>({}));
+    throw new Error(`PUT ${path} ${r.status}: ${j.message||"error"}`);
+  }
+  return r.json();
+}
+
+async function ghDelete(path, message){
+  const cur = await ghGet(path);
+  if(!cur || !cur.sha) return {skipped:true};
+  const url = `${ghBase()}/${encodeURIComponent(path)}`;
+  const r = await fetch(url,{
+    method:"DELETE",
+    headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"},
+    body: JSON.stringify({message: message||`delete ${path}`, sha: cur.sha, branch: branch()})
+  });
+  if(!r.ok){
+    const j = await r.json().catch(()=>({}));
+    throw new Error(`DELETE ${path} ${r.status}: ${j.message||"error"}`);
+  }
+  return r.json();
+}
+
+/* ========= Helpers for Reports ========= */
+const REPORTS_JSON = "data/reports.json";
+function dcarPath(id){ return `reports/${id}.md`; }
+function nowIso(){ return new Date().toISOString(); }
+function makeSummary(txt){
+  // title: 첫 줄 또는 첫 번째 Markdown 헤딩
+  const lines = (txt||"").split(/\r?\n/);
+  let title = (lines.find(l=>/^#{1,3}\s+/.test(l))||lines[0]||"").replace(/^#{1,3}\s+/,"").trim();
+  title = title||"Untitled";
+  const stripped = (txt||"").replace(/[#>*_\-\[\]\(\)`]/g," ").replace(/\s+/g," ").trim();
+  const summary = stripped.slice(0, 1000);
+  return {title, summary};
+}
+async function loadReportsJson(){
+  const j = await ghGet(REPORTS_JSON);
+  if(!j || !j.content) return {items:[]};
+  try{
+    const raw = decodeURIComponent(escape(atob(j.content)));
+    const obj = JSON.parse(raw);
+    obj._sha = j.sha;
+    return obj;
+  }catch(e){ return {items:[],_sha:j.sha}; }
+}
+function upsertReport(arr, item){
+  const i = arr.findIndex(x=>x.id===item.id);
+  if(i>=0) arr[i]=item; else arr.push(item);
+  return arr;
+}
+function removeReport(arr, id){
+  const i = arr.findIndex(x=>x.id===id);
+  if(i>=0) arr.splice(i,1);
+  return arr;
+}
+
+/* ========= UI Logic ========= */
+function refreshReportPath(){
+  const id = $("#reportId").value;
+  $("#reportPath").value = dcarPath(id);
+}
+
+async function testConnection(){
+  try{
+    const root = await ghGet("README.md"); // just try; may be null
+    $("#connState").textContent = `연결 OK (token 유효) · 브랜치: ${branch()}`;
+    showToast("연결 성공");
+  }catch(e){
+    $("#connState").textContent = `연결 실패: ${e.message}`;
+    showToast("연결 실패");
+  }
+}
+
+async function saveReport(){
+  const id = $("#reportId").value;
+  const txt = $("#reportText").value.trim();
+  if(!txt){ showToast("본문이 비어있습니다"); return; }
+
+  // 1) .md 저장
+  const mdPath = dcarPath(id);
+  await ghPut(mdPath, txt, `DCAR ${id}: update markdown`);
+
+  // 2) reports.json 업데이트
+  const meta = makeSummary(txt);
+  const json = await loadReportsJson();
+  const updated = {
+    id,
+    title: meta.title,
+    lang: "KR+EN",
+    path: mdPath,
+    updated: nowIso(),
+    summary: meta.summary
+  };
+  json.items = upsertReport(json.items||[], updated);
+
+  const out = JSON.stringify({items: json.items}, null, 2);
+  await ghPut(REPORTS_JSON, out, `DCAR ${id}: update reports.json`);
+
+  showToast(`저장 완료: ${id}`);
+}
+
+async function deleteReport(){
+  const id = $("#reportId").value;
+  // 1) md 삭제
+  await ghDelete(dcarPath(id), `DCAR ${id}: delete markdown`);
+  // 2) json에서 제거
+  const json = await loadReportsJson();
+  json.items = removeReport(json.items||[], id);
+  const out = JSON.stringify({items: json.items}, null, 2);
+  await ghPut(REPORTS_JSON, out, `DCAR ${id}: remove from reports.json`);
+  showToast(`삭제 완료: ${id}`);
+}
+
+function previewSummary(){
+  const meta = makeSummary($("#reportText").value||"");
+  alert(`제목(추출): ${meta.title}\n요약(1,000자):\n\n${meta.summary}`);
+}
+
+async function touchIndex(){
+  const stamp = `<!-- touch ${nowIso()} -->`;
+  // load index.html, append comment footer to force new SHA
+  const cur = await ghGet("index.html");
+  if(!cur || !cur.content){ showToast("index.html을 불러올 수 없습니다"); return; }
+  const raw = decodeURIComponent(escape(atob(cur.content)));
+  const newText = raw.replace(/\n?<!-- touch .* -->\s*$/,"") + "\n" + stamp + "\n";
+  await ghPut("index.html", newText, "touch index.html (cache bust)");
+  showToast("index.html 갱신");
+}
+
+function bustPages(){
+  // 실제 Pages 캐시 무효화 API는 없음. 쿼리스트링 버전으로 우회.
+  const a = $("#siteLink");
+  a.href = `/?v=${Date.now()}`;
+  showToast("페이지 새로고침 시 새 버전 쿼리 적용");
+}
+
+/* ========= Events ========= */
+$("#btnSaveLocal").onclick = saveLocal;
+$("#btnTest").onclick = testConnection;
+$("#btnBust").onclick = bustPages;
+$("#btnLogout").onclick = ()=>{ localStorage.removeItem(LSKEY); $("#token").value=""; showToast("토큰 삭제(로컬)"); };
+
+$("#reportId").onchange = refreshReportPath;
+$("#btnSaveReport").onclick = saveReport;
+$("#btnDeleteReport").onclick = deleteReport;
+$("#btnPreview").onclick = previewSummary;
+$("#btnReloadTabs").onclick = ()=>showToast("버튼 재생성 완료");
+
+$("#btnTouchIndex").onclick = touchIndex;
+
+/* ========= Init ========= */
+loadLocal();
+refreshReportPath();
+(()=>{ const origin = location.origin||""; $("#siteLink").href = origin+"/"; })();
+</script>
+</body>
+</html>

@@ -1,294 +1,400 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Lightflow Admin Ω.15 — Unified</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Lightflow Admin Ω.15 — Unified · Reports</title>
+<meta name="theme-color" content="#070c1a"/>
 <style>
 :root{
-  --bg:#070c1a;--panel:#0b1020;--soft:#101830;--fg:#e8edf7;--muted:#9fb0cc;
-  --border:#1e2744;--accent:#d4b97a;--accent2:#a3c2ff;--ok:#72e0a7;--bad:#ff6b6b;
+  --bg:#070c1a;--panel:#0b1020;--soft:#101835;--muted:#9fa8c0;
+  --accent:#d4b97a;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Pretendard,sans-serif}
-header{position:sticky;top:0;z-index:8;background:#0b1225;padding:12px;border-bottom:1px solid var(--border)}
+body{margin:0;background:var(--bg);color:#e6edf6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.5}
+header{position:sticky;top:0;z-index:9;background:linear-gradient(180deg,#101835,#0b1020);padding:.9rem 1rem;border-bottom:1px solid var(--border)}
 h1{margin:0;font-size:18px;color:var(--accent);font-weight:800}
 .sub{font-size:12px;color:var(--muted)}
-.nav{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.nav button{border:1px solid var(--border);background:#0d1530;color:#cfe0ff;border-radius:999px;padding:9px 14px;font-weight:800}
-.nav button.active{background:var(--accent);color:#000}
-.container{max-width:980px;margin:0 auto;padding:12px}
-.card{background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--border);margin:10px 0}
-h3{margin:0 0 8px;color:var(--accent)}
-input,textarea,button,select{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--fg)}
-button{font-weight:800;cursor:pointer}
-.btn{background:var(--accent);color:#000;border:none}
-.btn-ok{background:var(--ok);color:#002f1d;border:none}
-.btn-ghost{background:#0f1a39;color:#cfe0ff;border:1px solid var(--border)}
-.btn-bad{background:var(--bad);color:#000;border:none}
-.grid2{display:grid;grid-template-columns:1fr;gap:8px}
-@media(min-width:860px){.grid2{grid-template-columns:1fr 1fr}}
-.small{font-size:12px;color:var(--muted)}
-.hidden{display:none}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0b1223;border:1px solid var(--border);padding:8px 14px;border-radius:8px;opacity:0;transition:.2s}
-.toast.show{opacity:1}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.thumb{position:relative;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.thumb img{width:100%;height:120px;object-fit:cover}
-.thumb .cap{padding:4px 8px;font-size:12px}
-.thumb .x{position:absolute;top:6px;right:6px;background:var(--bad);border:none;border-radius:999px;font-size:11px;padding:3px 6px}
-.drop{border:2px dashed var(--border);text-align:center;padding:12px;border-radius:10px}
-.drop.drag{background:#14224a;border-color:#7fa1ff}
-pre.preview{background:#0b162d;border:1px solid var(--border);border-radius:8px;padding:8px;white-space:pre-wrap;max-height:260px;overflow:auto}
+.container{max-width:980px;margin:0 auto;padding:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:14px 0}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+input,textarea,select{width:100%;background:#0e1733;color:#e6edf6;border:1px solid var(--border);border-radius:10px;padding:12px}
+textarea{min-height:120px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{font-weight:800;cursor:pointer;border-radius:12px;border:1px solid var(--border);padding:12px 16px}
+.btn-prim{background:var(--accent);color:#000}
+.btn-sec{background:#0f1a39}
+.btn-ok{background:var(--ok);color:#001a10}
+.btn-bad{background:var(--bad);color:#000}
+small{display:block;color:var(--muted);margin-top:6px}
+hr{border:none;border-top:1px dashed var(--border);margin:14px 0}
+pre{background:#0e1733;border:1px solid var(--border);border-radius:12px;padding:12px;white-space:pre-wrap}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0f1a39;border:1px solid var(--border);color:#e6edf6;padding:10px 14px;border-radius:12px;display:none}
+.toast.show{display:block}
+.nav{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.nav .chip{background:#0f1a39;border:1px solid var(--border);padding:10px 14px;border-radius:999px;color:#e6edf6}
+code.k{color:#9ad}
+@media (max-width:860px){.row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>✨ Lightflow Admin Ω.15 — Unified</h1>
-  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera</div>
-  <div class="nav" id="nav">
-    <button data-tab="home" class="active">Home</button>
-    <button data-tab="art">Artworks</button>
-    <button data-tab="dcar">DCAR</button>
-    <button data-tab="upload">Upload</button>
-    <button data-tab="trigger">Trigger</button>
-  </div>
+  <h1>✨ Lightflow Admin Ω.15 — Reports</h1>
+  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · iPhone-Stable</div>
 </header>
 
 <div class="container">
 
-<!-- HOME -->
-<section id="home" class="tab">
-<div class="card">
-<h3>GitHub 연결</h3>
-<div class="grid2">
-<div>
-<input id="owner" placeholder="Owner (예: dungzakcestlavie)">
-<input id="repo" placeholder="Repo (예: dungzakcestlavie.github.io)">
-<input id="branch" value="main" placeholder="Branch">
-<input id="token" type="password" placeholder="Personal Access Token (repo)">
-</div>
-<div>
-<button id="save" class="btn">💾 저장</button>
-<button id="test" class="btn-ok">🔗 연결 테스트</button>
-<button id="logout" class="btn-bad">🔒 토큰 삭제</button>
-</div>
-</div>
-<div class="small">브라우저 localStorage에 저장됩니다.</div>
-</div>
-</section>
+  <!-- 0. GitHub 연결 -->
+  <div class="card">
+    <h3 style="margin:0 0 6px">0️⃣ GitHub 연결</h3>
+    <div class="row">
+      <div>
+        <label>Owner</label>
+        <input id="ghOwner" placeholder="예: dungzakcestlavie">
+      </div>
+      <div>
+        <label>Repo</label>
+        <input id="ghRepo" placeholder="예: dungzakcestlavie.github.io">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Branch</label>
+        <input id="ghBranch" value="main">
+      </div>
+      <div>
+        <label>Token (PAT) <small>Fine-grained · Contents: Read/Write</small></label>
+        <input id="ghToken" type="password" placeholder="github_pat_...">
+      </div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-prim" id="btnSaveCfg">저장</button>
+      <button class="btn btn-ok" id="btnTest">연결 테스트</button>
+      <button class="btn btn-sec" id="btnPurge">🚀 Pages 캐시 무효화(커밋)</button>
+      <button class="btn btn-bad" id="btnClearTok">토큰 삭제</button>
+    </div>
+    <small>설정/토큰은 이 브라우저의 <code class="k">localStorage</code>에만 저장됩니다.</small>
+    <div id="testResult" style="margin-top:8px;color:#9fa8c0"></div>
+  </div>
 
-<!-- ARTWORK -->
-<section id="art" class="tab hidden">
-<div class="card">
-<h3>작품 관리</h3>
-<div class="grid2">
-<div>
-<select id="sec">
-<option value="light">Ⅰ Light & Memory</option>
-<option value="human">Ⅱ Human Being</option>
-<option value="rebirth">Ⅲ Rebirth of Mind</option>
-<option value="restore">Ⅳ Restoration of Being</option>
-<option value="meta">Ⅴ Metaconsciousness</option>
-</select>
-<input id="aid" placeholder="ID (예: light-01)">
-<input id="title" placeholder="Title">
-<input id="year" placeholder="Year">
-<input id="medium" placeholder="Medium">
-<input id="size" placeholder="Size">
-<div id="drop" class="drop">📥 드래그/탭하여 이미지 선택</div>
-<input id="file" type="file" accept="image/*" class="hidden">
-<img id="prev" style="display:none;width:100%;max-height:200px;margin-top:6px;border-radius:8px">
-<div style="display:flex;gap:8px;margin-top:8px">
-<button id="upload" class="btn">📤 업로드</button>
-<button id="update" class="btn-ghost">✏️ 수정</button>
-<button id="del" class="btn-bad">🗑 삭제</button>
-</div>
-</div>
-<div>
-<input id="q" placeholder="검색(ID/제목)">
-<div id="cnt" class="small"></div>
-<div id="grid" class="gallery"></div>
-</div>
-</div>
-</div>
-</section>
+  <!-- 1. 미학 보고서 (DCAR) — 한/영 제목 + 본문 -->
+  <div class="card">
+    <h3 style="margin:0 0 6px">1️⃣ 미학 보고서 (DCAR) — 한/영 제목 + 본문</h3>
+    <div class="row">
+      <div>
+        <label>Report ID</label>
+        <input id="repId" placeholder="예: DCAR01">
+        <small>파일 경로: <code class="k">/reports/&lt;ID&gt;.md</code> · 요약: <code class="k">/data/reports.json</code></small>
+      </div>
+      <div>
+        <label>작성자 표기</label>
+        <input id="repAuthor" value="등작 燈酌 DUNGZAK CESTLAVIE · 루메라 Lumera">
+      </div>
+    </div>
 
-<!-- DCAR -->
-<section id="dcar" class="tab hidden">
-<div class="card">
-<h3>미학 보고서 (붙여넣기)</h3>
-<select id="rid"></select>
-<input id="titleEN" placeholder="Title EN">
-<input id="titleKO" placeholder="제목 KO">
-<textarea id="bodyEN" rows="8" placeholder="English text paste"></textarea>
-<textarea id="bodyKO" rows="8" placeholder="한국어 본문 붙여넣기"></textarea>
-<div style="display:flex;gap:8px;margin-top:6px">
-<button id="saveReport" class="btn">📝 저장</button>
-<button id="delReport" class="btn-bad">🗑 삭제</button>
-</div>
-<div class="small">/reports/DCAR-XX.md · /data/reports.json</div>
-<pre id="prevR" class="preview"></pre>
-</div>
-</section>
+    <div class="row">
+      <div>
+        <label>Title (EN)</label>
+        <input id="titleEN" placeholder="English title">
+      </div>
+      <div>
+        <label>제목 (KO)</label>
+        <input id="titleKO" placeholder="한국어 제목">
+      </div>
+    </div>
 
-<!-- UPLOAD -->
-<section id="upload" class="tab hidden">
-<div class="card">
-<h3>빠른 업로드</h3>
-<input id="upath" value="img/light/">
-<div id="udrop" class="drop">📥 여러 파일 드롭</div>
-<input id="ufiles" type="file" multiple class="hidden" accept="image/*">
-<button id="urun" class="btn" style="margin-top:8px">📤 실행</button>
-<pre id="ulist" class="preview"></pre>
-</div>
-</section>
+    <div class="row">
+      <div>
+        <label>본문 (EN) — Paste</label>
+        <textarea id="bodyEN" placeholder="Paste English body here"></textarea>
+      </div>
+      <div>
+        <label>본문 (KO) — 붙여넣기</label>
+        <textarea id="bodyKO" placeholder="여기에 한국어 본문을 붙여넣기"></textarea>
+      </div>
+    </div>
 
-<!-- TRIGGER -->
-<section id="trigger" class="tab hidden">
-<div class="card">
-<h3>GitHub Pages Trigger</h3>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button id="touch" class="btn">✏️ Touch commit</button>
-<button id="build" class="btn-ok">🚀 Pages build</button>
-</div>
-<div class="small" style="margin-top:6px">변경 강제 반영</div>
-</div>
-</section>
+    <div class="btns">
+      <button class="btn btn-prim" id="btnPreview">미리보기</button>
+      <button class="btn btn-ok" id="btnSaveReport">📝 저장</button>
+      <button class="btn btn-bad" id="btnDeleteReport">🗑️ 삭제</button>
+      <button class="btn btn-sec" id="btnResetReport">폼 재설정</button>
+      <button class="btn btn-sec" id="btnLoadReport">불러오기(기존 파일 → 폼)</button>
+    </div>
+
+    <hr/>
+    <details>
+      <summary>📄 미리보기</summary>
+      <pre id="previewBox">—</pre>
+    </details>
+  </div>
 
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-/* ===== Helpers ===== */
-const $=q=>document.querySelector(q);
-const cfg=k=>localStorage.getItem(k)||"";
-const set=(k,v)=>localStorage.setItem(k,v);
-const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);};
-const b64=s=>btoa(unescape(encodeURIComponent(s)));
-const de=s=>decodeURIComponent(escape(atob(s)));
+/* ========= Core Utils ========= */
+const $ = sel => document.querySelector(sel);
+const enc = str => btoa(unescape(encodeURIComponent(str))); // base64
+const dec = b64 => decodeURIComponent(escape(atob(b64)));
 
-async function gh(m,p,b=null,j=true){
- const tk=cfg("token"); if(!tk) throw new Error("토큰 없음");
- const r=await fetch(`https://api.github.com/${p}`,{method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${tk}`},body:b?(j?JSON.stringify(b):b):null});
- if(!r.ok) throw new Error("GitHub "+r.status);
- return r.json();
-}
-async function getContent(p){try{const j=await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}?ref=${cfg("branch")}`);return{e:1,sha:j.sha,txt:de(j.content)};}catch{return{e:0};}}
-async function putFile(p,c,m){const o=await getContent(p);const body={message:m,content:c,branch:cfg("branch")};if(o.e)body.sha=o.sha;return gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}`,body);}
-async function delFile(p){const o=await getContent(p);if(!o.e)return;return gh("DELETE",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}`,{message:"del "+p,sha:o.sha,branch:cfg("branch")});}
-async function f2b(f){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(',')[1]);fr.onerror=rej;fr.readAsDataURL(f);});}
-
-/* ===== Tabs ===== */
-$("#nav").onclick=e=>{
- const b=e.target.closest("button[data-tab]");if(!b)return;
- document.querySelectorAll(".tab").forEach(x=>x.classList.add("hidden"));
- document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
- $("#"+b.dataset.tab).classList.remove("hidden");b.classList.add("active");
+const LS = {
+  get(){ try{ return JSON.parse(localStorage.getItem('lf_cfg')||'{}'); }catch(e){ return {}; } },
+  set(v){ localStorage.setItem('lf_cfg', JSON.stringify(v)); },
+  clearToken(){
+    const v = LS.get(); delete v.token; LS.set(v);
+  }
 };
 
-/* ===== Settings ===== */
-function loadCfg(){["owner","repo","branch","token"].forEach(id=>{if(cfg(id))$("#"+id).value=cfg(id);});}
-$("#save").onclick=()=>{["owner","repo","branch","token"].forEach(id=>set(id,$("#"+id).value.trim()));toast("저장됨")};
-$("#logout").onclick=()=>{localStorage.removeItem("token");$("#token").value="";toast("토큰 삭제")};
-$("#test").onclick=async()=>{try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);toast("연결 OK")}catch(e){toast("실패 "+e.message)}};
-
-/* ===== Artworks ===== */
-let arts={light:[],human:[],rebirth:[],restore:[],meta:[]};
-
-async function loadArts(){
- const r=await getContent("data/artworks.json");
- if(r.e) try{arts=JSON.parse(r.txt);}catch{}
- renderArts();
-}
-function renderArts(){
- const sec=$("#sec").value,q=$("#q").value.toLowerCase(),arr=(arts[sec]||[]).filter(a=>a.id.includes(q)||(a.title||"").toLowerCase().includes(q));
- $("#cnt").textContent=`총 ${arr.length} 개`;const g=$("#grid");g.innerHTML="";
- arr.forEach(a=>{
-  const d=document.createElement("div");d.className="thumb";
-  d.innerHTML=`<button class="x" data-id="${a.id}">×</button><img src="${a.image||""}"><div class="cap">${a.id} · ${a.title||""}</div>`;
-  d.onclick=e=>{
-    if(e.target.classList.contains("x"))return;
-    $("#aid").value=a.id;$("#title").value=a.title||"";$("#year").value=a.year||"";$("#medium").value=a.medium||"";$("#size").value=a.size||"";
-    if(a.image){$("#prev").src=a.image;$("#prev").style.display="block";}
+function cfg(){
+  const v = LS.get();
+  return {
+    owner: $('#ghOwner').value || v.owner || '',
+    repo: $('#ghRepo').value || v.repo || '',
+    branch: $('#ghBranch').value || v.branch || 'main',
+    token: $('#ghToken').value || v.token || ''
   };
-  d.querySelector(".x").onclick=()=>delArt(a.id);
-  g.appendChild(d);
- });
 }
-async function saveArts(){await putFile("data/artworks.json",b64(JSON.stringify(arts,null,2)),"update artworks");}
-async function delArt(id){
- const s=$("#sec").value,i=(arts[s]||[]).findIndex(x=>x.id===id);if(i<0)return;
- const a=arts[s][i];if(a.image)try{await delFile(a.image.replace(/^\//,''));}catch{}
- arts[s].splice(i,1);await saveArts();renderArts();toast("삭제");
+
+function saveCfg(){
+  const v = cfg();
+  LS.set({owner:v.owner, repo:v.repo, branch:v.branch, token:v.token});
+  toast('설정 저장 완료');
 }
-$("#q").oninput=renderArts;$("#sec").onchange=renderArts;
 
-$("#drop").onclick=()=>$("#file").click();
-["dragover","dragenter"].forEach(e=>$("#drop").addEventListener(e,x=>{$("#drop").classList.add("drag");x.preventDefault();}));
-["dragleave","drop"].forEach(e=>$("#drop").addEventListener(e,x=>{$("#drop").classList.remove("drag");x.preventDefault();}));
-$("#drop").ondrop=e=>{const f=e.dataTransfer.files[0];if(f){$("#file").files=e.dataTransfer.files;$("#prev").src=URL.createObjectURL(f);$("#prev").style.display="block";}}
-
-$("#file").onchange=e=>{const f=e.target.files[0];if(f){$("#prev").src=URL.createObjectURL(f);$("#prev").style.display="block";}}
-
-async function saveArt(update){
- const id=$("#aid").value.trim();if(!id)return toast("ID 필요");
- const sec=$("#sec").value,f=$("#file").files[0];
- const o=(arts[sec]||[]).find(x=>x.id===id)||{};
- let img=o.image;
- if(!update&&f){const b=await f2b(f);const ext=f.name.match(/\.\w+$/)?.[0]||".jpg";const p=`img/${sec}/${id}${ext}`;await putFile(p,b,`add ${p}`);img="/"+p;}
- const n={id,title:$("#title").value,year:$("#year").value,medium:$("#medium").value,size:$("#size").value,image:img};
- const i=(arts[sec]||[]).findIndex(x=>x.id===id);
- if(i>=0) arts[sec][i]=n; else arts[sec].push(n);
- await saveArts();renderArts();toast(update?"수정":"저장 완료");
+function loadCfgForm(){
+  const v = LS.get();
+  if(v.owner) $('#ghOwner').value = v.owner;
+  if(v.repo) $('#ghRepo').value = v.repo;
+  if(v.branch) $('#ghBranch').value = v.branch;
+  if(v.token) $('#ghToken').value = v.token;
 }
-$("#upload").onclick=()=>saveArt(false);
-$("#update").onclick=()=>saveArt(true);
-$("#del").onclick=()=>{const id=$("#aid").value.trim();if(id)delArt(id)};
 
-/* ===== DCAR ===== */
-const IDS=Array.from({length:8},(_,i)=>"DCAR-"+String(i+1).padStart(2,"0"));
-let reps={};
-function fillRid(){$("#rid").innerHTML=IDS.map(x=>`<option value="${x}">${x}</option>`).join('');}
-function previewR(){
- const id=$("#rid").value,en=$("#titleEN").value,ko=$("#titleKO").value,bE=$("#bodyEN").value,bK=$("#bodyKO").value;
- $("#prevR").textContent=`---\nid:${id}\ntitleEN:"${en}"\ntitleKO:"${ko}"\n---\n\n## ${en}\n\n${bE}\n\n---\n\n## ${ko}\n\n${bK}`;
+/* ========= GitHub API ========= */
+async function gh(path, method='GET', body=null){
+  const v = cfg();
+  if(!v.owner||!v.repo||!v.branch||!v.token) throw new Error('GitHub 설정이 비어 있음');
+  const url = `https://api.github.com/repos/${v.owner}/${v.repo}${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'Accept':'application/vnd.github+json',
+      'Authorization':`Bearer ${v.token}`
+    },
+    body: body ? JSON.stringify(body) : null
+  });
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error(`GitHub ${res.status}: ${t}`);
+  }
+  return res.json();
 }
-["rid","titleEN","titleKO","bodyEN","bodyKO"].forEach(id=>$("#"+id).oninput=previewR);
 
-async function loadReps(){const r=await getContent("data/reports.json");if(r.e){try{reps=JSON.parse(r.txt);}catch{}}}
-async function saveReps(){await putFile("data/reports.json",b64(JSON.stringify(reps,null,2)),"update reports");}
+async function getContent(path){
+  // GET /contents
+  try{
+    const v = cfg();
+    return await gh(`/contents${path}?ref=${encodeURIComponent(v.branch)}`,'GET');
+  }catch(e){
+    if(String(e).includes('404')) return null; // not exist
+    throw e;
+  }
+}
 
-$("#saveReport").onclick=async()=>{
- const id=$("#rid").value,en=$("#titleEN").value,ko=$("#titleKO").value,txt=$("#prevR").textContent;
- await putFile(`reports/${id}.md`,b64(txt),`save ${id}`);
- reps[id]={id,titleEN:en,titleKO:ko,updated:new Date().toISOString()};
- await saveReps();toast("보고서 저장");
+async function putContent(path, message, text, sha=null){
+  const v = cfg();
+  return gh(`/contents${path}`,'PUT',{
+    message,
+    content: enc(text),
+    branch: v.branch,
+    sha: sha || undefined
+  });
+}
+
+async function deleteContent(path, message, sha){
+  const v = cfg();
+  return gh(`/contents${path}`,'DELETE',{
+    message,
+    sha,
+    branch: v.branch
+  });
+}
+
+/* ========= UI: Toast ========= */
+let toastTimer;
+function toast(msg){
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+
+/* ========= Buttons ========= */
+$('#btnSaveCfg').onclick = saveCfg;
+
+$('#btnClearTok').onclick = () => {
+  LS.clearToken();
+  $('#ghToken').value='';
+  toast('토큰 삭제됨');
 };
-$("#delReport").onclick=async()=>{
- const id=$("#rid").value; await delFile(`reports/${id}.md`); delete reps[id]; await saveReps(); toast("삭제");
+
+$('#btnTest').onclick = async () => {
+  try{
+    const v = cfg();
+    const r = await gh('/git/refs/heads/'+v.branch, 'GET');
+    $('#testResult').textContent = '연결 OK (200) · head: ' + (r.object && r.object.sha ? r.object.sha.slice(0,7) : '—');
+    toast('연결 OK');
+  }catch(e){
+    $('#testResult').textContent = '연결 실패: ' + e.message;
+    toast('연결 실패');
+  }
 };
 
-/* ===== Upload mini ===== */
-let UF=[];
-$("#udrop").onclick=()=>$("#ufiles").click();
-$("#ufiles").onchange=e=>{UF=[...e.target.files];listU()};
-function listU(){$("#ulist").textContent=UF.map(f=>f.name).join("\n");}
-$("#urun").onclick=async()=>{
- const base=$("#upath").value.replace(/^\/+/,'');for(const f of UF){const b=await f2b(f);const p=(base.endsWith('/')?base:base+'/')+f.name.replace(/\s+/g,'_');await putFile(p,b,`upload ${p}`);}toast("완료");
+$('#btnPurge').onclick = async () => {
+  try{
+    const now = new Date().toISOString();
+    await putContent('/touch.txt','chore: pages cache bust',`touch ${now}`);
+    toast('Pages 캐시 무효화 커밋 완료');
+  }catch(e){ toast('실패: '+e.message); }
 };
 
-/* ===== Trigger ===== */
-$("#touch").onclick=async()=>{const st=new Date().toISOString();await putFile("data/.touch",b64(st),"touch");toast("touch OK")};
-$("#build").onclick=async()=>{try{await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});toast("Pages build 요청")}catch{toast("Pages API 없음")}};
+/* ========= Reports (DCAR) ========= */
 
-/* ===== init ===== */
-async function init(){
- fillRid();loadCfg();await Promise.all([loadArts(),loadReps()]);previewR();
+function buildMarkdown(meta){
+  const {id, titleEN, titleKO, bodyEN, bodyKO, author} = meta;
+  const updated = new Date().toISOString();
+  return `---
+id: ${id}
+titleEN: "${(titleEN||'').replace(/"/g,'\\"')}"
+titleKO: "${(titleKO||'').replace(/"/g,'\\"')}"
+author: "${(author||'').replace(/"/g,'\\"')}"
+updated: ${updated}
+---
+
+# ${titleKO||''}
+${bodyKO||''}
+
+---
+
+# ${titleEN||''}
+${bodyEN||''}
+`;
 }
-window.onload=init;
+
+function gatherForm(){
+  return {
+    id: ($('#repId').value||'').trim(),
+    titleEN: $('#titleEN').value,
+    titleKO: $('#titleKO').value,
+    bodyEN: $('#bodyEN').value,
+    bodyKO: $('#bodyKO').value,
+    author: $('#repAuthor').value
+  };
+}
+
+$('#btnPreview').onclick = () => {
+  const md = buildMarkdown(gatherForm());
+  $('#previewBox').textContent = md || '—';
+};
+
+$('#btnResetReport').onclick = () => {
+  $('#titleEN').value='';
+  $('#titleKO').value='';
+  $('#bodyEN').value='';
+  $('#bodyKO').value='';
+  $('#previewBox').textContent='—';
+  toast('폼 초기화');
+};
+
+$('#btnLoadReport').onclick = async () => {
+  try{
+    const { id } = gatherForm();
+    if(!id) return toast('Report ID 입력');
+    const path = `/reports/${id}.md`;
+    const obj = await getContent(path);
+    if(!obj) return toast('파일이 존재하지 않음');
+    const text = dec(obj.content);
+    // front-matter 단순 파싱
+    const tEN = /titleEN:\s*"(.*)"/.exec(text)?.[1] || '';
+    const tKO = /titleKO:\s*"(.*)"/.exec(text)?.[1] || '';
+    const author = /author:\s*"(.*)"/.exec(text)?.[1] || '';
+    const parts = text.split('---');
+    let body = parts.slice(2).join('---').trim();
+    // 추정 분리: KO 앞, EN 뒤
+    const sep = /\n---\n/.exec(body) ? body.indexOf('\n---\n') : -1;
+    let ko='', en='';
+    if(sep>0){ ko = body.slice(0,sep).trim(); en = body.slice(sep+5).trim(); }
+    else { ko = body; en=''; }
+    $('#titleEN').value = tEN;
+    $('#titleKO').value = tKO;
+    $('#repAuthor').value = author || $('#repAuthor').value;
+    $('#bodyKO').value = ko.replace(/^# .*\n/,'');
+    $('#bodyEN').value = en.replace(/^# .*\n/,'');
+    toast('불러오기 완료');
+  }catch(e){ toast('불러오기 실패: '+e.message); }
+};
+
+async function updateReportsJson(meta){
+  const path = '/data/reports.json';
+  const now = new Date().toISOString();
+  const stub = { id: meta.id, titleEN: meta.titleEN, titleKO: meta.titleKO, updated: now };
+  const exist = await getContent(path);
+  let data = [];
+  if(exist){
+    try{ data = JSON.parse(dec(exist.content)); }catch(_){}
+    const i = data.findIndex(x=>x.id===meta.id);
+    if(i>=0) data[i]=stub; else data.unshift(stub);
+    await putContent(path,`chore: update reports.json (${meta.id})`, JSON.stringify(data,null,2), exist.sha);
+  }else{
+    data = [stub];
+    await putContent(path,`chore: create reports.json (${meta.id})`, JSON.stringify(data,null,2));
+  }
+}
+
+$('#btnSaveReport').onclick = async () => {
+  try{
+    const m = gatherForm();
+    if(!m.id) return toast('Report ID가 필요합니다');
+    if(!m.titleEN || !m.titleKO) return toast('한/영 제목을 입력하세요');
+    const md = buildMarkdown(m);
+    const path = `/reports/${m.id}.md`;
+    const exist = await getContent(path);
+    if(exist){
+      await putContent(path, `feat(reports): update ${m.id}`, md, exist.sha);
+    }else{
+      await putContent(path, `feat(reports): create ${m.id}`, md);
+    }
+    await updateReportsJson(m);
+    toast('보고서 저장 완료');
+  }catch(e){ toast('저장 실패: '+e.message); }
+};
+
+$('#btnDeleteReport').onclick = async () => {
+  try{
+    const { id } = gatherForm();
+    if(!id) return toast('Report ID 입력');
+    const path = `/reports/${id}.md`;
+    const exist = await getContent(path);
+    if(!exist) return toast('파일이 존재하지 않습니다');
+    await deleteContent(path, `chore(reports): delete ${id}`, exist.sha);
+    // reports.json에서도 제거
+    const rj = await getContent('/data/reports.json');
+    if(rj){
+      let list = [];
+      try{ list = JSON.parse(dec(rj.content)); }catch(_){}
+      list = list.filter(x=>x.id!==id);
+      await putContent('/data/reports.json', `chore: remove ${id} from reports.json`, JSON.stringify(list,null,2), rj.sha);
+    }
+    toast('보고서 삭제 완료');
+  }catch(e){ toast('삭제 실패: '+e.message); }
+};
+
+/* ========= Boot ========= */
+loadCfgForm();
 </script>
 </body>
 </html>

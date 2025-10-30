@@ -3,309 +3,182 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.11 — Unified Controller</title>
+<title>Lightflow Admin Ω.11.1 — Unified Controller</title>
 <meta name="theme-color" content="#070c1a" />
-<meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Admin Ω.11 · Unified + iPhone Stable" />
-
 <style>
-:root{
- --bg:#070c1a;--panel:#0b1020;--soft:#10182d;--fg:#e8edf7;
- --muted:#9fa8c0;--accent:#d4b97a;--accent2:#a3c2ff;
- --ok:#74e0a1;--warn:#ffb04d;--bad:#ff6b6b;
- --border:#1e2744;--radius:14px;
-}
+:root{--bg:#070c1a;--panel:#0b1020;--soft:#10182d;--fg:#e8edf7;--muted:#9fa8c0;--accent:#d4b97a;--accent2:#a3c2ff;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--r:14px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;line-height:1.5}
-
-/* Header */
-.header{position:sticky;top:0;background:linear-gradient(180deg,#0a0f1f,transparent);
- padding:12px 14px 10px;border-bottom:1px solid var(--border);z-index:100}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.5}
+.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a0f1f,transparent);padding:12px 14px 10px;border-bottom:1px solid var(--border)}
 h1{margin:0;color:var(--accent);font-weight:800;font-size:22px}
 .sub{font-size:13px;color:var(--muted);margin-top:4px}
-
-/* Nav */
-.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);
- backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-.admin-nav .bar{max-width:980px;margin:0 auto;padding:8px 12px;display:flex;gap:8px;overflow-x:auto}
-.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;
- padding:8px 12px;border-radius:999px;background:#0d142b;color:#cfe0ff;border:1px solid var(--border)}
+.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.admin-nav .bar{max-width:980px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:8px 12px}
+.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;padding:8px 12px;border-radius:999px;background:#0d142b;color:#cfe0ff;border:1px solid var(--border)}
 .admin-nav a.active{background:var(--accent);color:#000}
-
-/* Layout */
 .container{max-width:980px;margin:0 auto;padding:12px}
-
-/* Card */
-.card{background:var(--panel);border:1px solid var(--border);
- border-radius:var(--radius);padding:14px;margin:12px 0}
-.card h3{margin:0 0 12px;font-size:1rem;color:var(--accent);font-weight:700}
-
-/* Inputs */
-input,textarea,select,button{
- width:100%;padding:10px;font-size:15px;border-radius:10px;
- border:1px solid var(--border);background:var(--soft);color:var(--fg)
-}
-button{border:none;font-weight:700;cursor:pointer}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:12px 0}
+.card h3{margin:0 0 12px;color:var(--accent);font-size:1rem;font-weight:800}
+input,textarea,select,button{width:100%;padding:10px;font-size:15px;border-radius:10px;border:1px solid var(--border);background:var(--soft);color:var(--fg)}
+button{border:none;font-weight:800;cursor:pointer}
 .btn{background:var(--accent);color:#07101f}
-.btn-ghost{background:#1b2748;color:var(--fg)}
 .btn-ok{background:var(--ok);color:#06251a}
+.btn-ghost{background:#1b2748;color:var(--fg)}
 .btn-bad{background:var(--bad);color:#200}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-
-/* Tabs */
-.tabs{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px}
-.tabs button{flex:0 0 auto;padding:8px 12px;border-radius:999px;border:1px solid var(--border);
- background:#0d142b;color:#cfe0ff;font-size:14px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:#0d142b;color:#cfe0ff}
 .tabs button.active{background:var(--accent);color:#000}
-
-/* Gallery */
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .thumb{position:relative;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .thumb img{width:100%;height:120px;object-fit:cover}
 .thumb .cap{padding:6px;font-size:12px}
-.thumb .x{position:absolute;top:6px;right:6px;padding:2px 6px;font-size:12px;
- background:var(--bad);border:none;border-radius:50%}
-
-/* Toast */
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
- background:#0b1223;border:1px solid var(--border);padding:10px 14px;border-radius:10px;
- color:var(--fg);opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
+.thumb .x{position:absolute;top:6px;right:6px;padding:2px 6px;font-size:12px;background:var(--bad);border:none;border-radius:50%}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b1223;border:1px solid var(--border);padding:10px 14px;border-radius:10px;color:var(--fg);opacity:0;transition:.2s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
-
-@media(min-width:860px){
- .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-}
+@media(min-width:860px){.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
 </style>
 </head>
-
 <body>
 <div class="header">
- <h1>✨ Lightflow Admin Ω.11</h1>
- <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera</div>
+  <h1>✨ Lightflow Admin Ω.11.1</h1>
+  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera</div>
 </div>
 
 <nav class="admin-nav">
- <div class="bar">
-  <a href="#home" data-k="home">Home</a>
-  <a href="#artworks" data-k="artworks">Artworks</a>
-  <a href="#dcar" data-k="dcar">DCAR</a>
-  <a href="/admin/batch.html" data-k="upload">Upload</a>
-  <a href="#settings" data-k="settings">Settings</a>
- </div>
+  <div class="bar">
+    <a href="#home" data-k="home">Home</a>
+    <a href="#artworks" data-k="artworks">Artworks</a>
+    <a href="#dcar" data-k="dcar">DCAR</a>
+    <a href="/admin/batch.html" data-k="upload">Upload</a>
+    <a href="#settings" data-k="settings">Settings</a>
+  </div>
 </nav>
 
 <div class="container">
+  <section class="card" id="home">
+    <h3>0️⃣ GitHub 연결</h3>
+    <div class="grid2">
+      <input id="owner" placeholder="Owner">
+      <input id="repo" placeholder="Repository">
+      <input id="branch" value="main">
+      <input id="token" placeholder="Personal Access Token (repo)">
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="saveCfg()">저장</button>
+      <button class="btn-ghost" onclick="testConn()">연결 테스트</button>
+      <button class="btn-bad" onclick="logout()">토큰 삭제</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px">설정은 이 브라우저의 localStorage 에만 저장됩니다.</div>
+  </section>
 
-<!-------------------- HOME / GITHUB --------------------->
-<section class="card" id="home">
- <h3>GitHub 연결</h3>
- <div class="grid">
-  <input id="owner" placeholder="Owner">
-  <input id="repo" placeholder="Repository">
-  <input id="branch" value="main">
-  <input id="token" placeholder="Personal Access Token">
- </div>
- <div class="btn-row">
-  <button class="btn" onclick="saveCfg()">저장</button>
-  <button class="btn-ghost" onclick="testConn()">연결 테스트</button>
-  <button class="btn-bad" onclick="logout()">토큰 삭제</button>
- </div>
- <div style="font-size:12px;color:var(--muted);margin-top:4px">
-  LocalStorage 저장 / GitHub Pages 자동 commit
- </div>
-</section>
+  <section class="card" id="artworks">
+    <h3>1️⃣ 작품 관리</h3>
+    <div id="workTabs" class="tabs"></div>
+    <div id="workForm"></div>
+    <div id="workGallery" class="gallery"></div>
+  </section>
 
-<!-------------------- ARTWORKS --------------------->
-<section class="card" id="artworks">
- <h3>작품 관리</h3>
- <div id="workTabs" class="tabs"></div>
- <div id="workForm"></div>
- <div id="workGallery" class="gallery"></div>
-</section>
+  <section class="card" id="dcar">
+    <h3>2️⃣ 미학 보고서 (DCAR)</h3>
+    <select id="dcarSel"></select>
+    <textarea id="dcarText" placeholder="DCAR 내용"></textarea>
+    <div class="btn-row">
+      <button class="btn" onclick="saveDcar()">📝 저장</button>
+    </div>
+    <div id="dcarPreview" style="margin-top:8px;border:1px solid var(--border);padding:8px;border-radius:10px;font-size:14px"></div>
+  </section>
 
-<!-------------------- DCAR --------------------->
-<section class="card" id="dcar">
- <h3>미학 보고서 (DCAR)</h3>
- <select id="dcarSel"></select>
- <textarea id="dcarText" placeholder="DCAR 내용"></textarea>
- <div class="btn-row">
-  <button class="btn" onclick="saveDcar()">저장</button>
- </div>
- <div id="dcarPreview" style="margin-top:8px;border:1px solid var(--border);padding:8px;border-radius:10px;font-size:14px"></div>
-</section>
-
-<!-------------------- SETTINGS --------------------->
-<section class="card" id="settings">
- <h3>Settings / Pages</h3>
- <div class="btn-row">
-  <button class="btn-ghost" onclick="touch()">Pages 캐시 무효화</button>
-  <button class="btn-ghost" onclick="window.location='/admin/trigger.html'">Trigger</button>
-  <button class="btn-bad" onclick="localStorage.clear();location.reload()">초기화</button>
- </div>
-</section>
+  <section class="card" id="settings">
+    <h3>3️⃣ Settings / Pages</h3>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="touch()">🚀 Pages 캐시 무효화</button>
+      <button class="btn-ghost" onclick="window.location='/admin/trigger.html'">Trigger 열기</button>
+      <button class="btn-bad" onclick="localStorage.clear();location.reload()">localStorage 초기화</button>
+    </div>
+  </section>
 </div>
 
 <div id="toast" class="toast"></div>
 
-<!--========================================================
-   SCRIPT — Unified Controller (GitHub + Artworks + DCAR)
-=========================================================-->
 <script>
+/* ---------- Helpers ---------- */
 const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
-const say=(m,e=false)=>{const t=$("#toast");t.textContent=m;
- t.style.borderColor=e?"#ff6b6b":"#22304f";t.classList.add("show");
- setTimeout(()=>t.classList.remove("show"),1800);};
-
+const toast=(m,e=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=e?"#ff6b6b":"#22304f";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);}
 const KEY="lf_admin_cfg_v101";
 const cfg=k=>JSON.parse(localStorage.getItem(KEY)||"{}")[k]||"";
-const setCfg=(k,v)=>{const o=JSON.parse(localStorage.getItem(KEY)||"{}");o[k]=v;localStorage.setItem(KEY,JSON.stringify(o));};
+const setCfg=(k,v)=>{const j=JSON.parse(localStorage.getItem(KEY)||"{}");j[k]=v;localStorage.setItem(KEY,JSON.stringify(j));};
+function saveCfg(){["owner","repo","branch","token"].forEach(id=>setCfg(id,$("#"+id).value.trim()));toast("저장 완료");testConn();}
+function logout(){localStorage.removeItem(KEY);toast("토큰 삭제");}
 
-function saveCfg(){
- ["owner","repo","branch","token"].forEach(id=>setCfg(id,$("#"+id).value.trim()));
- say("저장 완료"); testConn();
-}
-function logout(){localStorage.removeItem(KEY);say("토큰 삭제");}
-
-/* GitHub API */
+/* ---------- GitHub API ---------- */
 async function gh(m,p,b=null,j=true){
- const t=cfg("token"); if(!t)throw Error("토큰 없음");
- const r=await fetch(`https://api.github.com/${p}`,{
-  method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${t}`},
-  body:b?(j?JSON.stringify(b):b):null});
- if(!r.ok)throw Error(await r.text()); return r.json();
+  const t=cfg("token"); if(!t) throw Error("토큰 없음");
+  const r=await fetch(`https://api.github.com/${p}`,{method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${t}`},body:b?(j?JSON.stringify(b):b):null});
+  if(!r.ok) throw Error(await r.text()); return r.json();
 }
 const b64=s=>btoa(unescape(encodeURIComponent(s)));
-async function fileInfo(p){
- try{const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
- const j=await gh("GET",`repos/${o}/${r}/contents/${p}?ref=${b}`);
- return {sha:j.sha,txt:j.content?atob(j.content.replace(/\n/g,"")):""};}catch{return {};}}
-
+async function stat(p){
+  try{const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";const j=await gh("GET",`repos/${o}/${r}/contents/${encodeURIComponent(p)}?ref=${b}`);return {sha:j.sha,txt:j.content?atob(j.content.replace(/\n/g,"")):""}}catch{return{}}
+}
 async function put(p,txt,msg){
- const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
- const old=await fileInfo(p); const body={message:msg,content:b64(txt),branch:b};
- if(old.sha)body.sha=old.sha;
- return gh("PUT",`repos/${o}/${r}/contents/${p}`,body);
+  const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";const old=await stat(p);
+  const body={message:msg,content:b64(txt),branch:b}; if(old.sha) body.sha=old.sha;
+  return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(p)}`,body);
 }
+async function testConn(){try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);toast("연결 OK");}catch(e){toast("실패: "+e.message,true);}}
 
-/* Test */
-async function testConn(){
- try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("연결 OK");}
- catch(e){say("실패: "+e.message,true);}
-}
+/* ---------- Pages touch ---------- */
+async function touch(){try{const t=new Date().toISOString();await put("data/.touch","touch "+t,`touch ${t}`);toast("캐시 무효화 ok");}catch(e){toast(e.message,true);}}
 
-/* Touch pages */
-async function touch(){
- try{const t=new Date().toISOString();
- await put("data/.touch",`touch ${t}`,`touch ${t}`);say("캐시 무효화 ok");}
- catch(e){say(e.message,true);}
-}
-
-/* Artworks */
-const SECT=[
- ["light","Ⅰ Light & Memory"],
- ["human","Ⅱ Human Being"],
- ["rebirth","Ⅲ Rebirth"],
- ["restore","Ⅳ Restoration"],
- ["meta","Ⅴ Metaconsciousness"]
-];
+/* ---------- Artworks ---------- */
+const SECT=[["light","Ⅰ Light & Memory"],["human","Ⅱ Human Being"],["rebirth","Ⅲ Rebirth"],["restore","Ⅳ Restoration"],["meta","Ⅴ Metaconsciousness"]];
 let works={light:[],human:[],rebirth:[],restore:[],meta:[]}, CUR="light";
-
-async function loadWorks(){
- try{const f=await fileInfo("data/artworks.json");
- works=f.txt?JSON.parse(f.txt):works; renderGallery(); say("작품 로드");}
- catch(e){say("작품 로드 실패",true);}
+async function loadWorks(){try{const f=await stat("data/artworks.json");if(f.txt)works=JSON.parse(f.txt);renderGallery();toast("작품 로드");}catch(e){toast("작품 로드 실패",true)}}
+function navWorks(){ $("#workTabs").innerHTML=SECT.map(([k,l],i)=>`<button class="${i?"":"active"}" onclick="sel('${k}',this)">${l}</button>`).join(""); sel("light",$("#workTabs button")); }
+function sel(s,btn){ CUR=s; $$("#workTabs button").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
+  $("#workForm").innerHTML=`<input id='w-id' placeholder='${s}-01'><input id='w-title' placeholder='Title'><input id='w-year' placeholder='Year'><input id='w-med' placeholder='Medium'><input id='w-size' placeholder='Size'><input id='w-img' type='file' accept='image/*'><div class='btn-row'><button class='btn' onclick='upWork()'>업로드+등록</button><button class='btn-bad' onclick='delWork()'>삭제</button></div>`; renderGallery();
 }
-function idx(sec,id){return works[sec].findIndex(x=>x.id===id);}
-function navWorks(){
- $("#workTabs").innerHTML=SECT.map(([k,l],i)=>`<button class="${i==0?"active":""}" onclick="select('${k}',this)">${l}</button>`).join("");
- select("light",$("#workTabs button"));
-}
-function select(s,btn){
- CUR=s; $$("#workTabs button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
- $("#workForm").innerHTML=`
- <input id='w-id' placeholder='${s}-01'>
- <input id='w-title' placeholder='Title'>
- <input id='w-year' placeholder='Year'>
- <input id='w-med' placeholder='Medium'>
- <input id='w-size' placeholder='Size'>
- <input id='w-img' type='file' accept='image/*'>
- <div class='btn-row'>
-  <button class='btn' onclick='upWork()'>업로드+등록</button>
-  <button class='btn-bad' onclick='delWork()'>삭제</button>
- </div>`;
- renderGallery();
-}
-function renderGallery(){
- const box=$("#workGallery");box.innerHTML="";
- for(const a of works[CUR]){
-  const d=document.createElement("div");d.className="thumb";
-  d.innerHTML=`<button class='x' onclick='delWork("${a.id}")'>×</button>
-   <img src="${a.image||""}"><div class='cap'>${a.id} ${a.title||""}</div>`;
-  d.onclick=()=>{ $("#w-id").value=a.id;$("#w-title").value=a.title||"";$("#w-year").value=a.year||"";$("#w-med").value=a.medium||"";$("#w-size").value=a.size||""; };
-  box.appendChild(d);
- }
-}
+function idx(sec,id){return (works[sec]||[]).findIndex(x=>x.id===id)}
+function renderGallery(){const box=$("#workGallery");box.innerHTML="";(works[CUR]||[]).forEach(a=>{const d=document.createElement("div");d.className="thumb";d.innerHTML=`<button class='x' onclick='delWork("${a.id}")'>×</button><img src="${a.image||""}"><div class="cap">${a.id} ${a.title||""}</div>`;d.onclick=()=>{$("#w-id").value=a.id;$("#w-title").value=a.title||"";$("#w-year").value=a.year||"";$("#w-med").value=a.medium||"";$("#w-size").value=a.size||""};box.appendChild(d);});}
 async function upWork(){
- try{
-  const id=$("#w-id").value.trim();if(!id)return;
-  const f=$("#w-img").files[0]; let url="";
-  if(f){
-   const ext=f.name.match(/\.\w+$/)?.[0]||".jpg";
-   const b=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(',')[1]);fr.readAsDataURL(f);});
-   const path=`img/${CUR}/${id}${ext}`;
-   await gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${path}`,{message:`upload ${path}`,content:b,branch:cfg("branch")||"main"});
-   url=`/${path}`;
-  }
-  const e={id,title:$("#w-title").value,year:$("#w-year").value,medium:$("#w-med").value,size:$("#w-size").value,image:url};
-  const i=idx(CUR,id); if(i>=0)works[CUR][i]=e; else works[CUR].push(e);
-  await put("data/artworks.json",JSON.stringify(works,null,2),"update artworks.json");
-  renderGallery();say("업로드 완료");
- }catch(e){say(e.message,true);}
+  try{
+    const id=$("#w-id").value.trim(); if(!id) return;
+    const f=$("#w-img").files[0]; let url="";
+    if(f){
+      // 기본 업로드 (원본 유지)
+      const ext=(f.name.match(/\.\w+$/)?.[0]||".jpg").toLowerCase();
+      const b=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(",")[1]);fr.readAsDataURL(f);});
+      const path=`img/${CUR}/${id}${ext}`;
+      await gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${path}`,{message:`upload ${path}`,content:b,branch:cfg("branch")||"main"});
+      url=`/${path}`;
+    }
+    const rec={id,title:$("#w-title").value,year:$("#w-year").value,medium:$("#w-med").value,size:$("#w-size").value,image:url};
+    const i=idx(CUR,id); if(i>=0) works[CUR][i]=rec; else works[CUR].push(rec);
+    await put("data/artworks.json",JSON.stringify(works,null,2),"update artworks.json");
+    renderGallery(); toast("업로드 완료");
+  }catch(e){toast(e.message,true);}
 }
 async function delWork(id){
- try{
-  if(!id)id=$("#w-id").value.trim(); if(!id)return;
-  const i=idx(CUR,id); if(i>=0)works[CUR].splice(i,1);
-  await put("data/artworks.json",JSON.stringify(works,null,2),"delete record");
-  renderGallery();say("삭제 완료");
- }catch(e){say(e.message,true);}
+  try{ if(!id) id=$("#w-id").value.trim(); if(!id) return;
+    const i=idx(CUR,id); if(i>=0) works[CUR].splice(i,1);
+    await put("data/artworks.json",JSON.stringify(works,null,2),"delete record");
+    renderGallery(); toast("삭제 완료");
+  }catch(e){toast(e.message,true);}
 }
 
-/* DCAR */
-const IDS=["dcar01","dcar02","dcar03","dcar04","dcar05","dcar06","dcar07","dcar08"];
-let dcar={};
-async function loadDcar(){
- const f=await fileInfo("data/reports.json");
- dcar=f.txt?JSON.parse(f.txt):{}; $("#dcarSel").innerHTML=IDS.map(i=>`<option>${i}</option>`).join("");
- selDcar();
-}
-function selDcar(){
- const id=$("#dcarSel").value; $("#dcarText").value=dcar[id]?.text||""; prevDcar();
-}
+/* ---------- DCAR ---------- */
+const IDS=["dcar01","dcar02","dcar03","dcar04","dcar05","dcar06","dcar07","dcar08"]; let dcar={};
+async function loadDcar(){const f=await stat("data/reports.json"); if(f.txt) dcar=JSON.parse(f.txt); $("#dcarSel").innerHTML=IDS.map(i=>`<option>${i}</option>`).join(""); selDcar();}
+function selDcar(){const id=$("#dcarSel").value; $("#dcarText").value=dcar[id]?.text||""; prevDcar();}
 function prevDcar(){ $("#dcarPreview").innerHTML=$("#dcarText").value.replace(/\n\n+/g,"<br><br>").replace(/\n/g,"<br>"); }
-async function saveDcar(){
- const id=$("#dcarSel").value,txt=$("#dcarText").value;
- dcar[id]={id,text:txt,updated:new Date().toISOString()};
- await put(`reports/${id}.md`,txt,`save ${id}.md`);
- await put("data/reports.json",JSON.stringify(dcar,null,2),"save reports");
- say("DCAR 저장"); prevDcar();
-}
-$("#dcarSel").onchange=selDcar;
-$("#dcarText").oninput=prevDcar;
+async function saveDcar(){const id=$("#dcarSel").value,txt=$("#dcarText").value; dcar[id]={id,text:txt,updated:new Date().toISOString()}; await put(`reports/${id}.md`,txt,`save ${id}.md`); await put("data/reports.json",JSON.stringify(dcar,null,2),"save reports"); toast("DCAR 저장"); prevDcar();}
+$("#dcarSel").onchange=selDcar; $("#dcarText").oninput=prevDcar;
 
-/* Nav active */
-function navActive(){
- const h=location.hash||"#home";
- $$(".admin-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===h));
- if(h.startsWith("#")){const t=$(h); if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}
-}
+/* ---------- Nav active & boot ---------- */
+function navActive(){const h=location.hash||"#home"; $$(".admin-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===h));}
 window.addEventListener("hashchange",navActive);
-
-/* Init */
-window.addEventListener("load",()=>{
- ["owner","repo","branch","token"].forEach(id=>{if(cfg(id))$("#"+id).value=cfg(id)});
- navActive(); navWorks(); loadWorks(); loadDcar();
-});
+window.addEventListener("load",()=>{["owner","repo","branch","token"].forEach(id=>{if(cfg(id)) $("#"+id).value=cfg(id)}); navActive(); navWorks(); loadWorks(); loadDcar();});
 </script>
-
 </body>
 </html>

@@ -1,34 +1,166 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>Trigger GitHub Actions</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lightflow Admin — Trigger (Ω.10.1 · iPhone-Stable)</title>
+<meta name="theme-color" content="#070c1a">
 <style>
-body { background:#0b1020; color:#eef3ff; font:15px/1.6 Inter,system-ui; padding:32px; }
-button { background:#243470; color:white; border:none; padding:12px 20px; border-radius:8px; cursor:pointer; }
+:root{
+ --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;
+ --accent:#d4b97a;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header{
+ position:sticky;top:0;z-index:10;
+ background:linear-gradient(180deg,#0a1022e6,#0a102200);
+ padding:14px 12px 10px;border-bottom:1px solid var(--border);
+ backdrop-filter:saturate(130%) blur(8px);
+}
+h1{margin:0;font-size:26px;color:var(--accent);font-weight:800}
+.sub{font-size:13px;color:var(--muted);margin-top:4px}
+.container{max-width:860px;margin:0 auto;padding:14px 14px 120px}
+
+.card{
+ background:var(--panel);border:1px solid var(--border);
+ padding:14px;margin:10px 0;border-radius:var(--radius)
+}
+.card h3{margin:4px 0 10px;color:var(--accent);font-size:1.05rem;font-weight:800}
+
+button{
+ width:100%;padding:14px;border-radius:12px;border:none;font-weight:800;
+ font-size:15px;cursor:pointer;background:var(--accent);color:#09101f
+}
+.btn-ok{background:var(--ok);color:#081d12}
+.btn-ghost{background:#203055;color:var(--fg);border:1px solid rgba(255,255,255,.08)}
+.btn-bad{background:var(--bad);color:#200}
+.btnbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+
+small{font-size:12px;color:var(--muted)}
+
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:14px}
+.k{color:var(--muted)}
+
+.toast{
+ position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
+ transform:translateX(-50%);
+ background:#0b1223;border:1px solid var(--border);
+ padding:10px 16px;border-radius:12px;color:var(--fg);
+ opacity:0;transition:.22s;pointer-events:none;z-index:999;
+}
+.toast.show{opacity:1;transform:translate(-50%,-6px)}
 </style>
 </head>
 <body>
-<h1>🪶 DUNGZAK Admin Trigger</h1>
-<p>GitHub Actions 자동 빌드를 수동으로 실행합니다.</p>
-<button onclick="trigger()">Run Content Pipeline</button>
+<header>
+ <h1>🚀 Trigger · Ω.10.1</h1>
+ <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Pages Deploy Tools</div>
+</header>
+
+<div class="container">
+
+ <div class="card">
+  <h3>연결 상태</h3>
+  <div class="kv">
+   <div class="k">Owner</div><div id="sOwner">—</div>
+   <div class="k">Repo</div><div id="sRepo">—</div>
+   <div class="k">Branch</div><div id="sBranch">—</div>
+   <div class="k">Token</div><div id="sToken">—</div>
+   <div class="k">Last Check</div><div id="sCheck">—</div>
+  </div>
+  <div class="btnbar" style="margin-top:10px">
+   <button type="button" class="btn-ghost" id="refresh">↻ 갱신</button>
+   <button type="button" class="btn-ok" id="test">🔗 연결 테스트</button>
+  </div>
+  <small>설정은 admin 페이지(localStorage)와 동일하게 사용됩니다.</small>
+ </div>
+
+ <div class="card">
+  <h3>강제 트리거</h3>
+  <button type="button" id="touch">📝 Commit Touch (캐시 무효)</button>
+  <div class="btnbar">
+   <button type="button" class="btn" id="pages">🚀 Pages Build 요청</button>
+   <button type="button" class="btn-bad" id="clear">🧹 localStorage 초기화</button>
+  </div>
+  <small>touch 파일이 생성되며 GitHub Pages 최신화가 동작합니다.</small>
+ </div>
+
+</div>
+
+<div id="toast" class="toast">Ready.</div>
+
 <script>
-async function trigger(){
-  const token = localStorage.getItem('gh_token');
-  if(!token){ alert('토큰이 없습니다! 관리자에서 먼저 저장하세요.'); return; }
+/* helpers */
+const $=q=>document.querySelector(q);
+const say=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);};
 
-  const res = await fetch('https://api.github.com/repos/dungzakcestlavie/dungzakcestlavie.github.io/actions/workflows/content-pipeline.yml/dispatches', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json'
-    },
-    body: JSON.stringify({ref:'main'})
-  });
+const KEY="lf_admin_cfg_v101";
+function cfg(k){try{return JSON.parse(localStorage.getItem(KEY)||"{}")[k]||"";}catch{return "";}}
 
-  if(res.ok) alert('✅ Content Pipeline 실행 요청됨!');
-  else alert('❌ 실패: ' + res.status);
+function hydrate(){
+ $("#sOwner").textContent=cfg("owner")||"—";
+ $("#sRepo").textContent=cfg("repo")||"—";
+ $("#sBranch").textContent=cfg("branch")||"—";
+ $("#sToken").textContent=cfg("token")?"••••••••":"—";
+ $("#sCheck").textContent=new Date().toLocaleTimeString();
 }
+
+/* GH */
+async function gh(m,p,b=null,isJson=true){
+ const token=cfg("token"); if(!token) throw new Error("토큰 없음");
+ const r=await fetch(`https://api.github.com/${p}`,{
+  method:m,
+  headers:{ "Accept":"application/vnd.github+json","Authorization":`token ${token}` },
+  body:b?(isJson?JSON.stringify(b):b):null
+ });
+ if(!r.ok){const t=await r.text();throw new Error(`GitHub ${r.status}: ${t.slice(0,150)}`);}
+ return r.json();
+}
+function b64(s){return btoa(unescape(encodeURIComponent(s)))}
+async function putFile(p,data,msg){
+ const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
+ let old=null;
+ try{old=await gh("GET",`repos/${o}/${r}/contents/${p}?ref=${b}`);}catch{}
+ const body={message:msg,content:data,branch:b};
+ if(old?.sha) body.sha=old.sha;
+ return gh("PUT",`repos/${o}/${r}/contents/${p}`,body);
+}
+
+/* trigger functions */
+async function testConn(){
+ try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("✅ 연결 OK (200)");}
+ catch(e){say("⚠️ 연결 실패: "+e.message,true);}
+}
+
+async function touch(){
+ try{
+  const stamp=new Date().toISOString();
+  await putFile("data/.touch",b64("touch "+stamp),`touch ${stamp}`);
+  say("📝 touch commit 완료");
+ }catch(e){say("touch 실패: "+e.message,true);}
+}
+
+async function pagesBuild(){
+ try{
+  await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});
+  say("🚀 Pages 빌드 요청 완료");
+ }catch(e){say("⚠️ Pages API 실패: "+e.message,true);}
+}
+
+/* events */
+window.addEventListener("load",()=>{
+ hydrate();
+ $("#refresh").onclick=hydrate;
+ $("#test").onclick=testConn;
+ $("#touch").onclick=touch;
+ $("#pages").onclick=pagesBuild;
+ $("#clear").onclick=()=>{localStorage.removeItem(KEY);say("localStorage 삭제 완료");hydrate();}
+});
+window.addEventListener("error",e=>say("JS 오류: "+e.message,true));
 </script>
 </body>
-</html> 해
+</html>

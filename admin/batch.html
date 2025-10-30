@@ -3,45 +3,32 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.11 — Batch Uploader</title>
+<title>Lightflow Admin Ω.11.1 — Batch Uploader</title>
 <meta name="theme-color" content="#070c1a" />
-<meta name="description" content="DUNGZAK CESTLAVIE · Lightflow Admin Ω.11 · Batch Uploader · Unified + iPhone Stable" />
 <style>
-:root{
-  --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;
-  --accent:#d4b97a;--ok:#74e0a1;--warn:#ffb04d;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
-}
-/* Base */
+:root{--bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;--accent:#d4b97a;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--r:14px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
-.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a1022e6,#0a102200);
-  padding:12px 14px 10px;border-bottom:1px solid var(--border);backdrop-filter:saturate(130%) blur(8px)}
+.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a1022e6,#0a102200);padding:12px 14px 10px;border-bottom:1px solid var(--border)}
 .h1{margin:0;color:var(--accent);font-weight:800;font-size:22px}
 .sub{font-size:13px;color:var(--muted);margin-top:4px}
-.container{max-width:980px;margin:0 auto;padding:12px 12px 120px}
-/* Nav (Global) */
-.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);
-  border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 .admin-nav .bar{max-width:980px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:8px 12px}
-.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;color:#cfe0ff;
-  background:#0d142b;border:1px solid var(--border);border-radius:999px;padding:8px 12px}
+.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;color:#cfe0ff;background:#0d142b;border:1px solid var(--border);border-radius:999px;padding:8px 12px}
 .admin-nav a.active{background:var(--accent);color:#000}
-/* Cards */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:12px 0}
-.card h3{margin:0 0 12px;color:var(--accent);font-size:1.05rem;font-weight:800}
-/* Form / Buttons */
-input,select,button{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--border);
-  background:var(--soft);color:var(--fg);padding:12px;font-size:15px}
-button{border:none;cursor:pointer;font-weight:800}
+.container{max-width:980px;margin:0 auto;padding:12px 12px 120px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:12px 0}
+.card h3{margin:0 0 12px;color:var(--accent);font-size:1.05rem}
+input,select,button{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--border);background:var(--soft);color:var(--fg);padding:12px;font-size:15px}
+button{border:none;font-weight:800;cursor:pointer}
 .btn{background:var(--accent);color:#08101f}
 .btn-ok{background:var(--ok);color:#062519}
-.btn-ghost{background:#203055;color:var(--fg);border:1px solid rgba(255,255,255,.08)}
+.btn-ghost{background:#203055;color:#e8edf7;border:1px solid rgba(255,255,255,.08)}
 .btn-bad{background:var(--bad);color:#2a0000}
 .btnbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .row{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:860px){.row{grid-template-columns:1.3fr 1fr}}
 small{color:var(--muted);font-size:12px}
-/* Dropzone & List */
 .drop{border:2px dashed var(--border);border-radius:12px;background:#0a142b;padding:16px;text-align:center}
 .drop.drag{background:#14224a;border-color:#7fa1ff}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
@@ -51,20 +38,14 @@ small{color:var(--muted);font-size:12px}
 .prog-wrap{background:#0a1022;border-radius:999px;overflow:hidden;border:1px solid #1a2548}
 .prog{height:8px;width:0%;background:var(--ok);transition:width .2s}
 .state{font-weight:700}
-/* KV */
-.kv{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:14px}
-.k{color:var(--muted)}
-/* Toast */
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);
- background:#0b1223;border:1px solid var(--border);color:var(--fg);padding:10px 16px;border-radius:12px;
- opacity:0;transition:.22s;pointer-events:none;z-index:999}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0b1223;border:1px solid var(--border);color:var(--fg);padding:10px 16px;border-radius:12px;opacity:0;transition:.22s;pointer-events:none;z-index:999}
 .toast.show{opacity:1;transform:translate(-50%,-6px)}
 </style>
 </head>
 <body>
 <header class="header">
-  <div class="h1">✨ Lightflow Admin Ω.11 — Batch Uploader</div>
-  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Unified + iPhone-Stable</div>
+  <div class="h1">✨ Lightflow Admin Ω.11.1 — Batch Uploader</div>
+  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Auto Resize · WebP · Retry</div>
 </header>
 
 <nav class="admin-nav">
@@ -78,222 +59,163 @@ small{color:var(--muted);font-size:12px}
 </nav>
 
 <main class="container">
-  <!-- 0) 연결 상태 -->
   <section class="card">
     <h3>0️⃣ 연결 상태</h3>
-    <div class="kv">
-      <div class="k">Owner</div><div id="sOwner">—</div>
-      <div class="k">Repo</div><div id="sRepo">—</div>
-      <div class="k">Branch</div><div id="sBranch">—</div>
-      <div class="k">Token</div><div id="sToken">—</div>
-      <div class="k">artworks.json</div><div id="sJson">—</div>
+    <div class="btnbar" style="margin-bottom:8px">
+      <button class="btn-ghost" id="refresh">↻ 상태 새로고침</button>
+      <button class="btn" id="test">🔗 연결 테스트</button>
     </div>
-    <div class="btnbar" style="margin-top:10px">
-      <button type="button" class="btn-ghost" id="refresh">↻ 상태 새로고침</button>
-      <button type="button" class="btn" id="test">🔗 연결 테스트</button>
-    </div>
-    <small>설정은 <code>admin.html</code>에서 저장한 값(localStorage)을 사용합니다.</small>
+    <small>설정은 admin.html 의 localStorage 값을 사용합니다.</small>
   </section>
 
-  <!-- 1) 업로드 대상 선택 -->
   <section class="card">
-    <h3>1️⃣ 업로드 대상 선택</h3>
+    <h3>1️⃣ 업로드 대상</h3>
     <div class="row">
       <div>
         <label>섹션</label>
         <select id="sec">
-          <option value="light">Ⅰ Light & Memory (light)</option>
-          <option value="human">Ⅱ Human Being (human)</option>
-          <option value="rebirth">Ⅲ Rebirth of Mind (rebirth)</option>
-          <option value="restore">Ⅳ Restoration of Being (restore)</option>
-          <option value="meta">Ⅴ Metaconsciousness (meta)</option>
+          <option value="light">Ⅰ Light & Memory</option>
+          <option value="human">Ⅱ Human Being</option>
+          <option value="rebirth">Ⅲ Rebirth of Mind</option>
+          <option value="restore">Ⅳ Restoration of Being</option>
+          <option value="meta">Ⅴ Metaconsciousness</option>
         </select>
       </div>
       <div>
-        <label>시작 번호 (예: 1 → id는 human-01)</label>
+        <label>시작 번호</label>
         <input id="start" type="number" value="1" inputmode="numeric" />
       </div>
     </div>
     <div class="row" style="margin-top:8px">
       <div>
-        <div id="drop" class="drop">📥 이미지를 드롭하거나 탭해서 선택</div>
+        <div id="drop" class="drop">📥 이미지를 드롭/탭하여 선택</div>
         <input id="files" type="file" accept="image/*" multiple style="display:none" />
+        <small>자동 리사이즈: 최대 가로 1800px · WebP 변환(작을 때만)</small>
       </div>
       <div>
         <div class="btnbar">
-          <button type="button" class="btn-ok" id="uploadAll">📤 일괄 업로드</button>
-          <button type="button" class="btn-bad" id="clearList">🧹 목록 비우기</button>
+          <button class="btn-ok" id="uploadAll">📤 일괄 업로드</button>
+          <button class="btn-bad" id="clearList">🧹 목록 비우기</button>
         </div>
-        <small>경로: <code>/img/{section}/{id}.ext</code> · 메타: <code>/data/artworks.json</code></small>
+        <small>저장 경로: <code>/img/{section}/{id}.(webp/jpg)</code> · 메타: <code>/data/artworks.json</code></small>
       </div>
     </div>
     <div id="list" class="list"></div>
   </section>
 
-  <!-- 2) 결과 -->
   <section class="card">
     <h3>2️⃣ 결과</h3>
-    <div class="kv">
-      <div class="k">업로드 성공</div><div id="sOK">0</div>
-      <div class="k">실패</div><div id="sFail">0</div>
-      <div class="k">최종 메시지</div><div id="sMsg">—</div>
-    </div>
+    <div>성공 <b id="sOK">0</b> · 실패 <b id="sFail">0</b> · 메시지 <span id="sMsg">—</span></div>
   </section>
 </main>
 
 <div id="toast" class="toast">Ready.</div>
 
 <script>
-/* ===== Helpers / Nav Active ===== */
+/* Helpers / Nav */
 const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
-const say=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";
-  t.classList.add("show");clearTimeout(say._t);say._t=setTimeout(()=>t.classList.remove("show"),1800);};
-(function navActive(){
-  const p=location.pathname;
-  $$(".admin-nav a").forEach(a=>{
-    const key=a.dataset.k;
-    const active = (key==="upload" && p.endsWith("/batch.html")) ||
-                   (key==="home" && p.endsWith("/admin.html") && location.hash==="#home") ||
-                   (key==="artworks" && location.hash==="#artworks") ||
-                   (key==="dcar" && location.hash==="#dcar") ||
-                   (key==="settings" && location.hash==="#settings");
-    a.classList.toggle("active",active);
-  });
-})();
+const toast=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1800);};
+(function(){ $$(".admin-nav a").forEach(a=>a.classList.toggle("active",a.dataset.k==="upload")); })();
 
-/* ===== Local config ===== */
+/* Local cfg */
 const KEY="lf_admin_cfg_v101";
-function readCfg(){ try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){return {};} }
-function cfg(k){return (readCfg()[k]||"");}
+const readCfg=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch{return {}}};
+const cfg=k=>readCfg()[k]||"";
 
-/* ===== GitHub API ===== */
-async function gh(method,path,body=null,isJson=true){
-  const token=cfg("token"); if(!token) throw new Error("토큰 없음");
-  const r=await fetch(`https://api.github.com/${path}`,{
-    method,
-    headers:{ "Accept":"application/vnd.github+json", "Authorization":`token ${token}` },
-    body:body?(isJson?JSON.stringify(body):body):null
-  });
-  if(!r.ok){const t=await r.text();throw new Error(`GitHub ${r.status}: ${t.slice(0,180)}`);}
-  return r.json();
+/* GitHub API */
+async function gh(m,p,b=null,j=true){
+  const t=cfg("token"); if(!t) throw Error("토큰 없음");
+  const r=await fetch(`https://api.github.com/${p}`,{method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${t}`},body:b?(j?JSON.stringify(b):b):null});
+  if(!r.ok){const t=await r.text(); throw Error(`GitHub ${r.status}: ${t.slice(0,160)}`);} return r.json();
 }
-function b64(s){return btoa(unescape(encodeURIComponent(s)));}
-function fileToB64(f){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(",")[1]);fr.onerror=rej;fr.readAsDataURL(f);});}
-async function getContent(p){
+async function getContent(path){
   const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
-  try{const j=await gh("GET",`repos/${o}/${r}/contents/${encodeURIComponent(p)}?ref=${b}`);return {sha:j.sha,content:j.content?atob(j.content.replace(/\n/g,"")):null,exists:true};}
-  catch(e){return {sha:null,content:null,exists:false};}
+  try{const j=await gh("GET",`repos/${o}/${r}/contents/${encodeURIComponent(path)}?ref=${b}`);return {sha:j.sha,content:j.content?atob(j.content.replace(/\n/g,"")):null,exists:true}}catch{return {sha:null,content:null,exists:false}}
 }
-async function putFile(p,b64data,msg){
+async function putFile(path,b64,msg){
   const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
-  const old=await getContent(p); const body={message:msg||`update ${p}`,content:b64data,branch:b};
-  if(old.exists) body.sha=old.sha;
-  return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(p)}`,body);
+  const old=await getContent(path);
+  const body={message:msg||`update ${path}`,content:b64,branch:b}; if(old.exists) body.sha=old.sha;
+  return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(path)}`,body);
 }
 
-/* ===== State ===== */
-let queue=[]; // {file, id, ext, el, sec}
+/* Artworks JSON */
 let artworks={light:[],human:[],rebirth:[],restore:[],meta:[]};
-let ok=0, fail=0;
+async function loadArtworks(){try{const r=await getContent("data/artworks.json"); if(r.exists) artworks=JSON.parse(r.content);}catch(e){toast("artworks.json 로드 실패: "+e.message,true);}}
 
-/* ===== Hydrate / Status ===== */
-function hydrate(){
-  $("#sOwner").textContent=cfg("owner")||"—";
-  $("#sRepo").textContent=cfg("repo")||"—";
-  $("#sBranch").textContent=cfg("branch")||"—";
-  $("#sToken").textContent=cfg("token")?"••••••••":"—";
-}
-async function testConn(){
-  try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("연결 OK (200)");}
-  catch(e){say("연결 실패: "+e.message,true);}
-}
-async function loadArtworks(){
-  try{
-    const r=await getContent("data/artworks.json");
-    if(r.exists) artworks=JSON.parse(r.content);
-    $("#sJson").textContent=r.exists?"loaded":"new (create)";
-  }catch(e){ say("artworks.json 로드 실패: "+e.message,true); }
-}
-
-/* ===== Queue / UI ===== */
+/* Queue UI */
+let queue=[], ok=0, fail=0;
 function addFiles(files){
-  const sec=$("#sec").value;
-  let n=parseInt($("#start").value||"1",10);
+  const sec=$("#sec").value; let n=parseInt($("#start").value||"1",10);
   [...files].forEach(f=>{
-    const ext=(f.name.match(/\.\w+$/)?.[0]||".jpg").toLowerCase();
     const id=`${sec}-${String(n++).padStart(2,"0")}`;
     const el=document.createElement("div"); el.className="item";
-    el.innerHTML=`
-      <img class="thumb" alt="">
-      <div class="meta">
-        <div><b>${id}</b> <span style="opacity:.8">(${Math.round(f.size/1024)} KB)</span></div>
-        <div>→ <code>img/${sec}/${id}${ext}</code></div>
-        <div class="prog-wrap"><div class="prog"></div></div>
-        <div class="state">대기</div>
-      </div>`;
+    el.innerHTML=`<img class="thumb"><div class="meta"><div><b>${id}</b> <span style="opacity:.75">(${Math.round(f.size/1024)} KB)</span></div><div class="prog-wrap"><div class="prog"></div></div><div class="state">대기</div></div>`;
     el.querySelector(".thumb").src=URL.createObjectURL(f);
     $("#list").appendChild(el);
-    queue.push({file:f,id,ext,el,sec});
+    queue.push({file:f,id,sec,el});
   });
-  $("#start").value = String(n);
+  $("#start").value=String(n);
 }
-function clearList(){ queue=[]; $("#list").innerHTML=""; ok=0; fail=0; $("#sOK").textContent=0; $("#sFail").textContent=0; $("#sMsg").textContent="—"; }
+function clearList(){queue=[];$("#list").innerHTML="";ok=0;fail=0;$("#sOK").textContent=0;$("#sFail").textContent=0;$("#sMsg").textContent="—";}
+function initDnD(){const dz=$("#drop"),fi=$("#files"); dz.onclick=()=>fi.click(); ["dragenter","dragover"].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add("drag");})); ["dragleave","drop"].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.remove("drag");})); dz.addEventListener("drop",e=>{if(e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files)}); fi.addEventListener("change",e=>{if(e.target.files?.length){addFiles(e.target.files);fi.value=""}});}
 
-function initDnD(){
-  const dz=$("#drop"), fi=$("#files");
-  dz.onclick=()=>fi.click();
-  ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag");}));
-  ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag");}));
-  dz.addEventListener("drop",e=>{ if(e.dataTransfer?.files?.length){ addFiles(e.dataTransfer.files); }});
-  fi.addEventListener("change",e=>{ if(e.target.files?.length){ addFiles(e.target.files); fi.value=""; }});
+/* Image process: resize->webp if smaller */
+async function toOptimizedB64(file){
+  const blob=await new Response(file).blob(); // original
+  const img=await createImageBitmap(blob).catch(async()=>{return await new Promise((res,rej)=>{const im=new Image(); im.onload=()=>{res(im)}; im.onerror=rej; im.src=URL.createObjectURL(blob);});});
+  const maxW=1800;
+  let w=img.width, h=img.height;
+  if(w>maxW){h=Math.round(h*maxW/w); w=maxW;}
+  const cvs=document.createElement("canvas"); cvs.width=w; cvs.height=h; const ctx=cvs.getContext("2d"); ctx.drawImage(img,0,0,w,h);
+  const webp=await new Promise(res=>cvs.toBlob(b=>res(b),'image/webp',0.9));
+  const useWebp = webp && webp.size < blob.size;
+  const chosen = useWebp ? webp : blob;
+  const ext = useWebp ? ".webp" : (file.name.match(/\.\w+$/)?.[0]||".jpg").toLowerCase();
+  const b64 = await new Promise(res=>{const fr=new FileReader(); fr.onload=()=>res(fr.result.split(",")[1]); fr.readAsDataURL(chosen);});
+  return {ext,b64};
 }
 
-/* ===== Upload Pipeline ===== */
+/* Upload all with retry */
 async function uploadAll(){
-  if(!queue.length) return say("대상 파일 없음",true);
-  await loadArtworks();
-  ok=0; fail=0;
+  if(!queue.length) return toast("대상 파일 없음",true);
+  await loadArtworks(); ok=0; fail=0;
   for(const q of queue){
-    const state=q.el.querySelector(".state");
-    const prog=q.el.querySelector(".prog");
+    const state=q.el.querySelector(".state"), prog=q.el.querySelector(".prog");
     try{
-      state.textContent="업로드 중…";
-      const b=await fileToB64(q.file);
-      const path=`img/${q.sec}/${q.id}${q.ext}`;
-      await putFile(path,b,`add ${path}`);
+      state.textContent="최적화…";
+      const {ext,b64}=await toOptimizedB64(q.file);
+      const path=`img/${q.sec}/${q.id}${ext}`;
+      state.textContent="업로드…";
+      await tryPut(path,b64,3);
       prog.style.width="100%";
+      // JSON 기록
       const rec={id:q.id,title:"",year:"",medium:"",size:"",image:`/${path}`};
       const arr=artworks[q.sec]||(artworks[q.sec]=[]);
       const i=arr.findIndex(x=>x.id===rec.id); if(i>=0) arr[i]=rec; else arr.push(rec);
       state.textContent="완료"; ok++; $("#sOK").textContent=ok;
     }catch(e){
-      state.textContent="실패: "+e.message;
-      prog.style.background= "#ff6b6b";
-      fail++; $("#sFail").textContent=fail;
+      state.textContent="실패: "+e.message; prog.style.background="#ff6b6b"; fail++; $("#sFail").textContent=fail;
     }
   }
   try{
-    await putFile("data/artworks.json", b64(JSON.stringify(artworks,null,2)),"update artworks.json");
-    $("#sJson").textContent="saved";
-    $("#sMsg").textContent=`done: ${ok} ok / ${fail} fail`;
-    say(`완료: ${ok} 성공 / ${fail} 실패`);
-  }catch(e){ say("JSON 저장 실패: "+e.message,true); }
+    await putFile("data/artworks.json", btoa(unescape(encodeURIComponent(JSON.stringify(artworks,null,2)))), "update artworks.json");
+    $("#sMsg").textContent=`done: ${ok} ok / ${fail} fail`; toast(`완료: ${ok} / 실패 ${fail}`);
+  }catch(e){ toast("JSON 저장 실패: "+e.message,true); }
+}
+async function tryPut(path,b64,retry){
+  for(let i=0;i<retry;i++){
+    try{ await putFile(path,b64,`add ${path}`); return; }
+    catch(e){ if(i===retry-1) throw e; await new Promise(r=>setTimeout(r,600)); }
+  }
 }
 
-/* ===== Events ===== */
-function bindTap(id,fn){
-  const el=$(id);
-  el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false});
-  el.addEventListener("pointerup",e=>{ if(e.pointerType==="touch"){e.preventDefault();e.stopPropagation();fn();}},{passive:false});
-}
-function boot(){
-  hydrate(); loadArtworks(); initDnD();
-  bindTap("#refresh", hydrate);
-  bindTap("#test", testConn);
-  bindTap("#uploadAll", uploadAll);
-  bindTap("#clearList", clearList);
-}
-window.addEventListener("error",e=>{try{say("JS 오류: "+e.message,true);}catch{}});
+/* Status / Events */
+async function testConn(){ try{ await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`); toast("연결 OK (200)"); }catch(e){ toast("연결 실패: "+e.message,true); } }
+function hydrate(){ /* placeholder for future details */ }
+function bindTap(sel,fn){ const el=$(sel); el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false}); el.addEventListener("pointerup",e=>{ if(e.pointerType==="touch"){e.preventDefault();e.stopPropagation();fn();}}, {passive:false}); }
+function boot(){ hydrate(); initDnD(); bindTap("#refresh",hydrate); bindTap("#test",testConn); bindTap("#uploadAll",uploadAll); bindTap("#clearList",clearList); }
+window.addEventListener("error",e=>{ try{ toast("JS 오류: "+e.message,true) }catch{} });
 window.addEventListener("load", boot);
 </script>
 </body>

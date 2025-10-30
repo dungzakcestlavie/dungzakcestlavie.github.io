@@ -1,3 +1,8 @@
-{ "reports": [] }
-  - { id: "editor", title: "Report Editor · Auto HTML & PDF (Pro)" }
-  - { id: "print-preview", title: "DUNGZAK CESTLAVIE — Report & Portfolio Manager" }
+{
+  "dcar01": {
+    "id": "DCAR01",
+    "titleEN": "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · Being",
+    "titleKO": "등작 燈酌 DUNGZAK CESTLAVIE  미학 보고서 DCAR-01-2025  빛 · 기억 · 존재",
+    "updated": "2025-10-30T10:29:48.886Z"
+  }
+}

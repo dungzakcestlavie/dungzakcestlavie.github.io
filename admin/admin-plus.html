@@ -1,105 +1,455 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.11.1 — Plus</title>
-<meta name="theme-color" content="#070c1a" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lightflow Admin-Plus Ω.14 — Unified · iPhone-Stable</title>
+<meta name="theme-color" content="#070c1a">
 <style>
-:root{--bg:#070c1a;--panel:#0b1020;--soft:#10182d;--fg:#e8edf7;--muted:#9fa8c0;--accent:#d4b97a;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--r:14px}
+:root{
+  --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--border:#1e2744;
+  --fg:#e8edf7;--muted:#9fb0cc;--accent:#d4b97a;--accent2:#a3c2ff;
+  --ok:#72e0a7;--bad:#ff6b6b
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
-.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a0f1f,transparent);padding:12px 14px 10px;border-bottom:1px solid var(--border)}
-h1{margin:0;color:var(--accent);font-weight:800;font-size:22px}
-.sub{font-size:13px;color:var(--muted);margin-top:4px}
-.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-.admin-nav .bar{max-width:980px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:8px 12px}
-.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;padding:8px 12px;border-radius:999px;background:#0d142b;color:#cfe0ff;border:1px solid var(--border)}
-.admin-nav a.active{background:var(--accent);color:#000}
-.container{max-width:980px;margin:0 auto;padding:12px 12px 120px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:12px 0}
-.card h3{margin:0 0 12px;color:var(--accent)}
-input,textarea,select,button{width:100%;padding:10px;font-size:15px;border-radius:10px;border:1px solid var(--border);background:var(--soft);color:var(--fg)}
-button{border:none;font-weight:800;cursor:pointer}
-.btn{background:var(--accent);color:#07101f}
-.btn-ghost{background:#1b2748;color:var(--fg)}
-.btn-ok{background:var(--ok);color:#06251a}
-.btn-bad{background:var(--bad);color:#200}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b1223;border:1px solid var(--border);padding:10px 14px;border-radius:10px;color:var(--fg);opacity:0;transition:.2s;pointer-events:none;z-index:999}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Pretendard,sans-serif;
+  padding-top:76px}
+header{position:fixed;top:0;left:0;right:0;z-index:10000;
+  background:linear-gradient(180deg,#091227 0%,#091227cc 60%,#09122700 100%);
+  border-bottom:1px solid var(--border);padding:12px 12px 8px;
+  font-weight:800;color:var(--accent);font-size:18px}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.nav{position:sticky;top:48px;z-index:9999;display:flex;gap:8px;overflow-x:auto;
+  padding:8px 12px;background:#000a16;border-bottom:1px solid var(--border)}
+.nav button{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;
+  background:#0c1531;color:#cfe0ff;padding:8px 14px;font-weight:800}
+.nav button.active{background:var(--accent);color:#000}
+.container{max-width:1024px;margin:0 auto;padding:0 12px 120px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin:12px 0}
+h3{margin:0 0 10px;color:var(--accent);font-size:1.05rem}
+input,select,textarea,button{width:100%;padding:10px 12px;font-size:15px;border-radius:10px;border:1px solid var(--border);background:var(--soft);color:var(--fg)}
+button{cursor:pointer;font-weight:800}
+button:disabled{opacity:.6;cursor:not-allowed}
+.btn{background:var(--accent);color:#000;border:none}
+.btn-ok{background:var(--ok);color:#012c1a;border:none}
+.btn-ghost{background:#0f1a39;color:var(--accent2);border:1px solid var(--border)}
+.btn-bad{background:var(--bad);color:#000;border:none}
+.grid2{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:880px){.grid2{grid-template-columns:1fr 1fr}}
+.thumb{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.box{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#0b152f}
+.box .img{height:100px;background:#0a1329 center/cover no-repeat}
+.box .cap{padding:6px 8px;font-size:12px;color:#cfe0ff}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0b1223;border:1px solid var(--border);border-radius:12px;color:var(--fg);padding:10px 14px;opacity:0;transition:opacity .2s;z-index:10001}
 .toast.show{opacity:1}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+small{color:var(--muted)}
+/* iOS tap reliability */
+header,.nav,.container,.card{pointer-events:auto}
+button{pointer-events:auto;touch-action:manipulation}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>✨ Lightflow Admin Ω.11.1 — Plus</h1>
-  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Quick DCAR & Pages Touch</div>
-</div>
+<header>✨ Lightflow Admin-Plus Ω.14 — Unified · iPhone-Stable
+  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera</div>
+</header>
 
-<nav class="admin-nav">
-  <div class="bar">
-    <a href="/admin/admin.html#home" data-k="home">Home</a>
-    <a href="/admin/admin.html#artworks" data-k="artworks">Artworks</a>
-    <a href="/admin/admin.html#dcar" data-k="dcar">DCAR</a>
-    <a href="/admin/batch.html" data-k="upload">Upload</a>
-    <a href="/admin/admin-plus.html#tools" data-k="settings">Settings</a>
-  </div>
-</nav>
+<div class="nav">
+  <button data-tab="home" class="active">Home</button>
+  <button data-tab="art">Artworks</button>
+  <button data-tab="dcar">DCAR</button>
+  <button data-tab="quick">QuickPaste</button>
+  <button data-tab="mini">Mini-Batch</button>
+  <button data-tab="trigger">Trigger</button>
+  <button data-tab="settings">Settings</button>
+</div>
 
 <div class="container">
 
-  <section class="card" id="quick">
-    <h3>1️⃣ DCAR 빠른 붙여넣기 저장</h3>
+<!-- HOME -->
+<section id="home" class="tab">
+  <div class="card">
+    <h3>0️⃣ GitHub 연결</h3>
     <div class="grid2">
       <div>
-        <label>Report ID</label>
-        <select id="qid"></select>
+        <input id="owner" placeholder="Owner (예: dungzakcestlavie)">
+        <input id="repo"  placeholder="Repo (예: dungzakcestlavie.github.io)">
+        <input id="branch" value="main" placeholder="Branch">
+        <input id="token" type="password" placeholder="GitHub Token (repo)">
       </div>
       <div>
-        <label>자동 저장</label>
-        <select id="qauto"><option value="on" selected>ON (1.5s)</option><option value="off">OFF</option></select>
+        <button class="btn" onclick="saveCfg()">💾 저장</button>
+        <button class="btn-ok" onclick="testConn()">🔗 연결 테스트</button>
+        <button class="btn-ghost" onclick="touchPages()">🚀 Pages 캐시 무효화</button>
+        <button class="btn-bad" onclick="logout()">🔒 토큰 삭제</button>
+        <div id="status" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
+        <small>Admin/Trigger/Batch 페이지는 모두 동일한 localStorage 값을 공유합니다.</small>
       </div>
     </div>
-    <textarea id="qtext" placeholder="여기에 DCAR 본문(한·영 무제한)을 붙여넣으세요."></textarea>
-    <div class="btn-row">
-      <button class="btn" onclick="saveQuick()">📝 붙여넣기 저장</button>
-      <button class="btn-ghost" onclick="pagesTouch()">🚀 Pages 캐시 무효화</button>
-    </div>
-    <div id="qprev" style="margin-top:8px;border:1px solid var(--border);padding:8px;border-radius:10px;font-size:14px"></div>
-  </section>
+  </div>
+</section>
 
-  <section class="card" id="tools">
-    <h3>2️⃣ 도구</h3>
-    <div class="btn-row">
-      <button class="btn-ghost" onclick="window.location='/admin/trigger.html'">Trigger 열기</button>
-      <button class="btn-bad" onclick="localStorage.removeItem(KEY);location.reload()">localStorage 초기화</button>
+<!-- ARTWORKS -->
+<section id="art" class="tab" style="display:none">
+  <div class="card">
+    <h3>1️⃣ 작품 아카이브</h3>
+    <div class="grid2">
+      <div>
+        <select id="sec">
+          <option value="light">Ⅰ Light & Memory</option>
+          <option value="human">Ⅱ Human Being</option>
+          <option value="rebirth">Ⅲ Rebirth of Mind</option>
+          <option value="restore">Ⅳ Restoration of Being</option>
+          <option value="meta">Ⅴ Metaconsciousness</option>
+        </select>
+        <input id="wid" placeholder="ID (예: light-01)">
+        <input id="wtitle" placeholder="Title">
+        <input id="wyear" placeholder="Year">
+        <input id="wmedium" placeholder="Medium">
+        <input id="wsize" placeholder="Size">
+        <input id="wfile" type="file" accept="image/*">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="uploadArtwork()">📤 업로드+등록</button>
+          <button class="btn-ghost" onclick="replaceImage()">🖼 이미지 교체</button>
+          <button class="btn-bad" onclick="deleteArtwork()">🗑 삭제</button>
+        </div>
+      </div>
+      <div>
+        <input id="wq" placeholder="검색(ID/제목)" oninput="renderGallery()">
+        <div id="wcount" style="font-size:13px;color:var(--muted);margin:6px 0"></div>
+        <div id="wg" class="thumb"></div>
+      </div>
     </div>
-  </section>
+    <small>JSON: <code>/data/artworks.json</code> · 이미지: <code>/img/{section}/</code></small>
+  </div>
+</section>
+
+<!-- DCAR (폼 저장) -->
+<section id="dcar" class="tab" style="display:none">
+  <div class="card">
+    <h3>2️⃣ 미학 보고서 — EN/KR 제목 + 본문 저장</h3>
+    <div class="grid2">
+      <div>
+        <select id="rid">
+          <option value="dcar02">DCAR-02</option>
+          <option value="dcar03">DCAR-03</option>
+          <option value="dcar05">DCAR-05</option>
+          <option value="dcar01">DCAR-01</option>
+          <option value="dcar04">DCAR-04</option>
+          <option value="dcar06">DCAR-06</option>
+          <option value="dcar07">DCAR-07</option>
+          <option value="dcar08">DCAR-08</option>
+        </select>
+        <input id="rTitleEN" placeholder="Title (EN)">
+        <input id="rTitleKO" placeholder="제목 (KO)">
+        <textarea id="rBody" placeholder="본문(EN/KR 혼합 가능 — 저장 시 그대로 .md 생성)"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="saveReportForm()">📝 저장</button>
+          <button class="btn-bad" onclick="deleteReport()">🗑 삭제</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">미리보기</div>
+        <div id="rPrev" style="background:#0b152f;border:1px solid var(--border);border-radius:10px;min-height:220px;padding:10px;overflow:auto"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK PASTE (자동 저장) -->
+<section id="quick" class="tab" style="display:none">
+  <div class="card">
+    <h3>3️⃣ QuickPaste — 붙여넣기 자동 저장(1.2s) · EN/KR 자동 분리</h3>
+    <div class="grid2">
+      <div>
+        <select id="qid">
+          <option value="dcar02">DCAR-02</option>
+          <option value="dcar03">DCAR-03</option>
+          <option value="dcar05">DCAR-05</option>
+          <option value="dcar01">DCAR-01</option>
+          <option value="dcar04">DCAR-04</option>
+          <option value="dcar06">DCAR-06</option>
+          <option value="dcar07">DCAR-07</option>
+          <option value="dcar08">DCAR-08</option>
+        </select>
+        <textarea id="qpaste" placeholder="형식:
+영문 제목
+영문 본문…
+
+[빈 줄]
+
+한글 제목
+한글 본문…"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="saveQuick()">📝 수동 저장</button>
+        </div>
+        <small>입력 후 1.2초 정지하면 자동 저장됩니다.</small>
+      </div>
+      <div>
+        <div id="qPrev" style="background:#0b152f;border:1px solid var(--border);border-radius:10px;min-height:220px;padding:10px;overflow:auto"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINI BATCH -->
+<section id="mini" class="tab" style="display:none">
+  <div class="card">
+    <h3>4️⃣ Mini-Batch — 다중 이미지(최대 10) 간편 등록</h3>
+    <div class="grid2">
+      <div>
+        <select id="msec">
+          <option value="light">Ⅰ Light & Memory</option>
+          <option value="human">Ⅱ Human Being</option>
+          <option value="rebirth">Ⅲ Rebirth of Mind</option>
+          <option value="restore">Ⅳ Restoration of Being</option>
+          <option value="meta">Ⅴ Metaconsciousness</option>
+        </select>
+        <input id="mprefix" placeholder="ID 접두사 (예: light)">
+        <input id="mstart" type="number" value="1" min="1" placeholder="시작 번호">
+        <input id="myear" placeholder="공통 Year (선택)">
+        <input id="mmedium" placeholder="공통 Medium (선택)">
+        <input id="msize" placeholder="공통 Size (선택)">
+        <input id="mfiles" type="file" accept="image/*" multiple>
+        <button class="btn-ok" onclick="runMini()">업로드 시작</button>
+      </div>
+      <div>
+        <div id="mthumbs" class="thumb"></div>
+        <div id="mprog" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>
+    <small>파일명에서 Title 자동 추출. 대량 업로드는 <code>/admin/batch.html</code> 사용.</small>
+  </div>
+</section>
+
+<!-- TRIGGER -->
+<section id="trigger" class="tab" style="display:none">
+  <div class="card">
+    <h3>5️⃣ Trigger</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-ghost" onclick="touchPages()">✏️ Commit Touch</button>
+      <button class="btn-ok" onclick="pagesBuild()">🚀 Pages Build 요청</button>
+      <button class="btn-bad" onclick="resetLocal()">🧹 localStorage 초기화</button>
+    </div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="tab" style="display:none">
+  <div class="card">
+    <h3>정보</h3>
+    <div id="info" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+</section>
+
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
-const toast=(m,e=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=e?"#ff6b6b":"#22304f";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);}
-const KEY="lf_admin_cfg_v101";
-const cfg=k=>JSON.parse(localStorage.getItem(KEY)||"{}")[k]||"";
-function md2html(md){return md.replace(/</g,"&lt;").replace(/>/g,"&gt;").split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,"<br>")}</p>`).join("")}
+/* ===== Tabs ===== */
+document.querySelectorAll('.nav button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const t=b.dataset.tab;
+    document.querySelectorAll('.tab').forEach(x=>x.style.display='none');
+    document.getElementById(t).style.display='block';
+  });
+});
 
-/* GH */
-async function gh(m,p,b=null,j=true){const t=cfg("token"); if(!t) throw Error("토큰 없음"); const r=await fetch(`https://api.github.com/${p}`,{method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${t}`},body:b?(j?JSON.stringify(b):b):null}); if(!r.ok) throw Error(await r.text()); return r.json();}
+/* ===== Helpers ===== */
+const $=s=>document.querySelector(s);
+const say=(m,e=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=e?'#ff6b6b':'#22304f';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);};
+const cfg=k=>localStorage.getItem(k)||""; const setcfg=(k,v)=>localStorage.setItem(k,v);
 const b64=s=>btoa(unescape(encodeURIComponent(s)));
-async function stat(p){try{const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";const j=await gh("GET",`repos/${o}/${r}/contents/${encodeURIComponent(p)}?ref=${b}`);return {sha:j.sha,txt:j.content?atob(j.content.replace(/\n/g,"")):""}}catch{return{}}}
-async function put(p,txt,msg){const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";const old=await stat(p);const body={message:msg,content:b64(txt),branch:b};if(old.sha) body.sha=old.sha;return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(p)}`,body);}
+const fileToB64=f=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(',')[1]);fr.onerror=rej;fr.readAsDataURL(f);});
 
-/* Quick */
-const IDS=["dcar01","dcar02","dcar03","dcar04","dcar05","dcar06","dcar07","dcar08"]; let reports={};
-async function load(){ $("#qid").innerHTML=IDS.map(i=>`<option>${i}</option>`).join(""); const f=await stat("data/reports.json"); if(f.txt) reports=JSON.parse(f.txt); $("#qtext").addEventListener("input",()=>{ $("#qprev").innerHTML=md2html($("#qtext").value); if($("#qauto").value==="on"){ clearTimeout(window.__qs); window.__qs=setTimeout(saveQuick,1500);} }); }
-async function saveQuick(){ try{ const id=$("#qid").value,txt=$("#qtext").value; if(!txt.trim()) return toast("내용 없음",true); await put(`reports/${id}.md`,txt,`save ${id}.md`); reports[id]={id,text:txt,updated:new Date().toISOString()}; await put("data/reports.json",JSON.stringify(reports,null,2),"update reports"); toast("저장 완료"); }catch(e){toast(e.message,true);} }
-async function pagesTouch(){ try{const t=new Date().toISOString(); await put("data/.touch","touch "+t,`touch ${t}`); toast("Pages 캐시 무효화 OK");}catch(e){toast(e.message,true);} }
+/* ===== Config ===== */
+function saveCfg(){["owner","repo","branch","token"].forEach(id=>setcfg(id,$("#"+id).value.trim())); loadInfo(); say("저장됨");}
+function logout(){localStorage.removeItem("token"); say("토큰 삭제");}
+function resetLocal(){localStorage.clear(); location.reload();}
+function loadInfo(){ $("#status").innerHTML=`Owner ${cfg("owner")} · Repo ${cfg("repo")} · Branch ${cfg("branch")}`; $("#info").textContent=$("#status").innerText; }
+["owner","repo","branch","token"].forEach(id=>{if(cfg(id))$("#"+id).value=cfg(id);}); loadInfo();
 
-window.addEventListener("load",load);
+/* ===== GitHub Core ===== */
+async function gh(m,p,b=null,isJson=true){
+  const tk=cfg("token"); if(!tk) throw new Error("토큰 없음");
+  const r=await fetch(`https://api.github.com/${p}`,{
+    method:m,headers:{Accept:"application/vnd.github+json","Authorization":`token ${tk}`},
+    body:b?(isJson?JSON.stringify(b):b):null
+  });
+  if(!r.ok) throw new Error(`GitHub ${r.status}: ${(await r.text()).slice(0,200)}`);
+  return r.json();
+}
+async function getContent(path){
+  try{
+    const j=await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}?ref=${cfg("branch")}`);
+    return {exists:true,sha:j.sha,content:j.content?atob(j.content.replace(/\n/g,"")):null};
+  }catch(e){return {exists:false,sha:null,content:null};}
+}
+async function putFile(path,b64c,msg){
+  const old=await getContent(path);
+  const body={message:msg||`update ${path}`,content:b64c,branch:cfg("branch")};
+  if(old.exists) body.sha=old.sha;
+  return gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}`,body);
+}
+async function delFile(path,msg){
+  const old=await getContent(path); if(!old.exists) return;
+  return gh("DELETE",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}`,{message:msg||`delete ${path}`,sha:old.sha,branch:cfg("branch")});
+}
+async function testConn(){try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("연결 OK (200)");}catch(e){say("연결 실패: "+e.message,true);}}
+
+/* ===== Pages ===== */
+async function touchPages(){
+  try{
+    const s=new Date().toISOString();
+    await putFile("data/.touch", b64("touch "+s), "touch");
+    await putFile("data/.pages-touch", b64(s), "touch pages");
+    say("Touch 커밋 완료");
+  }catch(e){say("Touch 실패: "+e.message,true);}
+}
+async function pagesBuild(){
+  try{await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});say("Pages Build 요청됨");}
+  catch(e){say("Pages API 권한 없음 — touch만 사용",true);}
+}
+
+/* ===== Artworks ===== */
+let artworks={light:[],human:[],rebirth:[],restore:[],meta:[]};
+function secKey(){return $("#sec").value;}
+function idVal(){return $("#wid").value.trim();}
+function titleFromName(n){return n.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').trim();}
+async function loadArtworks(){
+  try{const r=await getContent("data/artworks.json"); if(r.exists) artworks=JSON.parse(r.content); renderGallery(); say("artworks.json 로드 완료");}
+  catch(e){say("작품 로드 실패: "+e.message,true);}
+}
+function renderGallery(){
+  const box=$("#wg"); box.innerHTML="";
+  const q=$("#wq").value.trim().toLowerCase();
+  const arr=(artworks[secKey()]||[]).filter(a=>!q||a.id.toLowerCase().includes(q)||String(a.title||"").toLowerCase().includes(q));
+  $("#wcount").textContent=`총 ${arr.length} 개`;
+  arr.forEach(a=>{
+    const d=document.createElement("div"); d.className="box";
+    d.innerHTML=`<div class="img" style="background-image:url('${a.image||""}')"></div><div class="cap">${a.id} · ${a.title||""}</div>`;
+    d.onclick=()=>{$("#wid").value=a.id||"";$("#wtitle").value=a.title||"";$("#wyear").value=a.year||"";$("#wmedium").value=a.medium||"";$("#wsize").value=a.size||"";};
+    box.appendChild(d);
+  });
+}
+async function saveArtworksJson(){await putFile("data/artworks.json", b64(JSON.stringify(artworks,null,2)), "update artworks.json");}
+async function uploadArtwork(){
+  try{
+    const id=idVal(); if(!id) return say("ID 필수",true);
+    let url=artworks[secKey()]?.find(x=>x.id===id)?.image||"";
+    const f=$("#wfile").files[0];
+    if(f){const ext=(f.name.match(/\.\w+$/)||[".jpg"])[0];const name=id.replace(/\s+/g,"_")+ext;const path=`img/${secKey()}/${name}`;await putFile(path,await fileToB64(f),`upload ${path}`);url="/"+path;}
+    const e={id,title:$("#wtitle").value||titleFromName($("#wfile").files[0]?.name||id),year:$("#wyear").value,medium:$("#wmedium").value,size:$("#wsize").value,image:url};
+    const arr=artworks[secKey()]||(artworks[secKey()]=[]); const i=arr.findIndex(x=>x.id===id); if(i>=0)arr[i]=e; else arr.push(e);
+    await saveArtworksJson(); renderGallery(); say("작품 저장 완료");
+  }catch(e){say("업로드 실패: "+e.message,true);}
+}
+async function replaceImage(){
+  try{
+    const id=idVal(); if(!id) return say("ID 필수",true);
+    const f=$("#wfile").files[0]; if(!f) return say("이미지 선택",true);
+    const ext=(f.name.match(/\.\w+$/)||[".jpg"])[0]; const name=id.replace(/\s+/g,"_")+ext; const path=`img/${secKey()}/${name}`;
+    await putFile(path,await fileToB64(f),`replace ${path}`);
+    const arr=artworks[secKey()]||[]; const i=arr.findIndex(x=>x.id===id); if(i>=0){arr[i].image="/"+path; await saveArtworksJson(); renderGallery();}
+    say("이미지 교체 완료");
+  }catch(e){say("교체 실패: "+e.message,true);}
+}
+async function deleteArtwork(){
+  try{
+    const id=idVal(); if(!id) return say("ID 필수",true);
+    const arr=artworks[secKey()]||[]; const i=arr.findIndex(x=>x.id===id); if(i<0) return say("존재하지 않음",true);
+    try{const path=(arr[i].image||"").replace(/^\//,''); if(path) await delFile(path,`delete ${path}`);}catch{}
+    arr.splice(i,1); await saveArtworksJson(); renderGallery(); say("삭제 완료");
+  }catch(e){say("삭제 실패: "+e.message,true);}
+}
+
+/* ===== DCAR (폼) ===== */
+function mdToHtml(md){return md.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,"<br>")}</p>`).join("");}
+$("#rBody").addEventListener("input",()=>{$("#rPrev").innerHTML=mdToHtml($("#rBody").value);});
+async function saveReportForm(){
+  try{
+    const id=$("#rid").value, body=$("#rBody").value||"";
+    await putFile(`reports/${id.toUpperCase()}.md`, b64(body), `save ${id}.md`);
+    const cur=await getContent("data/reports.json"); const repo=cur.exists?JSON.parse(cur.content):{};
+    repo[id]={id,titleEN:$("#rTitleEN").value||"",titleKO:$("#rTitleKO").value||"",updated:new Date().toISOString(),size:body.length};
+    await putFile("data/reports.json", b64(JSON.stringify(repo,null,2)), "update reports.json");
+    say("DCAR 저장 완료");
+  }catch(e){say("보고서 저장 실패: "+e.message,true);}
+}
+async function deleteReport(){
+  try{
+    const id=$("#rid").value;
+    try{await delFile(`reports/${id.toUpperCase()}.md`, `delete ${id}.md`);}catch{}
+    const cur=await getContent("data/reports.json"); if(cur.exists){const repo=JSON.parse(cur.content); delete repo[id]; await putFile("data/reports.json", b64(JSON.stringify(repo,null,2)), "update reports.json");}
+    say("DCAR 삭제 완료");
+  }catch(e){say("삭제 실패: "+e.message,true);}
+}
+
+/* ===== QuickPaste (auto split EN/KR + autosave) ===== */
+function splitENKR(txt){
+  const blocks=txt.trim().split(/\n\s*\n/); let pivot=0;
+  for(let i=0;i<blocks.length;i++){ if(/[가-힣]/.test(blocks[i])){pivot=i;break;} }
+  const en=blocks.slice(0,Math.max(1,pivot)).join("\n\n").trim();
+  const kr=blocks.slice(Math.max(1,pivot)).join("\n\n").trim();
+  const titleEN=(en.split("\n")[0]||"").trim();
+  const titleKO=(kr.split("\n")[0]||"").trim();
+  return {en,kr,titleEN,titleKO};
+}
+$("#qpaste").addEventListener("input",()=>{
+  const {en,kr}=splitENKR($("#qpaste").value);
+  $("#qPrev").innerHTML=`<h4 style="margin:0 0 6px;color:#cfe0ff">EN</h4>${mdToHtml(en)}<hr style="border-color:#1b2a54"><h4 style="margin:6px 0;color:#cfe0ff">KO</h4>${mdToHtml(kr)}`;
+  clearTimeout(window.__qs); window.__qs=setTimeout(saveQuick,1200);
+});
+async function saveQuick(){
+  try{
+    const id=$("#qid").value; const body=$("#qpaste").value; if(!body.trim()) return;
+    const {titleEN,titleKO}=splitENKR(body);
+    await putFile(`reports/${id.toUpperCase()}.md`, b64(body), `save ${id}.md`);
+    const cur=await getContent("data/reports.json"); const repo=cur.exists?JSON.parse(cur.content):{};
+    repo[id]={id,titleEN, titleKO, updated:new Date().toISOString(), size:body.length};
+    await putFile("data/reports.json", b64(JSON.stringify(repo,null,2)), "update reports.json");
+    say("QuickPaste 자동 저장");
+  }catch(e){say("QuickPaste 실패: "+e.message,true);}
+}
+
+/* ===== Mini-Batch ===== */
+function mTitle(n){return n.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').trim();}
+$("#mfiles").addEventListener("change",()=>{
+  const box=$("#mthumbs"); box.innerHTML=""; [...$("#mfiles").files].slice(0,10).forEach(f=>{
+    const d=document.createElement("div"); d.className="box";
+    d.innerHTML=`<div class="img" style="background-image:url('${URL.createObjectURL(f)}')"></div><div class="cap">${f.name}</div>`;
+    box.appendChild(d);
+  });
+});
+async function runMini(){
+  try{
+    const files=[...$("#mfiles").files].slice(0,10); if(files.length===0) return say("이미지 선택",true);
+    const sec=$("#msec").value, prefix=$("#mprefix").value.trim()||sec, start=parseInt($("#mstart").value||"1",10);
+    const year=$("#myear").value, medium=$("#mmedium").value, size=$("#msize").value;
+    const r=await getContent("data/artworks.json"); let art=r.exists?JSON.parse(r.content):{light:[],human:[],rebirth:[],restore:[],meta:[]};
+    let n=start, done=0;
+    for(const f of files){
+      const id=`${prefix}-${String(n).padStart(2,'0')}`; const ext=(f.name.match(/\.\w+$/)||[".jpg"])[0];
+      const name=id+ext; const path=`img/${sec}/${name}`;
+      await putFile(path, await fileToB64(f), `upload ${path}`);
+      const e={id,title:mTitle(f.name),year,medium,size,image:`/${path}`};
+      const arr=art[sec]||(art[sec]=[]); const i=arr.findIndex(x=>x.id===id); if(i>=0)arr[i]=e; else arr.push(e);
+      $("#mprog").textContent=`업로드 ${++done}/${files.length}`;
+      n++;
+    }
+    await putFile("data/artworks.json", b64(JSON.stringify(art,null,2)), "update artworks.json");
+    say("Mini-Batch 완료");
+  }catch(e){say("Mini-Batch 실패: "+e.message,true);}
+}
+
+/* ===== iOS touch→click bridge ===== */
+(function(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);if(!isiOS)return;function bind(el){if(el.__tapBound)return;el.__tapBound=1;let sx=0,sy=0;el.addEventListener("touchstart",e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;},{passive:true});el.addEventListener("touchend",e=>{const t=e.changedTouches[0];if(Math.abs(t.clientX-sx)<10&&Math.abs(t.clientY-sy)<10){e.preventDefault();e.stopPropagation();el.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true}))}},{passive:false})}function scan(){document.querySelectorAll("button,[onclick],input[type=file]").forEach(bind)}window.addEventListener("load",scan);document.addEventListener("touchstart",scan,{passive:true});new MutationObserver(scan).observe(document.body,{subtree:true,childList:true});})();
+
+/* ===== Init ===== */
+window.addEventListener("load",async()=>{await loadArtworks();});
 </script>
 </body>
 </html>

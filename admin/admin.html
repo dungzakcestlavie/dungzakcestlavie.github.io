@@ -1,195 +1,160 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.14 — Unified · iPhone-Stable</title>
-<meta name="theme-color" content="#070c1a" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lightflow Admin Ω.15 — Unified</title>
 <style>
 :root{
-  --bg:#070c1a; --panel:#0b1020; --soft:#0f1730; --border:#1e2744;
-  --fg:#e8edf7; --muted:#9fb0cc; --accent:#d4b97a; --accent2:#a3c2ff;
-  --ok:#72e0a7; --bad:#ff6b6b;
+  --bg:#070c1a;--panel:#0b1020;--soft:#101830;--fg:#e8edf7;--muted:#9fb0cc;
+  --border:#1e2744;--accent:#d4b97a;--accent2:#a3c2ff;--ok:#72e0a7;--bad:#ff6b6b;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  margin:0;background:var(--bg);color:var(--fg);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Pretendard,sans-serif;
-  padding-top:76px;
-}
-header{
-  position:fixed;top:0;left:0;right:0;z-index:10000;
-  background:linear-gradient(180deg,#091227 0%,#091227cc 60%,#09122700 100%);
-  border-bottom:1px solid var(--border);
-  padding:12px 12px 8px;font-weight:800;color:var(--accent);font-size:18px;
-}
-.sub{font-size:12px;color:var(--muted);margin-top:2px}
-.nav{
-  position:sticky;top:48px;z-index:9999;display:flex;gap:8px;overflow-x:auto;
-  padding:8px 12px;background:#000a16;border-bottom:1px solid var(--border)
-}
-.nav button{
-  flex:0 0 auto;border:1px solid var(--border);border-radius:999px;
-  background:#0c1531;color:#cfe0ff;padding:8px 14px;font-weight:700
-}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Pretendard,sans-serif}
+header{position:sticky;top:0;z-index:8;background:#0b1225;padding:12px;border-bottom:1px solid var(--border)}
+h1{margin:0;font-size:18px;color:var(--accent);font-weight:800}
+.sub{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.nav button{border:1px solid var(--border);background:#0d1530;color:#cfe0ff;border-radius:999px;padding:9px 14px;font-weight:800}
 .nav button.active{background:var(--accent);color:#000}
-.container{max-width:980px;margin:0 auto;padding:0 12px 120px}
-.card{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:14px;padding:14px;margin:12px 0
-}
-h3{margin:0 0 10px;color:var(--accent);font-size:1.05rem}
-input,select,textarea,button{
-  width:100%;padding:10px 12px;font-size:15px;border-radius:10px;
-  border:1px solid var(--border);background:var(--soft);color:var(--fg)
-}
-button{cursor:pointer;font-weight:800}
-button:disabled{opacity:.6;cursor:not-allowed}
+.container{max-width:980px;margin:0 auto;padding:12px}
+.card{background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--border);margin:10px 0}
+h3{margin:0 0 8px;color:var(--accent)}
+input,textarea,button,select{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--fg)}
+button{font-weight:800;cursor:pointer}
 .btn{background:var(--accent);color:#000;border:none}
-.btn-ok{background:var(--ok);color:#012c1a;border:none}
-.btn-ghost{background:#0f1a39;color:var(--accent2);border:1px solid var(--border)}
+.btn-ok{background:var(--ok);color:#002f1d;border:none}
+.btn-ghost{background:#0f1a39;color:#cfe0ff;border:1px solid var(--border)}
 .btn-bad{background:var(--bad);color:#000;border:none}
 .grid2{display:grid;grid-template-columns:1fr;gap:8px}
 @media(min-width:860px){.grid2{grid-template-columns:1fr 1fr}}
-.toast{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:10001;
-  background:#0b1223;border:1px solid var(--border);border-radius:12px;
-  padding:10px 16px;color:var(--fg);opacity:0;transition:opacity .2s
-}
+.small{font-size:12px;color:var(--muted)}
+.hidden{display:none}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0b1223;border:1px solid var(--border);padding:8px 14px;border-radius:8px;opacity:0;transition:.2s}
 .toast.show{opacity:1}
-
-/* iOS tap reliability */
-header,.nav,.container,.card{pointer-events:auto}
-button{pointer-events:auto;touch-action:manipulation}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.thumb{position:relative;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.thumb img{width:100%;height:120px;object-fit:cover}
+.thumb .cap{padding:4px 8px;font-size:12px}
+.thumb .x{position:absolute;top:6px;right:6px;background:var(--bad);border:none;border-radius:999px;font-size:11px;padding:3px 6px}
+.drop{border:2px dashed var(--border);text-align:center;padding:12px;border-radius:10px}
+.drop.drag{background:#14224a;border-color:#7fa1ff}
+pre.preview{background:#0b162d;border:1px solid var(--border);border-radius:8px;padding:8px;white-space:pre-wrap;max-height:260px;overflow:auto}
 </style>
 </head>
 <body>
 
 <header>
-  ✨ Lightflow Admin Ω.14 — Unified · iPhone-Stable
+  <h1>✨ Lightflow Admin Ω.15 — Unified</h1>
   <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera</div>
+  <div class="nav" id="nav">
+    <button data-tab="home" class="active">Home</button>
+    <button data-tab="art">Artworks</button>
+    <button data-tab="dcar">DCAR</button>
+    <button data-tab="upload">Upload</button>
+    <button data-tab="trigger">Trigger</button>
+  </div>
 </header>
-
-<div class="nav">
-  <button type="button" data-tab="home" class="active">Home</button>
-  <button type="button" data-tab="art">Artworks</button>
-  <button type="button" data-tab="dcar">DCAR</button>
-  <button type="button" data-tab="trigger">Trigger</button>
-  <button type="button" data-tab="settings">Settings</button>
-</div>
 
 <div class="container">
 
 <!-- HOME -->
 <section id="home" class="tab">
-  <div class="card">
-    <h3>0️⃣ GitHub 연결</h3>
-    <div class="grid2">
-      <div>
-        <input id="owner" placeholder="Owner (예: dungzakcestlavie)">
-        <input id="repo"  placeholder="Repo (예: dungzakcestlavie.github.io)">
-        <input id="branch" value="main" placeholder="Branch">
-        <input id="token"  placeholder="GitHub Token (repo)" type="password">
-      </div>
-      <div>
-        <button type="button" class="btn" onclick="saveCfg()">💾 저장</button>
-        <button type="button" class="btn-ok" onclick="testConn()">🔗 연결 테스트</button>
-        <button type="button" class="btn-ghost" onclick="touchPages()">🚀 Pages 캐시 무효화</button>
-        <button type="button" class="btn-bad" onclick="logout()">🔒 토큰 삭제</button>
-        <div id="status" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
-      </div>
-    </div>
-  </div>
+<div class="card">
+<h3>GitHub 연결</h3>
+<div class="grid2">
+<div>
+<input id="owner" placeholder="Owner (예: dungzakcestlavie)">
+<input id="repo" placeholder="Repo (예: dungzakcestlavie.github.io)">
+<input id="branch" value="main" placeholder="Branch">
+<input id="token" type="password" placeholder="Personal Access Token (repo)">
+</div>
+<div>
+<button id="save" class="btn">💾 저장</button>
+<button id="test" class="btn-ok">🔗 연결 테스트</button>
+<button id="logout" class="btn-bad">🔒 토큰 삭제</button>
+</div>
+</div>
+<div class="small">브라우저 localStorage에 저장됩니다.</div>
+</div>
 </section>
 
-<!-- ARTWORKS -->
-<section id="art" class="tab" style="display:none">
-  <div class="card">
-    <h3>1️⃣ 작품 아카이브 (Ⅰ–Ⅴ)</h3>
-    <div class="grid2">
-      <div>
-        <select id="sec">
-          <option value="light">Ⅰ Light & Memory</option>
-          <option value="human">Ⅱ Human Being</option>
-          <option value="rebirth">Ⅲ Rebirth of Mind</option>
-          <option value="restore">Ⅳ Restoration of Being</option>
-          <option value="meta">Ⅴ Metaconsciousness</option>
-        </select>
-        <input id="wid" placeholder="ID (예: light-01)">
-        <input id="wtitle" placeholder="Title">
-        <input id="wyear" placeholder="Year">
-        <input id="wmedium" placeholder="Medium">
-        <input id="wsize" placeholder="Size">
-        <input id="wfile" type="file" accept="image/*">
-        <div style="display:flex;gap:8px">
-          <button type="button" class="btn" onclick="uploadArtwork()">📤 업로드+등록</button>
-          <button type="button" class="btn-ghost" onclick="replaceImage()">🖼 이미지 교체</button>
-          <button type="button" class="btn-bad" onclick="deleteArtwork()">🗑 삭제</button>
-        </div>
-      </div>
-      <div>
-        <input id="wq" placeholder="검색(ID/제목)" oninput="renderGallery()">
-        <div id="wcount" style="font-size:13px;color:var(--muted);margin:6px 0"></div>
-        <div id="wg" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px"></div>
-      </div>
-    </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:6px">JSON: <code>/data/artworks.json</code> · 이미지: <code>/img/{section}/</code></div>
-  </div>
+<!-- ARTWORK -->
+<section id="art" class="tab hidden">
+<div class="card">
+<h3>작품 관리</h3>
+<div class="grid2">
+<div>
+<select id="sec">
+<option value="light">Ⅰ Light & Memory</option>
+<option value="human">Ⅱ Human Being</option>
+<option value="rebirth">Ⅲ Rebirth of Mind</option>
+<option value="restore">Ⅳ Restoration of Being</option>
+<option value="meta">Ⅴ Metaconsciousness</option>
+</select>
+<input id="aid" placeholder="ID (예: light-01)">
+<input id="title" placeholder="Title">
+<input id="year" placeholder="Year">
+<input id="medium" placeholder="Medium">
+<input id="size" placeholder="Size">
+<div id="drop" class="drop">📥 드래그/탭하여 이미지 선택</div>
+<input id="file" type="file" accept="image/*" class="hidden">
+<img id="prev" style="display:none;width:100%;max-height:200px;margin-top:6px;border-radius:8px">
+<div style="display:flex;gap:8px;margin-top:8px">
+<button id="upload" class="btn">📤 업로드</button>
+<button id="update" class="btn-ghost">✏️ 수정</button>
+<button id="del" class="btn-bad">🗑 삭제</button>
+</div>
+</div>
+<div>
+<input id="q" placeholder="검색(ID/제목)">
+<div id="cnt" class="small"></div>
+<div id="grid" class="gallery"></div>
+</div>
+</div>
+</div>
 </section>
 
 <!-- DCAR -->
-<section id="dcar" class="tab" style="display:none">
-  <div class="card">
-    <h3>2️⃣ 미학 보고서 (붙여넣기 자동 저장 · EN/KR 동시)</h3>
-    <div class="grid2">
-      <div>
-        <select id="rid">
-          <option value="dcar02">DCAR-02</option>
-          <option value="dcar03">DCAR-03</option>
-          <option value="dcar05">DCAR-05</option>
-          <option value="dcar01">DCAR-01</option>
-          <option value="dcar04">DCAR-04</option>
-          <option value="dcar06">DCAR-06</option>
-          <option value="dcar07">DCAR-07</option>
-          <option value="dcar08">DCAR-08</option>
-        </select>
-        <input id="rTitleEN" placeholder="Title (EN)">
-        <input id="rTitleKO" placeholder="제목 (KO)">
-        <textarea id="rPaste" placeholder="여기에 전체 본문 붙여넣기: 
-첫 줄들 = 영문 제목/본문, 빈 줄 후 = 한글 제목/본문.
-자동으로 .md 생성 + reports.json 갱신됩니다."></textarea>
-        <div style="display:flex;gap:8px">
-          <button type="button" class="btn" onclick="saveReport()">📝 붙여넣기 저장</button>
-          <button type="button" class="btn-bad" onclick="deleteReport()">🗑 삭제</button>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">미리보기</div>
-        <div id="rPrev" style="background:#0b152f;border:1px solid var(--border);border-radius:10px;min-height:220px;padding:10px;overflow:auto"></div>
-      </div>
-    </div>
-  </div>
+<section id="dcar" class="tab hidden">
+<div class="card">
+<h3>미학 보고서 (붙여넣기)</h3>
+<select id="rid"></select>
+<input id="titleEN" placeholder="Title EN">
+<input id="titleKO" placeholder="제목 KO">
+<textarea id="bodyEN" rows="8" placeholder="English text paste"></textarea>
+<textarea id="bodyKO" rows="8" placeholder="한국어 본문 붙여넣기"></textarea>
+<div style="display:flex;gap:8px;margin-top:6px">
+<button id="saveReport" class="btn">📝 저장</button>
+<button id="delReport" class="btn-bad">🗑 삭제</button>
+</div>
+<div class="small">/reports/DCAR-XX.md · /data/reports.json</div>
+<pre id="prevR" class="preview"></pre>
+</div>
+</section>
+
+<!-- UPLOAD -->
+<section id="upload" class="tab hidden">
+<div class="card">
+<h3>빠른 업로드</h3>
+<input id="upath" value="img/light/">
+<div id="udrop" class="drop">📥 여러 파일 드롭</div>
+<input id="ufiles" type="file" multiple class="hidden" accept="image/*">
+<button id="urun" class="btn" style="margin-top:8px">📤 실행</button>
+<pre id="ulist" class="preview"></pre>
+</div>
 </section>
 
 <!-- TRIGGER -->
-<section id="trigger" class="tab" style="display:none">
-  <div class="card">
-    <h3>3️⃣ Pages Trigger</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button type="button" class="btn-ghost" onclick="touchPages()">✏️ Commit Touch</button>
-      <button type="button" class="btn-ok" onclick="pagesBuild()">🚀 Pages Build 요청</button>
-      <button type="button" class="btn-bad" onclick="resetLocal()">🧹 localStorage 초기화</button>
-    </div>
-  </div>
-</section>
-
-<!-- SETTINGS -->
-<section id="settings" class="tab" style="display:none">
-  <div class="card">
-    <h3>정보</h3>
-    <div id="info" style="font-size:13px;color:var(--muted)"></div>
-  </div>
+<section id="trigger" class="tab hidden">
+<div class="card">
+<h3>GitHub Pages Trigger</h3>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button id="touch" class="btn">✏️ Touch commit</button>
+<button id="build" class="btn-ok">🚀 Pages build</button>
+</div>
+<div class="small" style="margin-top:6px">변경 강제 반영</div>
+</div>
 </section>
 
 </div>
@@ -197,244 +162,133 @@ button{pointer-events:auto;touch-action:manipulation}
 <div id="toast" class="toast"></div>
 
 <script>
-/* ---------- UI: Tabs ---------- */
-document.querySelectorAll('.nav button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const t=b.dataset.tab;
-    document.querySelectorAll('.tab').forEach(x=>x.style.display='none');
-    document.getElementById(t).style.display='block';
-  });
-});
-
-/* ---------- Helpers ---------- */
-const $ = s=>document.querySelector(s);
-const $$= s=>document.querySelectorAll(s);
-const say=(m,e=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=e?'#ff6b6b':'#22304f';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);};
-const cfg=k=>localStorage.getItem(k)||""; const setcfg=(k,v)=>localStorage.setItem(k,v);
+/* ===== Helpers ===== */
+const $=q=>document.querySelector(q);
+const cfg=k=>localStorage.getItem(k)||"";
+const set=(k,v)=>localStorage.setItem(k,v);
+const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);};
 const b64=s=>btoa(unescape(encodeURIComponent(s)));
+const de=s=>decodeURIComponent(escape(atob(s)));
 
-/* ---------- Config ---------- */
-function saveCfg(){["owner","repo","branch","token"].forEach(id=>setcfg(id,$("#"+id).value.trim())); say("저장됨"); loadInfo();}
-function logout(){localStorage.removeItem("token"); say("토큰 삭제");}
-function resetLocal(){localStorage.clear(); location.reload();}
-function loadInfo(){ $("#status").innerHTML = `Owner: ${cfg("owner")} · Repo: ${cfg("repo")} · Branch: ${cfg("branch")}`; $("#info").textContent=$("#status").innerText; }
-["owner","repo","branch","token"].forEach(id=>{if(cfg(id))$("#"+id).value=cfg(id);}); loadInfo();
+async function gh(m,p,b=null,j=true){
+ const tk=cfg("token"); if(!tk) throw new Error("토큰 없음");
+ const r=await fetch(`https://api.github.com/${p}`,{method:m,headers:{Accept:"application/vnd.github+json",Authorization:`token ${tk}`},body:b?(j?JSON.stringify(b):b):null});
+ if(!r.ok) throw new Error("GitHub "+r.status);
+ return r.json();
+}
+async function getContent(p){try{const j=await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}?ref=${cfg("branch")}`);return{e:1,sha:j.sha,txt:de(j.content)};}catch{return{e:0};}}
+async function putFile(p,c,m){const o=await getContent(p);const body={message:m,content:c,branch:cfg("branch")};if(o.e)body.sha=o.sha;return gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}`,body);}
+async function delFile(p){const o=await getContent(p);if(!o.e)return;return gh("DELETE",`repos/${cfg("owner")}/${cfg("repo")}/contents/${p}`,{message:"del "+p,sha:o.sha,branch:cfg("branch")});}
+async function f2b(f){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(',')[1]);fr.onerror=rej;fr.readAsDataURL(f);});}
 
-/* ---------- GitHub Core ---------- */
-async function gh(m,p,b=null,isJson=true){
-  const tk=cfg("token"); if(!tk) throw new Error("토큰 없음");
-  const r=await fetch(`https://api.github.com/${p}`,{
-    method:m,
-    headers:{Accept:"application/vnd.github+json","Authorization":`token ${tk}`},
-    body: b ? (isJson?JSON.stringify(b):b) : null
-  });
-  if(!r.ok){throw new Error(`GitHub ${r.status}: ${(await r.text()).slice(0,200)}`);}
-  return r.json();
-}
-async function getContent(path){
-  try{
-    const j = await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}?ref=${cfg("branch")}`);
-    return {exists:true,sha:j.sha,content:j.content?atob(j.content.replace(/\n/g,"")):null};
-  }catch(e){return {exists:false,sha:null,content:null};}
-}
-async function putFile(path,b64content,msg){
-  const old=await getContent(path);
-  const body={message:msg||`update ${path}`,content:b64content,branch:cfg("branch")};
-  if(old.exists) body.sha=old.sha;
-  return gh("PUT",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}`,body);
-}
-async function delFile(path,msg){
-  const old=await getContent(path); if(!old.exists) return;
-  return gh("DELETE",`repos/${cfg("owner")}/${cfg("repo")}/contents/${encodeURIComponent(path)}`,{message:msg||`delete ${path}`,sha:old.sha,branch:cfg("branch")});
-}
-async function testConn(){ try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`); say("연결 OK (200)");}catch(e){say("연결 실패: "+e.message,true);} }
+/* ===== Tabs ===== */
+$("#nav").onclick=e=>{
+ const b=e.target.closest("button[data-tab]");if(!b)return;
+ document.querySelectorAll(".tab").forEach(x=>x.classList.add("hidden"));
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+ $("#"+b.dataset.tab).classList.remove("hidden");b.classList.add("active");
+};
 
-/* ---------- Pages ---------- */
-async function touchPages(){
-  try{
-    const stamp = new Date().toISOString();
-    await putFile("data/.touch", b64("touch "+stamp), "touch");
-    await putFile("data/.pages-touch", b64(stamp), "touch pages");
-    say("Touch 커밋 완료");
-  }catch(e){say("Touch 실패: "+e.message,true);}
-}
-async function pagesBuild(){
-  try{ await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{}); say("Pages Build 요청됨"); }
-  catch(e){ say("Pages API 권한 없음 — touch로 대체 가능", true); }
-}
+/* ===== Settings ===== */
+function loadCfg(){["owner","repo","branch","token"].forEach(id=>{if(cfg(id))$("#"+id).value=cfg(id);});}
+$("#save").onclick=()=>{["owner","repo","branch","token"].forEach(id=>set(id,$("#"+id).value.trim()));toast("저장됨")};
+$("#logout").onclick=()=>{localStorage.removeItem("token");$("#token").value="";toast("토큰 삭제")};
+$("#test").onclick=async()=>{try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);toast("연결 OK")}catch(e){toast("실패 "+e.message)}};
 
-/* ---------- Artworks ---------- */
-let artworks = {light:[],human:[],rebirth:[],restore:[],meta:[]};
-function secDir(){return $("#sec").value;}
-function secKey(){return $("#sec").value;}
-function idVal(){return $("#wid").value.trim();}
-function findIdx(arr,id){return (arr||[]).findIndex(x=>x.id===id);}
+/* ===== Artworks ===== */
+let arts={light:[],human:[],rebirth:[],restore:[],meta:[]};
 
-async function loadArtworks(){
-  try{
-    const r=await getContent("data/artworks.json");
-    if(r.exists) artworks = JSON.parse(r.content);
-    renderGallery(); say("artworks.json 로드 완료");
-  }catch(e){say("작품 로드 실패: "+e.message,true);}
+async function loadArts(){
+ const r=await getContent("data/artworks.json");
+ if(r.e) try{arts=JSON.parse(r.txt);}catch{}
+ renderArts();
 }
-function renderGallery(){
-  const box=$("#wg"); box.innerHTML="";
-  const q=$("#wq").value.trim().toLowerCase();
-  const arr=(artworks[secKey()]||[]).filter(a=>!q||a.id.toLowerCase().includes(q)||String(a.title||"").toLowerCase().includes(q));
-  $("#wcount").textContent=`총 ${arr.length} 개`;
-  arr.forEach(a=>{
-    const d=document.createElement("div");
-    d.style.border="1px solid var(--border)"; d.style.borderRadius="10px"; d.style.overflow="hidden"; d.style.background="#0b152f";
-    d.innerHTML=`<div style="height:100px;background:#0a1329 url('${a.image||""}') center/cover no-repeat"></div>
-                 <div style="padding:6px 8px;font-size:12px">${a.id} · ${a.title||""}</div>`;
-    d.onclick=()=>{
-      $("#wid").value=a.id||""; $("#wtitle").value=a.title||"";
-      $("#wyear").value=a.year||""; $("#wmedium").value=a.medium||"";
-      $("#wsize").value=a.size||"";
-    };
-    box.appendChild(d);
-  });
+function renderArts(){
+ const sec=$("#sec").value,q=$("#q").value.toLowerCase(),arr=(arts[sec]||[]).filter(a=>a.id.includes(q)||(a.title||"").toLowerCase().includes(q));
+ $("#cnt").textContent=`총 ${arr.length} 개`;const g=$("#grid");g.innerHTML="";
+ arr.forEach(a=>{
+  const d=document.createElement("div");d.className="thumb";
+  d.innerHTML=`<button class="x" data-id="${a.id}">×</button><img src="${a.image||""}"><div class="cap">${a.id} · ${a.title||""}</div>`;
+  d.onclick=e=>{
+    if(e.target.classList.contains("x"))return;
+    $("#aid").value=a.id;$("#title").value=a.title||"";$("#year").value=a.year||"";$("#medium").value=a.medium||"";$("#size").value=a.size||"";
+    if(a.image){$("#prev").src=a.image;$("#prev").style.display="block";}
+  };
+  d.querySelector(".x").onclick=()=>delArt(a.id);
+  g.appendChild(d);
+ });
 }
-async function saveArtworksJson(){
-  await putFile("data/artworks.json", b64(JSON.stringify(artworks,null,2)), "update artworks.json");
+async function saveArts(){await putFile("data/artworks.json",b64(JSON.stringify(arts,null,2)),"update artworks");}
+async function delArt(id){
+ const s=$("#sec").value,i=(arts[s]||[]).findIndex(x=>x.id===id);if(i<0)return;
+ const a=arts[s][i];if(a.image)try{await delFile(a.image.replace(/^\//,''));}catch{}
+ arts[s].splice(i,1);await saveArts();renderArts();toast("삭제");
 }
-async function uploadArtwork(){
-  try{
-    const id=idVal(); if(!id) return say("ID 필수",true);
-    const f=$("#wfile").files[0]; let url=artworks[secKey()]?.find(x=>x.id===id)?.image||"";
-    if(f){
-      const fr=await fileToB64(f);
-      const ext=(f.name.match(/\.\w+$/)||[".jpg"])[0];
-      const name=id.replace(/\s+/g,"_")+ext;
-      const path=`img/${secDir()}/${name}`;
-      await putFile(path, fr, `upload ${path}`);
-      url = "/"+path;
-    }
-    const e={id,title:$("#wtitle").value,year:$("#wyear").value,medium:$("#wmedium").value,size:$("#wsize").value,image:url};
-    const arr = artworks[secKey()] || (artworks[secKey()]=[]);
-    const i=findIdx(arr,id); if(i>=0) arr[i]=e; else arr.push(e);
-    await saveArtworksJson(); renderGallery(); say("작품 저장 완료");
-  }catch(e){say("업로드 실패: "+e.message,true);}
-}
-async function replaceImage(){
-  try{
-    const id=idVal(); if(!id) return say("ID 필수",true);
-    const f=$("#wfile").files[0]; if(!f) return say("이미지 선택",true);
-    const fr=await fileToB64(f);
-    const ext=(f.name.match(/\.\w+$/)||[".jpg"])[0];
-    const name=id.replace(/\s+/g,"_")+ext;
-    const path=`img/${secDir()}/${name}`;
-    await putFile(path, fr, `replace ${path}`);
-    const arr=artworks[secKey()]||[]; const i=findIdx(arr,id);
-    if(i>=0){ arr[i].image="/"+path; await saveArtworksJson(); renderGallery(); }
-    say("이미지 교체 완료");
-  }catch(e){say("교체 실패: "+e.message,true);}
-}
-async function deleteArtwork(){
-  try{
-    const id=idVal(); if(!id) return say("ID 필수",true);
-    const arr=artworks[secKey()]||[]; const i=findIdx(arr,id); if(i<0) return say("존재하지 않음",true);
-    // 이미지 삭제 시도
-    try{
-      const path=(arr[i].image||"").replace(/^\//,"");
-      if(path) await delFile(path, `delete ${path}`);
-    }catch{}
-    arr.splice(i,1); await saveArtworksJson(); renderGallery(); say("삭제 완료");
-  }catch(e){say("삭제 실패: "+e.message,true);}
-}
-function fileToB64(f){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(',')[1]);fr.onerror=rej;fr.readAsDataURL(f);});}
+$("#q").oninput=renderArts;$("#sec").onchange=renderArts;
 
-/* ---------- DCAR (paste → EN/KR 분리 → .md + reports.json) ---------- */
-function mdToHtml(md){return md.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,"<br>")}</p>`).join("");}
-$("#rPaste").addEventListener("input", ()=>{
-  const {en,kr,titleEN,titleKO} = splitENKR($("#rPaste").value);
-  if(!$("#rTitleEN").value && titleEN) $("#rTitleEN").value = titleEN;
-  if(!$("#rTitleKO").value && titleKO) $("#rTitleKO").value = titleKO;
-  $("#rPrev").innerHTML = `<h4 style="margin:0 0 6px;color:#cfe0ff">EN</h4>${mdToHtml(en)}<hr style="border-color:#1b2a54"><h4 style="margin:6px 0;color:#cfe0ff">KO</h4>${mdToHtml(kr)}`;
-});
-function splitENKR(txt){
-  // 규칙: 빈 줄(2개 이상)로 블록 구분. 한/영 자동 감지.
-  const blocks = txt.trim().split(/\n\s*\n/);
-  let pivot=0;
-  for(let i=0;i<blocks.length;i++){
-    if(/[가-힣]/.test(blocks[i])){pivot=i;break;}
-  }
-  const enBlocks = blocks.slice(0, Math.max(1,pivot));
-  const krBlocks = blocks.slice(Math.max(1,pivot));
-  const en = enBlocks.join("\n\n").trim();
-  const kr = krBlocks.join("\n\n").trim();
-  const titleEN = (en.split("\n")[0]||"").trim();
-  const titleKO = (kr.split("\n")[0]||"").trim();
-  return {en,kr,titleEN,titleKO};
+$("#drop").onclick=()=>$("#file").click();
+["dragover","dragenter"].forEach(e=>$("#drop").addEventListener(e,x=>{$("#drop").classList.add("drag");x.preventDefault();}));
+["dragleave","drop"].forEach(e=>$("#drop").addEventListener(e,x=>{$("#drop").classList.remove("drag");x.preventDefault();}));
+$("#drop").ondrop=e=>{const f=e.dataTransfer.files[0];if(f){$("#file").files=e.dataTransfer.files;$("#prev").src=URL.createObjectURL(f);$("#prev").style.display="block";}}
+
+$("#file").onchange=e=>{const f=e.target.files[0];if(f){$("#prev").src=URL.createObjectURL(f);$("#prev").style.display="block";}}
+
+async function saveArt(update){
+ const id=$("#aid").value.trim();if(!id)return toast("ID 필요");
+ const sec=$("#sec").value,f=$("#file").files[0];
+ const o=(arts[sec]||[]).find(x=>x.id===id)||{};
+ let img=o.image;
+ if(!update&&f){const b=await f2b(f);const ext=f.name.match(/\.\w+$/)?.[0]||".jpg";const p=`img/${sec}/${id}${ext}`;await putFile(p,b,`add ${p}`);img="/"+p;}
+ const n={id,title:$("#title").value,year:$("#year").value,medium:$("#medium").value,size:$("#size").value,image:img};
+ const i=(arts[sec]||[]).findIndex(x=>x.id===id);
+ if(i>=0) arts[sec][i]=n; else arts[sec].push(n);
+ await saveArts();renderArts();toast(update?"수정":"저장 완료");
 }
-async function saveReport(){
-  try{
-    const id=$("#rid").value;
-    const paste=$("#rPaste").value; if(!paste.trim()) return say("내용 없음",true);
-    const {en,kr,titleEN,titleKO} = splitENKR(paste);
-    if(!$("#rTitleEN").value) $("#rTitleEN").value = titleEN;
-    if(!$("#rTitleKO").value) $("#rTitleKO").value = titleKO;
+$("#upload").onclick=()=>saveArt(false);
+$("#update").onclick=()=>saveArt(true);
+$("#del").onclick=()=>{const id=$("#aid").value.trim();if(id)delArt(id)};
 
-    // 1) reports/{ID}.md 저장 (원문 전체)
-    await putFile(`reports/${id.toUpperCase()}.md`, b64(paste), `save ${id}.md`);
-
-    // 2) data/reports.json 갱신
-    const cur = await getContent("data/reports.json");
-    const repo = cur.exists ? JSON.parse(cur.content) : {};
-    repo[id] = {
-      id,
-      titleEN: $("#rTitleEN").value || titleEN || "",
-      titleKO: $("#rTitleKO").value || titleKO || "",
-      updated: new Date().toISOString(),
-      size: paste.length
-    };
-    await putFile("data/reports.json", b64(JSON.stringify(repo,null,2)), "update reports.json");
-
-    say("DCAR 저장 완료");
-  }catch(e){say("보고서 저장 실패: "+e.message,true);}
+/* ===== DCAR ===== */
+const IDS=Array.from({length:8},(_,i)=>"DCAR-"+String(i+1).padStart(2,"0"));
+let reps={};
+function fillRid(){$("#rid").innerHTML=IDS.map(x=>`<option value="${x}">${x}</option>`).join('');}
+function previewR(){
+ const id=$("#rid").value,en=$("#titleEN").value,ko=$("#titleKO").value,bE=$("#bodyEN").value,bK=$("#bodyKO").value;
+ $("#prevR").textContent=`---\nid:${id}\ntitleEN:"${en}"\ntitleKO:"${ko}"\n---\n\n## ${en}\n\n${bE}\n\n---\n\n## ${ko}\n\n${bK}`;
 }
-async function deleteReport(){
-  try{
-    const id=$("#rid").value;
-    try{ await delFile(`reports/${id.toUpperCase()}.md`, `delete ${id}.md`); }catch{}
-    const cur = await getContent("data/reports.json");
-    if(cur.exists){
-      const repo=JSON.parse(cur.content); delete repo[id];
-      await putFile("data/reports.json", b64(JSON.stringify(repo,null,2)), "update reports.json");
-    }
-    say("DCAR 삭제 완료");
-  }catch(e){say("삭제 실패: "+e.message,true);}
+["rid","titleEN","titleKO","bodyEN","bodyKO"].forEach(id=>$("#"+id).oninput=previewR);
+
+async function loadReps(){const r=await getContent("data/reports.json");if(r.e){try{reps=JSON.parse(r.txt);}catch{}}}
+async function saveReps(){await putFile("data/reports.json",b64(JSON.stringify(reps,null,2)),"update reports");}
+
+$("#saveReport").onclick=async()=>{
+ const id=$("#rid").value,en=$("#titleEN").value,ko=$("#titleKO").value,txt=$("#prevR").textContent;
+ await putFile(`reports/${id}.md`,b64(txt),`save ${id}`);
+ reps[id]={id,titleEN:en,titleKO:ko,updated:new Date().toISOString()};
+ await saveReps();toast("보고서 저장");
+};
+$("#delReport").onclick=async()=>{
+ const id=$("#rid").value; await delFile(`reports/${id}.md`); delete reps[id]; await saveReps(); toast("삭제");
+};
+
+/* ===== Upload mini ===== */
+let UF=[];
+$("#udrop").onclick=()=>$("#ufiles").click();
+$("#ufiles").onchange=e=>{UF=[...e.target.files];listU()};
+function listU(){$("#ulist").textContent=UF.map(f=>f.name).join("\n");}
+$("#urun").onclick=async()=>{
+ const base=$("#upath").value.replace(/^\/+/,'');for(const f of UF){const b=await f2b(f);const p=(base.endsWith('/')?base:base+'/')+f.name.replace(/\s+/g,'_');await putFile(p,b,`upload ${p}`);}toast("완료");
+};
+
+/* ===== Trigger ===== */
+$("#touch").onclick=async()=>{const st=new Date().toISOString();await putFile("data/.touch",b64(st),"touch");toast("touch OK")};
+$("#build").onclick=async()=>{try{await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});toast("Pages build 요청")}catch{toast("Pages API 없음")}};
+
+/* ===== init ===== */
+async function init(){
+ fillRid();loadCfg();await Promise.all([loadArts(),loadReps()]);previewR();
 }
-
-/* ---------- iOS Tap Bridge (reliable) ---------- */
-(function(){
-  const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if(!isiOS) return;
-  function bind(el){
-    if(el.__tapBound) return; el.__tapBound=true;
-    let sx=0,sy=0;
-    el.addEventListener("touchstart",e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;},{passive:true});
-    el.addEventListener("touchend",e=>{
-      const t=e.changedTouches[0];
-      if(Math.abs(t.clientX-sx)<10 && Math.abs(t.clientY-sy)<10){
-        e.preventDefault(); e.stopPropagation();
-        el.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true}));
-      }
-    },{passive:false});
-  }
-  function scan(){ document.querySelectorAll('button,[onclick]').forEach(bind); }
-  window.addEventListener("load",scan);
-  document.addEventListener("touchstart",scan,{passive:true});
-  new MutationObserver(scan).observe(document.body,{subtree:true,childList:true});
-})();
-
-/* ---------- Init ---------- */
-window.addEventListener("load", async ()=>{
-  await loadArtworks();
-  $("#rPrev").innerHTML="";
-});
+window.onload=init;
 </script>
 </body>
 </html>

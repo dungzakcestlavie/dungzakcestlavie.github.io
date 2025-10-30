@@ -1,166 +1,184 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Lightflow Admin — Trigger (Ω.10.1 · iPhone-Stable)</title>
-<meta name="theme-color" content="#070c1a">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Lightflow Admin Ω.11 — Trigger</title>
+<meta name="theme-color" content="#070c1a" />
+<meta name="description" content="DUNGZAK CESTLAVIE · Lightflow Admin Ω.11 · Trigger · Unified + iPhone Stable" />
 <style>
 :root{
- --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;
- --accent:#d4b97a;--ok:#74e0a1;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
+  --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;
+  --accent:#d4b97a;--ok:#74e0a1;--warn:#ffb04d;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
 }
+/* Base */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{
- margin:0;background:var(--bg);color:var(--fg);
- font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
-}
-header{
- position:sticky;top:0;z-index:10;
- background:linear-gradient(180deg,#0a1022e6,#0a102200);
- padding:14px 12px 10px;border-bottom:1px solid var(--border);
- backdrop-filter:saturate(130%) blur(8px);
-}
-h1{margin:0;font-size:26px;color:var(--accent);font-weight:800}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,#0a1022e6,#0a102200);
+  padding:12px 14px 10px;border-bottom:1px solid var(--border);backdrop-filter:saturate(130%) blur(8px)}
+.h1{margin:0;color:var(--accent);font-weight:800;font-size:22px}
 .sub{font-size:13px;color:var(--muted);margin-top:4px}
-.container{max-width:860px;margin:0 auto;padding:14px 14px 120px}
-
-.card{
- background:var(--panel);border:1px solid var(--border);
- padding:14px;margin:10px 0;border-radius:var(--radius)
-}
-.card h3{margin:4px 0 10px;color:var(--accent);font-size:1.05rem;font-weight:800}
-
-button{
- width:100%;padding:14px;border-radius:12px;border:none;font-weight:800;
- font-size:15px;cursor:pointer;background:var(--accent);color:#09101f
-}
-.btn-ok{background:var(--ok);color:#081d12}
-.btn-ghost{background:#203055;color:var(--fg);border:1px solid rgba(255,255,255,.08)}
-.btn-bad{background:var(--bad);color:#200}
-.btnbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-
-small{font-size:12px;color:var(--muted)}
-
+.container{max-width:980px;margin:0 auto;padding:12px 12px 120px}
+/* Nav (Global) */
+.admin-nav{position:sticky;top:56px;z-index:90;background:rgba(10,16,34,.92);
+  border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.admin-nav .bar{max-width:980px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:8px 12px}
+.admin-nav a{flex:0 0 auto;text-decoration:none;font-weight:700;font-size:14px;color:#cfe0ff;
+  background:#0d142b;border:1px solid var(--border);border-radius:999px;padding:8px 12px}
+.admin-nav a.active{background:var(--accent);color:#000}
+/* Cards */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:12px 0}
+.card h3{margin:0 0 12px;color:var(--accent);font-size:1.05rem;font-weight:800}
+/* Buttons */
+button{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--border);
+  background:var(--soft);color:var(--fg);padding:12px;font-size:15px;cursor:pointer;font-weight:800}
+.btn{background:var(--accent);color:#08101f}
+.btn-ok{background:var(--ok);color:#062519}
+.btn-ghost{background:#203055;color:#e8edf7;border:1px solid rgba(255,255,255,.08)}
+.btn-bad{background:var(--bad);color:#2a0000}
+.btnbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .kv{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:14px}
 .k{color:var(--muted)}
-
-.toast{
- position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
- transform:translateX(-50%);
- background:#0b1223;border:1px solid var(--border);
- padding:10px 16px;border-radius:12px;color:var(--fg);
- opacity:0;transition:.22s;pointer-events:none;z-index:999;
-}
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);
+ background:#0b1223;border:1px solid var(--border);color:var(--fg);padding:10px 16px;border-radius:12px;
+ opacity:0;transition:.22s;pointer-events:none;z-index:999}
 .toast.show{opacity:1;transform:translate(-50%,-6px)}
 </style>
 </head>
 <body>
-<header>
- <h1>🚀 Trigger · Ω.10.1</h1>
- <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Pages Deploy Tools</div>
+<header class="header">
+  <div class="h1">🚀 Lightflow Admin Ω.11 — Trigger</div>
+  <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Unified + iPhone-Stable</div>
 </header>
 
-<div class="container">
-
- <div class="card">
-  <h3>연결 상태</h3>
-  <div class="kv">
-   <div class="k">Owner</div><div id="sOwner">—</div>
-   <div class="k">Repo</div><div id="sRepo">—</div>
-   <div class="k">Branch</div><div id="sBranch">—</div>
-   <div class="k">Token</div><div id="sToken">—</div>
-   <div class="k">Last Check</div><div id="sCheck">—</div>
+<nav class="admin-nav">
+  <div class="bar">
+    <a href="/admin/admin.html#home" data-k="home">Home</a>
+    <a href="/admin/admin.html#artworks" data-k="artworks">Artworks</a>
+    <a href="/admin/admin.html#dcar" data-k="dcar">DCAR</a>
+    <a href="/admin/batch.html" data-k="upload">Upload</a>
+    <a href="/admin/admin.html#settings" data-k="settings">Settings</a>
   </div>
-  <div class="btnbar" style="margin-top:10px">
-   <button type="button" class="btn-ghost" id="refresh">↻ 갱신</button>
-   <button type="button" class="btn-ok" id="test">🔗 연결 테스트</button>
-  </div>
-  <small>설정은 admin 페이지(localStorage)와 동일하게 사용됩니다.</small>
- </div>
+</nav>
 
- <div class="card">
-  <h3>강제 트리거</h3>
-  <button type="button" id="touch">📝 Commit Touch (캐시 무효)</button>
-  <div class="btnbar">
-   <button type="button" class="btn" id="pages">🚀 Pages Build 요청</button>
-   <button type="button" class="btn-bad" id="clear">🧹 localStorage 초기화</button>
-  </div>
-  <small>touch 파일이 생성되며 GitHub Pages 최신화가 동작합니다.</small>
- </div>
+<main class="container">
+  <!-- 0) 연결 상태 -->
+  <section class="card">
+    <h3>0️⃣ 연결 상태</h3>
+    <div class="kv">
+      <div class="k">Owner</div><div id="sOwner">—</div>
+      <div class="k">Repo</div><div id="sRepo">—</div>
+      <div class="k">Branch</div><div id="sBranch">—</div>
+      <div class="k">Token</div><div id="sToken">—</div>
+      <div class="k">Last Check</div><div id="sCheck">—</div>
+    </div>
+    <div class="btnbar" style="margin-top:10px">
+      <button type="button" class="btn-ghost" id="refresh">↻ 갱신</button>
+      <button type="button" class="btn-ok" id="test">🔗 연결 테스트</button>
+    </div>
+    <small>설정은 <code>admin.html</code>에서 저장한 값(localStorage)을 사용합니다.</small>
+  </section>
 
-</div>
+  <!-- 1) 강제 트리거 -->
+  <section class="card">
+    <h3>1️⃣ 강제 트리거</h3>
+    <button type="button" class="btn" id="touch">📝 Commit Touch (캐시 무효)</button>
+    <div class="btnbar" style="margin-top:8px">
+      <button type="button" class="btn" id="pages">🚀 Pages Build 요청</button>
+      <button type="button" class="btn-bad" id="clear">🧹 localStorage 초기화</button>
+    </div>
+    <small>touch 파일 커밋 후 Pages 빌드를 요청해 캐시를 최신화합니다.</small>
+  </section>
+</main>
 
 <div id="toast" class="toast">Ready.</div>
 
 <script>
-/* helpers */
-const $=q=>document.querySelector(q);
-const say=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800);};
+/* ===== Helpers / Nav Active ===== */
+const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
+const say=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";
+  t.classList.add("show");clearTimeout(say._t);say._t=setTimeout(()=>t.classList.remove("show"),1800);};
+(function navActive(){
+  // Trigger 페이지에선 Settings 항목을 활성화 표시
+  $$(".admin-nav a").forEach(a=>a.classList.toggle("active", a.dataset.k==="settings"));
+})();
 
+/* ===== Local config ===== */
 const KEY="lf_admin_cfg_v101";
-function cfg(k){try{return JSON.parse(localStorage.getItem(KEY)||"{}")[k]||"";}catch{return "";}}
+function readCfg(){ try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){return {};} }
+function cfg(k){return (readCfg()[k]||"");}
 
+/* ===== GitHub API ===== */
+async function gh(method,path,body=null,isJson=true){
+  const token=cfg("token"); if(!token) throw new Error("토큰 없음");
+  const r=await fetch(`https://api.github.com/${path}`,{
+    method,
+    headers:{ "Accept":"application/vnd.github+json", "Authorization":`token ${token}` },
+    body:body?(isJson?JSON.stringify(body):body):null
+  });
+  if(!r.ok){const t=await r.text();throw new Error(`GitHub ${r.status}: ${t.slice(0,180)}`);}
+  return r.json();
+}
+function b64(s){return btoa(unescape(encodeURIComponent(s)));}
+async function getContent(p){
+  const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
+  try{const j=await gh("GET",`repos/${o}/${r}/contents/${encodeURIComponent(p)}?ref=${b}`);return {sha:j.sha,content:j.content?atob(j.content.replace(/\n/g,"")):null,exists:true};}
+  catch(e){return {sha:null,content:null,exists:false};}
+}
+async function putFile(p,b64data,msg){
+  const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
+  const old=await getContent(p); const body={message:msg||`update ${p}`,content:b64data,branch:b};
+  if(old.exists) body.sha=old.sha;
+  return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(p)}`,body);
+}
+
+/* ===== UI / Actions ===== */
 function hydrate(){
- $("#sOwner").textContent=cfg("owner")||"—";
- $("#sRepo").textContent=cfg("repo")||"—";
- $("#sBranch").textContent=cfg("branch")||"—";
- $("#sToken").textContent=cfg("token")?"••••••••":"—";
- $("#sCheck").textContent=new Date().toLocaleTimeString();
+  $("#sOwner").textContent=cfg("owner")||"—";
+  $("#sRepo").textContent=cfg("repo")||"—";
+  $("#sBranch").textContent=cfg("branch")||"—";
+  $("#sToken").textContent=cfg("token")?"••••••••":"—";
+  $("#sCheck").textContent=new Date().toLocaleString();
 }
-
-/* GH */
-async function gh(m,p,b=null,isJson=true){
- const token=cfg("token"); if(!token) throw new Error("토큰 없음");
- const r=await fetch(`https://api.github.com/${p}`,{
-  method:m,
-  headers:{ "Accept":"application/vnd.github+json","Authorization":`token ${token}` },
-  body:b?(isJson?JSON.stringify(b):b):null
- });
- if(!r.ok){const t=await r.text();throw new Error(`GitHub ${r.status}: ${t.slice(0,150)}`);}
- return r.json();
-}
-function b64(s){return btoa(unescape(encodeURIComponent(s)))}
-async function putFile(p,data,msg){
- const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
- let old=null;
- try{old=await gh("GET",`repos/${o}/${r}/contents/${p}?ref=${b}`);}catch{}
- const body={message:msg,content:data,branch:b};
- if(old?.sha) body.sha=old.sha;
- return gh("PUT",`repos/${o}/${r}/contents/${p}`,body);
-}
-
-/* trigger functions */
 async function testConn(){
- try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("✅ 연결 OK (200)");}
- catch(e){say("⚠️ 연결 실패: "+e.message,true);}
+  try{await gh("GET",`repos/${cfg("owner")}/${cfg("repo")}`);say("✅ 연결 OK (200)");}
+  catch(e){say("⚠️ 연결 실패: "+e.message,true);}
 }
-
 async function touch(){
- try{
-  const stamp=new Date().toISOString();
-  await putFile("data/.touch",b64("touch "+stamp),`touch ${stamp}`);
-  say("📝 touch commit 완료");
- }catch(e){say("touch 실패: "+e.message,true);}
+  try{
+    const stamp=new Date().toISOString();
+    await putFile("data/.touch", b64("touch "+stamp), `touch ${stamp}`);
+    await putFile("data/.pages-touch", b64("pages "+stamp), `pages-touch ${stamp}`);
+    say("📝 touch commit 완료");
+  }catch(e){say("touch 실패: "+e.message,true);}
 }
-
 async function pagesBuild(){
- try{
-  await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});
-  say("🚀 Pages 빌드 요청 완료");
- }catch(e){say("⚠️ Pages API 실패: "+e.message,true);}
+  try{
+    await gh("POST",`repos/${cfg("owner")}/${cfg("repo")}/pages/builds`,{});
+    say("🚀 Pages 빌드 요청 완료");
+  }catch(e){say("⚠️ Pages API 실패: "+e.message,true);}
 }
 
-/* events */
-window.addEventListener("load",()=>{
- hydrate();
- $("#refresh").onclick=hydrate;
- $("#test").onclick=testConn;
- $("#touch").onclick=touch;
- $("#pages").onclick=pagesBuild;
- $("#clear").onclick=()=>{localStorage.removeItem(KEY);say("localStorage 삭제 완료");hydrate();}
-});
-window.addEventListener("error",e=>say("JS 오류: "+e.message,true));
+/* ===== Events (iOS-safe: click + pointerup) ===== */
+function bindTap(sel,fn){
+  const el=$(sel);
+  el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();fn();},{passive:false});
+  el.addEventListener("pointerup",e=>{ if(e.pointerType==="touch"){e.preventDefault();e.stopPropagation();fn();}},{passive:false});
+}
+
+function boot(){
+  hydrate();
+  bindTap("#refresh", hydrate);
+  bindTap("#test", testConn);
+  bindTap("#touch", touch);
+  bindTap("#pages", pagesBuild);
+  bindTap("#clear", ()=>{ localStorage.removeItem(KEY); hydrate(); say("localStorage 삭제 완료"); });
+}
+
+window.addEventListener("error",e=>{try{say("JS 오류: "+e.message,true);}catch{}});
+window.addEventListener("load", boot);
 </script>
 </body>
 </html>

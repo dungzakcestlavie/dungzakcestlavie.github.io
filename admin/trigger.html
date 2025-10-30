@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.11 — Trigger</title>
+<title>Lightflow Admin Ω.11.1 — Trigger</title>
 <meta name="theme-color" content="#070c1a" />
-<meta name="description" content="DUNGZAK CESTLAVIE · Lightflow Admin Ω.11 · Trigger · Unified + iPhone Stable" />
+<meta name="description" content="DUNGZAK CESTLAVIE · Lightflow Admin Ω.11.1 · Trigger · Unified + iPhone Stable" />
 <style>
 :root{
   --bg:#070c1a;--panel:#0b1020;--soft:#0f1730;--fg:#e8edf7;--muted:#9fa8c0;
-  --accent:#d4b97a;--ok:#74e0a1;--warn:#ffb04d;--bad:#ff6b6b;--border:#1e2744;--radius:14px;
+  --accent:#d4b97a;--ok:#74e0a1;--warn:#ffb04d;--bad:#ff6b6b;--border:#1e2744;--r:14px;
 }
 /* Base */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -28,9 +28,9 @@ body{margin:0;background:var(--bg);color:var(--fg);
   background:#0d142b;border:1px solid var(--border);border-radius:999px;padding:8px 12px}
 .admin-nav a.active{background:var(--accent);color:#000}
 /* Cards */
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:12px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:12px 0}
 .card h3{margin:0 0 12px;color:var(--accent);font-size:1.05rem;font-weight:800}
-/* Buttons */
+/* Buttons & layout */
 button{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--border);
   background:var(--soft);color:var(--fg);padding:12px;font-size:15px;cursor:pointer;font-weight:800}
 .btn{background:var(--accent);color:#08101f}
@@ -49,7 +49,7 @@ button{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--bord
 </head>
 <body>
 <header class="header">
-  <div class="h1">🚀 Lightflow Admin Ω.11 — Trigger</div>
+  <div class="h1">🚀 Lightflow Admin Ω.11.1 — Trigger</div>
   <div class="sub">등작 燈酌 DUNGZAK CESTLAVIE × Lumera · Unified + iPhone-Stable</div>
 </header>
 
@@ -101,7 +101,6 @@ const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
 const say=(m,err=false)=>{const t=$("#toast");t.textContent=m;t.style.borderColor=err?"#ff6b6b":"#22304f";
   t.classList.add("show");clearTimeout(say._t);say._t=setTimeout(()=>t.classList.remove("show"),1800);};
 (function navActive(){
-  // Trigger 페이지에선 Settings 항목을 활성화 표시
   $$(".admin-nav a").forEach(a=>a.classList.toggle("active", a.dataset.k==="settings"));
 })();
 
@@ -130,7 +129,7 @@ async function getContent(p){
 async function putFile(p,b64data,msg){
   const o=cfg("owner"),r=cfg("repo"),b=cfg("branch")||"main";
   const old=await getContent(p); const body={message:msg||`update ${p}`,content:b64data,branch:b};
-  if(old.exists) body.sha=old.sha;
+  if(old.sha) body.sha=old.sha;
   return gh("PUT",`repos/${o}/${r}/contents/${encodeURIComponent(p)}`,body);
 }
 

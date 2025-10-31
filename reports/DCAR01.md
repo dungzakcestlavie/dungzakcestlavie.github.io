@@ -1,20 +1,10 @@
 ---
 id: DCAR01
-title_kr: "등작 燈酌 DUNGZAK CESTLAVIE
-
-미학 보고서 DCAR-01-2025
-
-빛 · 기억 · 존재
-
-"
-title_en: "DUNGZAK CESTLAVIE
-
-Aesthetic Report DCAR-01-2025
-
-Light · Memory · Being"
+title_kr: "등작 燈酌 DUNGZAK CESTLAVIE  미학 보고서 DCAR-01-2025  빛 · 기억 · 존재"
+title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · Being"
 ---
-# (KR)
 
+# (KR)
 Ⅰ. 기억의 방 — 내면의 기원
 
 
@@ -228,8 +218,6 @@ Light · Memory · Being"
 © 2025 등작 燈酌 DUNGZAK CESTLAVIE. All rights reserved.
 
 
-
----
 # (EN)
 I. Chamber of Memory — The Origin Within
 

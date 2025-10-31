@@ -4,15 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.7.2</title>
-<meta name="description" content="빛 · 기억 · 존재 — DUNGZAK CESTLAVIE · Lightflow Ω.7.2 · Gallery · Aesthetic Reports (DCAR)" />
+<meta name="description" content="빛 · 기억 · 존재 — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
 <meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.7.2" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
-
 <style>
-:root{ --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8; --panel:#0f1630; --line:#1b2652; --max:1180px }
+:root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
@@ -23,13 +22,13 @@ body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,S
 #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
 
 /* header */
-header{position:sticky;top:0;z-index:5;padding:10px 12px;background:rgba(9,14,30,.85);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
+header{position:sticky;top:0;z-index:5;padding:10px 12px;background:linear-gradient(180deg,rgba(9,14,30,.9),rgba(9,14,30,.7));border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
 .brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(16px,5vw,22px)}
 nav.primary{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 12px;border-radius:10px}
+nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 12px;border-radius:12px}
 nav.primary button:hover,nav.primary button.active{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
 .lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
-.lang button{all:unset;cursor:pointer;border:1px solid #2a335f;border-radius:8px;padding:5px 10px;color:#cfe0ff}
+.lang button{all:unset;cursor:pointer;border:1px solid #2a335f;border-radius:10px;padding:6px 12px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
 
 /* sections */
@@ -42,13 +41,12 @@ h2{margin-bottom:12px}
 /* hero / poem */
 .hero{text-align:center;min-height:68vh}
 .hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
-.hero p{opacity:.9;margin-bottom:18px}
-.poemwrap{max-width:860px;margin:0 auto;text-align:left;background:rgba(16,22,48,.35);border:1px solid #223;border-radius:12px;padding:14px}
+.poemwrap{max-width:860px;margin:18px auto 0;text-align:left;background:rgba(16,22,48,.35);border:1px solid #223;border-radius:12px;padding:14px}
 .poem p{margin:8px 0}
 
 /* works */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
-.tab{padding:8px 12px;border-radius:18px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
+.tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
 .tabpanel{display:none;animation:fade .28s ease}
 .tabpanel.active{display:block}
@@ -60,10 +58,8 @@ h2{margin-bottom:12px}
 .card.visible{opacity:1;transform:translateY(0)}
 .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.card .caption{display:none}
-.note{margin-top:6px;text-align:center;color:#aecdff;opacity:.85}
 
-/* reports (accordion) */
+/* reports */
 .accordion{border:1px solid #2a3a78;border-radius:12px;overflow:hidden}
 .accordion-item{border-bottom:1px solid #2a3a78}
 .accordion-header{background:#0f1838;color:var(--gold);padding:14px 16px;cursor:pointer;font-weight:700}
@@ -78,19 +74,19 @@ h2{margin-bottom:12px}
 .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
 .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
 .lb-arrow:hover{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
-.lb-prev{left:-60px} .lb-next{right:-60px}
+.lb-prev{left:-60px}.lb-next{right:-60px}
 @media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
 .lb-close{position:absolute;top:-56px;right:0;width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;cursor:pointer}
 .lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
 
-/* footer central links */
+/* footer */
 footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 96px}
 .links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
 .links a{color:#cfe0ff;text-decoration:none}
 .links a:hover{color:#cbe0ff}
 small{display:block;margin-top:6px;color:#9fb0d8}
 
-/* center bottom resonance + tiny fft bar */
+/* resonance controls */
 #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:8}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18)}
 .ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
@@ -107,7 +103,6 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 @media(prefers-reduced-motion:reduce){#waves,#trail{display:none}}
 </style>
 </head>
-
 <body class="korean">
 <!-- cosmic canvases -->
 <canvas id="waves" aria-hidden="true"></canvas>
@@ -130,46 +125,28 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 <main>
   <!-- Poem -->
   <section id="poem" class="hero">
-    <div>
-      <h1 class="ko">빛 · 기억 · 존재</h1>
-      <h1 class="en">Light · Memory · Being</h1>
-
-      <div class="poemwrap">
-        <p class="ko" style="font-weight:700">〈파리의 센느강〉</p>
-        <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
-        <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
-        <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
-
-        <div class="poem">
-          <p class="ko">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
-          <p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
-          <p class="ko">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
-          <p class="en">People who live with humble dreams gather to dance.</p>
-          <p class="ko">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
-          <p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
-          <p class="ko">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
-          <p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
-          <p class="ko">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
-          <p class="en">Dreaming women and dreaming men clasp hands,</p>
-          <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
-          <p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
-          <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
-          <p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
-          <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
-          <p class="en">In that scene, the crescent moon releases a tender white smile.</p>
-          <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
-          <p class="en">Sharak, sharak— as the rhythm of dance expands,</p>
-          <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p>
-          <p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
-          <p class="ko">사랑의 입맞춤을 의식한다.</p>
-          <p class="en">Becoming aware of love’s gentle kiss.</p>
-          <p class="ko">흘러감 속에 포개진 순간,</p>
-          <p class="en">Within the the flowing overlap of time,</p>
-          <p class="ko">그들은 영혼의 박제가 되어,</p>
-          <p class="en">They become taxidermies of the soul,</p>
-          <p class="ko">멈춤 속에 영원을 새긴다.</p>
-          <p class="en">Inscribing eternity into stillness.</p>
-        </div>
+    <h1 class="ko">빛 · 기억 · 존재</h1>
+    <h1 class="en">Light · Memory · Being</h1>
+    <div class="poemwrap">
+      <p class="ko" style="font-weight:700">〈파리의 센느강〉</p>
+      <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
+      <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
+      <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
+      <div class="poem">
+        <p class="ko">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p><p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
+        <p class="ko">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p><p class="en">People who live with humble dreams gather to dance.</p>
+        <p class="ko">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p><p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
+        <p class="ko">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p><p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
+        <p class="ko">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p><p class="en">Dreaming women and dreaming men clasp hands,</p>
+        <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p><p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
+        <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p><p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
+        <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p><p class="en">In that scene, the crescent moon releases a tender white smile.</p>
+        <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p><p class="en">Sharak, sharak—as the rhythm of dance expands,</p>
+        <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p><p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
+        <p class="ko">사랑의 입맞춤을 의식한다.</p><p class="en">Becoming aware of love’s gentle kiss.</p>
+        <p class="ko">흘러감 속에 포개진 순간,</p><p class="en">Within the flowing overlap of time,</p>
+        <p class="ko">그들은 영혼의 박제가 되어,</p><p class="en">They become taxidermies of the soul,</p>
+        <p class="ko">멈춤 속에 영원을 새긴다.</p><p class="en">Inscribing eternity into stillness.</p>
       </div>
     </div>
   </section>
@@ -189,10 +166,6 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
     <div id="panel-rebirth" class="tabpanel"></div>
     <div id="panel-exist" class="tabpanel"></div>
     <div id="panel-cosmos" class="tabpanel"></div>
-    <p class="note">
-      ※ 이미지는 <code>images/standard/파일명</code> · 라이트박스는 <code>images/zoom/파일명</code> 사용.
-      제목·재료·크기·년도·파일명은 <code>data/works.json</code>에서 자동 반영.
-    </p>
   </section>
 
   <!-- Reports -->
@@ -223,7 +196,7 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   <div class="lb-meta" id="lbMeta"></div>
 </div>
 
-<!-- center bottom resonance + tiny fft -->
+<!-- resonance -->
 <div id="fftBar" aria-hidden="true"><span></span></div>
 <div id="ctrl" aria-label="Prayer Resonance controls">
   <button class="ctrlbtn" id="soundBtn" title="Play Prayer Resonance">✨</button>
@@ -243,41 +216,42 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 </footer>
 
 <script>
-/* ========== Core UI: section & language ========== */
+/* ===== Section & Language ===== */
 (function(){
   const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
-  function showSection(id){['poem','works','reports'].forEach(x=>{const el=document.getElementById(x); el.style.display=(x===id)?'block':'none';}); $$('.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id))}
-  $$('.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target))); showSection('poem');
-
+  function showSection(id){['poem','works','reports'].forEach(x=>{const el=document.getElementById(x);el.style.display=(x===id)?'block':'none'});$$('nav.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id))}
+  $$('nav.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target))); showSection('poem');
   const ko=document.getElementById('koBtn'), en=document.getElementById('enBtn'), hy=document.getElementById('hyBtn');
-  function setLang(lang){document.body.classList.remove('korean','english','hybrid');document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');[ko,en,hy].forEach(b=>b.classList.remove('active'));({ko:ko,en:en,hy:hy}[lang]).classList.add('active');localStorage.setItem('dz_lang',lang)}
+  function setLang(lang){document.body.className='';document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');[ko,en,hy].forEach(b=>b.classList.remove('active'));({ko:ko,en:en,hy:hy}[lang]).classList.add('active');localStorage.setItem('dz_lang',lang)}
   ko.onclick=()=>setLang('ko'); en.onclick=()=>setLang('en'); hy.onclick=()=>setLang('hy'); setLang(localStorage.getItem('dz_lang')||'ko');
 })();
 
-/* ========== Background waves & trail ========== */
+/* ===== Background waves & trail ===== */
 (function(){
   try{
     const waves=document.getElementById('waves').getContext('2d',{alpha:true});
     const trail=document.getElementById('trail').getContext('2d',{alpha:true});
-    let DPR=1,W=0,H=0,visible=true,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py;
-    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));W=waves.canvas.width=Math.floor(innerWidth*DPR);H=waves.canvas.height=Math.floor(innerHeight*DPR);trail.canvas.width=W;trail.canvas.height=H;waves.setTransform(1,0,0,1,0,0);trail.setTransform(1,0,0,1,0,0);waves.scale(1/DPR,1/DPR);trail.scale(1/DPR,1/DPR)}
+    let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
+    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));[waves,trail].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR);c.canvas.height=Math.floor(innerHeight*DPR);c.setTransform(1,0,0,1,0,0);c.scale(1/DPR,1/DPR)})}
     resize(); addEventListener('resize',resize,{passive:true}); document.addEventListener('visibilitychange',()=>visible=!document.hidden);
     addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true}); addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
     const ease=x=>x*x*(3-2*x);
-    const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006;const a1=26+k*12,a2=14+k*8;const drift=t*(0.75+k*0.15);const base=innerHeight*0.30 + k*108 + Math.sin(t*0.5+k)*12;const curve=0.9 + ease(x/innerWidth)*0.2;return base + Math.sin(x*f1+drift*1.1+Math.sin(drift*0.7+k)*.25)*a1*curve + Math.sin(x*f2+drift*.85)*a2;}
+    const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
     function frame(now){
       if(!visible){requestAnimationFrame(frame);return}
       const T=(now/1000)%30,seg=T/30,hue=(seg<.5)?200+(260-200)*(seg/.5):(seg<.75)?260+(45-260)*((seg-.5)/.25):45+(200-45)*((seg-.75)/.25);
       waves.clearRect(0,0,innerWidth,innerHeight);
       for(let k=0;k<4;k++){waves.beginPath();for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001);x?waves.lineTo(x,y):waves.moveTo(x,y)}const y0=waveY(0,k,now*0.001);const g=waves.createLinearGradient(0,y0-140,0,y0+140);g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);g.addColorStop(.5,`hsla(45,70%,68%,.30)`);g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);waves.strokeStyle=g;waves.lineWidth=1.1+k*0.45;waves.globalAlpha=0.9-k*0.12;waves.shadowBlur=16;waves.shadowColor='rgba(160,200,255,.18)';waves.stroke()}
       waves.globalAlpha=1;waves.shadowBlur=0; px+=(tx-px)*0.16; py+=(ty-py)*0.16; const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
-      trail.fillStyle='rgba(0,0,0,.12)';trail.fillRect(0,0,innerWidth,innerHeight);const grad=trail.createRadialGradient(px,py,0,px,py,r);grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);grad.addColorStop(.55,'rgba(140,185,255,.14)');grad.addColorStop(1,'rgba(140,185,255,0)');trail.fillStyle=grad;trail.beginPath();trail.arc(px,py,r,0,Math.PI*2);trail.fill(); requestAnimationFrame(frame)
+      trail.fillStyle='rgba(0,0,0,.12)';trail.fillRect(0,0,innerWidth,innerHeight);
+      const grad=trail.createRadialGradient(px,py,0,px,py,r);grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);grad.addColorStop(.55,'rgba(140,185,255,.14)');grad.addColorStop(1,'rgba(140,185,255,0)');trail.fillStyle=grad;trail.beginPath();trail.arc(px,py,r,0,Math.PI*2);trail.fill();
+      requestAnimationFrame(frame)
     }
     requestAnimationFrame(frame);
   }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* ========== Works: works.json → 탭 렌더 + 라이트박스 ========== */
+/* ===== Works: works.json → 탭 렌더 + 라이트박스 ===== */
 (async function(){
   const $=(s,sc)=>(sc||document).querySelector(s); const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
   async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
@@ -285,32 +259,41 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json 로드 실패');return r.json()}
   const WORKS=await loadWorks();
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
+  const isKR=()=>!document.body.classList.contains('english'); // korean or hybrid → KR 우선
+
   function cardHTML(w){
-    const kr=document.body.classList.contains('english')?false:true;
-    const title=kr?(w.titleKR||w.titleEN||''):(w.titleEN||w.titleKR||'');
-    const meta =kr?(w.mediumKR||''):(w.mediumEN||'');
+    const title=isKR()?(w.titleKR||w.titleEN||''):(w.titleEN||w.titleKR||'');
+    const meta =isKR()?(w.mediumKR||''):(w.mediumEN||'');
     const ssrc=`/images/standard/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
     const zsrc=`/images/zoom/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
     const alt=[title,meta,w.size||'',w.year||''].filter(Boolean).join(' · ');
-    return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" data-src="${ssrc}" alt="${alt}"><div class="caption"></div></article>`
+    return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`
   }
   async function renderPanel(panelId,sectionName){
-    const host=document.getElementById(panelId); const items=Array.isArray(WORKS[sectionName])?WORKS[sectionName]:[];
+    const host=document.getElementById(panelId); const items=Array.isArray(WORKS[sectionName])?WORKS[sectionName].slice(0,20):[];
     host.innerHTML=`<div class="grid">${items.map(cardHTML).join('')}</div>`;
     try{
       const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target;if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')} img.closest('.card')?.classList.add('visible');io.unobserve(img)}})},{rootMargin:'200px'});
       $$(`#${panelId} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
-  await Promise.all([
-    renderPanel('panel-pray',MAP.pray),
-    renderPanel('panel-human',MAP.human),
-    renderPanel('panel-rebirth',MAP.rebirth),
-    renderPanel('panel-exist',MAP.exist),
-    renderPanel('panel-cosmos',MAP.cosmos)
-  ]);
+  async function renderAll(){
+    await Promise.all([
+      renderPanel('panel-pray',MAP.pray),
+      renderPanel('panel-human',MAP.human),
+      renderPanel('panel-rebirth',MAP.rebirth),
+      renderPanel('panel-exist',MAP.exist),
+      renderPanel('panel-cosmos',MAP.cosmos)
+    ]);
+  }
+  await renderAll();
 
-  // tabs
+  // 언어 전환 시 캡션 즉시 갱신
+  ['koBtn','enBtn','hyBtn'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',()=>{renderAll()},{passive:true});
+  });
+
+  // 탭 동작
   (function initTabs(){
     $$('.tabs .tab').forEach(b=>{
       b.addEventListener('click',()=>{
@@ -321,14 +304,15 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
     });
   })();
 
-  // lightbox
+  // 라이트박스
   (function attachLightbox(){
     const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prevBtn=$('#lbPrev'),nextBtn=$('#lbNext'),closeBtn=$('#lbClose');
     let list=[],idx=0,zoom=1,ox=0,oy=0,dragging=false,sx=0,sy=0;
-    function collect(activePanel){list=Array.from(activePanel.querySelectorAll('.card')).map(c=>({zoom:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.zoom)}
-    function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].zoom; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
+    function collect(activePanel){list=Array.from(activePanel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z)}
+    function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
     function close(){lb.classList.remove('on');lb.setAttribute('aria-hidden','true')}
-    function prev(){openAt(idx-1)} function next(){openAt(idx+1)} function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`;img.style.cursor=zoom>1?'grab':'zoom-in'}
+    function prev(){openAt(idx-1)} function next(){openAt(idx+1)}
+    function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`;img.style.cursor=zoom>1?'grab':'zoom-in'}
     document.addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const activePanel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');collect(activePanel);const cards=Array.from(activePanel.querySelectorAll('.card'));openAt(Math.max(0,cards.indexOf(card)))});
     prevBtn.addEventListener('click',prev); nextBtn.addEventListener('click',next); closeBtn.addEventListener('click',close); lb.addEventListener('click',e=>{if(e.target===lb) close()});
     lb.addEventListener('wheel',e=>{if(!lb.classList.contains('on'))return;e.preventDefault();const d=e.deltaY>0?0.9:1.1;const pz=zoom;zoom=Math.min(5,Math.max(1,zoom*d));if(zoom===1){ox=oy=0}else{const r=img.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2-ox;const cy=e.clientY-r.top-r.height/2-oy;ox-=cx*(zoom/pz-1);oy-=cy*(zoom/pz-1)}apply()},{passive:false});
@@ -337,7 +321,7 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   })();
 })();
 
-/* ========== Reports: DCAR01–08 md → 아코디언 ========== */
+/* ===== Reports: DCAR01–08 md → 아코디언 ===== */
 (async function(){
   const acc=document.getElementById('dcarAcc'); if(!acc) return;
   async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
@@ -350,7 +334,7 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   acc.querySelectorAll('.accordion-header').forEach(h=>{const item=h.parentElement;h.addEventListener('click',()=>item.classList.toggle('active'))});
 })();
 
-/* ========== Prayer Resonance (audio) ========== */
+/* ===== Prayer Resonance (audio) ===== */
 (function(){
   const btn=document.getElementById('soundBtn'), stop=document.getElementById('soundStopBtn'), bar=document.querySelector('#fftBar span'); if(!btn||!stop||!bar) return;
   let ac=null,nodes=null,on=false,analyser=null,rafId=null;

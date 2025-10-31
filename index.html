@@ -12,29 +12,18 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 
 <style>
-:root{
-  --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
-  --panel:#0f1630; --line:#1b2652; --max:1180px;
-}
+:root{ --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8; --panel:#0f1630; --line:#1b2652; --max:1180px }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  background:#070c1a;color:var(--fg);
-  font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-  overscroll-behavior-y:none; overflow-x:hidden;
-}
+body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
 
 /* canvases */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
 #waves{z-index:0;opacity:.48}
 #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
 
-/* header (sticky) */
-header{
-  position:sticky;top:0;z-index:5;
-  padding:10px 12px; background:rgba(9,14,30,.85);
-  border-bottom:1px solid rgba(255,255,255,.08); backdrop-filter:blur(12px)
-}
+/* header */
+header{position:sticky;top:0;z-index:5;padding:10px 12px;background:rgba(9,14,30,.85);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
 .brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(16px,5vw,22px)}
 nav.primary{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 12px;border-radius:10px}
@@ -71,8 +60,7 @@ h2{margin-bottom:12px}
 .card.visible{opacity:1;transform:translateY(0)}
 .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.card .caption{display:none} /* Works는 이미지 전용 */
-
+.card .caption{display:none}
 .note{margin-top:6px;text-align:center;color:#aecdff;opacity:.85}
 
 /* reports (accordion) */
@@ -109,11 +97,11 @@ small{display:block;margin-top:6px;color:#9fb0d8}
 #fftBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden}
 #fftBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9}
 
-/* language visibility — 기본은 보이게, 모드에서만 숨김 */
-.en, .ko { display: inherit; }
-body.korean .en { display: none; }
-body.english .ko { display: none; }
-body.hybrid .ko, body.hybrid .en { display: inherit; }
+/* language visibility */
+.en,.ko{display:inherit}
+body.korean .en{display:none}
+body.english .ko{display:none}
+body.hybrid .ko,body.hybrid .en{display:inherit}
 
 /* motion reduce */
 @media(prefers-reduced-motion:reduce){#waves,#trail{display:none}}
@@ -176,7 +164,7 @@ body.hybrid .ko, body.hybrid .en { display: inherit; }
           <p class="ko">사랑의 입맞춤을 의식한다.</p>
           <p class="en">Becoming aware of love’s gentle kiss.</p>
           <p class="ko">흘러감 속에 포개진 순간,</p>
-          <p class="en">Within the flowing overlap of time,</p>
+          <p class="en">Within the the flowing overlap of time,</p>
           <p class="ko">그들은 영혼의 박제가 되어,</p>
           <p class="en">They become taxidermies of the soul,</p>
           <p class="ko">멈춤 속에 영원을 새긴다.</p>
@@ -186,7 +174,7 @@ body.hybrid .ko, body.hybrid .en { display: inherit; }
     </div>
   </section>
 
-  <!-- Works (이미지 전용 그리드) -->
+  <!-- Works -->
   <section id="works" style="display:none">
     <h2>Artworks — 작품 아카이브</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
@@ -201,69 +189,24 @@ body.hybrid .ko, body.hybrid .en { display: inherit; }
     <div id="panel-rebirth" class="tabpanel"></div>
     <div id="panel-exist" class="tabpanel"></div>
     <div id="panel-cosmos" class="tabpanel"></div>
-    <p class="note">※ 이미지를 <code>works/{섹션키}/{번호}.jpg</code>로 올리면 자동 표시됩니다. (예: <code>works/pray/1.jpg</code>)</p>
+    <p class="note">
+      ※ 이미지는 <code>images/standard/파일명</code> · 라이트박스는 <code>images/zoom/파일명</code> 사용.
+      제목·재료·크기·년도·파일명은 <code>data/works.json</code>에서 자동 반영.
+    </p>
   </section>
 
-  <!-- Reports (DCAR 01–08 전부) -->
+  <!-- Reports -->
   <section id="reports" style="display:none">
     <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
     <div id="dcarAcc" class="accordion">
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-01-2025 · 존재의 회복 · The Restoration of Being</div>
-        <div class="accordion-content">
-          <p class="ko">존재의 회복과 감각의 윤리.</p>
-          <p class="en">Restoration of being and the ethics of sensation.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-02-2025 · 기억의 윤리 · The Ethics of Memory</div>
-        <div class="accordion-content">
-          <p class="ko">기억의 구성과 공존의 책임.</p>
-          <p class="en">Construction of memory and responsibility for coexistence.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-03-2025 · 정신의 재탄생 · The Rebirth of Mind</div>
-        <div class="accordion-content">
-          <p class="ko">지각의 진화와 의식의 확장.</p>
-          <p class="en">Evolution of perception and broadening consciousness.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-04-2025 · 빛의 상흔 · The Scars of Light</div>
-        <div class="accordion-content">
-          <p class="ko">상흔의 미학과 존엄.</p>
-          <p class="en">Aesthetics and dignity of scars.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-05-2025 · 공존의 기억 · Memory for Coexistence</div>
-        <div class="accordion-content">
-          <p class="ko">공명과 연대의 기억 장치.</p>
-          <p class="en">Mnemonics of resonance and solidarity.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-06-2025 · 감각의 윤무 · The Round of Senses</div>
-        <div class="accordion-content">
-          <p class="ko">감각의 회로와 신성한 반복.</p>
-          <p class="en">Circuits of senses and sacred repetition.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-07-2025 · 빛의 기도 · The Prayer of Light</div>
-        <div class="accordion-content">
-          <p class="ko">저주파 공명과 내적 평온.</p>
-          <p class="en">Low-frequency resonance and inner calm.</p>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <div class="accordion-header">DCAR-08-2025 · 초의식의 장 · The Field of Metaconsciousness</div>
-        <div class="accordion-content">
-          <p class="ko">초의식적 공존을 향한 서사.</p>
-          <p class="en">Narratives toward metaconscious coexistence.</p>
-        </div>
-      </div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-01-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-02-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-03-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-04-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-05-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-06-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-07-2025</div><div class="accordion-content"></div></div>
+      <div class="accordion-item"><div class="accordion-header">DCAR-08-2025</div><div class="accordion-content"></div></div>
     </div>
   </section>
 </main>
@@ -300,381 +243,126 @@ body.hybrid .ko, body.hybrid .en { display: inherit; }
 </footer>
 
 <script>
-/* =======================
-   Lightflow Ω.7.2 — Core
-   ======================= */
+/* ========== Core UI: section & language ========== */
 (function(){
-  const $ = (s,sc)=> (sc||document).querySelector(s);
-  const $$ = (s,sc)=> Array.from((sc||document).querySelectorAll(s));
-  const store={get(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+  const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
+  function showSection(id){['poem','works','reports'].forEach(x=>{const el=document.getElementById(x); el.style.display=(x===id)?'block':'none';}); $$('.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id))}
+  $$('.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target))); showSection('poem');
 
-  /* Section switching */
-  function showSection(id){
-    ['poem','works','reports'].forEach(x=>{ const el = document.getElementById(x); el.style.display = (x===id)?'block':'none'; });
-    $$('nav.primary button').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
-  }
-  $$('nav.primary button').forEach(b=> b.addEventListener('click', ()=> showSection(b.dataset.target)));
-  showSection('poem');
+  const ko=document.getElementById('koBtn'), en=document.getElementById('enBtn'), hy=document.getElementById('hyBtn');
+  function setLang(lang){document.body.classList.remove('korean','english','hybrid');document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');[ko,en,hy].forEach(b=>b.classList.remove('active'));({ko:ko,en:en,hy:hy}[lang]).classList.add('active');localStorage.setItem('dz_lang',lang)}
+  ko.onclick=()=>setLang('ko'); en.onclick=()=>setLang('en'); hy.onclick=()=>setLang('hy'); setLang(localStorage.getItem('dz_lang')||'ko');
+})();
 
-  /* Language */
-  const koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
-  function setLang(lang){
-    document.body.classList.remove('korean','english','hybrid');
-    if(lang==='ko') document.body.classList.add('korean');
-    else if(lang==='en') document.body.classList.add('english');
-    else document.body.classList.add('hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]).classList.add('active');
-    store.set('dz_lang',lang);
-  }
-  koBtn.onclick=()=>setLang('ko'); enBtn.onclick=()=>setLang('en'); hyBtn.onclick=()=>setLang('hy');
-  setLang(store.get('dz_lang','ko'));
-
-  /* Background: 30s hue cycle + finger-follow glow */
+/* ========== Background waves & trail ========== */
+(function(){
   try{
-    const waves = $('#waves').getContext('2d',{alpha:true});
-    const trail = $('#trail').getContext('2d',{alpha:true});
-    let DPR=1,W=0,H=0,visible=true;
-    let px=innerWidth/2, py=innerHeight/2, tx=px, ty=py;
-
-    function resize(){
-      DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
-      W=waves.canvas.width = Math.floor(innerWidth*DPR);
-      H=waves.canvas.height= Math.floor(innerHeight*DPR);
-      trail.canvas.width=W; trail.canvas.height=H;
-      waves.setTransform(1,0,0,1,0,0); trail.setTransform(1,0,0,1,0,0);
-      waves.scale(1/DPR,1/DPR); trail.scale(1/DPR,1/DPR);
-    }
-    resize(); addEventListener('resize',resize,{passive:true});
-    document.addEventListener('visibilitychange',()=>visible=!document.hidden);
-
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
-
-    const ease = x=>x*x*(3-2*x);
-    const waveY=(x,k,t)=>{
-      const f1=0.0030+k*0.0007, f2=0.0060+k*0.0006;
-      const a1=26+k*12, a2=14+k*8;
-      const drift=t*(0.75+k*0.15);
-      const base=innerHeight*0.30 + k*108 + Math.sin(t*0.5+k)*12;
-      const curve = 0.9 + ease(x/innerWidth)*0.2;
-      return base + Math.sin(x*f1+drift*1.1+Math.sin(drift*0.7+k)*.25)*a1*curve
-                  + Math.sin(x*f2+drift*.85)*a2;
-    }
-
+    const waves=document.getElementById('waves').getContext('2d',{alpha:true});
+    const trail=document.getElementById('trail').getContext('2d',{alpha:true});
+    let DPR=1,W=0,H=0,visible=true,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py;
+    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));W=waves.canvas.width=Math.floor(innerWidth*DPR);H=waves.canvas.height=Math.floor(innerHeight*DPR);trail.canvas.width=W;trail.canvas.height=H;waves.setTransform(1,0,0,1,0,0);trail.setTransform(1,0,0,1,0,0);waves.scale(1/DPR,1/DPR);trail.scale(1/DPR,1/DPR)}
+    resize(); addEventListener('resize',resize,{passive:true}); document.addEventListener('visibilitychange',()=>visible=!document.hidden);
+    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true}); addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+    const ease=x=>x*x*(3-2*x);
+    const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006;const a1=26+k*12,a2=14+k*8;const drift=t*(0.75+k*0.15);const base=innerHeight*0.30 + k*108 + Math.sin(t*0.5+k)*12;const curve=0.9 + ease(x/innerWidth)*0.2;return base + Math.sin(x*f1+drift*1.1+Math.sin(drift*0.7+k)*.25)*a1*curve + Math.sin(x*f2+drift*.85)*a2;}
     function frame(now){
-      if(!visible){ requestAnimationFrame(frame); return; }
-      const T = (now/1000)%30, seg = T/30;
-      const hue = (seg<.5)? 200 + (260-200)*(seg/.5)
-                 : (seg<.75)? 260 + (45-260)*((seg-.5)/.25)
-                 : 45  + (200-45) * ((seg-.75)/.25);
-
+      if(!visible){requestAnimationFrame(frame);return}
+      const T=(now/1000)%30,seg=T/30,hue=(seg<.5)?200+(260-200)*(seg/.5):(seg<.75)?260+(45-260)*((seg-.5)/.25):45+(200-45)*((seg-.75)/.25);
       waves.clearRect(0,0,innerWidth,innerHeight);
-      for(let k=0;k<4;k++){
-        waves.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){
-          const y = waveY(x,k,now*0.001);
-          x?waves.lineTo(x,y):waves.moveTo(x,y);
-        }
-        const y0 = waveY(0,k,now*0.001);
-        const g = waves.createLinearGradient(0,y0-140,0,y0+140);
-        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);
-        g.addColorStop(.5,`hsla(45,70%,68%,.30)`);
-        g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
-        waves.strokeStyle=g; waves.lineWidth=1.1+k*0.45; waves.globalAlpha=0.9-k*0.12;
-        waves.shadowBlur=16; waves.shadowColor='rgba(160,200,255,.18)'; waves.stroke();
-      }
-      waves.globalAlpha=1; waves.shadowBlur=0;
-
-      // finger-follow glow
-      px+=(tx-px)*0.16; py+=(ty-py)*0.16;
-      const speed=Math.hypot(tx-px,ty-py);
-      const r=96 + Math.min(speed*160,240);
-      trail.fillStyle='rgba(0,0,0,.12)'; trail.fillRect(0,0,innerWidth,innerHeight);
-      const grad=trail.createRadialGradient(px,py,0,px,py,r);
-      grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);
-      grad.addColorStop(.55,'rgba(140,185,255,.14)');
-      grad.addColorStop(1,'rgba(140,185,255,0)');
-      trail.fillStyle=grad; trail.beginPath(); trail.arc(px,py,r,0,Math.PI*2); trail.fill();
-
-      requestAnimationFrame(frame);
+      for(let k=0;k<4;k++){waves.beginPath();for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001);x?waves.lineTo(x,y):waves.moveTo(x,y)}const y0=waveY(0,k,now*0.001);const g=waves.createLinearGradient(0,y0-140,0,y0+140);g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);g.addColorStop(.5,`hsla(45,70%,68%,.30)`);g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);waves.strokeStyle=g;waves.lineWidth=1.1+k*0.45;waves.globalAlpha=0.9-k*0.12;waves.shadowBlur=16;waves.shadowColor='rgba(160,200,255,.18)';waves.stroke()}
+      waves.globalAlpha=1;waves.shadowBlur=0; px+=(tx-px)*0.16; py+=(ty-py)*0.16; const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
+      trail.fillStyle='rgba(0,0,0,.12)';trail.fillRect(0,0,innerWidth,innerHeight);const grad=trail.createRadialGradient(px,py,0,px,py,r);grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);grad.addColorStop(.55,'rgba(140,185,255,.14)');grad.addColorStop(1,'rgba(140,185,255,0)');trail.fillStyle=grad;trail.beginPath();trail.arc(px,py,r,0,Math.PI*2);trail.fill(); requestAnimationFrame(frame)
     }
     requestAnimationFrame(frame);
   }catch(e){console.warn('canvas init error',e)}
+})();
 
-  /* Works: 이미지 전용 렌더 + lazy */
-  const SECTIONS=[
-    {key:'pray',title:'Pray for Us'},
-    {key:'human',title:'Human Being'},
-    {key:'rebirth',title:'Rebirth of Mind'},
-    {key:'exist',title:'Restoration of Being'},
-    {key:'cosmos',title:'Metaconsciousness of Light'}
-  ];
-  function cardHTML(sec,i){
-    const alt = `${sec} ${i}`;
-    return `<article class="card" data-sec="${sec}" data-id="${i}">
-      <img loading="lazy" data-src="works/${sec}/${i}.jpg" alt="${alt}">
-      <div class="caption"></div>
-    </article>`;
+/* ========== Works: works.json → 탭 렌더 + 라이트박스 ========== */
+(async function(){
+  const $=(s,sc)=>(sc||document).querySelector(s); const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
+  const CB=await getCB();
+  async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json 로드 실패');return r.json()}
+  const WORKS=await loadWorks();
+  const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
+  function cardHTML(w){
+    const kr=document.body.classList.contains('english')?false:true;
+    const title=kr?(w.titleKR||w.titleEN||''):(w.titleEN||w.titleKR||'');
+    const meta =kr?(w.mediumKR||''):(w.mediumEN||'');
+    const ssrc=`/images/standard/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
+    const zsrc=`/images/zoom/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
+    const alt=[title,meta,w.size||'',w.year||''].filter(Boolean).join(' · ');
+    return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" data-src="${ssrc}" alt="${alt}"><div class="caption"></div></article>`
   }
-  function renderPanel(key){
-    const host = document.getElementById('panel-'+key);
-    const N=20;
-    host.innerHTML = `<div class="grid">${Array.from({length:N},(_,k)=>cardHTML(key,k+1)).join('')}</div>`;
+  async function renderPanel(panelId,sectionName){
+    const host=document.getElementById(panelId); const items=Array.isArray(WORKS[sectionName])?WORKS[sectionName]:[];
+    host.innerHTML=`<div class="grid">${items.map(cardHTML).join('')}</div>`;
     try{
-      const io=new IntersectionObserver(es=>{
-        es.forEach(e=>{
-          if(e.isIntersecting){
-            const img=e.target; if(img.dataset.src){img.src=img.dataset.src; img.removeAttribute('data-src');}
-            img.closest('.card')?.classList.add('visible'); io.unobserve(img);
-          }
-        });
-      },{rootMargin:'200px'});
-      $$(`#panel-${key} img[loading][data-src]`).forEach(i=>io.observe(i));
+      const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target;if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')} img.closest('.card')?.classList.add('visible');io.unobserve(img)}})},{rootMargin:'200px'});
+      $$(`#${panelId} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
-  SECTIONS.forEach(s=>renderPanel(s.key));
-  $$('.tabs .tab').forEach(b=>{
-    b.addEventListener('click',()=>{
-      $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      $$('.tabpanel').forEach(p=>p.classList.remove('active'));
-      const key=b.dataset.panel; $('#panel-'+key)?.classList.add('active');
-      renderPanel(key);
-      window.scrollTo({top:document.getElementById('works').offsetTop-70,behavior:'smooth'});
-    });
-  });
+  await Promise.all([
+    renderPanel('panel-pray',MAP.pray),
+    renderPanel('panel-human',MAP.human),
+    renderPanel('panel-rebirth',MAP.rebirth),
+    renderPanel('panel-exist',MAP.exist),
+    renderPanel('panel-cosmos',MAP.cosmos)
+  ]);
 
-  /* Reports accordion */
-  $$('#dcarAcc .accordion-header').forEach(h=>{
-    const item = h.parentElement;
-    h.addEventListener('click',()=> item.classList.toggle('active'));
-  });
-
-  /* -------- Lightbox: click → open, arrows, wheel-zoom, dblclick-zoom, drag-pan, swipe -------- */
-  (function(){
-    const lb = $('#lightbox'), img = $('#lbImg'), cap = $('#lbCap');
-    const prevBtn = $('#lbPrev'), nextBtn = $('#lbNext'), closeBtn = $('#lbClose'), meta = $('#lbMeta');
-    let currentList = []; // {src, alt}
-    let idx = 0;
-    let zoom=1, ox=0, oy=0, sx=0, sy=0, dragging=false;
-
-    function gatherCurrentList(){
-      const activePanel = $('.tabpanel.active') || $('#panel-pray');
-      currentList = $$('.card img', activePanel).map(el=>{
-        const src = el.getAttribute('src') || el.getAttribute('data-src');
-        return {src, alt: el.getAttribute('alt')||''};
-      }).filter(o=>o.src);
-    }
-
-    function openAt(i){
-      if(!currentList.length) return;
-      idx = (i+currentList.length)%currentList.length;
-      const {src, alt} = currentList[idx];
-      img.src = src; img.alt = alt;
-      cap.textContent = alt.replace(/_/g,' ');
-      meta.textContent = `${idx+1} / ${currentList.length}`;
-      zoom=1; ox=oy=0; applyTransform();
-      lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
-    }
-
-    function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); }
-    function prev(){ openAt(idx-1); }
-    function next(){ openAt(idx+1); }
-
-    function applyTransform(){ img.style.transform = `translate(${ox}px,${oy}px) scale(${zoom})`; img.style.cursor = zoom>1?'grab':'zoom-in'; }
-
-    // grid click
-    document.addEventListener('click', e=>{
-      const card = e.target.closest('.card');
-      if(!card) return;
-      const activePanel = card.closest('.tabpanel'); // ensure scope
-      if(activePanel && !activePanel.classList.contains('active')) return;
-      gatherCurrentList();
-      const images = $$('.card img', activePanel);
-      const clicked = card.querySelector('img');
-      const i = images.findIndex(el=>(el.getAttribute('src')||el.getAttribute('data-src')) === (clicked.getAttribute('src')||clicked.getAttribute('data-src')));
-      openAt(Math.max(0,i));
-    });
-
-    // controls
-    prevBtn.addEventListener('click', prev);
-    nextBtn.addEventListener('click', next);
-    closeBtn.addEventListener('click', close);
-    lb.addEventListener('click', (e)=>{ if(e.target===lb) close(); });
-
-    // keyboard
-    window.addEventListener('keydown', (e)=>{
-      if(lb.classList.contains('on')){
-        if(e.key==='Escape') close();
-        else if(e.key==='ArrowLeft') prev();
-        else if(e.key==='ArrowRight') next();
-        else if(e.key==='+' || (e.key==='=' && e.shiftKey)) { zoom=Math.min(zoom*1.25,5); applyTransform(); }
-        else if(e.key==='-') { zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0;} applyTransform(); }
-      }
-    });
-
-    // wheel zoom
-    lb.addEventListener('wheel', (e)=>{
-      if(!lb.classList.contains('on')) return;
-      e.preventDefault();
-      const delta = e.deltaY>0 ? 0.9 : 1.1;
-      const prevZoom = zoom;
-      zoom = Math.min(5, Math.max(1, zoom*delta));
-      if(zoom===1){ ox=oy=0; }
-      else{
-        // zoom pivot to cursor
-        const rect = img.getBoundingClientRect();
-        const cx = e.clientX - rect.left - rect.width/2 - ox;
-        const cy = e.clientY - rect.top  - rect.height/2 - oy;
-        ox -= cx*(zoom/prevZoom - 1);
-        oy -= cy*(zoom/prevZoom - 1);
-      }
-      applyTransform();
-    }, {passive:false});
-
-    // double click / double tap zoom
-    let lastTap=0;
-    img.addEventListener('click', (e)=>{
-      const now = performance.now();
-      if(now-lastTap < 300){
-        zoom = (zoom===1)? 2 : 1;
-        if(zoom===1){ox=oy=0;}
-        applyTransform();
-      }
-      lastTap = now;
-    });
-
-    // drag pan
-    img.addEventListener('mousedown', e=>{
-      if(zoom===1) return;
-      dragging=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing';
-    });
-    window.addEventListener('mousemove', e=>{
-      if(!dragging) return; ox=e.clientX-sx; oy=e.clientY-sy; applyTransform();
-    });
-    window.addEventListener('mouseup', ()=>{ dragging=false; if(zoom>1) img.style.cursor='grab'; });
-
-    // touch swipe & pan
-    let touchStartX=0,touchStartY=0;
-    lb.addEventListener('touchstart', e=>{
-      if(e.touches.length===1){
-        touchStartX=e.touches[0].clientX;
-        touchStartY=e.touches[0].clientY;
-        if(zoom>1){ dragging=true; sx=touchStartX-ox; sy=touchStartY-oy; }
-      }
-    }, {passive:true});
-    lb.addEventListener('touchmove', e=>{
-      if(e.touches.length!==1) return;
-      const x=e.touches[0].clientX, y=e.touches[0].clientY;
-      if(dragging && zoom>1){ ox=x-sx; oy=y-sy; applyTransform(); }
-    }, {passive:true});
-    lb.addEventListener('touchend', e=>{
-      if(zoom===1){
-        const dx = (e.changedTouches?.[0]?.clientX||0) - touchStartX;
-        const dy = (e.changedTouches?.[0]?.clientY||0) - touchStartY;
-        if(Math.abs(dx) > 60 && Math.abs(dy) < 80){ dx>0 ? prev() : next(); }
-      }
-      dragging=false;
-    });
-
-  })();
-
-  /* Prayer Resonance v3 (stereo + shimmer + tiny FFT) */
-  (function(){
-    const btn=$('#soundBtn'), stop=$('#soundStopBtn'), bar=$('#fftBar span');
-    if(!btn||!stop||!bar) return;
-    let ac=null, nodes=null, on=false, analyser=null, rafId=null;
-
-    async function ensureAC(){ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; ac=new C({latencyHint:'interactive'});} if(ac.state==='suspended') await ac.resume(); return ac; }
-    function G(v){const g=ac.createGain();g.gain.value=v;return g;}
-    function O(type,f){const o=ac.createOscillator();o.type=type;o.frequency.value=f;return o;}
-
-    function createIR(len=1.8,decay=2.8){
-      const sr=ac.sampleRate, n=Math.floor(sr*len), buf=ac.createBuffer(2,n,sr);
-      for(let ch=0; ch<2; ch++){
-        const data=buf.getChannelData(ch);
-        for(let i=0;i<n;i++){ data[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay); }
-      }
-      return buf;
-    }
-
-    function drawFFT(){
-      if(!analyser){rafId=requestAnimationFrame(drawFFT);return;}
-      const arr=new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteTimeDomainData(arr);
-      let avg=0; for(let i=0;i<arr.length;i++){ avg+=Math.abs(arr[i]-128); } avg/=arr.length;
-      const w=Math.min(180,Math.max(10,avg*2.2));
-      bar.style.width=w+'px';
-      rafId=requestAnimationFrame(drawFFT);
-    }
-
-    async function start(){
-      if(on) return;
-      await ensureAC();
-      const base=G(0.12), sub=G(0.05), mid=G(0.06), shim=G(0.010);
-      const pan=ac.createStereoPanner(); let panPhase=0;
-
-      const low = O('sine',62), low2=O('sine',124), floor=O('sine',31);
-      const ch1 = O('sine',432), ch2 = O('sine',528);
-
-      const lfo1=O('sine',7.83), lfo2=O('sine',5.0);
-      const lpg=G(0.08), lpg2=G(0.06);
-      lfo1.connect(lpg).connect(base.gain);
-      lfo2.connect(lpg2).connect(base.gain);
-
-      const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=0.8;
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
-
-      const conv=ac.createConvolver(); conv.buffer=createIR();
-      const wet=G(0.25), dry=G(0.85);
-
-      low.connect(base).connect(bp).connect(lp);
-      low2.connect(mid).connect(bp);
-      floor.connect(sub).connect(bp);
-      ch1.connect(shim).connect(lp);
-      ch2.connect(shim).connect(lp);
-
-      lp.connect(dry).connect(pan).connect(ac.destination);
-      lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);
-      bp.connect(dry).connect(pan);
-      bp.connect(wet).connect(conv);
-
-      analyser=ac.createAnalyser(); analyser.fftSize=512;
-      pan.connect(analyser);
-
-      [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-
-      [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
-        const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2);}catch{}
+  // tabs
+  (function initTabs(){
+    $$('.tabs .tab').forEach(b=>{
+      b.addEventListener('click',()=>{
+        $$('.tabs .tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+        $$('.tabpanel').forEach(p=>p.classList.remove('active')); const key=b.dataset.panel; document.getElementById('panel-'+key)?.classList.add('active');
+        window.scrollTo({top:document.getElementById('works').offsetTop-70,behavior:'smooth'});
       });
-
-      (function panLoop(){ if(!ac||!pan) return; panPhase += 0.012; try{ pan.pan.value = Math.sin(panPhase)*0.35; }catch{} if(on) requestAnimationFrame(panLoop); })();
-      (function filterBreath(){ if(!ac) return; try{ lp.frequency.setTargetAtTime(700 + Math.sin(ac.currentTime*0.3)*250, ac.currentTime, 0.3); }catch{} if(on) setTimeout(filterBreath,160); })();
-
-      nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};
-      on=true; btn.disabled=true; stop.disabled=false;
-      drawFFT();
-    }
-
-    function stopAll(){
-      if(!on||!nodes||!ac) return;
-      const {low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim}=nodes;
-      const t=ac.currentTime;
-      [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8);}catch{}});
-      setTimeout(()=>{[low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>{try{o.stop()}catch{}});},1900);
-      on=false; btn.disabled=false; stop.disabled=true;
-      cancelAnimationFrame(rafId); $('#fftBar span').style.width='0px';
-    }
-
-    const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock);}
-    window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
-
-    btn.addEventListener('click',start);
-    stop.addEventListener('click',stopAll);
-    document.addEventListener('visibilitychange',async()=>{ if(!ac) return; if(document.hidden) {try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}} });
+    });
   })();
 
+  // lightbox
+  (function attachLightbox(){
+    const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prevBtn=$('#lbPrev'),nextBtn=$('#lbNext'),closeBtn=$('#lbClose');
+    let list=[],idx=0,zoom=1,ox=0,oy=0,dragging=false,sx=0,sy=0;
+    function collect(activePanel){list=Array.from(activePanel.querySelectorAll('.card')).map(c=>({zoom:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.zoom)}
+    function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].zoom; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
+    function close(){lb.classList.remove('on');lb.setAttribute('aria-hidden','true')}
+    function prev(){openAt(idx-1)} function next(){openAt(idx+1)} function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`;img.style.cursor=zoom>1?'grab':'zoom-in'}
+    document.addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const activePanel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');collect(activePanel);const cards=Array.from(activePanel.querySelectorAll('.card'));openAt(Math.max(0,cards.indexOf(card)))});
+    prevBtn.addEventListener('click',prev); nextBtn.addEventListener('click',next); closeBtn.addEventListener('click',close); lb.addEventListener('click',e=>{if(e.target===lb) close()});
+    lb.addEventListener('wheel',e=>{if(!lb.classList.contains('on'))return;e.preventDefault();const d=e.deltaY>0?0.9:1.1;const pz=zoom;zoom=Math.min(5,Math.max(1,zoom*d));if(zoom===1){ox=oy=0}else{const r=img.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2-ox;const cy=e.clientY-r.top-r.height/2-oy;ox-=cx*(zoom/pz-1);oy-=cy*(zoom/pz-1)}apply()},{passive:false});
+    img.addEventListener('mousedown',e=>{if(zoom===1)return;dragging=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'}); window.addEventListener('mousemove',e=>{if(!dragging)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()}); window.addEventListener('mouseup',()=>{dragging=false;if(zoom>1)img.style.cursor='grab'});
+    window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')prev();else if(e.key==='ArrowRight')next();else if(e.key==='+'||(e.key==='='&&e.shiftKey)){zoom=Math.min(zoom*1.25,5);apply()}else if(e.key==='-'){zoom=Math.max(zoom/1.25,1);if(zoom===1){ox=oy=0}apply()}});
+  })();
+})();
+
+/* ========== Reports: DCAR01–08 md → 아코디언 ========== */
+(async function(){
+  const acc=document.getElementById('dcarAcc'); if(!acc) return;
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
+  const CB=await getCB();
+  const ids=["DCAR01","DCAR02","DCAR03","DCAR04","DCAR05","DCAR06","DCAR07","DCAR08"];
+  function mdToHTML(md){md=md.replace(/^---[\s\S]*?---/,'');return md.replace(/^# (.*)$/gim,'<h3>$1</h3>').replace(/^## (.*)$/gim,'<h4>$1</h4>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\*(.*?)\*/g,'<i>$1</i>').replace(/\n/g,'<br>')}
+  async function loadOne(id){const r=await fetch(`/reports/${id}.md?cb=${CB}`,{cache:'no-store'});if(!r.ok) return null;return r.text()}
+  const items=acc.querySelectorAll('.accordion-item');
+  await Promise.all(ids.map(async(id,i)=>{const md=await loadOne(id);if(!md)return;const html=mdToHTML(md);const item=items[i];if(item){const content=item.querySelector('.accordion-content');if(content)content.innerHTML=html}}));
+  acc.querySelectorAll('.accordion-header').forEach(h=>{const item=h.parentElement;h.addEventListener('click',()=>item.classList.toggle('active'))});
+})();
+
+/* ========== Prayer Resonance (audio) ========== */
+(function(){
+  const btn=document.getElementById('soundBtn'), stop=document.getElementById('soundStopBtn'), bar=document.querySelector('#fftBar span'); if(!btn||!stop||!bar) return;
+  let ac=null,nodes=null,on=false,analyser=null,rafId=null;
+  async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})}if(ac.state==='suspended')await ac.resume();return ac}
+  function G(v){const g=ac.createGain();g.gain.value=v;return g} function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
+  function createIR(len=1.8,decay=2.8){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}}return buf}
+  function drawFFT(){if(!analyser){rafId=requestAnimationFrame(drawFFT);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++){avg+=Math.abs(arr[i]-128)}avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(drawFFT)}
+  async function start(){if(on)return;await ensureAC();const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.010);const pan=ac.createStereoPanner();let panPhase=0;const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);const lfo1=O('sine',7.83),lfo2=O('sine',5.0);const lpg=G(0.08),lpg2=G(0.06);lfo1.connect(lpg).connect(base.gain);lfo2.connect(lpg2).connect(base.gain);const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;lp.Q.value=0.8;const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=120;bp.Q.value=0.7;const conv=ac.createConvolver();conv.buffer=createIR();const wet=G(0.25),dry=G(0.85);low.connect(base).connect(bp).connect(lp);low2.connect(mid).connect(bp);floor.connect(sub).connect(bp);ch1.connect(shim).connect(lp);ch2.connect(shim).connect(lp);lp.connect(dry).connect(pan).connect(ac.destination);lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);bp.connect(dry).connect(pan);bp.connect(wet).connect(conv);analyser=ac.createAnalyser();analyser.fftSize=512;pan.connect(analyser);[low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());[base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value;try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime);g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});(function panLoop(){if(!ac||!pan)return;panPhase+=0.012;try{pan.pan.value=Math.sin(panPhase)*0.35}catch{} if(on)requestAnimationFrame(panLoop)})();(function filterBreath(){if(!ac)return;try{lp.frequency.setTargetAtTime(700+Math.sin(ac.currentTime*0.3)*250,ac.currentTime,0.3)}catch{} if(on)setTimeout(filterBreath,160)})();nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};on=true;btn.disabled=true;stop.disabled=false;drawFFT()}
+  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim}=nodes;const t=ac.currentTime;[base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8)}catch{}});setTimeout(()=>{[low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>{try{o.stop()}catch{}})},1900);on=false;btn.disabled=false;stop.disabled=true;cancelAnimationFrame(rafId);bar.style.width='0px'}
+  const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock);window.removeEventListener('click',unlock)}
+  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true}); btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
+  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
 })();
 </script>
 </body>

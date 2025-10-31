@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DUNGZAK CESTLAVIE · Admin Ω.17</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard',sans-serif;background:#070c1a;color:#dbe9ff;margin:0;padding:0;}
+section{padding:20px;border-bottom:1px solid #123;}
+h2{margin-top:0;color:#8fb7ff;}
+input,textarea,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #345;background:#0d1529;color:#fff;}
+button{cursor:pointer;background:#1d4ed8;border:none;font-weight:600;}
+button.red{background:#b91c1c;}
+pre{white-space:pre-wrap;background:#0c1324;padding:10px;border-radius:8px;}
+.small{font-size:12px;color:#89a;}
+textarea{height:140px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+.row>*{flex:1;}
+</style>
+</head>
+<body>
+
+<section>
+<h2>1) GitHub 연결</h2>
+<label>Owner</label><input id="owner" value="dungzakcestlavie">
+<label>Repo</label><input id="repo" value="dungzakcestlavie.github.io">
+<label>Branch</label><input id="branch" value="main">
+<label>Token (local only)</label><input id="token" placeholder="ghp_xxxxx">
+<button onclick="saveSettings()">저장</button>
+<button onclick="test()">연결 테스트</button>
+<div id="status" class="small"></div>
+</section>
+
+<section>
+<h2>2) 작품 메타데이터 (data/works.json)</h2>
+<div class="row">
+<button onclick="loadWorks()">불러오기</button>
+<button onclick="saveWorks()">저장</button>
+</div>
+<textarea id="works"></textarea>
+</section>
+
+<section>
+<h2>3) 미학 보고서 DCAR01–08 (reports/DCARxx.md)</h2>
+<select id="reportId">
+<option>DCAR01</option><option>DCAR02</option><option>DCAR03</option>
+<option>DCAR04</option><option>DCAR05</option><option>DCAR06</option>
+<option>DCAR07</option><option>DCAR08</option>
+</select>
+<div class="row">
+<button onclick="loadReport()">불러오기</button>
+<button onclick="saveReport()">저장</button>
+</div>
+<textarea id="report"></textarea>
+</section>
+
+<section>
+<h2>4) 캐시 갱신 (data/cachebust.json)</h2>
+<button onclick="bust()">지금 갱신</button>
+<pre id="cache"></pre>
+</section>
+
+<script>
+const g=s=>localStorage.getItem(s)||"";const S=(k,v)=>localStorage.setItem(k,v);
+owner.value=g("o");repo.value=g("r");branch.value=g("b");token.value=g("t");
+function saveSettings(){S("o",owner.value);S("r",repo.value);S("b",branch.value);S("t",token.value);alert("저장됨");}
+function api(p,method,content){
+return fetch(`https://api.github.com/repos/${g("o")}/${g("r")}/contents/${p}`,{
+method:method,
+headers:{Authorization:`token ${g("t")}`,Accept:"application/vnd.github.v3+json"},
+body:content?JSON.stringify(content):null
+});
+}
+async function getFile(path){
+let r=await api(path,"GET");if(!r.ok)return null;let j=await r.json();
+return {sha:j.sha,text:atob(j.content)};
+}
+async function putFile(path,text,sha){
+return api(path,"PUT",{message:"update "+path,content:btoa(text),sha});
+}
+async function test(){let r=await api("","GET");status.innerText=r.ok?"연결 성공":"실패";}
+async function loadWorks(){let f=await getFile("data/works.json");works.value=f?f.text:`{}`;}
+async function saveWorks(){let f=await getFile("data/works.json");await putFile("data/works.json",works.value,f?f.sha:null);alert("저장됨");}
+async function loadReport(){let id=reportId.value;let f=await getFile(`reports/${id}.md`);report.value=f?f.text:`---\nid:${id}\ntitle_kr:\"\"\ntitle_en:\"\"\n---\n`; }
+async function saveReport(){let id=reportId.value;let f=await getFile(`reports/${id}.md`);await putFile(`reports/${id}.md`,report.value,f?f.sha:null);alert("보고서 저장됨");}
+async function bust(){let v=Date.now();await putFile("data/cachebust.json",`{"v":${v}}`,null);cache.innerText="cache:"+v;alert("캐시 갱신");}
+</script>
+
+</body>
+</html>

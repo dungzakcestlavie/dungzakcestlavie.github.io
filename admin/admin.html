@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Admin Ω.16 — Self-Healing</title>
-<meta name="theme-color" content="#070c1a">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.17 — Unified & Self-Healing</title>
+<meta name="theme-color" content="#070c1a" />
 <style>
-:root{--bg:#0a1024;--fg:#eaf0ff;--gold:#e6c777;--line:#1a2758;--panel:#0f1632;--ok:#31d0a5;--bad:#ff6b6b}
+:root{--bg:#0a1024;--fg:#eaf0ff;--gold:#e6c777;--line:#1a2758;--panel:#0f1632;--ok:#31d0a5;--bad:#ff6b6b;--max:980px}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,'Noto Sans KR',Segoe UI,Roboto,sans-serif}
-h1{margin:18px 12px;font-size:18px;color:var(--gold)}
-.wrap{max-width:980px;margin:0 auto;padding:0 12px 60px}
+h1{margin:18px 12px;font-size:18px;color:var(--gold)} h2{margin:0 0 8px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 12px 80px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 input,select,button,textarea{font:inherit}
@@ -18,42 +18,28 @@ input[type=text]{min-width:180px}
 button{border:1px solid #3a4d88;background:#14245a;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
 button.primary{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230;border-color:#e6c777;font-weight:700}
 button:disabled{opacity:.55;cursor:not-allowed}
-small,h2{opacity:.85}
-label{display:block;font-weight:600;margin-bottom:6px}
 textarea{width:100%;min-height:200px;border-radius:12px}
 .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
-.kv{display:grid;grid-template-columns:140px 1fr;gap:8px 10px}
 .badge{display:inline-block;border:1px solid #3a4d88;background:#0c1b45;padding:2px 8px;border-radius:999px;font-size:12px}
+.note{opacity:.75} hr{border:0;border-top:1px solid #223564;margin:10px 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#061132;color:#cfe0ff;border:1px solid #294;box-shadow:0 10px 40px #0006;border-radius:12px;padding:10px 14px;z-index:99;opacity:0;transition:opacity .25s}
 .toast.on{opacity:1}
-.ok{color:var(--ok)} .bad{color:var(--bad)}
-hr{border:0;border-top:1px solid #223564;margin:10px 0}
-.note{opacity:.7}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.16 — Self-Healing</h1>
+  <h1>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.17 — Unified & Self-Healing</h1>
 
   <!-- 1) 연결 -->
   <section class="card">
     <h2>1) Settings · 연결</h2>
     <div class="row">
-      <div>
-        <label>Owner</label>
-        <input id="owner" type="text" placeholder="dungzakcestlavie">
-      </div>
-      <div>
-        <label>Repository</label>
-        <input id="repo" type="text" placeholder="dungzakcestlavie.github.io">
-      </div>
-      <div>
-        <label>Branch</label>
-        <input id="branch" type="text" value="main">
-      </div>
+      <div><label>Owner</label><input id="owner" type="text" placeholder="dungzakcestlavie"></div>
+      <div><label>Repository</label><input id="repo" type="text" placeholder="dungzakcestlavie.github.io"></div>
+      <div><label>Branch</label><input id="branch" type="text" value="main"></div>
       <div style="flex:1 1 100%">
         <label>Personal Access Token (PAT) — 로컬 저장만</label>
-        <input id="token" type="text" placeholder="ghp_..." style="width:100%">
+        <input id="token" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ghp_..." style="width:100%">
       </div>
     </div>
     <div class="row" style="margin-top:8px">
@@ -73,6 +59,7 @@ hr{border:0;border-top:1px solid #223564;margin:10px 0}
       <button id="formatWorks">예시 스켈레톤</button>
     </div>
     <textarea id="works" class="mono" placeholder='{"pray":[],"human":[],"rebirth":[],"exist":[],"cosmos":[]}'></textarea>
+    <small class="note">필드 예시: {"title_kr":"","title_en":"","material_kr":"","material_en":"","size":"162.2×130.3cm","year":2025,"file":"Pray_for_Us_01.jpg"}</small>
   </section>
 
   <!-- 3) 미학 보고서 -->
@@ -87,7 +74,7 @@ hr{border:0;border-top:1px solid #223564;margin:10px 0}
       <button id="saveReport" class="primary">저장</button>
       <button id="templateReport">템플릿</button>
     </div>
-    <textarea id="reportBody" class="mono" placeholder="---\nid: DCAR01\ntitle_kr: \"\"\ntitle_en: \"\"\n---\n# (KR)\n...\n---\n# (EN)\n..."></textarea>
+    <textarea id="reportBody" class="mono" placeholder="---&#10;id: DCAR01&#10;title_kr: &quot;&quot;&#10;title_en: &quot;&quot;&#10;---&#10;# (KR)&#10;...&#10;---&#10;# (EN)&#10;..."></textarea>
   </section>
 
   <!-- 4) 캐시 무효화 -->
@@ -99,22 +86,22 @@ hr{border:0;border-top:1px solid #223564;margin:10px 0}
     </div>
   </section>
 
-  <p class="note">문제 없이 저장되도록, 파일이 없으면 자동으로 <b>생성</b>하고 있으면 안전하게 <b>업데이트</b>합니다.</p>
+  <p class="note">파일이 없으면 자동으로 생성하고, 있으면 안전하게 업데이트합니다. 오류 메시지는 원인과 해결책을 함께 표시합니다.</p>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-/* ========= Small helpers ========= */
+/* ========== helpers ========== */
 const $=s=>document.querySelector(s);
 const store={get:k=>localStorage.getItem(k)||'',set:(k,v)=>localStorage.setItem(k,v||'')};
-function toast(msg,ok=true){const t=$("#toast");t.innerHTML=msg;t.style.borderColor=ok?"#2a6":"#a33";t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1800)}
+function toast(msg,ok=true){const t=$("#toast");t.innerHTML=msg; t.style.borderColor=ok?"#2a6":"#a33"; t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),2000)}
 function b64(s){return btoa(unescape(encodeURIComponent(s)))}
 
-/* ========= GitHub API client (self-healing) ========= */
+/* ========== GitHub API (Self-Healing) ========== */
 function cfg(){
   const owner=$("#owner").value.trim(), repo=$("#repo").value.trim(), branch=$("#branch").value.trim()||"main", token=$("#token").value.trim();
-  if(!owner||!repo||!token) throw new Error("설정이 비었습니다.");
+  if(!owner||!repo||!token) throw new Error("설정이 비었습니다. Owner/Repo/Branch/Token 확인");
   const base=`https://api.github.com/repos/${owner}/${repo}/contents`;
   const headers={"Authorization":`Bearer ${token}`,"Accept":"application/vnd.github+json"};
   return {base,headers,branch};
@@ -123,80 +110,69 @@ async function ghGet(path){
   const {base,headers,branch}=cfg();
   const r=await fetch(`${base}/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch)}`,{headers});
   if(r.status===404) return null;
-  if(!r.ok) throw new Error(`GET 실패 ${path}`);
+  if(!r.ok) throw new Error(`GET 실패 ${path} (HTTP ${r.status})`);
   return r.json();
 }
-/* create or update (auto) */
 async function ghPut(path,content,message){
   const {base,headers,branch}=cfg();
-  let sha=null;
-  try{ const cur=await ghGet(path); sha=cur?.sha||null; }catch{}
+  let sha=null; try{const cur=await ghGet(path); sha=cur?.sha||null;}catch{}
   const body={message,content:b64(content),branch}; if(sha) body.sha=sha;
   const r=await fetch(`${base}/${encodeURIComponent(path)}`,{method:"PUT",headers,body:JSON.stringify(body)});
-  if(!r.ok) throw new Error(`PUT 실패 ${path}`);
+  if(!r.ok){
+    let tip=""; if(r.status===401) tip="토큰 만료/오타 가능";
+    if(r.status===403) tip="토큰 권한(Contents: Read&Write) 또는 브랜치 보호 규칙";
+    if(r.status===409) tip="브랜치 보호 규칙/필수 리뷰로 직접 커밋 차단";
+    throw new Error(`PUT 실패 ${path} (HTTP ${r.status}) ${tip}`);
+  }
   return r.json();
 }
-/* ensure file exists with default content (create if 404) */
-async function ensureFile(path,defaultContent){
-  const cur=await ghGet(path);
-  if(cur===null){ await ghPut(path, defaultContent, `create ${path}`); return {created:true} }
-  return {created:false, sha:cur.sha}
-}
+async function ensureFile(path,defaultContent){ const cur=await ghGet(path); if(cur===null){ await ghPut(path, defaultContent, `create ${path}`); return {created:true} } return {created:false, sha:cur.sha} }
+async function ensureFolderReports(){ await ensureFile("reports/.keep","keep\n"); }
 
-/* ========= UI wiring ========= */
+/* ========== UI wiring ========== */
 (function init(){
-  // restore
-  $("#owner").value = store.get("dz_owner") || "dungzakcestlavie";
-  $("#repo").value  = store.get("dz_repo")  || "dungzakcestlavie.github.io";
-  $("#branch").value= store.get("dz_branch")|| "main";
-  $("#token").value = store.get("dz_token") || "";
+  /* restore */
+  $("#owner").value=store.get("dz_owner")||"dungzakcestlavie";
+  $("#repo").value =store.get("dz_repo") ||"dungzakcestlavie.github.io";
+  $("#branch").value=store.get("dz_branch")||"main";
+  $("#token").value =store.get("dz_token") ||"";
 
-  $("#saveLocal").onclick=()=>{
-    ["dz_owner","dz_repo","dz_branch","dz_token"].forEach((k,i)=>{
-      const v=[$("#owner").value,$("#repo").value,$("#branch").value,$("#token").value][i];
-      store.set(k,v);
-    });
-    toast("로컬 저장 완료");
-  };
+  $("#saveLocal").onclick=()=>{ ["dz_owner","dz_repo","dz_branch","dz_token"].forEach((k,i)=>{ const v=[$("#owner").value,$("#repo").value,$("#branch").value,$("#token").value][i]; store.set(k,v);}); toast("로컬 저장 완료"); };
 
   $("#test").onclick=async()=>{
     try{
-      // self-heal minimal structure
       await ensureFile("data/cachebust.json", '{ "ts": 0 }\n');
       await ensureFile("data/works.json", JSON.stringify({pray:[],human:[],rebirth:[],exist:[],cosmos:[]},null,2)+"\n");
+      await ensureFolderReports();
       $("#state").textContent="상태: 연결 OK";
-      toast("<span class='ok'>연결 성공 + 기본 파일 확인</span>");
+      toast("<b>연결 성공</b> · 기본 파일/폴더 확인");
     }catch(e){ $("#state").textContent="상태: 오류"; toast("연결 실패: "+e.message,false); }
   };
 
-  // Works
+  /* Works */
   $("#formatWorks").onclick=()=>{
-    $("#works").value = JSON.stringify({
-      pray:[], human:[], rebirth:[], exist:[], cosmos:[]
-    }, null, 2);
+    $("#works").value=JSON.stringify({pray:[],human:[],rebirth:[],exist:[],cosmos:[]},null,2);
   };
   $("#loadWorks").onclick=async()=>{
     try{
       const j=await ghGet("data/works.json");
-      if(!j){ $("#works").value=""; toast("파일 없음(새로 생성됨)"); return; }
-      const text=atob(j.content||""); $("#works").value=text; toast("불러오기 완료");
+      if(!j){ $("#works").value=""; toast("파일 없음(새로 생성 예정)"); return; }
+      $("#works").value=atob(j.content||""); toast("불러오기 완료");
     }catch(e){ toast("불러오기 실패: "+e.message,false); }
   };
   $("#saveWorks").onclick=async()=>{
     try{
       let text=$("#works").value.trim();
       if(!text) text=JSON.stringify({pray:[],human:[],rebirth:[],exist:[],cosmos:[]},null,2)+"\n";
-      // JSON 유효성 검사
-      JSON.parse(text);
-      await ensureFile("data/cachebust.json", '{ "ts": 0 }\n'); // 존재 보장
+      JSON.parse(text); /* 유효성 검증 */
+      await ensureFile("data/cachebust.json", '{ "ts": 0 }\n');
       await ghPut("data/works.json", text, "update data/works.json");
-      // cache bust
       const ts=Date.now(); await ghPut("data/cachebust.json", JSON.stringify({ts},null,2)+"\n", "cache bust");
-      toast("<span class='ok'>works 저장 + 캐시 무효화 OK</span>");
+      toast("<b>works 저장</b> + 캐시 무효화 OK");
     }catch(e){ toast("저장 실패: "+e.message,false); }
   };
 
-  // Reports
+  /* Reports */
   $("#templateReport").onclick=()=>{
     const id=$("#reportId").value;
     $("#reportBody").value =
@@ -215,25 +191,27 @@ Here goes the English body
   };
   $("#loadReport").onclick=async()=>{
     try{
+      await ensureFolderReports();
       const id=$("#reportId").value;
       const j=await ghGet(`reports/${id}.md`);
-      if(!j){ $("#reportBody").value=""; toast("파일 없음(새로 생성됨)"); return; }
-      const text=atob(j.content||""); $("#reportBody").value=text; toast("불러오기 완료");
+      if(!j){ $("#reportBody").value=""; toast("파일 없음(새로 생성 예정)"); return; }
+      $("#reportBody").value=atob(j.content||""); toast("불러오기 완료");
     }catch(e){ toast("불러오기 실패: "+e.message,false); }
   };
   $("#saveReport").onclick=async()=>{
     try{
       const id=$("#reportId").value;
       let body=$("#reportBody").value.trim();
-      if(!body) { $("#templateReport").click(); body=$("#reportBody").value.trim(); }
+      if(!body){ $("#templateReport").click(); body=$("#reportBody").value.trim(); }
       await ensureFile("data/cachebust.json", '{ "ts": 0 }\n');
+      await ensureFolderReports();
       await ghPut(`reports/${id}.md`, body+"\n", `update reports/${id}.md`);
       const ts=Date.now(); await ghPut("data/cachebust.json", JSON.stringify({ts},null,2)+"\n", "cache bust");
-      toast(`<span class='ok'>${id} 저장 + 캐시 무효화 OK</span>`);
+      toast(`<b>${id} 저장</b> + 캐시 무효화 OK`);
     }catch(e){ toast("보고서 저장 실패: "+e.message,false); }
   };
 
-  // Cache bust only
+  /* Cache bust only */
   $("#bust").onclick=async()=>{
     try{
       await ensureFile("data/cachebust.json", '{ "ts": 0 }\n');

@@ -1,90 +1,339 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>DUNGZAK CESTLAVIE · Admin Ω.17</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DUNGZAK CESTLAVIE · Admin Ω.16 — Works & DCAR (KR/EN)</title>
+<meta name="color-scheme" content="dark light">
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard',sans-serif;background:#070c1a;color:#dbe9ff;margin:0;padding:0;}
-section{padding:20px;border-bottom:1px solid #123;}
-h2{margin-top:0;color:#8fb7ff;}
-input,textarea,select,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #345;background:#0d1529;color:#fff;}
-button{cursor:pointer;background:#1d4ed8;border:none;font-weight:600;}
-button.red{background:#b91c1c;}
-pre{white-space:pre-wrap;background:#0c1324;padding:10px;border-radius:8px;}
-.small{font-size:12px;color:#89a;}
-textarea{height:140px;}
-.row{display:flex;gap:10px;flex-wrap:wrap;}
-.row>*{flex:1;}
+:root{
+  --bg:#0b1020; --panel:#111a37; --ink:#eaf0ff; --sub:#a9b7e8; --brand:#e6c777; --accent:#6aa3ff;
+  --ok:#39d98a; --warn:#ffb454; --err:#ff6b6b; --line:#1c2754; --max:1220px
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif}
+.wrap{max-width:var(--max);margin:auto;padding:20px;display:grid;gap:18px}
+h1{margin:4px 0 6px;font-size:20px;color:var(--brand)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.row{display:grid;gap:10px}
+label{display:block;margin:6px 0 4px;color:var(--sub);font-weight:600}
+input,select,textarea{width:100%;background:#0e1530;border:1px solid #2a366b;border-radius:10px;color:var(--ink);padding:10px 12px;outline:none}
+textarea{min-height:140px;resize:vertical}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 12px;border-radius:10px;cursor:pointer;border:1px solid #2a366b;background:#0d142e;color:#eaf0ff;font-weight:600}
+.btn.primary{background:linear-gradient(180deg,#7cb3ff,#5e94ff);border-color:#4d7fe0}
+.btn.warn{background:#4b2a10;border-color:#8a3f0e;color:#ffd6a6}
+.btn.ok{background:#0f3a2c;border-color:#0c5b40;color:#b8ffe0}
+.btn.err{background:#3b1014;border-color:#7a1b27;color:#ffd0d4}
+.note{color:var(--sub);font-size:13px}
+.grid{display:grid;gap:10px}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #253066;padding:6px 8px;font-size:13px;text-align:left;vertical-align:top;background:#0c1431}
+.table th{position:sticky;top:0;background:#0f183b;color:#dfe7ff}
+small.k{opacity:.85}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border:1px solid #4050a9;border-radius:14px;background:#0e1840;margin-right:6px}
+hr.sep{border:0;border-top:1px dashed #31407a;margin:12px 0}
+kbd{padding:.2em .45em;border:1px solid #4455aa;border-bottom-width:2px;border-radius:6px;background:#0b1438}
+.status{font-size:13px;color:#cfe0ff}
+footer{opacity:.8;text-align:center;padding:16px 0}
+@media(min-width:880px){ .row.cols-2{grid-template-columns:1fr 1fr} .row.cols-3{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<section>
-<h2>1) GitHub 연결</h2>
-<label>Owner</label><input id="owner" value="dungzakcestlavie">
-<label>Repo</label><input id="repo" value="dungzakcestlavie.github.io">
-<label>Branch</label><input id="branch" value="main">
-<label>Token (local only)</label><input id="token" placeholder="ghp_xxxxx">
-<button onclick="saveSettings()">저장</button>
-<button onclick="test()">연결 테스트</button>
-<div id="status" class="small"></div>
-</section>
+  <!-- 1) 연결 -->
+  <div class="panel">
+    <h1>1) GitHub 연결</h1>
+    <div class="row cols-3">
+      <div><label>Owner</label><input id="owner" placeholder="dungzakcestlavie"></div>
+      <div><label>Repo</label><input id="repo" placeholder="dungzakcestlavie.github.io"></div>
+      <div><label>Branch</label><input id="branch" placeholder="main"></div>
+    </div>
+    <div class="row">
+      <div><label>Token (local only)</label><input id="token" placeholder="github_pat_xxxxx"></div>
+      <div class="btns">
+        <button class="btn primary" onclick="saveSettings()">저장</button>
+        <button class="btn" onclick="test()">연결 테스트</button>
+        <span id="status" class="status"></span>
+      </div>
+      <div class="note">토큰 권한: <span class="tag">Contents: Read &amp; write</span> <span class="tag">repo</span> 필요.</div>
+    </div>
+  </div>
 
-<section>
-<h2>2) 작품 메타데이터 (data/works.json)</h2>
-<div class="row">
-<button onclick="loadWorks()">불러오기</button>
-<button onclick="saveWorks()">저장</button>
+  <!-- 2) 작품 메타데이터 -->
+  <div class="panel">
+    <h1>2) Works — 작품(5섹션 × 20) · <code>data/works.json</code></h1>
+    <div class="note">필드: title_kr / title_en / material_kr / material_en / size_kr / size_en / year / image / zoom. 이미지는 <code>images/standard/</code>와 <code>images/zoom/</code>에 같은 파일명으로 업로드.</div>
+    <div class="btns" style="margin:8px 0">
+      <button class="btn" onclick="loadWorks()">불러오기</button>
+      <button class="btn primary" onclick="saveWorks()">저장</button>
+      <button class="btn" onclick="downloadJSON()">내보내기(JSON)</button>
+      <button class="btn" onclick="openImporter()">붙여넣기(표/CSV)</button>
+    </div>
+
+    <div class="row cols-2">
+      <div>
+        <label>섹션 선택</label>
+        <select id="sectionSel" onchange="renderTable()"></select>
+      </div>
+      <div class="btns">
+        <button class="btn ok" onclick="addRow()">+ 행 추가</button>
+        <button class="btn warn" onclick="capTo20()">20개로 맞추기</button>
+        <button class="btn err" onclick="delChecked()">선택 삭제</button>
+      </div>
+    </div>
+
+    <div id="worksTableWrap" style="overflow:auto;max-height:52vh;margin-top:8px">
+      <table class="table" id="worksTable"></table>
+    </div>
+    <div class="note">팁: iPhone에서 제목/재료/크기/년도 빠르게 입력 후 저장 → <kbd>캐시 갱신</kbd>을 누르면 Index에 즉시 반영.</div>
+  </div>
+
+  <!-- 3) 미학 보고서 -->
+  <div class="panel">
+    <h1>3) Aesthetic Reports (DCAR01–08) · <code>reports/DCARxx.md</code></h1>
+    <div class="row cols-3">
+      <div>
+        <label>Report</label>
+        <select id="reportId" onchange="loadReport()"></select>
+      </div>
+      <div><label>제목(한글)</label><input id="rTitleKr" placeholder="예: 존재의 회복"></div>
+      <div><label>Title (English)</label><input id="rTitleEn" placeholder="The Restoration of Being"></div>
+    </div>
+    <div class="row cols-2">
+      <div>
+        <label>본문 (KR)</label>
+        <textarea id="rBodyKr" placeholder="여기에 한국어 본문"></textarea>
+      </div>
+      <div>
+        <label>Body (EN)</label>
+        <textarea id="rBodyEn" placeholder="English body here"></textarea>
+      </div>
+    </div>
+    <div class="btns" style="margin-top:8px">
+      <button class="btn" onclick="loadReport()">불러오기</button>
+      <button class="btn primary" onclick="saveReport()">저장</button>
+      <button class="btn" onclick="openPrint()">미리보기·출력</button>
+    </div>
+  </div>
+
+  <!-- 4) 캐시 무효화 -->
+  <div class="panel">
+    <h1>4) 캐시 무효화 · <code>data/cachebust.json</code></h1>
+    <div class="btns">
+      <button class="btn primary" onclick="bust()">지금 갱신</button>
+      <span id="cache" class="status"></span>
+    </div>
+  </div>
+
+  <footer class="note">© 2025 DUNGZAK CESTLAVIE · Admin Ω.16 — Self-Healing</footer>
 </div>
-<textarea id="works"></textarea>
-</section>
-
-<section>
-<h2>3) 미학 보고서 DCAR01–08 (reports/DCARxx.md)</h2>
-<select id="reportId">
-<option>DCAR01</option><option>DCAR02</option><option>DCAR03</option>
-<option>DCAR04</option><option>DCAR05</option><option>DCAR06</option>
-<option>DCAR07</option><option>DCAR08</option>
-</select>
-<div class="row">
-<button onclick="loadReport()">불러오기</button>
-<button onclick="saveReport()">저장</button>
-</div>
-<textarea id="report"></textarea>
-</section>
-
-<section>
-<h2>4) 캐시 갱신 (data/cachebust.json)</h2>
-<button onclick="bust()">지금 갱신</button>
-<pre id="cache"></pre>
-</section>
 
 <script>
-const g=s=>localStorage.getItem(s)||"";const S=(k,v)=>localStorage.setItem(k,v);
-owner.value=g("o");repo.value=g("r");branch.value=g("b");token.value=g("t");
-function saveSettings(){S("o",owner.value);S("r",repo.value);S("b",branch.value);S("t",token.value);alert("저장됨");}
-function api(p,method,content){
-return fetch(`https://api.github.com/repos/${g("o")}/${g("r")}/contents/${p}`,{
-method:method,
-headers:{Authorization:`token ${g("t")}`,Accept:"application/vnd.github.v3+json"},
-body:content?JSON.stringify(content):null
-});
+/* ========= Utilities ========= */
+const $=sel=>document.querySelector(sel);
+const $$=sel=>Array.from(document.querySelectorAll(sel));
+const L={
+  get:k=>localStorage.getItem(k)||'',
+  set:(k,v)=>localStorage.setItem(k,v),
+  jget:(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'')}catch{return d}},
+  jset:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+};
+const DEF_SECTIONS=[
+  {key:'pray',  name:'Ⅰ 우리를 위해 기도해 주세요 · Pray for Us'},
+  {key:'human', name:'Ⅱ 인간 · Human Being'},
+  {key:'rebirth',name:'Ⅲ 정신의 재탄생 · Rebirth of Mind'},
+  {key:'exist', name:'Ⅳ 존재의 회복 · Restoration of Being'},
+  {key:'cosmos',name:'Ⅴ 빛의 초의식 · Metaconsciousness of Light'}
+];
+const REPORTS=['DCAR01','DCAR02','DCAR03','DCAR04','DCAR05','DCAR06','DCAR07','DCAR08'];
+
+/* ========= Settings ========= */
+const owner=$('#owner'), repo=$('#repo'), branch=$('#branch'), token=$('#token');
+function initSettings(){
+  owner.value = L.get('o') || 'dungzakcestlavie';
+  repo.value  = L.get('r') || 'dungzakcestlavie.github.io';
+  branch.value= L.get('b') || 'main';
+  token.value = L.get('t') || '';
+  // dropdowns
+  const sSel = $('#sectionSel');
+  sSel.innerHTML = DEF_SECTIONS.map(s=>`<option value="${s.key}">${s.name}</option>`).join('');
+  const rSel = $('#reportId');
+  rSel.innerHTML = REPORTS.map(x=>`<option value="${x}">${x}</option>`).join('');
+}
+function saveSettings(){
+  L.set('o',owner.value.trim()); L.set('r',repo.value.trim());
+  L.set('b',branch.value.trim()); L.set('t',token.value.trim());
+  alert('연결 정보 저장됨');
+}
+function headers(){
+  const h={Accept:'application/vnd.github+json'};
+  const t=L.get('t'); if(t) h.Authorization = `token ${t}`;
+  return h;
+}
+/* GH helpers */
+async function repoInfo(){
+  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}`;
+  const r=await fetch(url,{headers:headers()});
+  return {ok:r.ok,status:r.status,json:await r.json().catch(()=>({}))};
 }
 async function getFile(path){
-let r=await api(path,"GET");if(!r.ok)return null;let j=await r.json();
-return {sha:j.sha,text:atob(j.content)};
+  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(L.get('b'))}`;
+  const r=await fetch(url,{headers:headers()});
+  if(!r.ok) return null;
+  const j=await r.json();
+  return {sha:j.sha, text: atob(j.content||"")};
 }
 async function putFile(path,text,sha){
-return api(path,"PUT",{message:"update "+path,content:btoa(text),sha});
+  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}/contents/${encodeURIComponent(path)}`;
+  const body={message:`update ${path}`, content:btoa(unescape(encodeURIComponent(text))), branch:L.get('b')};
+  if(sha) body.sha=sha;
+  const r=await fetch(url,{method:'PUT',headers:{...headers(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){ const e=await r.json().catch(()=>({message:''})); throw new Error(`GitHub ${r.status}: ${e.message||'권한/경로 확인'}`) }
+  return r.json();
 }
-async function test(){let r=await api("","GET");status.innerText=r.ok?"연결 성공":"실패";}
-async function loadWorks(){let f=await getFile("data/works.json");works.value=f?f.text:`{}`;}
-async function saveWorks(){let f=await getFile("data/works.json");await putFile("data/works.json",works.value,f?f.sha:null);alert("저장됨");}
-async function loadReport(){let id=reportId.value;let f=await getFile(`reports/${id}.md`);report.value=f?f.text:`---\nid:${id}\ntitle_kr:\"\"\ntitle_en:\"\"\n---\n`; }
-async function saveReport(){let id=reportId.value;let f=await getFile(`reports/${id}.md`);await putFile(`reports/${id}.md`,report.value,f?f.sha:null);alert("보고서 저장됨");}
-async function bust(){let v=Date.now();await putFile("data/cachebust.json",`{"v":${v}}`,null);cache.innerText="cache:"+v;alert("캐시 갱신");}
-</script>
+/* Test */
+async function test(){
+  const s=$('#status'); s.textContent='테스트 중…';
+  try{
+    const info=await repoInfo();
+    if(info.ok){ s.textContent=`연결 성공 · default=${info.json.default_branch}`; }
+    else{ s.textContent=`실패(${info.status}) · ${info.json.message||''}`; alert(s.textContent); }
+  }catch(e){ s.textContent='실패: 네트워크/토큰 문제'; alert(e.message||e); }
+}
 
+/* ========= Works editor ========= */
+let WORKS = {pray:[],human:[],rebirth:[],exist:[],cosmos:[]};
+const FIELDS=['title_kr','title_en','material_kr','material_en','size_kr','size_en','year','image','zoom'];
+function rowTemplate(){
+  return {title_kr:'',title_en:'',material_kr:'',material_en:'',size_kr:'',size_en:'',year:'',image:'',zoom:''}
+}
+function renderTable(){
+  const key = $('#sectionSel').value;
+  const list = WORKS[key]||(WORKS[key]=[]);
+  const thead = `<tr>
+    <th style="width:26px"><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
+    <th>#</th>${FIELDS.map(f=>`<th>${f}</th>`).join('')}
+  </tr>`;
+  const rows = list.map((it,i)=>`
+    <tr>
+      <td><input type="checkbox" data-i="${i}"></td>
+      <td>${i+1}</td>
+      ${FIELDS.map(f=>`<td contenteditable oninput="cellEdit('${key}',${i},'${f}',this.innerText)">${(it[f]??'')}</td>`).join('')}
+    </tr>`).join('');
+  $('#worksTable').innerHTML = thead + rows;
+}
+function cellEdit(key,i,field,val){ WORKS[key][i][field]=val.trim(); }
+function addRow(){ const key=$('#sectionSel').value; (WORKS[key]||(WORKS[key]=[])).push(rowTemplate()); renderTable(); }
+function capTo20(){ const key=$('#sectionSel').value; WORKS[key]=(WORKS[key]||[]).slice(0,20); while(WORKS[key].length<20) WORKS[key].push(rowTemplate()); renderTable(); }
+function delChecked(){
+  const key=$('#sectionSel').value; const list=WORKS[key]||[];
+  const checks=$$('#worksTable input[type=checkbox][data-i]').filter(c=>c.checked).map(c=>+c.dataset.i);
+  WORKS[key]=list.filter((_,i)=>!checks.includes(i)); renderTable();
+}
+function toggleAll(m){ $$('#worksTable input[type=checkbox][data-i]').forEach(c=>c.checked=m.checked); }
+
+async function loadWorks(){
+  const f=await getFile('data/works.json');
+  WORKS = f ? JSON.parse(f.text||'{}') : {pray:[],human:[],rebirth:[],exist:[],cosmos:[]};
+  // 안전 장치
+  for(const s of DEF_SECTIONS){ if(!Array.isArray(WORKS[s.key])) WORKS[s.key]=[]; }
+  $('#sectionSel').value = DEF_SECTIONS[0].key;
+  renderTable();
+  alert('works.json 불러오기 완료');
+}
+async function saveWorks(){
+  try{
+    // 각 섹션 최대 20로 제한(넘치면 잘라줌)
+    for(const s of DEF_SECTIONS){ if(WORKS[s.key].length>20) WORKS[s.key]=WORKS[s.key].slice(0,20); }
+    const text=JSON.stringify(WORKS,null,2);
+    const f=await getFile('data/works.json');
+    await putFile('data/works.json',text,f?f.sha:null);
+    alert('works.json 저장 완료');
+  }catch(e){ alert(e.message); }
+}
+function downloadJSON(){
+  const blob=new Blob([JSON.stringify(WORKS,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='works.json'; a.click();
+}
+/* Paste importer (CSV/TSV/표) */
+function openImporter(){
+  const raw=prompt('표/CSV/탭 구분 텍스트를 붙여넣으세요.\n열 순서: '+FIELDS.join(', '));
+  if(!raw) return;
+  const lines=raw.split(/\r?\n/).filter(x=>x.trim());
+  const rows=lines.map(l=>l.split(/\t|,/));
+  const list=rows.map(c=>{
+    const o=rowTemplate(); FIELDS.forEach((f,i)=>o[f]=c[i]?String(c[i]).trim():''); return o;
+  });
+  const key=$('#sectionSel').value;
+  WORKS[key]=list.slice(0,20);
+  renderTable();
+}
+
+/* ========= Reports ========= */
+function fmBuild(id,kr,en,bodyKr,bodyEn){
+  return `---\nid: ${id}\ntitle_kr: "${kr.replace(/"/g,'\\"')}"\ntitle_en: "${en.replace(/"/g,'\\"')}"\n---\n\n# (KR)\n${bodyKr}\n\n# (EN)\n${bodyEn}\n`;
+}
+function fmParse(text){
+  // very light parser
+  const m = text.match(/^---\s*[\r\n]+([\s\S]*?)---\s*([\s\S]*)$/);
+  let meta={}, rest=text;
+  if(m){ const head=m[1], body=m[2]; rest=body;
+    head.split(/\r?\n/).forEach(line=>{
+      const mm=line.match(/^(\w+):\s*"(.*)"\s*$/) || line.match(/^(\w+):\s*(.*)\s*$/);
+      if(mm) meta[mm[1]]=mm[2];
+    });
+  }
+  const mk = rest.split(/\n# \(EN\)\n/); // split bodies
+  const bodyKr = mk[0].replace(/^# \(KR\)\n/,'');
+  const bodyEn = mk[1]||'';
+  return {meta, bodyKr, bodyEn};
+}
+async function loadReport(){
+  const id=$('#reportId').value;
+  const f=await getFile(`reports/${id}.md`);
+  if(f){
+    const {meta,bodyKr,bodyEn}=fmParse(f.text);
+    $('#rTitleKr').value = meta.title_kr||'';
+    $('#rTitleEn').value = meta.title_en||'';
+    $('#rBodyKr').value = bodyKr.trim();
+    $('#rBodyEn').value = bodyEn.trim();
+    alert(`${id} 불러오기 완료`);
+  }else{
+    $('#rTitleKr').value=''; $('#rTitleEn').value='';
+    $('#rBodyKr').value='';  $('#rBodyEn').value='';
+    alert(`${id} 파일이 없어 새로 작성합니다.`);
+  }
+}
+async function saveReport(){
+  try{
+    const id=$('#reportId').value;
+    const text=fmBuild(id,$('#rTitleKr').value,$('#rTitleEn').value,$('#rBodyKr').value,$('#rBodyEn').value);
+    const f=await getFile(`reports/${id}.md`);
+    await putFile(`reports/${id}.md`,text,f?f.sha:null);
+    alert(`${id} 저장 완료`);
+  }catch(e){ alert(e.message); }
+}
+function openPrint(){
+  const id=$('#reportId').value;
+  window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
+}
+
+/* ========= Cache bust ========= */
+async function bust(){
+  try{
+    const v=Date.now();
+    const f=await getFile('data/cachebust.json'); // allow overwrite
+    await putFile('data/cachebust.json',JSON.stringify({v}),f?f.sha:null);
+    $('#cache').textContent='cache: '+v;
+    alert('캐시 갱신 완료');
+  }catch(e){ alert(e.message) }
+}
+
+/* boot */
+initSettings();
+renderTable();
+</script>
 </body>
 </html>

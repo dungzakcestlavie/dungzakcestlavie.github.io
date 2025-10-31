@@ -1,374 +1,361 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Lightflow Admin Ω.15 — One-File Unified (Artworks+Reports+Index)</title>
-<meta name="theme-color" content="#070c1a" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Admin Ω.Unified</title>
+<meta name="theme-color" content="#070c1a">
 <style>
-:root{
-  --bg:#070c1a;--panel:#0b1020;--soft:#101838;--fg:#e8edf8;
-  --muted:#9fb0ce;--accent:#d4b97a;--ok:#20c997;--bad:#ff6b6b;--warn:#ffaf45;
-  --bd:#1e2744;--r:14px;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Helvetica,Arial}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(7,12,26,.9),rgba(7,12,26,.6));backdrop-filter:blur(6px);border-bottom:1px solid var(--bd)}
-h1{margin:0;padding:14px 16px;font-size:18px;color:var(--accent)}
-main{max-width:980px;margin:0 auto;padding:14px}
-section.card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin:10px 0}
-h2{margin:0 0 8px 0;font-size:16px;color:var(--accent)}
-label{display:block;margin:8px 0 4px 0;color:var(--muted);font-size:13px}
-input,select,textarea{width:100%;background:#0e1530;color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
-textarea{min-height:220px;resize:vertical;white-space:pre-wrap}
-.row{display:grid;gap:10px}
-.row.cols2{grid-template-columns:1fr 1fr}
-.row.cols3{grid-template-columns:1fr 1fr 1fr}
-button{cursor:pointer;font-weight:700;border:none;border-radius:12px;padding:11px 14px}
-.btn{background:#1a2344;color:#cfe0ff;border:1px solid var(--bd)}
-.btn-ok{background:var(--ok);color:#001a12}
-.btn-ghost{background:#0c1738;color:#cfe0ff;border:1px solid var(--bd)}
-.btn-bad{background:var(--bad);color:#1d0000}
-.btn-warn{background:var(--warn);color:#2a1200}
-.small{font-size:12px;color:var(--muted)}
-hr.sep{border:none;border-top:1px dashed var(--bd);margin:12px 0}
-kbd{background:#121b36;border:1px solid var(--bd);border-radius:6px;padding:0 6px;color:#9db4ff}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;border:1px solid var(--bd);background:#0f1836;color:#cfe0ff}
-.grid2{display:grid;gap:10px}
-@media(min-width:880px){ .grid2{grid-template-columns:1fr 1fr} }
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0b122c;border:1px solid var(--bd);color:#eaf4ff;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);display:none}
-.toast.show{display:block;animation:f .2s ease-out}
-@keyframes f{from{opacity:.3;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-.flex{display:flex;gap:8px;flex-wrap:wrap}
-a.inline{color:#bcd3ff;text-decoration:none;border-bottom:1px dotted #3552a8}
-footer{opacity:.7;margin:16px 0 40px 0;font-size:12px}
+:root{--bg:#070c1a;--panel:#0b1326;--line:#1c2745;--fg:#e8e8ea;--mut:#95a1b5;--accent:#e7c36f;--btn:#2a6bff;--bad:#d64545}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 ui-sans-serif,system-ui,Segoe UI,Apple SD Gothic Neo,Apple Color Emoji}
+h1{margin:18px 14px 0;font-size:20px;color:var(--accent)}
+h2{margin:16px 0 8px;font-size:16px;color:var(--accent)}
+.container{padding:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}
+.grid{display:grid;gap:12px}
+@media (min-width:880px){.two{grid-template-columns:1fr 1fr}}
+label{display:block;margin:8px 0 4px;color:var(--mut)}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#0f1b34;color:#fff}
+textarea{min-height:120px}
+button{cursor:pointer;border:0;border-radius:8px;padding:10px 12px;background:var(--btn);color:#fff}
+button.ghost{background:#223355} button.bad{background:var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.small{color:var(--mut);font-size:12px}
+.item{border:1px dashed var(--line);padding:10px;border-radius:8px;margin:10px 0}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center}
+code.inline{background:#0a1226;border:1px solid #1a2442;padding:2px 6px;border-radius:6px}
+hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.badge{padding:2px 8px;border-radius:999px;background:#0f223f;border:1px solid #233c70;color:#9dc0ff;font-size:12px}
 </style>
 </head>
 <body>
-<header><h1>등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Admin Ω.15 — Unified</h1></header>
-<main>
+<h1>등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Admin Ω.Unified</h1>
+<div class="container">
 
-<!-- SETTINGS -->
-<section class="card" id="sec-settings">
+<!-- 1) 연결 -->
+<div class="panel">
   <h2>1) Settings · 연결</h2>
-  <div class="row cols2">
+  <div class="grid two">
     <div>
-      <label>Owner</label>
-      <input id="owner" placeholder="dungzakcestlavie" />
+      <label>Owner</label><input id="owner" placeholder="ex) dungzakcestlavie">
+      <label>Repository</label><input id="repo" placeholder="ex) dungzakcestlavie.github.io">
+      <label>Branch</label><input id="branch" value="main">
     </div>
     <div>
-      <label>Repository</label>
-      <input id="repo" placeholder="dungzakcestlavie.github.io" />
+      <label>Personal Access Token (로컬 저장 전용)</label>
+      <input id="token" type="password" placeholder="ghp_… (fine-grained, contents:read/write)">
+      <div class="row">
+        <button onclick="saveCfg()">저장(로컬)</button>
+        <button class="ghost" onclick="testConn()">연결 테스트</button>
+        <button class="bad" onclick="logout()">로그아웃/토큰삭제</button>
+        <button class="ghost" onclick="openRepo()">GitHub Pages 열기</button>
+      </div>
+      <div id="status" class="small">상태: -</div>
     </div>
   </div>
-  <div class="row cols2">
+  <div class="small">보안: 토큰은 이 브라우저의 <code class="inline">localStorage</code>에만 저장된다.</div>
+</div>
+
+<!-- 2) 작품 아카이브 -->
+<div class="panel">
+  <h2>2) 작품 아카이브 · 5섹션 × 20 = 100</h2>
+  <div class="row">
+    <select id="sectionSel"></select>
+    <button class="ghost" onclick="addWork()">+ 작품 추가</button>
+    <button class="ghost" onclick="importWorks()">JSON 불러오기</button>
+    <button class="ghost" onclick="exportWorks()">JSON 내보내기</button>
+    <span class="badge" id="workCount">0/20</span>
+  </div>
+  <div id="worksWrap"></div>
+  <div class="row">
+    <button onclick="saveWorksLocal()">저장(로컬)</button>
+    <button onclick="pushWorks()">GitHub 반영(works.json + cachebust)</button>
+  </div>
+</div>
+
+<!-- 3) 이미지 업로드 -->
+<div class="panel">
+  <h2>3) 이미지 업로드 · 자동 압축(1600/2560)</h2>
+  <div class="row">
+    <input type="file" id="imgInput" accept="image/*" multiple>
+    <button onclick="uploadImages()">업로드</button>
+    <button class="ghost" onclick="toggleWebP()">JPEG/WebP 전환</button>
+  </div>
+  <div id="imgLog" class="small">표준 1600px(품질 0.85) + 줌 2560px(품질 0.9) 업로드. 파일명은 공백→언더바.</div>
+  <canvas id="canvas" style="display:none"></canvas>
+</div>
+
+<!-- 4) DCAR 01–08 -->
+<div class="panel">
+  <h2>4) 미학 보고서 · Aesthetic Reports (DCAR01–08)</h2>
+  <div class="row">
+    <select id="dcarSel"></select>
+    <button class="ghost" onclick="newDCAR()">초기화</button>
+  </div>
+  <div class="grid two">
     <div>
-      <label>Branch</label>
-      <input id="branch" value="main" />
+      <label>제목(한국어)</label><input id="dcarTitleKR">
+      <label>본문(한국어)</label><textarea id="dcarBodyKR" placeholder="KR 본문"></textarea>
     </div>
     <div>
-      <label>Personal Access Token (PAT) <span class="small">로컬 저장만</span></label>
-      <input id="token" placeholder="ghp_… 혹은 github_pat_…" />
+      <label>Title (English)</label><input id="dcarTitleEN">
+      <label>Body (English)</label><textarea id="dcarBodyEN" placeholder="EN body"></textarea>
     </div>
   </div>
-  <div class="flex" style="margin-top:8px">
-    <button class="btn-ok" id="btnSaveLocal">저장(로컬)</button>
-    <button class="btn" id="btnTest">연결 테스트</button>
-    <button class="btn-ghost" id="btnBust">GitHub Pages 캐시 무효화</button>
-    <button class="btn-bad" id="btnLogout">로그아웃/토큰삭제</button>
+  <div class="row">
+    <button onclick="saveDCARLocal()">저장(로컬)</button>
+    <button onclick="pushDCAR()">GitHub 반영(DCARxx.md + cachebust)</button>
+    <button class="bad" onclick="deleteDCAR()">삭제(로컬만)</button>
   </div>
-  <div class="small" id="connState" style="margin-top:8px">상태: -</div>
-</section>
+</div>
 
-<!-- REPORTS -->
-<section class="card" id="sec-reports">
-  <h2>2) 미학 보고서 · Aesthetic Reports (DCAR01–08)</h2>
+<!-- 5) 도움말 -->
+<div class="panel">
+  <h2>5) 반영 규칙</h2>
+  <ul class="small">
+    <li>작품 데이터 저장: <code class="inline">data/works.json</code> (섹션·작품 배열)</li>
+    <li>DCAR 저장: <code class="inline">reports/DCAR01.md … DCAR08.md</code> (YAML front-matter)</li>
+    <li>이미지: <code class="inline">images/standard/</code>, <code class="inline">images/zoom/</code></li>
+    <li>캐시 무효화: <code class="inline">data/cachebust.json</code>의 <code class="inline">ts</code> 값 갱신</li>
+  </ul>
+</div>
 
-  <div class="row cols3">
-    <div>
-      <label>Report</label>
-      <select id="reportId">
-        <option>DCAR01</option>
-        <option>DCAR02</option>
-        <option>DCAR03</option>
-        <option>DCAR04</option>
-        <option>DCAR05</option>
-        <option>DCAR06</option>
-        <option>DCAR07</option>
-        <option>DCAR08</option>
-      </select>
-    </div>
-    <div>
-      <label>Auto Save</label>
-      <select id="autoMode">
-        <option value="paste">ON (붙여넣기 저장)</option>
-        <option value="off">OFF</option>
-      </select>
-    </div>
-    <div>
-      <label>파일 경로(참고)</label>
-      <input id="reportPath" class="mono" readonly />
-    </div>
-  </div>
-
-  <label>여기에 DCAR 본문(한/영 무제한)을 붙여넣고 <b>Save Paste</b> 클릭</label>
-  <textarea id="reportText" placeholder="등작 燈酌 DUNGZAK CESTLAVIE — DCAR 본문 전체를 여기에 붙여넣으세요. (KR/EN, unlimited)"></textarea>
-
-  <div class="flex" style="margin-top:8px">
-    <button class="btn-warn" id="btnPreview">미리보기(요약)</button>
-    <button class="btn-ok" id="btnSaveReport">붙여넣기 저장 · Save Paste (.md + JSON)</button>
-    <button class="btn-bad" id="btnDeleteReport">보고서 삭제</button>
-    <button class="btn" id="btnReloadTabs">버튼 재생성 · Rebuild Tabs</button>
-  </div>
-
-  <hr class="sep" />
-  <details>
-    <summary class="badge">동작 설명</summary>
-    <div class="small" style="margin-top:6px">
-      • 본문은 <span class="mono">/reports/DCARXX.md</span>로 저장합니다.<br/>
-      • 1,000자 요약 및 메타는 <span class="mono">/data/reports.json</span>에 반영합니다.<br/>
-      • 파일이 이미 있으면 자동으로 SHA를 조회하여 업데이트(409 충돌 방지).<br/>
-      • 삭제는 <span class="mono">DCARXX.md</span>와 <span class="mono">reports.json</span>에서 해당 항목을 제거합니다.<br/>
-      • 모든 요청은 GitHub REST <span class="mono">/repos/:owner/:repo/contents/:path</span> API 사용.
-    </div>
-  </details>
-</section>
-
-<!-- INDEX UTIL -->
-<section class="card">
-  <h2>3) Index/Health</h2>
-  <div class="flex">
-    <button class="btn" id="btnTouchIndex">index.html 저장시간 갱신(Touch)</button>
-    <a class="inline" id="siteLink" target="_blank" href="/">공식 사이트 열기</a>
-  </div>
-</section>
-
-<footer class="small">
-  Owner: <span id="fOwner" class="mono"></span> · Repo: <span id="fRepo" class="mono"></span> · Branch: <span id="fBranch" class="mono"></span><br/>
-  Token은 이 브라우저의 <span class="mono">localStorage</span>에만 저장됩니다.
-</footer>
-
-<div id="toast" class="toast">-</div>
-
-</main>
+</div>
 
 <script>
-/* ========= Core Utilities ========= */
-const $ = (q)=>document.querySelector(q);
-const showToast = (msg)=>{ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2200); };
+/* ========= 기본 데이터 ========= */
+const SECTIONS=[
+ "Light & Memory","Human Prayer","Rebirth","Existence","Cosmos"
+];
+const MAX_PER_SECTION=20;
+const DCAR_IDS=["DCAR01","DCAR02","DCAR03","DCAR04","DCAR05","DCAR06","DCAR07","DCAR08"];
 
-const LSKEY = "lightflow_admin_v15";
-function saveLocal(){
-  const data = {
-    owner: $("#owner").value.trim(),
-    repo: $("#repo").value.trim(),
-    branch: $("#branch").value.trim(),
-    token: $("#token").value.trim()
-  };
-  localStorage.setItem(LSKEY, JSON.stringify(data));
-  $("#fOwner").textContent = data.owner; $("#fRepo").textContent=data.repo; $("#fBranch").textContent=data.branch;
-  showToast("로컬 저장 완료");
+/* ========= 설정 로드/저장 ========= */
+function el(id){return document.getElementById(id)}
+function saveCfg(){
+ localStorage.setItem('cfg_owner',el('owner').value.trim());
+ localStorage.setItem('cfg_repo',el('repo').value.trim());
+ localStorage.setItem('cfg_branch',el('branch').value.trim());
+ localStorage.setItem('cfg_token',el('token').value.trim());
+ setStatus('저장 완료');
 }
-function loadLocal(){
-  const raw = localStorage.getItem(LSKEY);
-  if(!raw) return;
+function loadCfg(){
+ el('owner').value=localStorage.getItem('cfg_owner')||'';
+ el('repo').value=localStorage.getItem('cfg_repo')||'';
+ el('branch').value=localStorage.getItem('cfg_branch')||'main';
+ el('token').value=localStorage.getItem('cfg_token')||'';
+}
+function logout(){localStorage.removeItem('cfg_token');el('token').value='';setStatus('토큰 삭제')}
+function openRepo(){
+ const o=el('owner').value.trim(), r=el('repo').value.trim();
+ if(o&&r) window.open(`https://github.com/${o}/${r}`,'_blank');
+}
+
+/* ========= 상태 ========= */
+function setStatus(t){el('status').textContent='상태: '+t}
+
+/* ========= 연결 테스트 ========= */
+async function testConn(){
+ try{
+  const res=await ghFetch(`repos/${el('owner').value}/${el('repo').value}`);
+  setStatus(res.ok?'연결 성공':'연결 실패');
+ }catch(e){setStatus('오류')}
+}
+
+/* ========= GitHub API 래퍼 ========= */
+function cfg(){return{
+ owner:el('owner').value.trim(),
+ repo:el('repo').value.trim(),
+ branch:el('branch').value.trim(),
+ token:el('token').value.trim()
+}}
+function apiBase(){return 'https://api.github.com/'}
+async function ghFetch(path,opts={}){
+ const {token}=cfg();
+ opts.headers=Object.assign({},opts.headers||{},{
+  'Authorization': 'token '+token,
+  'Accept':'application/vnd.github+json'
+ });
+ return fetch(apiBase()+path,opts);
+}
+async function ghGetContent(path){
+ const {owner,repo}=cfg();
+ const r=await ghFetch(`repos/${owner}/${repo}/contents/${path}`);
+ if(!r.ok) return {sha:null,content:null};
+ const j=await r.json();
+ return {sha:j.sha,content:j.content};
+}
+async function ghPut(path,rawContent,isBinary=false){
+ const {owner,repo,branch}=cfg();
+ // get sha if exists
+ const prev=await ghGetContent(path);
+ const body={
+  message:`update ${path}`,
+  content: isBinary ? rawContent : btoa(unescape(encodeURIComponent(rawContent))),
+  sha: prev.sha||undefined,
+  branch
+ };
+ const r=await ghFetch(`repos/${owner}/${repo}/contents/${path}`,{
+  method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+ });
+ if(!r.ok){throw new Error('PUT 실패 '+path)}
+}
+
+/* ========= 캐시버스트 ========= */
+async function bumpCacheBust(){
+ const ts=Date.now();
+ await ghPut('data/cachebust.json', JSON.stringify({ts},null,2));
+}
+
+/* ========= 작품 데이터 ========= */
+let WORKS = JSON.parse(localStorage.getItem('works_json')||'{}');
+function ensureSection(name){if(!WORKS[name]) WORKS[name]=[]}
+function initSections(){
+ const sel=el('sectionSel'); sel.innerHTML='';
+ SECTIONS.forEach((s,i)=>{const o=document.createElement('option');o.value=s;o.textContent=`${i+1}) ${s}`;sel.appendChild(o)});
+ sel.onchange=renderWorks;
+ if(!WORKS || Object.keys(WORKS).length===0){SECTIONS.forEach(ensureSection)}
+ renderWorks();
+}
+function renderWorks(){
+ const sec=el('sectionSel').value||SECTIONS[0];
+ ensureSection(sec);
+ const arr=WORKS[sec];
+ el('workCount').textContent=`${arr.length}/${MAX_PER_SECTION}`;
+ const wrap=el('worksWrap'); wrap.innerHTML='';
+ arr.forEach((w,i)=>{
+  const div=document.createElement('div'); div.className='item';
+  div.innerHTML=`
+   <div class="kv"><div>제목(KR)</div><input value="${escapeHtml(w.titleKR||'')}" oninput="wUpd('${sec}',${i},'titleKR',this.value)"></div>
+   <div class="kv"><div>Title(EN)</div><input value="${escapeHtml(w.titleEN||'')}" oninput="wUpd('${sec}',${i},'titleEN',this.value)"></div>
+   <div class="kv"><div>재료(KR)</div><input value="${escapeHtml(w.mediumKR||'')}" oninput="wUpd('${sec}',${i},'mediumKR',this.value)"></div>
+   <div class="kv"><div>Medium(EN)</div><input value="${escapeHtml(w.mediumEN||'')}" oninput="wUpd('${sec}',${i},'mediumEN',this.value)"></div>
+   <div class="kv"><div>크기</div><input value="${escapeHtml(w.size||'')}" oninput="wUpd('${sec}',${i},'size',this.value)" placeholder="예: 162.2×130.3cm"></div>
+   <div class="kv"><div>년도</div><input value="${escapeHtml(w.year||'')}" oninput="wUpd('${sec}',${i},'year',this.value)"></div>
+   <div class="kv"><div>이미지</div><input value="${escapeHtml(w.image||'')}" oninput="wUpd('${sec}',${i},'image',this.value)" placeholder="파일명.ext"></div>
+   <div class="row"><button class="bad" onclick="delWork('${sec}',${i})">삭제</button></div>
+  `;
+  wrap.appendChild(div);
+ });
+}
+function escapeHtml(s){return (s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function addWork(){
+ const sec=el('sectionSel').value||SECTIONS[0];
+ ensureSection(sec);
+ if(WORKS[sec].length>=MAX_PER_SECTION){alert('해당 섹션은 20개가 최대');return}
+ WORKS[sec].push({}); renderWorks();
+}
+function delWork(sec,i){WORKS[sec].splice(i,1);renderWorks()}
+function wUpd(sec,i,k,v){WORKS[sec][i][k]=v}
+function saveWorksLocal(){localStorage.setItem('works_json',JSON.stringify(WORKS));setStatus('작품 로컬 저장')}
+function exportWorks(){
+ const blob=new Blob([JSON.stringify(WORKS,null,2)],{type:'application/json'});
+ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='works.json'; a.click();
+}
+function importWorks(){
+ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+ inp.onchange=()=>{const f=inp.files[0]; const fr=new FileReader(); fr.onload=()=>{WORKS=JSON.parse(fr.result); saveWorksLocal(); renderWorks()}; fr.readAsText(f)}
+ inp.click();
+}
+async function pushWorks(){
+ try{
+  await ghPut('data/works.json', JSON.stringify(WORKS,null,2));
+  await bumpCacheBust();
+  setStatus('works.json 업로드 완료 + cachebust 갱신');
+ }catch(e){alert('업로드 실패: '+e.message)}
+}
+
+/* ========= DCAR ========= */
+let DCAR = JSON.parse(localStorage.getItem('dcar_json')||'{}');
+function initDCAR(){
+ const sel=el('dcarSel'); sel.innerHTML='';
+ DCAR_IDS.forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=id;sel.appendChild(o)});
+ sel.onchange=renderDCAR;
+ renderDCAR();
+}
+function newDCAR(){el('dcarTitleKR').value='';el('dcarBodyKR').value='';el('dcarTitleEN').value='';el('dcarBodyEN').value=''}
+function renderDCAR(){
+ const id=el('dcarSel').value||DCAR_IDS[0];
+ const d=DCAR[id]||{};
+ el('dcarTitleKR').value=d.titleKR||'';
+ el('dcarBodyKR').value=d.bodyKR||'';
+ el('dcarTitleEN').value=d.titleEN||'';
+ el('dcarBodyEN').value=d.bodyEN||'';
+}
+function saveDCARLocal(){
+ const id=el('dcarSel').value;
+ DCAR[id]={titleKR:el('dcarTitleKR').value, bodyKR:el('dcarBodyKR').value, titleEN:el('dcarTitleEN').value, bodyEN:el('dcarBodyEN').value};
+ localStorage.setItem('dcar_json',JSON.stringify(DCAR));
+ setStatus('DCAR 로컬 저장');
+}
+function deleteDCAR(){
+ const id=el('dcarSel').value; delete DCAR[id];
+ localStorage.setItem('dcar_json',JSON.stringify(DCAR)); newDCAR(); setStatus('DCAR 로컬 삭제');
+}
+function buildDCARMarkdown(d,id){
+ return `---\nid: ${id}\ntitle_kr: "${(d.titleKR||'').replace(/"/g,'\\"')}"\ntitle_en: "${(d.titleEN||'').replace(/"/g,'\\"')}"\n---\n\n# ${d.titleKR||''}\n\n${d.bodyKR||''}\n\n---\n\n# ${d.titleEN||''}\n\n${d.bodyEN||''}\n`;
+}
+async function pushDCAR(){
+ try{
+  const id=el('dcarSel').value;
+  const d=DCAR[id]||{titleKR:'',titleEN:'',bodyKR:'',bodyEN:''};
+  await ghPut(`reports/${id}.md`, buildDCARMarkdown(d,id));
+  await bumpCacheBust();
+  setStatus(`${id} 업로드 완료 + cachebust 갱신`);
+ }catch(e){alert('DCAR 업로드 실패: '+e.message)}
+}
+
+/* ========= 이미지 업로드 & 압축 ========= */
+let useWebP=false;
+function toggleWebP(){useWebP=!useWebP; el('imgLog').textContent=useWebP?'현재: WebP 업로드':'현재: JPEG 업로드'}
+async function uploadImages(){
+ const files=[...el('imgInput').files]; if(!files.length){alert('파일 선택');return}
+ for(const f of files){
+  const base=f.name.replace(/\s+/g,'_');
   try{
-    const d = JSON.parse(raw);
-    $("#owner").value=d.owner||"";
-    $("#repo").value=d.repo||"";
-    $("#branch").value=d.branch||"main";
-    $("#token").value=d.token||"";
-    $("#fOwner").textContent=d.owner||""; $("#fRepo").textContent=d.repo||""; $("#fBranch").textContent=d.branch||"";
-  }catch(e){}
-}
-
-/* ========= GitHub API ========= */
-function ghBase(){ return `https://api.github.com/repos/${owner()}/${repo()}/contents`; }
-function owner(){ return $("#owner").value.trim(); }
-function repo(){ return $("#repo").value.trim(); }
-function branch(){ return $("#branch").value.trim() || "main"; }
-function token(){ return $("#token").value.trim(); }
-
-async function ghGet(path){
-  const url = `${ghBase()}/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch())}`;
-  const r = await fetch(url,{headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"}});
-  if(r.status===404) return null;
-  if(!r.ok){ throw new Error(`GET ${path} ${r.status}`); }
-  return r.json();
-}
-
-async function ghPut(path, contentText, message){
-  // check existence to get SHA (prevents 409)
-  const cur = await ghGet(path); // may be null
-  const body = {
-    message: message || `update ${path}`,
-    content: btoa(unescape(encodeURIComponent(contentText))),
-    branch: branch()
-  };
-  if(cur && cur.sha) body.sha = cur.sha;
-
-  const url = `${ghBase()}/${encodeURIComponent(path)}`;
-  const r = await fetch(url,{
-    method:"PUT",
-    headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"},
-    body: JSON.stringify(body)
-  });
-  if(!r.ok){
-    const j = await r.json().catch(()=>({}));
-    throw new Error(`PUT ${path} ${r.status}: ${j.message||"error"}`);
-  }
-  return r.json();
-}
-
-async function ghDelete(path, message){
-  const cur = await ghGet(path);
-  if(!cur || !cur.sha) return {skipped:true};
-  const url = `${ghBase()}/${encodeURIComponent(path)}`;
-  const r = await fetch(url,{
-    method:"DELETE",
-    headers:{Authorization:`Bearer ${token()}`,Accept:"application/vnd.github+json"},
-    body: JSON.stringify({message: message||`delete ${path}`, sha: cur.sha, branch: branch()})
-  });
-  if(!r.ok){
-    const j = await r.json().catch(()=>({}));
-    throw new Error(`DELETE ${path} ${r.status}: ${j.message||"error"}`);
-  }
-  return r.json();
-}
-
-/* ========= Helpers for Reports ========= */
-const REPORTS_JSON = "data/reports.json";
-function dcarPath(id){ return `reports/${id}.md`; }
-function nowIso(){ return new Date().toISOString(); }
-function makeSummary(txt){
-  // title: 첫 줄 또는 첫 번째 Markdown 헤딩
-  const lines = (txt||"").split(/\r?\n/);
-  let title = (lines.find(l=>/^#{1,3}\s+/.test(l))||lines[0]||"").replace(/^#{1,3}\s+/,"").trim();
-  title = title||"Untitled";
-  const stripped = (txt||"").replace(/[#>*_\-\[\]\(\)`]/g," ").replace(/\s+/g," ").trim();
-  const summary = stripped.slice(0, 1000);
-  return {title, summary};
-}
-async function loadReportsJson(){
-  const j = await ghGet(REPORTS_JSON);
-  if(!j || !j.content) return {items:[]};
-  try{
-    const raw = decodeURIComponent(escape(atob(j.content)));
-    const obj = JSON.parse(raw);
-    obj._sha = j.sha;
-    return obj;
-  }catch(e){ return {items:[],_sha:j.sha}; }
-}
-function upsertReport(arr, item){
-  const i = arr.findIndex(x=>x.id===item.id);
-  if(i>=0) arr[i]=item; else arr.push(item);
-  return arr;
-}
-function removeReport(arr, id){
-  const i = arr.findIndex(x=>x.id===id);
-  if(i>=0) arr.splice(i,1);
-  return arr;
-}
-
-/* ========= UI Logic ========= */
-function refreshReportPath(){
-  const id = $("#reportId").value;
-  $("#reportPath").value = dcarPath(id);
-}
-
-async function testConnection(){
-  try{
-    const root = await ghGet("README.md"); // just try; may be null
-    $("#connState").textContent = `연결 OK (token 유효) · 브랜치: ${branch()}`;
-    showToast("연결 성공");
+    const std=await resizeImage(f,1600,useWebP? 'image/webp':'image/jpeg',useWebP?0.9:0.85);
+    const zoom=await resizeImage(f,2560,useWebP? 'image/webp':'image/jpeg',useWebP?0.92:0.90);
+    await ghPut(`images/standard/${base.replace(/\.[^.]+$/,'')}${useWebP?'.webp':''}`, std, true);
+    await ghPut(`images/zoom/${base.replace(/\.[^.]+$/,'')}${useWebP?'.webp':''}`, zoom, true);
+    el('imgLog').innerHTML += `<div>업로드 완료: ${base}</div>`;
   }catch(e){
-    $("#connState").textContent = `연결 실패: ${e.message}`;
-    showToast("연결 실패");
+    el('imgLog').innerHTML += `<div style="color:#ff9e9e">실패: ${base} - ${e.message}</div>`;
   }
+ }
+ await bumpCacheBust(); setStatus('이미지 업로드 및 cachebust 완료');
 }
-
-async function saveReport(){
-  const id = $("#reportId").value;
-  const txt = $("#reportText").value.trim();
-  if(!txt){ showToast("본문이 비어있습니다"); return; }
-
-  // 1) .md 저장
-  const mdPath = dcarPath(id);
-  await ghPut(mdPath, txt, `DCAR ${id}: update markdown`);
-
-  // 2) reports.json 업데이트
-  const meta = makeSummary(txt);
-  const json = await loadReportsJson();
-  const updated = {
-    id,
-    title: meta.title,
-    lang: "KR+EN",
-    path: mdPath,
-    updated: nowIso(),
-    summary: meta.summary
+function resizeImage(file,maxW,type,quality){
+ return new Promise((resolve,reject)=>{
+  const img=new Image(); const url=URL.createObjectURL(file);
+  img.onload=()=>{
+   const scale=maxW/img.width; const w=maxW; const h=Math.round(img.height*scale);
+   const c=el('canvas'); c.width=w; c.height=h;
+   const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+   ctx.drawImage(img,0,0,w,h);
+   c.toBlob(async blob=>{
+     try{
+       const arr=await blob.arrayBuffer();
+       const b64=btoa(String.fromCharCode(...new Uint8Array(arr)));
+       resolve(b64);
+     }catch(e){reject(e)}
+   }, type, quality);
   };
-  json.items = upsertReport(json.items||[], updated);
-
-  const out = JSON.stringify({items: json.items}, null, 2);
-  await ghPut(REPORTS_JSON, out, `DCAR ${id}: update reports.json`);
-
-  showToast(`저장 완료: ${id}`);
+  img.onerror=()=>reject(new Error('이미지 로드 실패'));
+  img.src=url;
+ });
 }
 
-async function deleteReport(){
-  const id = $("#reportId").value;
-  // 1) md 삭제
-  await ghDelete(dcarPath(id), `DCAR ${id}: delete markdown`);
-  // 2) json에서 제거
-  const json = await loadReportsJson();
-  json.items = removeReport(json.items||[], id);
-  const out = JSON.stringify({items: json.items}, null, 2);
-  await ghPut(REPORTS_JSON, out, `DCAR ${id}: remove from reports.json`);
-  showToast(`삭제 완료: ${id}`);
+/* ========= 초기화 ========= */
+function init(){
+ loadCfg();
+ // 섹션
+ initSections();
+ // DCAR
+ initDCAR();
 }
+init();
 
-function previewSummary(){
-  const meta = makeSummary($("#reportText").value||"");
-  alert(`제목(추출): ${meta.title}\n요약(1,000자):\n\n${meta.summary}`);
-}
-
-async function touchIndex(){
-  const stamp = `<!-- touch ${nowIso()} -->`;
-  // load index.html, append comment footer to force new SHA
-  const cur = await ghGet("index.html");
-  if(!cur || !cur.content){ showToast("index.html을 불러올 수 없습니다"); return; }
-  const raw = decodeURIComponent(escape(atob(cur.content)));
-  const newText = raw.replace(/\n?<!-- touch .* -->\s*$/,"") + "\n" + stamp + "\n";
-  await ghPut("index.html", newText, "touch index.html (cache bust)");
-  showToast("index.html 갱신");
-}
-
-function bustPages(){
-  // 실제 Pages 캐시 무효화 API는 없음. 쿼리스트링 버전으로 우회.
-  const a = $("#siteLink");
-  a.href = `/?v=${Date.now()}`;
-  showToast("페이지 새로고침 시 새 버전 쿼리 적용");
-}
-
-/* ========= Events ========= */
-$("#btnSaveLocal").onclick = saveLocal;
-$("#btnTest").onclick = testConnection;
-$("#btnBust").onclick = bustPages;
-$("#btnLogout").onclick = ()=>{ localStorage.removeItem(LSKEY); $("#token").value=""; showToast("토큰 삭제(로컬)"); };
-
-$("#reportId").onchange = refreshReportPath;
-$("#btnSaveReport").onclick = saveReport;
-$("#btnDeleteReport").onclick = deleteReport;
-$("#btnPreview").onclick = previewSummary;
-$("#btnReloadTabs").onclick = ()=>showToast("버튼 재생성 완료");
-
-$("#btnTouchIndex").onclick = touchIndex;
-
-/* ========= Init ========= */
-loadLocal();
-refreshReportPath();
-(()=>{ const origin = location.origin||""; $("#siteLink").href = origin+"/"; })();
+/* ========= 유틸 ========= */
 </script>
 </body>
 </html>

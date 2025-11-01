@@ -59,12 +59,28 @@ h2{margin-bottom:12px}
 .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 
-/* reports */
-.accordion{border:1px solid #2a3a78;border-radius:12px;overflow:hidden}
-.accordion-item{border-bottom:1px solid #2a3a78}
-.accordion-header{background:#0f1838;color:var(--gold);padding:14px 16px;cursor:pointer;font-weight:700}
-.accordion-content{display:none;background:#0b1020;padding:12px 16px;color:#cfe0ff}
-.accordion-item.active .accordion-content{display:block}
+/* Reports Ω — card layout */
+.reports-omega{padding:24px 0}
+.reports-omega .r-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.reports-omega h2{margin:0;font-size:clamp(18px,2.4vw,24px);color:var(--gold)}
+.r-tabs{display:flex;gap:8px}
+.r-tab{cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
+.r-tab.is-active{outline:2px solid #6aa3ff;background:#132252}
+.r-grid{display:grid;gap:12px}
+@media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
+.r-card{position:relative;border:1px solid #243169;background:linear-gradient(180deg,#0d1534,#0b1128);border-radius:14px;overflow:hidden}
+.r-card .r-in{padding:14px 14px 12px}
+.r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800;letter-spacing:.2px}
+.r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8}
+.r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
+.r-badge{font-size:11px;border:1px solid #345; padding:2px 7px;border-radius:999px;background:#0c183b;color:#cfe0ff}
+.r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a}
+.r-body{font-size:14px;color:#d6e1ff;opacity:.95}
+.r-actions{display:flex;gap:8px;margin-top:12px}
+.r-actions a,.r-actions button{all:unset;cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
+.r-actions a:hover,.r-actions button:hover{background:#15265a}
+.r-legend{margin-top:10px;color:#a9b7e8;font-size:12px}
 
 /* Lightbox */
 #lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:opacity .25s}
@@ -168,18 +184,20 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
     <div id="panel-cosmos" class="tabpanel"></div>
   </section>
 
-  <!-- Reports -->
-  <section id="reports" style="display:none">
-    <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
-    <div id="dcarAcc" class="accordion">
-      <div class="accordion-item"><div class="accordion-header">DCAR-01-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-02-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-03-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-04-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-05-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-06-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-07-2025</div><div class="accordion-content"></div></div>
-      <div class="accordion-item"><div class="accordion-header">DCAR-08-2025</div><div class="accordion-content"></div></div>
+  <!-- Reports (card layout) -->
+  <section id="reports" class="reports-omega" style="display:none">
+    <div class="r-head">
+      <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
+      <div class="r-tabs" role="tablist" aria-label="Language filter">
+        <button class="r-tab is-active" data-lang="kr" aria-selected="true">KR</button>
+        <button class="r-tab" data-lang="en" aria-selected="false">EN</button>
+        <button class="r-tab" data-lang="both" aria-selected="false">KR+EN</button>
+      </div>
+    </div>
+    <div id="r-grid" class="r-grid" aria-live="polite"></div>
+    <div class="r-legend">
+      <span class="r-badge">MD</span> /reports/DCARxx.md ·
+      <span class="r-badge pdf">PDF</span> 미리보기(인쇄)
     </div>
   </section>
 </main>
@@ -216,14 +234,34 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 </footer>
 
 <script>
+/* ===== helpers ===== */
+const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
+const $=(s,sc)=>(sc||document).querySelector(s);
+
 /* ===== Section & Language ===== */
 (function(){
-  const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
-  function showSection(id){['poem','works','reports'].forEach(x=>{const el=document.getElementById(x);el.style.display=(x===id)?'block':'none'});$$('nav.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id))}
-  $$('nav.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target))); showSection('poem');
-  const ko=document.getElementById('koBtn'), en=document.getElementById('enBtn'), hy=document.getElementById('hyBtn');
-  function setLang(lang){document.body.className='';document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');[ko,en,hy].forEach(b=>b.classList.remove('active'));({ko:ko,en:en,hy:hy}[lang]).classList.add('active');localStorage.setItem('dz_lang',lang)}
-  ko.onclick=()=>setLang('ko'); en.onclick=()=>setLang('en'); hy.onclick=()=>setLang('hy'); setLang(localStorage.getItem('dz_lang')||'ko');
+  function showSection(id){
+    ['poem','works','reports'].forEach(x=>{
+      const el=document.getElementById(x);
+      el.style.display=(x===id)?'block':'none';
+    });
+    $$('nav.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+  }
+  $$('nav.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target)));
+  showSection('poem');
+
+  const ko=$('#koBtn'), en=$('#enBtn'), hy=$('#hyBtn');
+  function setLang(lang){
+    document.body.className='';
+    document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
+    [ko,en,hy].forEach(b=>b.classList.remove('active'));
+    ({ko:ko,en:en,hy:hy}[lang]).classList.add('active');
+    localStorage.setItem('dz_lang',lang);
+    // reports/works 즉시 갱신 트리거
+    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
+  }
+  ko.onclick=()=>setLang('ko'); en.onclick=()=>setLang('en'); hy.onclick=()=>setLang('hy');
+  setLang(localStorage.getItem('dz_lang')||'ko');
 })();
 
 /* ===== Background waves & trail ===== */
@@ -239,7 +277,7 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
     const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
     function frame(now){
       if(!visible){requestAnimationFrame(frame);return}
-      const T=(now/1000)%30,seg=T/30,hue=(seg<.5)?200+(260-200)*(seg/.5):(seg<.75)?260+(45-260)*((seg-.5)/.25):45+(200-45)*((seg-.75)/.25);
+      const T=(now/1000)%30,hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
       waves.clearRect(0,0,innerWidth,innerHeight);
       for(let k=0;k<4;k++){waves.beginPath();for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001);x?waves.lineTo(x,y):waves.moveTo(x,y)}const y0=waveY(0,k,now*0.001);const g=waves.createLinearGradient(0,y0-140,0,y0+140);g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);g.addColorStop(.5,`hsla(45,70%,68%,.30)`);g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);waves.strokeStyle=g;waves.lineWidth=1.1+k*0.45;waves.globalAlpha=0.9-k*0.12;waves.shadowBlur=16;waves.shadowColor='rgba(160,200,255,.18)';waves.stroke()}
       waves.globalAlpha=1;waves.shadowBlur=0; px+=(tx-px)*0.16; py+=(ty-py)*0.16; const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
@@ -253,27 +291,40 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 
 /* ===== Works: works.json → 탭 렌더 + 라이트박스 ===== */
 (async function(){
-  const $=(s,sc)=>(sc||document).querySelector(s); const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
   const CB=await getCB();
   async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json 로드 실패');return r.json()}
   const WORKS=await loadWorks();
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
-  const isKR=()=>!document.body.classList.contains('english'); // korean or hybrid → KR 우선
+  const isKR=()=>!document.body.classList.contains('english');
 
   function cardHTML(w){
-    const title=isKR()?(w.titleKR||w.titleEN||''):(w.titleEN||w.titleKR||'');
-    const meta =isKR()?(w.mediumKR||''):(w.mediumEN||'');
-    const ssrc=`/images/standard/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
-    const zsrc=`/images/zoom/${(w.image||'').replace(/\s+/g,'_')}?cb=${CB}`;
-    const alt=[title,meta,w.size||'',w.year||''].filter(Boolean).join(' · ');
-    return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`
+    const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
+    const meta =isKR()?(w.material_kr||''):(w.material_en||'');
+    const size =isKR()?(w.size_kr||''):(w.size_en||'');
+    const year = w.year||'';
+    const file=(w.image||'').replace(/\s+/g,'_');
+    const ssrc=`/images/standard/${file}?cb=${CB}`;
+    const zsrc=`/images/zoom/${file}?cb=${CB}`;
+    const alt=[title,meta,size,year].filter(Boolean).join(' · ');
+    return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
   }
-  async function renderPanel(panelId,sectionName){
-    const host=document.getElementById(panelId); const items=Array.isArray(WORKS[sectionName])?WORKS[sectionName].slice(0,20):[];
-    host.innerHTML=`<div class="grid">${items.map(cardHTML).join('')}</div>`;
+  async function renderPanel(panelId,sectionKey){
+    const host=document.getElementById(panelId);
+    const list=Array.isArray(WORKS[sectionKey])?WORKS[sectionKey].slice(0,20):[];
+    host.innerHTML=`<div class="grid">${list.map(cardHTML).join('')}</div>`;
+    // lazy
     try{
-      const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target;if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')} img.closest('.card')?.classList.add('visible');io.unobserve(img)}})},{rootMargin:'200px'});
+      const io=new IntersectionObserver(es=>{
+        es.forEach(e=>{
+          if(e.isIntersecting){
+            const img=e.target;
+            if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')}
+            img.closest('.card')?.classList.add('visible');
+            io.unobserve(img);
+          }
+        });
+      },{rootMargin:'200px'});
       $$(`#${panelId} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
@@ -288,50 +339,146 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   }
   await renderAll();
 
-  // 언어 전환 시 캡션 즉시 갱신
-  ['koBtn','enBtn','hyBtn'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',()=>{renderAll()},{passive:true});
-  });
+  // 언어 전환 시 갱신
+  document.addEventListener('dz-lang-change',renderAll);
 
   // 탭 동작
-  (function initTabs(){
-    $$('.tabs .tab').forEach(b=>{
-      b.addEventListener('click',()=>{
-        $$('.tabs .tab').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-        $$('.tabpanel').forEach(p=>p.classList.remove('active')); const key=b.dataset.panel; document.getElementById('panel-'+key)?.classList.add('active');
-        window.scrollTo({top:document.getElementById('works').offsetTop-70,behavior:'smooth'});
-      });
+  $$('.tabs .tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      $$('.tabpanel').forEach(p=>p.classList.remove('active'));
+      const key=b.dataset.panel;
+      document.getElementById('panel-'+key)?.classList.add('active');
+      window.scrollTo({top:document.getElementById('works').offsetTop-70,behavior:'smooth'});
     });
-  })();
+  });
 
   // 라이트박스
   (function attachLightbox(){
     const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prevBtn=$('#lbPrev'),nextBtn=$('#lbNext'),closeBtn=$('#lbClose');
-    let list=[],idx=0,zoom=1,ox=0,oy=0,dragging=false,sx=0,sy=0;
-    function collect(activePanel){list=Array.from(activePanel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z)}
+    let list=[],idx=0,zoom=1,ox=0,oy=0,drag=false,sx=0,sy=0;
+    function collect(panel){list=Array.from(panel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z)}
     function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
     function close(){lb.classList.remove('on');lb.setAttribute('aria-hidden','true')}
     function prev(){openAt(idx-1)} function next(){openAt(idx+1)}
     function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`;img.style.cursor=zoom>1?'grab':'zoom-in'}
-    document.addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const activePanel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');collect(activePanel);const cards=Array.from(activePanel.querySelectorAll('.card'));openAt(Math.max(0,cards.indexOf(card)))});
-    prevBtn.addEventListener('click',prev); nextBtn.addEventListener('click',next); closeBtn.addEventListener('click',close); lb.addEventListener('click',e=>{if(e.target===lb) close()});
+    document.addEventListener('click',e=>{
+      const card=e.target.closest('.card'); if(!card) return;
+      const panel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');
+      const cards=Array.from(panel.querySelectorAll('.card')); collect(panel);
+      openAt(Math.max(0,cards.indexOf(card)));
+    });
+    prevBtn.addEventListener('click',prev); nextBtn.addEventListener('click',next); closeBtn.addEventListener('click',close); $('#lightbox').addEventListener('click',e=>{if(e.target===lb) close()});
     lb.addEventListener('wheel',e=>{if(!lb.classList.contains('on'))return;e.preventDefault();const d=e.deltaY>0?0.9:1.1;const pz=zoom;zoom=Math.min(5,Math.max(1,zoom*d));if(zoom===1){ox=oy=0}else{const r=img.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2-ox;const cy=e.clientY-r.top-r.height/2-oy;ox-=cx*(zoom/pz-1);oy-=cy*(zoom/pz-1)}apply()},{passive:false});
-    img.addEventListener('mousedown',e=>{if(zoom===1)return;dragging=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'}); window.addEventListener('mousemove',e=>{if(!dragging)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()}); window.addEventListener('mouseup',()=>{dragging=false;if(zoom>1)img.style.cursor='grab'});
-    window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')prev();else if(e.key==='ArrowRight')next();else if(e.key==='+'||(e.key==='='&&e.shiftKey)){zoom=Math.min(zoom*1.25,5);apply()}else if(e.key==='-'){zoom=Math.max(zoom/1.25,1);if(zoom===1){ox=oy=0}apply()}});
+    img.addEventListener('mousedown',e=>{if(zoom===1)return;drag=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'}); 
+    window.addEventListener('mousemove',e=>{if(!drag)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()}); 
+    window.addEventListener('mouseup',()=>{drag=false;if(zoom>1)img.style.cursor='grab'});
+    window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')prev();else if(e.key==='ArrowRight')next();else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()}else if(e.key==='-'){zoom=Math.max(zoom/1.25,1);if(zoom===1){ox=oy=0}apply()}});
   })();
 })();
 
-/* ===== Reports: DCAR01–08 md → 아코디언 ===== */
+/* ===== Reports Ω: /reports/DCARxx.md → 카드 렌더 ===== */
 (async function(){
-  const acc=document.getElementById('dcarAcc'); if(!acc) return;
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.ts||Date.now()}catch{return Date.now()}}
-  const CB=await getCB();
+  const root=document.getElementById('reports'); if(!root) return;
+  const grid=document.getElementById('r-grid');
+  const tabs=$$('.r-tab');
   const ids=["DCAR01","DCAR02","DCAR03","DCAR04","DCAR05","DCAR06","DCAR07","DCAR08"];
-  function mdToHTML(md){md=md.replace(/^---[\s\S]*?---/,'');return md.replace(/^# (.*)$/gim,'<h3>$1</h3>').replace(/^## (.*)$/gim,'<h4>$1</h4>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\*(.*?)\*/g,'<i>$1</i>').replace(/\n/g,'<br>')}
-  async function loadOne(id){const r=await fetch(`/reports/${id}.md?cb=${CB}`,{cache:'no-store'});if(!r.ok) return null;return r.text()}
-  const items=acc.querySelectorAll('.accordion-item');
-  await Promise.all(ids.map(async(id,i)=>{const md=await loadOne(id);if(!md)return;const html=mdToHTML(md);const item=items[i];if(item){const content=item.querySelector('.accordion-content');if(content)content.innerHTML=html}}));
-  acc.querySelectorAll('.accordion-header').forEach(h=>{const item=h.parentElement;h.addEventListener('click',()=>item.classList.toggle('active'))});
+
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
+  const CB=await getCB();
+
+  function stripFM(md){return md.replace(/^---[\s\S]*?---\s*/,'')}
+  function parseTitle(md,key){
+    const head=md.match(/^---\s*([\s\S]*?)---/); if(!head) return '';
+    const line=head[1].split(/\r?\n/).find(l=>l.startsWith(key+':'));
+    if(!line) return '';
+    const m=line.match(/:\s*"(.*)"\s*$/) || line.match(/:\s*(.*)\s*$/);
+    return (m?m[1]:'').trim();
+  }
+  function excerpt(html,limit=260){
+    const t=html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    return t.length>limit? t.slice(0,limit)+'…' : t;
+  }
+  function md2html(md){
+    md=stripFM(md);
+    return md
+      .replace(/^#\s*\(KR\)\s*$/gim,'<h3>KR</h3>')
+      .replace(/^#\s*\(EN\)\s*$/gim,'<h3>EN</h3>')
+      .replace(/^###\s+(.*)$/gim,'<h4>$1</h4>')
+      .replace(/^##\s+(.*)$/gim,'<h3>$1</h3>')
+      .replace(/^#\s+(.*)$/gim,'<h2>$1</h2>')
+      .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
+      .replace(/\*(.*?)\*/g,'<i>$1</i>')
+      .replace(/\n/g,'<br>');
+  }
+
+  async function fetchOne(id){
+    const r=await fetch(`/reports/${id}.md?cb=${CB}`,{cache:'no-store'});
+    if(!r.ok) return null;
+    const md=await r.text();
+    return {
+      id,
+      titleKR: parseTitle(md,'title_kr') || id,
+      titleEN: parseTitle(md,'title_en') || id,
+      html: md2html(md)
+    };
+  }
+
+  const reports=(await Promise.all(ids.map(fetchOne))).filter(Boolean);
+
+  function renderCards(mode){
+    grid.innerHTML = reports.map((r,i)=>{
+      const link=`/reports/print-preview.html?file=${r.id}.md`;
+      const bodyKR = excerpt(r.html.split(/<h3>EN<\/h3>/i)[0]||r.html);
+      const bodyEN = excerpt((r.html.split(/<h3>EN<\/h3>/i)[1]||r.html));
+      const title = mode==='en' ? r.titleEN : mode==='kr' ? r.titleKR : `${r.titleKR} · ${r.titleEN}`;
+      const body  = mode==='en' ? bodyEN : mode==='kr' ? bodyKR : `<div class="ko">${bodyKR}</div><hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0"><div class="en">${bodyEN}</div>`;
+      return `
+      <article class="r-card">
+        <div class="r-in">
+          <div class="r-meta">
+            <span class="r-badge">DCAR-${String(i+1).padStart(2,'0')}-2025</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">${title}</h3>
+          <p class="r-sub">/reports/${r.id}.md</p>
+          <div class="r-body">${body}</div>
+          <div class="r-actions">
+            <a href="${link}" target="_blank" rel="noopener">미리보기·인쇄</a>
+            <button data-open="${r.id}">전체 보기</button>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  // 초기 렌더 + 탭
+  let mode='kr'; renderCards(mode);
+  tabs.forEach(t=>{
+    t.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('is-active'));
+      t.classList.add('is-active');
+      mode=t.dataset.lang; renderCards(mode);
+    });
+  });
+
+  // 전체 보기(모달 대신 새창)
+  grid.addEventListener('click',e=>{
+    const id=e.target.getAttribute('data-open');
+    if(!id) return;
+    const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
+    if(w) w.focus();
+  });
+
+  // 언어 토글시 제목/본문 재렌더
+  document.addEventListener('dz-lang-change',()=>{
+    const b=document.body;
+    mode = b.classList.contains('english') ? 'en' : b.classList.contains('hybrid') ? 'both' : 'kr';
+    tabs.forEach(x=>x.classList.remove('is-active'));
+    $(`.r-tab[data-lang="${mode}"]`)?.classList.add('is-active');
+    renderCards(mode);
+  });
 })();
 
 /* ===== Prayer Resonance (audio) ===== */
@@ -343,7 +490,7 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   function createIR(len=1.8,decay=2.8){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}}return buf}
   function drawFFT(){if(!analyser){rafId=requestAnimationFrame(drawFFT);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++){avg+=Math.abs(arr[i]-128)}avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(drawFFT)}
   async function start(){if(on)return;await ensureAC();const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.010);const pan=ac.createStereoPanner();let panPhase=0;const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);const lfo1=O('sine',7.83),lfo2=O('sine',5.0);const lpg=G(0.08),lpg2=G(0.06);lfo1.connect(lpg).connect(base.gain);lfo2.connect(lpg2).connect(base.gain);const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;lp.Q.value=0.8;const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=120;bp.Q.value=0.7;const conv=ac.createConvolver();conv.buffer=createIR();const wet=G(0.25),dry=G(0.85);low.connect(base).connect(bp).connect(lp);low2.connect(mid).connect(bp);floor.connect(sub).connect(bp);ch1.connect(shim).connect(lp);ch2.connect(shim).connect(lp);lp.connect(dry).connect(pan).connect(ac.destination);lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);bp.connect(dry).connect(pan);bp.connect(wet).connect(conv);analyser=ac.createAnalyser();analyser.fftSize=512;pan.connect(analyser);[low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());[base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value;try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime);g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});(function panLoop(){if(!ac||!pan)return;panPhase+=0.012;try{pan.pan.value=Math.sin(panPhase)*0.35}catch{} if(on)requestAnimationFrame(panLoop)})();(function filterBreath(){if(!ac)return;try{lp.frequency.setTargetAtTime(700+Math.sin(ac.currentTime*0.3)*250,ac.currentTime,0.3)}catch{} if(on)setTimeout(filterBreath,160)})();nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};on=true;btn.disabled=true;stop.disabled=false;drawFFT()}
-  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim}=nodes;const t=ac.currentTime;[base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8)}catch{}});setTimeout(()=>{[low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>{try{o.stop()}catch{}})},1900);on=false;btn.disabled=false;stop.disabled=true;cancelAnimationFrame(rafId);bar.style.width='0px'}
+  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim}=nodes;const t=ac.currentTime;[base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8)}catch{}});setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1900);on=false;btn.disabled=false;stop.disabled=true;cancelAnimationFrame(rafId);bar.style.width='0px'}
   const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock);window.removeEventListener('click',unlock)}
   window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true}); btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
   document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});

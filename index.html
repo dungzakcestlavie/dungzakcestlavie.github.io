@@ -776,5 +776,43 @@ const $=(q,sc)=>(sc||document).querySelector(q);
   });
 })();
 </script>
+
+<!-- Artist Bio & Exhibition Toggle Script -->
+<script>
+/* 언어 토글 버튼 연결 (ID가 반드시 존재해야 함: kr-btn, en-btn) */
+const bioKR = document.getElementById("bio-kr");
+const bioEN = document.getElementById("bio-en");
+const btnKR = document.getElementById("kr-btn");
+const btnEN = document.getElementById("en-btn");
+
+if(btnKR){
+btnKR.onclick = () => {
+  bioKR.style.display = "block";
+  bioEN.style.display = "none";
+};
+}
+
+if(btnEN){
+btnEN.onclick = () => {
+  bioKR.style.display = "none";
+  bioEN.style.display = "block";
+};
+}
+
+/* 전시 펼침 토글 (ID: exhibition-toggle, exhibition-full) */
+const exBtn = document.getElementById("exhibition-toggle");
+const exList = document.getElementById("exhibition-full");
+
+if(exBtn){
+exBtn.onclick = () => {
+  const isClosed = exList.style.display === "none" || exList.style.display === "";
+  exList.style.display = isClosed ? "block" : "none";
+  exBtn.innerText = isClosed
+    ? "DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▲"
+    : "DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▼";
+};
+}
+</script>
+
 </body>
 </html>

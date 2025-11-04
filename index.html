@@ -9,13 +9,13 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
 
 <style>
 :root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
+body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
 .en,.ko{display:inherit}
 body.korean .en{display:none}
 body.english .ko{display:none}
@@ -200,7 +200,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <div id="panel-cosmos" class="tabpanel"></div>
   </section>
 
-  <!-- REPORTS (collapsed by default) -->
+  <!-- REPORTS -->
   <section id="reports" style="display:none">
     <h2 class="ko">미학 보고서 (DCAR Series)</h2>
     <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -233,14 +233,14 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
       <button class="bio-close" aria-label="Close">✕</button>
     </div>
 
-    <!-- one-line summary -->
-    <button class="expo-kicker" id="expoToggle">
+    <!-- one-line summary (KR/EN 동기화) -->
+    <button class="expo-kicker" id="expoToggle" aria-expanded="false">
       <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 28회 ▾</span>
       <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
     </button>
 
     <!-- slide list -->
-    <div class="slide-wrap" id="expoSlide">
+    <div class="slide-wrap" id="expoSlide" data-open="false">
       <!-- Korean exhibition list -->
       <div class="bio-body ko">
         <p><strong>국내 주요전시</strong></p>
@@ -280,47 +280,47 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>《예술, 그 끝없는 사랑》(2024)</p>
       </div>
 
-      <!-- English exhibition list -->
+      <!-- English exhibition list (Republic of Korea 표기) -->
       <div class="bio-body en">
         <p><strong>Major Exhibitions in Korea</strong></p>
-        <p>2025 Gugu Gallery Mokdong, Seoul</p>
-        <p>2023, 2024 Gugu Gallery Mokdong, Seoul</p>
-        <p>2023 Art Plus Gallery, Insadong, Seoul</p>
-        <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul</p>
-        <p>2015 NC Gallery, Busan</p>
-        <p>2014 Gallery Golmok, Itaewon, Seoul</p>
-        <p>2013 Promise Land, Busan</p>
-        <p>2009 Art Gallery You, Busan</p>
-        <p>2005 Hoengseong Cultural Center</p>
-        <p>2003 Space Kitchen, Seoul</p>
-        <p>2003 Seasonal Outdoor Exhibition, Hongdae, Seoul</p>
-        <p>2000 Gallery Soho, Busan</p>
-        <p>2000 Sewon Department Store, Busan</p>
+        <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
+        <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
+        <p>2023 Art Plus Gallery Insadong, Seoul, Republic of Korea</p>
+        <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Republic of Korea</p>
+        <p>2015 NC Gallery, Busan, Republic of Korea</p>
+        <p>2014 Gallery Golmok, Itaewon, Seoul, Republic of Korea</p>
+        <p>2013 Promise Land, Busan, Republic of Korea</p>
+        <p>2009 Art Gallery You, Busan, Republic of Korea</p>
+        <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
+        <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
+        <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+        <p>2000 Gallery Soho, Busan, Republic of Korea</p>
+        <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
         <br><p><strong>Major International Exhibitions</strong></p>
         <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
-        <p>2015 Moscow International Airport — “The Distance Between Life and Art”</p>
-        <p>2014 Improvised Performance & Exhibition, Ho Chi Minh City Police Dept</p>
+        <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
+        <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
         <p>2011 Open Art in Amsterdam, Netherlands</p>
-        <p>2006 Linka Gallery, Amsterdam</p>
-        <p>2005 Lune Cafe, Montparnasse, Paris</p>
-        <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris</p>
+        <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
+        <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
+        <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
         <br><p><strong>Selected Other Exhibitions</strong></p>
-        <p>2025 Walking with Art in Iksan</p>
-        <p>2025 Gallery 5 National Invitational Exhibition, Incheon</p>
-        <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul</p>
-        <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul</p>
-        <p>2004 Gwangju Biennale “The Stage”</p>
-        <p>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun</p>
-        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Busan</p>
+        <p>2025 Walking with Art in Iksan, Republic of Korea</p>
+        <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
+        <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Republic of Korea</p>
+        <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul, Republic of Korea</p>
+        <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
+        <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
+        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
         <br><p><strong>Collections</strong></p>
-        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral; Sciences Po Paris; National Medical Institute Warsaw; Tokyo Church; Ho Chi Minh Police HQ; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); numerous private collections.</p>
+        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department; Van Gogh Museum (Portfolio), Amsterdam; MoMA, New York (Portfolio); numerous private collections.</p>
         <br><p><strong>Publications</strong></p>
         <p><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
         <p><em>Art, the Endless Love</em> (2024)</p>
       </div>
     </div>
 
-    <!-- Bio main text -->
+    <!-- Bio main text (KR: ‘등작 燈酌 DUNGZAK CESTLAVIE’ / EN: ‘DUNGZAK CESTLAVIE’) -->
     <div class="bio-body">
       <div class="ko">
         <p><strong>작가 소개</strong></p>
@@ -342,21 +342,21 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
   </div>
 </div>
 
-<!-- Lightbox & Sound controls (필수) -->
+<!-- Lightbox & Sound controls -->
 <div id="lightbox" aria-hidden="true">
   <div class="lb-stage">
     <img id="lbImg" alt="Artwork view">
     <div class="lb-caption" id="lbCap"></div>
-    <button class="lb-arrow lb-prev" id="lbPrev">◀</button>
-    <button class="lb-arrow lb-next" id="lbNext">▶</button>
+    <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">◀</button>
+    <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">▶</button>
   </div>
-  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
   <div class="lb-meta" id="lbMeta"></div>
 </div>
 <div id="fftBar"><span></span></div>
 <div id="ctrl">
-  <button class="ctrlbtn" id="soundBtn">✨</button>
-  <button class="ctrlbtn" id="soundStopBtn" disabled>🔇</button>
+  <button class="ctrlbtn" id="soundBtn" aria-label="Play ambient">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" aria-label="Stop ambient" disabled>🔇</button>
 </div>
 
 <footer>
@@ -371,13 +371,13 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
   <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
 </footer>
 
-<!-- ===================== SCRIPTS ===================== -->
+<!-- ===================== SCRIPTS (3/3) ===================== -->
 <script>
-/* helpers */
+/* short helpers */
 const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
 const $=(q,sc)=>(sc||document).querySelector(q);
 
-/* site language */
+/* site language: KR / EN / KR+EN */
 (function(){
   const body=document.body, koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
   function setSiteLang(lang){ // 'ko'|'en'|'hy'
@@ -388,13 +388,13 @@ const $=(q,sc)=>(sc||document).querySelector(q);
     localStorage.setItem('dz_site_lang',lang);
     document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
   }
-  koBtn&&(koBtn.onclick=()=>setSiteLang('ko'));
-  enBtn&&(enBtn.onclick=()=>setSiteLang('en'));
-  hyBtn&&(hyBtn.onclick=()=>setSiteLang('hy'));
+  koBtn?.addEventListener('click',()=>setSiteLang('ko'));
+  enBtn?.addEventListener('click',()=>setSiteLang('en'));
+  hyBtn?.addEventListener('click',()=>setSiteLang('hy'));
   setSiteLang(localStorage.getItem('dz_site_lang')||'ko');
 })();
 
-/* primary nav */
+/* primary nav show/hide */
 (function(){
   const sections=['poem','works','reports'];
   function show(id){
@@ -403,42 +403,61 @@ const $=(q,sc)=>(sc||document).querySelector(q);
       if(el) el.style.display=(s===id)?'block':'none';
     });
     $$('nav.primary button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
-    if(id==='works'){ const w=$('#works'); if(w) window.scrollTo({top:w.offsetTop-70,behavior:'smooth'}); }
   }
   $$('nav.primary button[data-target]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
   show('poem');
   $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO?.open());
 })();
 
-/* background waves & trail (compact) */
+/* background waves & trail (compact & safe) */
 (function(){
   try{
-    const wctx=$('#waves')?.getContext('2d',{alpha:true});
-    const tctx=$('#trail')?.getContext('2d',{alpha:true});
+    const waves=$('#waves'), trail=$('#trail');
+    const wctx=waves?.getContext('2d',{alpha:true});
+    const tctx=trail?.getContext('2d',{alpha:true});
     if(!wctx||!tctx) return;
     let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
     const ease=x=>x*x*(3-2*x);
-    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));[wctx,tctx].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR);c.canvas.height=Math.floor(innerHeight*DPR);c.setTransform(1,0,0,1,0,0);c.scale(1/DPR,1/DPR)})}
-    function waveY(x,k,t){const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
+    function resize(){
+      DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
+      [wctx,tctx].forEach(c=>{
+        c.canvas.width=Math.floor(innerWidth*DPR);
+        c.canvas.height=Math.floor(innerHeight*DPR);
+        c.setTransform(1,0,0,1,0,0); c.scale(1/DPR,1/DPR);
+      });
+    }
+    function waveY(x,k,t){
+      const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8;
+      const dr=t*(0.75+k*0.15);
+      const base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12;
+      const curve=0.9+ease(x/innerWidth)*0.2;
+      return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2;
+    }
     function frame(now){
       if(!visible){requestAnimationFrame(frame);return}
-      const T=(now/1000)%30,hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
+      const T=(now/1000)%30;
+      const hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
       wctx.clearRect(0,0,innerWidth,innerHeight);
       for(let k=0;k<4;k++){
         wctx.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001);x?wctx.lineTo(x,y):wctx.moveTo(x,y)}
+        for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001); x?wctx.lineTo(x,y):wctx.moveTo(x,y)}
         const y0=waveY(0,k,now*0.001),g=wctx.createLinearGradient(0,y0-140,0,y0+140);
-        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`); g.addColorStop(.5,`hsla(45,70%,68%,.30)`); g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
-        wctx.strokeStyle=g; wctx.lineWidth=1.1+k*0.45; wctx.globalAlpha=0.9-k*0.12; wctx.shadowBlur=16; wctx.shadowColor='rgba(160,200,255,.18)'; wctx.stroke();
+        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);
+        g.addColorStop(.5,`hsla(45,70%,68%,.30)`);
+        g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
+        wctx.strokeStyle=g; wctx.lineWidth=1.1+k*0.45; wctx.globalAlpha=0.9-k*0.12;
+        wctx.shadowBlur=16; wctx.shadowColor='rgba(160,200,255,.18)'; wctx.stroke();
       }
       wctx.globalAlpha=1; wctx.shadowBlur=0;
       px+=(tx-px)*0.16; py+=(ty-py)*0.16;
       const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
       tctx.fillStyle='rgba(0,0,0,.12)'; tctx.fillRect(0,0,innerWidth,innerHeight);
       const grad=tctx.createRadialGradient(px,py,0,px,py,r);
-      grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`); grad.addColorStop(.55,'rgba(140,185,255,.14)'); grad.addColorStop(1,'rgba(140,185,255,0)');
+      grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);
+      grad.addColorStop(.55,'rgba(140,185,255,.14)');
+      grad.addColorStop(1,'rgba(140,185,255,0)');
       tctx.fillStyle=grad; tctx.beginPath(); tctx.arc(px,py,r,0,Math.PI*2); tctx.fill();
-      requestAnimationFrame(frame)
+      requestAnimationFrame(frame);
     }
     resize(); addEventListener('resize',resize,{passive:true});
     document.addEventListener('visibilitychange',()=>visible=!document.hidden);
@@ -448,7 +467,7 @@ const $=(q,sc)=>(sc||document).querySelector(q);
   }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* Artist Bio modal (버그 수정 포함) */
+/* Artist Bio modal (KR/EN 확실한 병기 + 상태 유지) */
 window.DZ_BIO=(function(){
   const modal=$('#bio-modal');
   const closeBtn=modal?.querySelector('.bio-close');
@@ -458,13 +477,16 @@ window.DZ_BIO=(function(){
   const headKo=modal?.querySelector('.bio-head .ko');
   const headEn=modal?.querySelector('.bio-head .en');
 
-  function setBioLang(code){ // 'kr' | 'en'
+  function setBioLang(code){ // 'kr'|'en'
     if(headKo) headKo.style.display=(code==='kr')?'block':'none';
     if(headEn) headEn.style.display=(code==='en')?'block':'none';
-    /* 핵심 수정: 컨테이너 자체가 .ko/.en 인 블록을 토글 */
     $$('.bio-body.ko',modal).forEach(n=>n.style.display=(code==='kr')?'block':'none');
     $$('.bio-body.en',modal).forEach(n=>n.style.display=(code==='en')?'block':'none');
-    langBtns.forEach(b=>{const on=(b.dataset.bioLang===code); b.classList.toggle('active',on); b.setAttribute('aria-pressed',on?'true':'false')});
+    langBtns.forEach(b=>{
+      const on=(b.dataset.bioLang===code);
+      b.classList.toggle('active',on);
+      b.setAttribute('aria-pressed',on?'true':'false');
+    });
     localStorage.setItem('dz_bio_lang',code);
   }
   function setExpoOpen(open){
@@ -495,13 +517,24 @@ window.DZ_BIO=(function(){
   return {open,close,setBioLang,setExpoOpen};
 })();
 
-/* Works loader (5×20) */
+/* Works loader (5×20) — /data/works.json 필요 */
 (async function(){
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
   const panels={pray:$('#panel-pray'),human:$('#panel-human'),rebirth:$('#panel-rebirth'),exist:$('#panel-exist'),cosmos:$('#panel-cosmos')};
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
+  async function getCB(){
+    try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});
+      const j=await r.json(); return j.v||j.ts||Date.now();
+    }catch{return Date.now()}
+  }
   const CB=await getCB();
-  async function loadWorks(){try{const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw 0;return r.json()}catch{return {[MAP.pray]:[],[MAP.human]:[],[MAP.rebirth]:[],[MAP.exist]:[],[MAP.cosmos]:[]}}}
+  async function loadWorks(){
+    try{
+      const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});
+      if(!r.ok) throw 0; return r.json();
+    }catch{
+      return {[MAP.pray]:[],[MAP.human]:[],[MAP.rebirth]:[],[MAP.exist]:[],[MAP.cosmos]:[]}
+    }
+  }
   const WORKS=await loadWorks();
   const isKR=()=>!document.body.classList.contains('english');
   function cardHTML(w){
@@ -516,12 +549,25 @@ window.DZ_BIO=(function(){
   async function renderPanel(host,key){
     if(!host) return;
     const list=Array.isArray(WORKS[key])?WORKS[key].slice(0,20):[];
-    if(!list.length){host.innerHTML=`<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">No works yet. Upload /data/works.json and images.</article></div>`;return}
+    if(!list.length){
+      host.innerHTML=`<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">No works yet. Upload /data/works.json and images.</article></div>`;
+      return;
+    }
     host.innerHTML=`<div class="grid">${list.map(cardHTML).join('')}</div>`;
     try{
-      const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target;if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')}img.closest('.card')?.classList.add('visible');io.unobserve(img)}})},{rootMargin:'200px'});
+      const io=new IntersectionObserver(es=>{
+        es.forEach(e=>{
+          if(e.isIntersecting){
+            const img=e.target;
+            if(img.dataset.src){img.src=img.dataset.src; img.removeAttribute('data-src')}
+            img.closest('.card')?.classList.add('visible'); io.unobserve(img);
+          }
+        });
+      },{rootMargin:'200px'});
       $$(`#${host.id} img[loading][data-src]`).forEach(i=>io.observe(i));
-    }catch{}
+    }catch{
+      $$(`#${host.id} img[loading][data-src]`).forEach(i=>{i.src=i.dataset.src; i.removeAttribute('data-src'); i.closest('.card')?.classList.add('visible')});
+    }
   }
   async function renderAll(){
     await Promise.all([
@@ -574,91 +620,45 @@ window.DZ_BIO=(function(){
     if(!lb.classList.contains('on')) return; e.preventDefault();
     const d=e.deltaY>0?0.9:1.1, pz=zoom; zoom=Math.min(5,Math.max(1,zoom*d));
     if(zoom===1){ox=oy=0}else{
-      const r=img.getBoundingClientRect(); const cx=e.clientX-r.left-r.width/2-ox; const cy=e.clientY-r.top-r.height/2-oy;
+      const r=img.getBoundingClientRect();
+      const cx=e.clientX-r.left-r.width/2-ox; const cy=e.clientY-r.top-r.height/2-oy;
       ox-=cx*(zoom/pz-1); oy-=cy*(zoom/pz-1);
     } apply();
   },{passive:false});
   img.addEventListener('mousedown',e=>{if(zoom===1)return; drag=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing'});
   window.addEventListener('mousemove',e=>{if(!drag)return; ox=e.clientX-sx; oy=e.clientY-sy; apply()});
   window.addEventListener('mouseup',()=>{drag=false; if(zoom>1) img.style.cursor='grab'});
-  window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return; if(e.key==='Escape')hide(); else if(e.key==='ArrowLeft')openAt(idx-1); else if(e.key==='ArrowRight')openAt(idx+1); else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()} else if(e.key==='-'){zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply()}});
+  window.addEventListener('keydown',e=>{
+    if(!lb.classList.contains('on'))return;
+    if(e.key==='Escape')hide();
+    else if(e.key==='ArrowLeft')openAt(idx-1);
+    else if(e.key==='ArrowRight')openAt(idx+1);
+    else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()}
+    else if(e.key==='-'){zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply()}
+  });
 })();
 
-/* Reports: collapsed → open + filter + single-line title */
-(function(){
-  const wrap=$('.reports-omega'); const grid=$('#reportGrid'); const toggle=$('#reportsToggle');
-  if(!wrap||!grid||!toggle) return;
-  wrap.classList.add('is-collapsed');
-
-  // demo data (필요시 서버/MD로 교체)
-  const items=Array.from({length:12},(_,i)=>({
-    id:`DCAR${String(i+1).padStart(2,'0')}`,
-    title_kr:`DCAR-${String(i+1).padStart(2,'0')} — (KR) 제목 예시`,
-    title_en:`DCAR-${String(i+1).padStart(2,'0')} — (EN) Sample Title`,
-    snippet_kr:`(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.`,
-    snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`,
-    cat:(i%3===0?'theory':i%3===1?'archive':'practice')
-  }));
-
-  function render(cat){
-    const list=(cat==='all')?items:items.filter(x=>x.cat===cat);
-    grid.innerHTML=list.map((r,idx)=>`
-      <article class="r-card">
-        <div class="r-in">
-          <div class="r-meta">
-            <span class="r-badge">DCAR-${String(idx+1).padStart(2,'0')}-2025</span>
-            <span class="r-badge pdf">PDF</span>
-          </div>
-          <h3 class="r-title">${r.title_kr} · ${r.title_en}</h3>
-          <p class="r-sub">/reports/${r.id}.md</p>
-          <div class="r-body">
-            <div class="ko">${r.snippet_kr}</div>
-            <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-            <div class="en">${r.snippet_en}</div>
-          </div>
-          <div class="r-actions">
-            <a href="/reports/print-preview.html?file=${r.id}.md" target="_blank" rel="noopener">미리보기·인쇄 / Print</a>
-            <button data-open="${r.id}">전체 보기 / Open</button>
-          </div>
-        </div>
-      </article>
-    `).join('');
-  }
-  render('all');
-
-  $$('.r-tab').forEach(t=>{
-    t.addEventListener('click',()=>{
-      $$('.r-tab').forEach(x=>x.classList.remove('is-active'));
-      t.classList.add('is-active'); render(t.dataset.r);
-    });
-  });
-
-  grid.addEventListener('click',e=>{
-    const id=e.target.getAttribute('data-open'); if(!id) return;
-    const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank'); if(w) w.focus();
-  });
-
-  function setOpen(open){
-    wrap.classList.toggle('is-collapsed',!open);
-    toggle.setAttribute('aria-expanded',open?'true':'false');
-    toggle.textContent=open?'Close Reports':'Open Reports';
-  }
-  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
-})();
-
-/* Ambient sound */
+/* Ambient sound (WebAudio safe) */
 (function(){
   const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
   if(!btn||!stopBtn||!bar) return;
   let ac=null,nodes=null,on=false,analyser=null,rafId=null;
-  async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})} if(ac.state==='suspended') await ac.resume(); return ac}
-  function G(v){const g=ac.createGain();g.gain.value=v;return g}
-  function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
-  function ir(len=1.6,decay=2.6){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}return buf}
-  function draw(){if(!analyser){rafId=requestAnimationFrame(draw);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++)avg+=Math.abs(arr[i]-128);avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(draw)}
+  async function ensureAC(){ if(!ac){const C=window.AudioContext||window.webkitAudioContext; ac=new C({latencyHint:'interactive'})}
+    if(ac.state==='suspended') try{await ac.resume()}catch{}; return ac;
+  }
+  function G(v){const g=ac.createGain(); g.gain.value=v; return g}
+  function O(t,f){const o=ac.createOscillator(); o.type=t; o.frequency.value=f; return o}
+  function ir(len=1.6,decay=2.6){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);
+    for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)} return buf;
+  }
+  function draw(){ if(!analyser){rafId=requestAnimationFrame(draw);return}
+    const arr=new Uint8Array(analyser.frequencyBinCount); analyser.getByteTimeDomainData(arr);
+    let avg=0; for(let i=0;i<arr.length;i++) avg+=Math.abs(arr[i]-128); avg/=arr.length;
+    bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px'; rafId=requestAnimationFrame(draw);
+  }
   async function start(){
     if(on) return; await ensureAC();
-    const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.012),pan=ac.createStereoPanner();let ph=0;
+    const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.012),pan=ac.createStereoPanner(); let ph=0;
     const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);
     const lfo1=O('sine',7.7),lfo2=O('sine',5.2),lpg=G(0.08),lpg2=G(0.06); lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
     const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=880; lp.Q.value=0.8;
@@ -668,22 +668,23 @@ window.DZ_BIO=(function(){
     lp.connect(dry).connect(pan).connect(ac.destination); lp.connect(wet).connect(conv).connect(pan).connect(ac.destination); bp.connect(dry).connect(pan); bp.connect(wet).connect(conv);
     analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
     [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}} );
-    (function panLoop(){if(!ac||!pan)return; ph+=0.012; try{pan.pan.value=Math.sin(ph)*0.35}catch{} if(on) requestAnimationFrame(panLoop)})();
-    (function breath(){if(!ac)return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160)})();
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
+    (function panLoop(){ if(!ac||!pan) return; ph+=0.012; try{pan.pan.value=Math.sin(ph)*0.35}catch{} if(on) requestAnimationFrame(panLoop)})();
+    (function breath(){ if(!ac) return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160)})();
     nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stopBtn.disabled=false; draw();
   }
   function stop(){
     if(!on||!nodes||!ac) return;
     const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes, t=ac.currentTime;
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0); g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
     setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1700);
     on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px';
   }
   const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock)}
-  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
+  window.addEventListener('touchend',unlock,{once:true});
+  window.addEventListener('click',unlock,{once:true});
   btn.addEventListener('click',start); stopBtn.addEventListener('click',stop);
-  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
+  document.addEventListener('visibilitychange',async()=>{ if(!ac) return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}} });
 })();
 </script>
 </body>

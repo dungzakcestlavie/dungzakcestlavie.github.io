@@ -10,13 +10,23 @@
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+
 <style>
 :root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
-.en,.ko{display:inherit} body.korean .en{display:none} body.english .ko{display:none} body.hybrid .ko,body.hybrid .en{display:inherit}
-#waves,#trail{position:fixed;inset:0;pointer-events:none} #waves{z-index:0;opacity:.48} #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
+.en,.ko{display:inherit}
+body.korean .en{display:none}
+body.english .ko{display:none}
+body.hybrid .ko,body.hybrid .en{display:inherit}
+
+/* canvases */
+#waves,#trail{position:fixed;inset:0;pointer-events:none}
+#waves{z-index:0;opacity:.48}
+#trail{z-index:1;opacity:.70;mix-blend-mode:screen}
+
+/* header */
 header{position:sticky;top:0;z-index:5;padding:10px 12px;background:linear-gradient(180deg,rgba(9,14,30,.9),rgba(9,14,30,.7));border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
 .brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(18px,5vw,24px)}
 nav.primary{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
@@ -25,36 +35,62 @@ nav.primary button:hover,nav.primary button.active{background:linear-gradient(18
 .lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
 .lang button{all:unset;cursor:pointer;border:1px solid #2a335f;border-radius:10px;padding:6px 12px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
-main{position:relative;z-index:2} section{max-width:var(--max);margin:auto;padding:72px 16px}
-h1,h2{color:var(--gold)} h2{margin-bottom:12px} .sub{color:var(--muted)}
-.hero{text-align:center;min-height:68vh} .hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
+
+/* layout */
+main{position:relative;z-index:2}
+section{max-width:var(--max);margin:auto;padding:72px 16px}
+h1,h2{color:var(--gold)}
+h2{margin-bottom:12px}
+.sub{color:var(--muted)}
+.hero{text-align:center;min-height:68vh}
+.hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
+
+/* poem */
 .poemwrap{max-width:860px;margin:18px auto 0;text-align:left;background:rgba(16,22,48,.35);border:1px solid #223;border-radius:12px;padding:14px}
 .poem p{margin:8px 0}
+
+/* works */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
 .tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
-.tabpanel{display:none;animation:fade .28s ease} .tabpanel.active{display:block}
+.tabpanel{display:none;animation:fade .28s ease}
+.tabpanel.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)} @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .55s,transform .55s,box-shadow .6s}
-.card.visible{opacity:1;transform:translateY(0)} .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
+.card.visible{opacity:1;transform:translateY(0)}
+.card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-/* Reports */
+
+/* reports (cards + collapsed bar) */
 .reports-omega{padding:24px 0}
 .reports-omega .r-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .r-tabs{display:flex;gap:8px}
 .r-tab{cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
 .r-tab.is-active{outline:2px solid #6aa3ff;background:#132252}
-.r-grid{display:grid;gap:12px} @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}} @media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
+.r-grid{display:grid;gap:12px}
+@media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
 .r-card{position:relative;border:1px solid #243169;background:linear-gradient(180deg,#0d1534,#0b1128);border-radius:14px;overflow:hidden}
-.r-card .r-in{padding:14px 14px 12px} .r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800}
-.r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8} .r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
+.r-card .r-in{padding:14px 14px 12px}
+.r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8}
+.r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
 .r-badge{font-size:11px;border:1px solid #345;padding:2px 7px;border-radius:999px;background:#0c183b;color:#cfe0ff}
-.r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a} .r-body{font-size:14px;color:#d6e1ff;opacity:.95}
+.r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a}
+.r-body{font-size:14px;color:#d6e1ff;opacity:.95;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .r-actions{display:flex;gap:8px;margin-top:12px}
 .r-actions a,.r-actions button{all:unset;cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
 .r-actions a:hover,.r-actions button:hover{background:#15265a}
-/* Lightbox */
+
+/* collapsed bar */
+.reports-omega.is-collapsed .r-grid{display:none}
+.reports-omega.is-collapsed .r-head{border:1px solid #243169;border-radius:12px;padding:8px 10px;background:linear-gradient(180deg,#0d1534,#0b1128)}
+.r-toggle{all:unset;cursor:pointer;font-weight:800;padding:6px 10px;border:1px solid #2a366b;border-radius:10px;background:#0e1840;color:#dfe7ff}
+.r-toggle:hover{background:#15265a}
+
+/* lightbox */
 #lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:opacity .25s}
 #lightbox.on{opacity:1;pointer-events:auto}
 .lb-stage{position:relative;max-width:96vw;max-height:90vh;overflow:hidden;border:2px solid var(--gold);border-radius:12px;background:#000}
@@ -62,21 +98,26 @@ h1,h2{color:var(--gold)} h2{margin-bottom:12px} .sub{color:var(--muted)}
 .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
 .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
 .lb-arrow:hover{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
-.lb-prev{left:-60px}.lb-next{right:-60px} @media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
+.lb-prev{left:-60px}.lb-next{right:-60px}
+@media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
 .lb-close{position:absolute;top:-56px;right:0;width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;cursor:pointer}
 .lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
-/* Footer & controls */
+
+/* footer & sound controls */
 footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 96px}
 .links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-.links a{color:#cfe0ff;text-decoration:none} .links a:hover{color:#cbe0ff}
+.links a{color:#cfe0ff;text-decoration:none}
+.links a:hover{color:#cbe0ff}
 small{display:block;margin-top:6px;color:#9fb0d8}
 #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:8}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18)}
 .ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
 #fftBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden}
 #fftBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9}
-/* Bio Modal */
-#bio-modal[hidden]{display:none} #bio-modal{position:fixed;inset:0;z-index:9999}
+
+/* bio modal */
+#bio-modal[hidden]{display:none}
+#bio-modal{position:fixed;inset:0;z-index:9999}
 .bio-backdrop{position:absolute;inset:0;background:rgba(6,10,24,.62);backdrop-filter:saturate(1.1) blur(6px)}
 .bio-card{position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.2);border-radius:16px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.5)}
 .bio-head{display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.90))}
@@ -94,6 +135,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
 @media(max-width:480px){.bio-card{width:94vw;max-height:86vh}}
 </style>
 </head>
+
 <body class="korean">
 <canvas id="waves" aria-hidden="true"></canvas>
 <canvas id="trail" aria-hidden="true"></canvas>
@@ -143,7 +185,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
 
   <!-- WORKS -->
   <section id="works" style="display:none">
-    <h2>Artworks — 작품 아카이브</h2>
+    <h2 class="ko">작품 아카이브</h2><h2 class="en">Artworks</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
       <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
       <button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
@@ -158,136 +200,128 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <div id="panel-cosmos" class="tabpanel"></div>
   </section>
 
-<!-- ✅ ARTIST BIO MODAL -->
+  <!-- REPORTS (collapsed by default) -->
+  <section id="reports" style="display:none">
+    <h2 class="ko">미학 보고서 (DCAR Series)</h2>
+    <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+    <div class="reports-omega">
+      <div class="r-head">
+        <div class="r-tabs">
+          <button class="r-tab is-active" data-r="all">All</button>
+          <button class="r-tab" data-r="theory">Theory</button>
+          <button class="r-tab" data-r="archive">Archive</button>
+          <button class="r-tab" data-r="practice">Practice</button>
+        </div>
+        <button class="r-toggle" id="reportsToggle" aria-expanded="false">Open Reports</button>
+      </div>
+      <div class="r-grid" id="reportGrid"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ARTIST BIO MODAL -->
 <div id="bio-modal" hidden>
   <div class="bio-backdrop"></div>
-  <div class="bio-card">
-
+  <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title">
     <div class="bio-head">
-      <h2 class="ko">작가 소개</h2>
+      <h2 id="bio-title" class="ko">작가 소개</h2>
       <h2 class="en">Artist Bio</h2>
-
       <div class="bio-lang">
-        <button class="lang active" data-bio-lang="kr">KR</button>
-        <button class="lang" data-bio-lang="en">EN</button>
+        <button class="lang active" data-bio-lang="kr" aria-pressed="true">KR</button>
+        <button class="lang" data-bio-lang="en" aria-pressed="false">EN</button>
       </div>
-      <button class="bio-close">✕</button>
+      <button class="bio-close" aria-label="Close">✕</button>
     </div>
 
-    <!-- ✅ 전시 한줄 -->
+    <!-- one-line summary -->
     <button class="expo-kicker" id="expoToggle">
       <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 28회 ▾</span>
       <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
     </button>
 
-    <!-- ✅ 전시 전체 슬라이드 -->
+    <!-- slide list -->
     <div class="slide-wrap" id="expoSlide">
-
-      <!-- Korean Exhibition List -->
-      <div class="ko bio-body">
+      <!-- Korean exhibition list -->
+      <div class="bio-body ko">
         <p><strong>국내 주요전시</strong></p>
-        <p>2025 구구갤러리 목동, 서울, 대한민국</p>
-        <p>2023, 2024 구구갤러리 목동, 서울, 대한민국</p>
-        <p>2023 아트플러스 갤러리 인사동, 서울, 대한민국</p>
-        <p>2019, 2022 해양 에너지 정원 한남동, 서울, 대한민국</p>
-        <p>2015 NC 갤러리 부산, 대한민국</p>
-        <p>2014 갤러리 골목 이태원, 서울, 대한민국</p>
-        <p>2013 프라미스 랜드 부산, 대한민국</p>
-        <p>2009 아트 갤러리 유 부산, 대한민국</p>
-        <p>2005 횡성 문화관 강원도, 대한민국</p>
-        <p>2003 스페이스 키친 서울, 대한민국</p>
-        <p>2003 홍대 놀이터 사계 야외 전시, 서울, 대한민국</p>
-        <p>2000 갤러리 소호 부산, 대한민국</p>
-        <p>2000 세원백화점 부산, 대한민국</p>
-
+        <p>2025 구구갤러리 목동, 서울</p>
+        <p>2023, 2024 구구갤러리 목동, 서울</p>
+        <p>2023 아트플러스 갤러리 인사동, 서울</p>
+        <p>2019, 2022 해양 에너지 정원 한남동, 서울</p>
+        <p>2015 NC 갤러리, 부산</p>
+        <p>2014 갤러리 골목, 이태원</p>
+        <p>2013 프라미스 랜드, 부산</p>
+        <p>2009 아트 갤러리 유, 부산</p>
+        <p>2005 횡성 문화관</p>
+        <p>2003 스페이스 키친, 서울</p>
+        <p>2003 홍대 놀이터 사계 야외 전시, 서울</p>
+        <p>2000 갤러리 소호, 부산</p>
+        <p>2000 세원백화점, 부산</p>
         <br><p><strong>국외 주요전시</strong></p>
-        <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
-        <p>2015 러시아 모스크바 국제공항 『삶과 예술의 간격』</p>
-        <p>2014 호찌민시 중앙 경찰서 즉흥 퍼포먼스 전시</p>
+        <p>2016 Berlin Mitte Live Concert Bar, 베를린</p>
+        <p>2015 모스크바 국제공항 『삶과 예술의 간격』</p>
+        <p>2014 호찌민 중앙 경찰서 즉흥 퍼포먼스</p>
         <p>2011 Open Art in Amsterdam, 네덜란드</p>
-        <p>2006 Linka 갤러리, 암스테르담, 네덜란드</p>
-        <p>2005 Lune Cafe 몽파르나스, 파리, 프랑스</p>
-        <p>2005 루브르 박물관 외벽 전시, 파리, 프랑스</p>
-
+        <p>2006 Linka Gallery, 암스테르담</p>
+        <p>2005 Lune Cafe, 몽파르나스, 파리</p>
+        <p>2005 루브르 박물관 외벽 전시, 파리</p>
         <br><p><strong>그 외 전시</strong></p>
-        <p>2025 그림따라 걷는 도시 익산, 대한민국</p>
-        <p>2025 갤러리5 전국 작가 초대전 인천, 대한민국</p>
-        <p>2024, 2025 구구갤러리 송년 선물전, 서울, 대한민국</p>
-        <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울, 대한민국</p>
-        <p>2004 광주비엔날레 『The Stage』, 광주, 대한민국</p>
-        <p>2004 하대리 숲속 미술제 『예술의 휴가』, 횡성군, 대한민국</p>
-        <p>2000 호세 델가도·등작 2인전, 부산, 대한민국</p>
-
-        <br><p><strong>소장처</strong></p>
-        <p>독일 베를린 시청 / 독일 훔볼트 병원</p>
-        <p>프랑스 파리 노트르담 대성당 / 파리 정치대학</p>
-        <p>폴란드 바르샤바 국립 의료원</p>
-        <p>일본 도쿄 교회</p>
-        <p>베트남 호찌민시 중앙 경찰서</p>
-        <p>네덜란드 반 고흐 미술관 (Portfolio)</p>
-        <p>미국 뉴욕 MoMA (Portfolio)</p>
-        <p>국내외 개인 소장자 다수</p>
-
+        <p>2025 그림따라 걷는 도시, 익산</p>
+        <p>2025 갤러리5 전국 초대전, 인천</p>
+        <p>2024, 2025 구구갤러리 송년 선물전, 서울</p>
+        <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울</p>
+        <p>2004 광주비엔날레 “The Stage”</p>
+        <p>2004 하대리 숲속 미술제 “예술의 휴가”</p>
+        <p>2000 José Delgado·등작 2인전, 부산</p>
+        <br><p><strong>소장</strong></p>
+        <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 반 고흐 미술관(Portfolio) / MoMA(Portfolio) / 개인 소장 다수</p>
         <br><p><strong>저서</strong></p>
-        <p>《눈물은 절대 멈추지 않는다》 (2022)</p>
-        <p>《예술, 그 끝없는 사랑》 (2024)</p>
+        <p>《눈물은 절대 멈추지 않는다》(2022)</p>
+        <p>《예술, 그 끝없는 사랑》(2024)</p>
       </div>
 
-      <!-- English Exhibition List -->
-      <div class="en bio-body">
+      <!-- English exhibition list -->
+      <div class="bio-body en">
         <p><strong>Major Exhibitions in Korea</strong></p>
-        <p>2025 Gugu Gallery Mokdong, Seoul, Korea</p>
-        <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Korea</p>
-        <p>2023 Art Plus Gallery, Insadong, Seoul, Korea</p>
-        <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Korea</p>
-        <p>2015 NC Gallery, Busan, Korea</p>
-        <p>2014 Gallery Golmok, Itaewon, Seoul, Korea</p>
-        <p>2013 Promise Land, Busan, Korea</p>
-        <p>2009 Art Gallery You, Busan, Korea</p>
-        <p>2005 Hoengseong Cultural Center, Korea</p>
-        <p>2003 Space Kitchen, Seoul, Korea</p>
-        <p>2003 Seasonal Outdoor Street Exhibition, Hongdae, Korea</p>
-        <p>2000 Gallery Soho, Busan, Korea</p>
-        <p>2000 Sewon Department Store, Busan, Korea</p>
-
+        <p>2025 Gugu Gallery Mokdong, Seoul</p>
+        <p>2023, 2024 Gugu Gallery Mokdong, Seoul</p>
+        <p>2023 Art Plus Gallery, Insadong, Seoul</p>
+        <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul</p>
+        <p>2015 NC Gallery, Busan</p>
+        <p>2014 Gallery Golmok, Itaewon, Seoul</p>
+        <p>2013 Promise Land, Busan</p>
+        <p>2009 Art Gallery You, Busan</p>
+        <p>2005 Hoengseong Cultural Center</p>
+        <p>2003 Space Kitchen, Seoul</p>
+        <p>2003 Seasonal Outdoor Exhibition, Hongdae, Seoul</p>
+        <p>2000 Gallery Soho, Busan</p>
+        <p>2000 Sewon Department Store, Busan</p>
         <br><p><strong>Major International Exhibitions</strong></p>
-        <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
-        <p>2015 Moscow International Airport — “The Distance Between Life and Art”, Russia</p>
-        <p>2014 Improvised Performance & Exhibition, Ho Chi Minh City Police Dept, Vietnam</p>
-        <p>2011 Open Art in Amsterdam, Netherlands</p>
-        <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
-        <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
-        <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
-
+        <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
+        <p>2015 Moscow International Airport — “The Distance Between Life and Art”</p>
+        <p>2014 Improvised Performance & Exhibition, Ho Chi Minh City Police Dept</p>
+        <p>2011 Open Art in Amsterdam, Netherlands</p>
+        <p>2006 Linka Gallery, Amsterdam</p>
+        <p>2005 Lune Cafe, Montparnasse, Paris</p>
+        <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris</p>
         <br><p><strong>Selected Other Exhibitions</strong></p>
-        <p>2025 Walking with Art in Iksan, Korea</p>
-        <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Korea</p>
-        <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Korea</p>
-        <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul</p>
-        <p>2004 Gwangju Biennale “The Stage”, Korea</p>
-        <p>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun, Korea</p>
-        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Busan, Korea</p>
-
+        <p>2025 Walking with Art in Iksan</p>
+        <p>2025 Gallery 5 National Invitational Exhibition, Incheon</p>
+        <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul</p>
+        <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul</p>
+        <p>2004 Gwangju Biennale “The Stage”</p>
+        <p>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun</p>
+        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Busan</p>
         <br><p><strong>Collections</strong></p>
-        <p>Berlin City Hall / Humboldt Hospital, Germany</p>
-        <p>Notre-Dame Cathedral / Sciences Po, Paris</p>
-        <p>National Medical Institute, Warsaw</p>
-        <p>Tokyo Church, Japan</p>
-        <p>Ho Chi Minh City Police Dept, Vietnam</p>
-        <p>Van Gogh Museum, Amsterdam (Portfolio)</p>
-        <p>Museum of Modern Art, New York (Portfolio)</p>
-        <p>Private collectors worldwide</p>
-
+        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral; Sciences Po Paris; National Medical Institute Warsaw; Tokyo Church; Ho Chi Minh Police HQ; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); numerous private collections.</p>
         <br><p><strong>Publications</strong></p>
-        <p>Tears Never Stop — The Artist’s Duty and Human Desire (2022)</p>
-        <p>Art, the Endless Love (2024)</p>
+        <p><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
+        <p><em>Art, the Endless Love</em> (2024)</p>
       </div>
     </div>
 
-    <br>
-    <!-- ✅ Bio Main Text -->
+    <!-- Bio main text -->
     <div class="bio-body">
-
       <div class="ko">
         <p><strong>작가 소개</strong></p>
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 빛과 기억, 존재의 근원을 탐구하는 한국 현대 예술가다.</p>
@@ -296,48 +330,57 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>그의 회화는 기도문이자 기록이며, 흔적과 여백을 통해 감정의 근원을 되살린다.</p>
         <p>그의 예술 세계는 상처 이후에 남는 따스함, 사라지지 않는 기억의 힘, 인간 존엄의 조용한 선언이다.</p>
       </div>
-
       <div class="en">
         <p><strong>Artist Bio</strong></p>
         <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being.</p>
         <p>His practice documents emotional traces, the genesis of light passing through wounds, and cycles of disappearance and rebirth.</p>
         <p>Based in Seoul, he has worked across Berlin, Paris, Amsterdam, Warsaw, and Moscow, integrating painting, text, sound, video, and archival structures to explore an “ethics of light” and “dignity of memory.”</p>
         <p>His paintings act as prayers and records, rebuilding the foundations of feeling through traces and silence.</p>
-        <p>His world offers warmness after wounding, the persistence of memory, and the quiet dignity of the human spirit.</p>
+        <p>His world offers warmth after wounding, the persistence of memory, and the quiet dignity of the human spirit.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ✅ REPORTS SECTION -->
-<section id="reports" style="display:none">
-  <h2 class="ko">미학 보고서 (DCAR Series)</h2>
-  <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
-
-  <div class="reports-omega">
-    <div class="r-head">
-      <div class="r-tabs">
-        <button class="r-tab is-active" data-r="all">All</button>
-        <button class="r-tab" data-r="theory">Theory</button>
-        <button class="r-tab" data-r="archive">Archive</button>
-        <button class="r-tab" data-r="practice">Practice</button>
-      </div>
-    </div>
-    <div class="r-grid" id="reportGrid"></div>
+<!-- Lightbox & Sound controls (필수) -->
+<div id="lightbox" aria-hidden="true">
+  <div class="lb-stage">
+    <img id="lbImg" alt="Artwork view">
+    <div class="lb-caption" id="lbCap"></div>
+    <button class="lb-arrow lb-prev" id="lbPrev">◀</button>
+    <button class="lb-arrow lb-next" id="lbNext">▶</button>
   </div>
-</section>
+  <button class="lb-close" id="lbClose">✕</button>
+  <div class="lb-meta" id="lbMeta"></div>
+</div>
+<div id="fftBar"><span></span></div>
+<div id="ctrl">
+  <button class="ctrlbtn" id="soundBtn">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" disabled>🔇</button>
+</div>
 
-<!-- ===================== PART 3 / 3 — SCRIPTS ===================== -->
+<footer>
+  <div class="links">
+    <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
+    <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">YouTube</a>
+    <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">Naver Info</a>
+    <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
+  </div>
+  <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
+  <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
+</footer>
+
+<!-- ===================== SCRIPTS ===================== -->
 <script>
-/* ---------- helpers ---------- */
-window.$$ = window.$$ || ((q, sc)=>Array.from((sc||document).querySelectorAll(q)));
-window.$  = window.$  || ((q, sc)=>(sc||document).querySelector(q));
+/* helpers */
+const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
+const $=(q,sc)=>(sc||document).querySelector(q);
 
-/* ---------- site language (KR / EN / HY) ---------- */
+/* site language */
 (function(){
-  const body = document.body;
-  const koBtn = $('#koBtn'), enBtn = $('#enBtn'), hyBtn = $('#hyBtn');
-  function setSiteLang(lang){ // 'ko' | 'en' | 'hy'
+  const body=document.body, koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
+  function setSiteLang(lang){ // 'ko'|'en'|'hy'
     body.classList.remove('korean','english','hybrid');
     body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
     [koBtn,enBtn,hyBtn].forEach(b=>b&&b.classList.remove('active'));
@@ -345,289 +388,221 @@ window.$  = window.$  || ((q, sc)=>(sc||document).querySelector(q));
     localStorage.setItem('dz_site_lang',lang);
     document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
   }
-  koBtn && (koBtn.onclick = ()=>setSiteLang('ko'));
-  enBtn && (enBtn.onclick = ()=>setSiteLang('en'));
-  hyBtn && (hyBtn.onclick = ()=>setSiteLang('hy'));
-  setSiteLang(localStorage.getItem('dz_site_lang') || 'ko');
+  koBtn&&(koBtn.onclick=()=>setSiteLang('ko'));
+  enBtn&&(enBtn.onclick=()=>setSiteLang('en'));
+  hyBtn&&(hyBtn.onclick=()=>setSiteLang('hy'));
+  setSiteLang(localStorage.getItem('dz_site_lang')||'ko');
 })();
 
-/* ---------- primary nav (Poem / Works / Reports / Artist Bio) ---------- */
+/* primary nav */
 (function(){
-  const sections = ['poem','works','reports'];
+  const sections=['poem','works','reports'];
   function show(id){
     sections.forEach(s=>{
-      const el = document.getElementById(s);
-      if(el) el.style.display = (s===id)?'block':'none';
+      const el=document.getElementById(s);
+      if(el) el.style.display=(s===id)?'block':'none';
     });
-    $$('nav.primary button[data-target]').forEach(b=>{
-      b.classList.toggle('active', b.dataset.target===id);
-    });
-    if(id==='works'){
-      // scroll into view (offset header)
-      const w = $('#works');
-      if(w) window.scrollTo({top:w.offsetTop-70, behavior:'smooth'});
-    }
+    $$('nav.primary button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+    if(id==='works'){ const w=$('#works'); if(w) window.scrollTo({top:w.offsetTop-70,behavior:'smooth'}); }
   }
-  $$('nav.primary button[data-target]').forEach(b=>{
-    b.addEventListener('click',()=>show(b.dataset.target));
-  });
-  show('poem'); // default
-  // Artist Bio opens modal
+  $$('nav.primary button[data-target]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
+  show('poem');
   $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO?.open());
 })();
 
-/* ---------- Artist Bio modal & exhibitions toggle (BUGFIXED) ---------- */
-window.DZ_BIO = (function(){
-  const modal = $('#bio-modal');
-  const closeBtn = modal?.querySelector('.bio-close');
-  const langBtns = modal? $$('.bio-lang .lang', modal): [];
-  const expoToggle = $('#expoToggle');
-  const expoSlide = $('#expoSlide');
-  const headKo = modal?.querySelector('.bio-head .ko');
-  const headEn = modal?.querySelector('.bio-head .en');
-
-  function setBioLang(code){ // 'kr' | 'en'
-    // header title
-    if(headKo) headKo.style.display = (code==='kr')?'block':'none';
-    if(headEn) headEn.style.display = (code==='en')?'block':'none';
-    // body blocks
-    $$('.bio-body .ko', modal).forEach(n => n.style.display = (code==='kr')?'block':'none');
-    $$('.bio-body .en', modal).forEach(n => n.style.display = (code==='en')?'block':'none');
-    // buttons
-    langBtns.forEach(b=>{
-      const on = (b.dataset.bioLang === code);
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on?'true':'false');
-    });
-    // one-line summary text stays bilingual; no swap needed
-    localStorage.setItem('dz_bio_lang', code);
-  }
-
-  function setExpoOpen(open){
-    if(!expoSlide || !expoToggle) return;
-    expoSlide.setAttribute('data-open', open?'true':'false');
-    expoToggle.setAttribute('aria-expanded', open?'true':'false');
-  }
-
-  function open(){
-    if(!modal) return;
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    // prefer saved bio-lang; else mirror site lang
-    const site = document.body.classList.contains('english') ? 'en' : 'kr';
-    setBioLang(localStorage.getItem('dz_bio_lang') || site);
-    setExpoOpen(false);
-  }
-  function close(){
-    if(!modal) return;
-    modal.hidden = true;
-    document.body.style.overflow = '';
-  }
-
-  // wire
-  closeBtn?.addEventListener('click', close);
-  modal?.querySelector('.bio-backdrop')?.addEventListener('click', close);
-  langBtns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
-  expoToggle?.addEventListener('click',()=>{
-    const open = expoToggle.getAttribute('aria-expanded') !== 'true';
-    setExpoOpen(open);
-  });
-  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal && !modal.hidden) close(); });
-
-  // sync with site language changes (only on first open if no manual choice)
-  document.addEventListener('dz-lang-change',ev=>{
-    const pref = localStorage.getItem('dz_bio_lang');
-    if(!pref){ // if user hasn't pressed KR/EN in bio explicitly, mirror site
-      setBioLang(ev.detail==='en'?'en':'kr');
+/* background waves & trail (compact) */
+(function(){
+  try{
+    const wctx=$('#waves')?.getContext('2d',{alpha:true});
+    const tctx=$('#trail')?.getContext('2d',{alpha:true});
+    if(!wctx||!tctx) return;
+    let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
+    const ease=x=>x*x*(3-2*x);
+    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));[wctx,tctx].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR);c.canvas.height=Math.floor(innerHeight*DPR);c.setTransform(1,0,0,1,0,0);c.scale(1/DPR,1/DPR)})}
+    function waveY(x,k,t){const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
+    function frame(now){
+      if(!visible){requestAnimationFrame(frame);return}
+      const T=(now/1000)%30,hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
+      wctx.clearRect(0,0,innerWidth,innerHeight);
+      for(let k=0;k<4;k++){
+        wctx.beginPath();
+        for(let x=0;x<=innerWidth;x+=6){const y=waveY(x,k,now*0.001);x?wctx.lineTo(x,y):wctx.moveTo(x,y)}
+        const y0=waveY(0,k,now*0.001),g=wctx.createLinearGradient(0,y0-140,0,y0+140);
+        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`); g.addColorStop(.5,`hsla(45,70%,68%,.30)`); g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
+        wctx.strokeStyle=g; wctx.lineWidth=1.1+k*0.45; wctx.globalAlpha=0.9-k*0.12; wctx.shadowBlur=16; wctx.shadowColor='rgba(160,200,255,.18)'; wctx.stroke();
+      }
+      wctx.globalAlpha=1; wctx.shadowBlur=0;
+      px+=(tx-px)*0.16; py+=(ty-py)*0.16;
+      const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
+      tctx.fillStyle='rgba(0,0,0,.12)'; tctx.fillRect(0,0,innerWidth,innerHeight);
+      const grad=tctx.createRadialGradient(px,py,0,px,py,r);
+      grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`); grad.addColorStop(.55,'rgba(140,185,255,.14)'); grad.addColorStop(1,'rgba(140,185,255,0)');
+      tctx.fillStyle=grad; tctx.beginPath(); tctx.arc(px,py,r,0,Math.PI*2); tctx.fill();
+      requestAnimationFrame(frame)
     }
-  });
-
-  return {open, close, setBioLang, setExpoOpen};
+    resize(); addEventListener('resize',resize,{passive:true});
+    document.addEventListener('visibilitychange',()=>visible=!document.hidden);
+    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+    requestAnimationFrame(frame);
+  }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* ---------- Works loader (5×20 lazy) ---------- */
+/* Artist Bio modal (버그 수정 포함) */
+window.DZ_BIO=(function(){
+  const modal=$('#bio-modal');
+  const closeBtn=modal?.querySelector('.bio-close');
+  const langBtns=modal? $$('.bio-lang .lang',modal):[];
+  const expoToggle=$('#expoToggle');
+  const expoSlide=$('#expoSlide');
+  const headKo=modal?.querySelector('.bio-head .ko');
+  const headEn=modal?.querySelector('.bio-head .en');
+
+  function setBioLang(code){ // 'kr' | 'en'
+    if(headKo) headKo.style.display=(code==='kr')?'block':'none';
+    if(headEn) headEn.style.display=(code==='en')?'block':'none';
+    /* 핵심 수정: 컨테이너 자체가 .ko/.en 인 블록을 토글 */
+    $$('.bio-body.ko',modal).forEach(n=>n.style.display=(code==='kr')?'block':'none');
+    $$('.bio-body.en',modal).forEach(n=>n.style.display=(code==='en')?'block':'none');
+    langBtns.forEach(b=>{const on=(b.dataset.bioLang===code); b.classList.toggle('active',on); b.setAttribute('aria-pressed',on?'true':'false')});
+    localStorage.setItem('dz_bio_lang',code);
+  }
+  function setExpoOpen(open){
+    if(!expoSlide||!expoToggle) return;
+    expoSlide.setAttribute('data-open',open?'true':'false');
+    expoToggle.setAttribute('aria-expanded',open?'true':'false');
+  }
+  function open(){
+    if(!modal) return;
+    modal.hidden=false; document.body.style.overflow='hidden';
+    const site=document.body.classList.contains('english')?'en':'kr';
+    setBioLang(localStorage.getItem('dz_bio_lang')||site);
+    setExpoOpen(false);
+  }
+  function close(){ if(!modal) return; modal.hidden=true; document.body.style.overflow=''; }
+
+  closeBtn?.addEventListener('click',close);
+  modal?.querySelector('.bio-backdrop')?.addEventListener('click',close);
+  langBtns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
+  expoToggle?.addEventListener('click',()=>setExpoOpen(expoToggle.getAttribute('aria-expanded')!=='true'));
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal && !modal.hidden) close(); });
+
+  document.addEventListener('dz-lang-change',ev=>{
+    const pref=localStorage.getItem('dz_bio_lang');
+    if(!pref){ setBioLang(ev.detail==='en'?'en':'kr'); }
+  });
+
+  return {open,close,setBioLang,setExpoOpen};
+})();
+
+/* Works loader (5×20) */
 (async function(){
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
-  const panels = {
-    pray:   $('#panel-pray'),
-    human:  $('#panel-human'),
-    rebirth:$('#panel-rebirth'),
-    exist:  $('#panel-exist'),
-    cosmos: $('#panel-cosmos')
-  };
-
-  async function getCB(){
-    try{
-      const r = await fetch('/data/cachebust.json',{cache:'no-store'});
-      const j = await r.json(); return j.v||j.ts||Date.now();
-    }catch{return Date.now()}
-  }
-  const CB = await getCB();
-
-  async function loadWorks(){
-    try{
-      const r = await fetch('/data/works.json?cb='+CB,{cache:'no-store'});
-      if(!r.ok) throw 0;
-      return r.json();
-    }catch{
-      // fallback minimal structure
-      return {
-        [MAP.pray]:   [],
-        [MAP.human]:  [],
-        [MAP.rebirth]:[],
-        [MAP.exist]:  [],
-        [MAP.cosmos]: []
-      };
-    }
-  }
-  const WORKS = await loadWorks();
-
-  const isKR = ()=>!document.body.classList.contains('english');
-
+  const panels={pray:$('#panel-pray'),human:$('#panel-human'),rebirth:$('#panel-rebirth'),exist:$('#panel-exist'),cosmos:$('#panel-cosmos')};
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
+  const CB=await getCB();
+  async function loadWorks(){try{const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw 0;return r.json()}catch{return {[MAP.pray]:[],[MAP.human]:[],[MAP.rebirth]:[],[MAP.exist]:[],[MAP.cosmos]:[]}}}
+  const WORKS=await loadWorks();
+  const isKR=()=>!document.body.classList.contains('english');
   function cardHTML(w){
-    const title = isKR() ? (w.title_kr||w.title_en||'') : (w.title_en||w.title_kr||'');
-    const meta  = isKR() ? (w.material_kr||'') : (w.material_en||'');
-    const size  = isKR() ? (w.size_kr||'') : (w.size_en||'');
-    const year  = w.year||'';
-    const file  = (w.image||'').replace(/\s+/g,'_');
-    const ssrc  = `/images/standard/${file}?cb=${CB}`;
-    const zsrc  = `/images/zoom/${file}?cb=${CB}`;
-    const alt   = [title,meta,size,year].filter(Boolean).join(' · ');
+    const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
+    const meta=isKR()?(w.material_kr||''):(w.material_en||'');
+    const size=isKR()?(w.size_kr||''):(w.size_en||'');
+    const year=w.year||''; const file=(w.image||'').replace(/\s+/g,'_');
+    const ssrc=`/images/standard/${file}?cb=${CB}`; const zsrc=`/images/zoom/${file}?cb=${CB}`;
+    const alt=[title,meta,size,year].filter(Boolean).join(' · ');
     return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
   }
-
-  async function renderPanel(host, key){
+  async function renderPanel(host,key){
     if(!host) return;
-    const list = Array.isArray(WORKS[key]) ? WORKS[key].slice(0,20) : [];
-    if(!list.length){
-      host.innerHTML = `<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">No works yet. Upload /data/works.json and images.</article></div>`;
-      return;
-    }
-    host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
+    const list=Array.isArray(WORKS[key])?WORKS[key].slice(0,20):[];
+    if(!list.length){host.innerHTML=`<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">No works yet. Upload /data/works.json and images.</article></div>`;return}
+    host.innerHTML=`<div class="grid">${list.map(cardHTML).join('')}</div>`;
     try{
-      const io = new IntersectionObserver(es=>{
-        es.forEach(e=>{
-          if(e.isIntersecting){
-            const img=e.target;
-            if(img.dataset.src){img.src=img.dataset.src; img.removeAttribute('data-src');}
-            img.closest('.card')?.classList.add('visible');
-            io.unobserve(img);
-          }
-        });
-      },{rootMargin:'200px'});
+      const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const img=e.target;if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')}img.closest('.card')?.classList.add('visible');io.unobserve(img)}})},{rootMargin:'200px'});
       $$(`#${host.id} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
-
   async function renderAll(){
     await Promise.all([
-      renderPanel(panels.pray,    MAP.pray),
-      renderPanel(panels.human,   MAP.human),
-      renderPanel(panels.rebirth, MAP.rebirth),
-      renderPanel(panels.exist,   MAP.exist),
-      renderPanel(panels.cosmos,  MAP.cosmos)
+      renderPanel(panels.pray,MAP.pray),
+      renderPanel(panels.human,MAP.human),
+      renderPanel(panels.rebirth,MAP.rebirth),
+      renderPanel(panels.exist,MAP.exist),
+      renderPanel(panels.cosmos,MAP.cosmos)
     ]);
   }
   await renderAll();
-  document.addEventListener('dz-lang-change', renderAll);
-
-  // tabs switch within Works
+  document.addEventListener('dz-lang-change',renderAll);
   $$('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
       $$('.tabpanel').forEach(p=>p.classList.remove('active'));
-      const key = b.dataset.panel;
-      $('#panel-'+key)?.classList.add('active');
+      $('#panel-'+b.dataset.panel)?.classList.add('active');
     });
   });
 })();
 
-/* ---------- Lightbox (zoom/drag/keys) ---------- */
+/* Lightbox */
 (function(){
-  const lb = $('#lightbox'), img = $('#lbImg'), cap = $('#lbCap'), meta = $('#lbMeta');
-  const prevBtn=$('#lbPrev'), nextBtn=$('#lbNext'), closeBtn=$('#lbClose');
+  const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prev=$('#lbPrev'),next=$('#lbNext'),close=$('#lbClose');
   if(!lb||!img) return;
-  let list=[], idx=0, zoom=1, ox=0, oy=0, drag=false, sx=0, sy=0;
-
+  let list=[],idx=0,zoom=1,ox=0,oy=0,drag=false,sx=0,sy=0;
   function collect(){
-    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
-    if(!panel) return list=[];
-    list = Array.from(panel.querySelectorAll('.card'))
-      .map(c=>({z:c.getAttribute('data-zoom'), alt:c.querySelector('img')?.alt||''}))
-      .filter(x=>x.z);
+    const panel=document.querySelector('.tabpanel.active')||$('#panel-pray');
+    if(!panel){list=[];return}
+    list=Array.from(panel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z);
   }
   function openAt(i){
     if(!list.length) return;
-    idx = (i+list.length)%list.length;
-    img.src = list[idx].z;
-    cap.textContent = list[idx].alt;
-    meta.textContent = `${idx+1} / ${list.length}`;
-    zoom=1; ox=oy=0; apply();
-    lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
+    idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`;
+    zoom=1;ox=oy=0;apply(); lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
   }
-  function apply(){ img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`; img.style.cursor = (zoom>1?'grab':'zoom-in'); }
-  function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); }
-
+  function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`; img.style.cursor=zoom>1?'grab':'zoom-in'}
+  function hide(){lb.classList.remove('on'); lb.setAttribute('aria-hidden','true')}
   document.addEventListener('click',e=>{
-    const card = e.target.closest('.card');
-    if(!card) return;
-    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
-    if(!panel) return;
-    const cards = Array.from(panel.querySelectorAll('.card'));
-    collect();
-    openAt(Math.max(0, cards.indexOf(card)));
+    const card=e.target.closest('.card'); if(!card) return;
+    const panel=document.querySelector('.tabpanel.active')||$('#panel-pray');
+    const cards=Array.from(panel.querySelectorAll('.card')); collect(); openAt(Math.max(0,cards.indexOf(card)));
   });
-
-  prevBtn?.addEventListener('click',()=>openAt(idx-1));
-  nextBtn?.addEventListener('click',()=>openAt(idx+1));
-  closeBtn?.addEventListener('click',close);
-  $('#lightbox')?.addEventListener('click',e=>{ if(e.target===lb) close(); });
-
+  prev?.addEventListener('click',()=>openAt(idx-1));
+  next?.addEventListener('click',()=>openAt(idx+1));
+  close?.addEventListener('click',hide);
+  $('#lightbox')?.addEventListener('click',e=>{if(e.target===lb) hide()});
   lb.addEventListener('wheel',e=>{
-    if(!lb.classList.contains('on')) return;
-    e.preventDefault();
-    const d = e.deltaY>0 ? 0.9 : 1.1;
-    const pz = zoom;
-    zoom = Math.min(5, Math.max(1, zoom*d));
-    if(zoom===1){ ox=oy=0; }
-    else{
-      const r = img.getBoundingClientRect();
-      const cx = e.clientX - r.left - r.width/2 - ox;
-      const cy = e.clientY - r.top  - r.height/2 - oy;
-      ox -= cx*(zoom/pz - 1);
-      oy -= cy*(zoom/pz - 1);
-    }
-    apply();
+    if(!lb.classList.contains('on')) return; e.preventDefault();
+    const d=e.deltaY>0?0.9:1.1, pz=zoom; zoom=Math.min(5,Math.max(1,zoom*d));
+    if(zoom===1){ox=oy=0}else{
+      const r=img.getBoundingClientRect(); const cx=e.clientX-r.left-r.width/2-ox; const cy=e.clientY-r.top-r.height/2-oy;
+      ox-=cx*(zoom/pz-1); oy-=cy*(zoom/pz-1);
+    } apply();
   },{passive:false});
-
-  img.addEventListener('mousedown',e=>{ if(zoom===1) return; drag=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing'; });
-  window.addEventListener('mousemove',e=>{ if(!drag) return; ox=e.clientX-sx; oy=e.clientY-sy; apply(); });
-  window.addEventListener('mouseup',()=>{ drag=false; if(zoom>1) img.style.cursor='grab'; });
-
-  window.addEventListener('keydown',e=>{
-    if(!lb.classList.contains('on')) return;
-    if(e.key==='Escape') close();
-    else if(e.key==='ArrowLeft')  openAt(idx-1);
-    else if(e.key==='ArrowRight') openAt(idx+1);
-    else if(e.key==='+'){ zoom=Math.min(zoom*1.25,5); apply(); }
-    else if(e.key==='-'){ zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply(); }
-  });
+  img.addEventListener('mousedown',e=>{if(zoom===1)return; drag=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing'});
+  window.addEventListener('mousemove',e=>{if(!drag)return; ox=e.clientX-sx; oy=e.clientY-sy; apply()});
+  window.addEventListener('mouseup',()=>{drag=false; if(zoom>1) img.style.cursor='grab'});
+  window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return; if(e.key==='Escape')hide(); else if(e.key==='ArrowLeft')openAt(idx-1); else if(e.key==='ArrowRight')openAt(idx+1); else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()} else if(e.key==='-'){zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply()}});
 })();
 
-/* ---------- Reports (simple hydrated list, can be replaced by real fetch) ---------- */
+/* Reports: collapsed → open + filter + single-line title */
 (function(){
-  const grid = $('#reportGrid');
-  if(!grid) return;
-  const items = Array.from({length:12},(_,i)=>({
+  const wrap=$('.reports-omega'); const grid=$('#reportGrid'); const toggle=$('#reportsToggle');
+  if(!wrap||!grid||!toggle) return;
+  wrap.classList.add('is-collapsed');
+
+  // demo data (필요시 서버/MD로 교체)
+  const items=Array.from({length:12},(_,i)=>({
     id:`DCAR${String(i+1).padStart(2,'0')}`,
     title_kr:`DCAR-${String(i+1).padStart(2,'0')} — (KR) 제목 예시`,
     title_en:`DCAR-${String(i+1).padStart(2,'0')} — (EN) Sample Title`,
     snippet_kr:`(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.`,
-    snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`
+    snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`,
+    cat:(i%3===0?'theory':i%3===1?'archive':'practice')
   }));
-  function render(mode){ // 'all' 'theory' 'archive' 'practice' (demo uses same list)
-    grid.innerHTML = items.map((r,idx)=>`
+
+  function render(cat){
+    const list=(cat==='all')?items:items.filter(x=>x.cat===cat);
+    grid.innerHTML=list.map((r,idx)=>`
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
@@ -650,114 +625,66 @@ window.DZ_BIO = (function(){
     `).join('');
   }
   render('all');
+
   $$('.r-tab').forEach(t=>{
     t.addEventListener('click',()=>{
       $$('.r-tab').forEach(x=>x.classList.remove('is-active'));
-      t.classList.add('is-active');
-      render(t.dataset.r);
+      t.classList.add('is-active'); render(t.dataset.r);
     });
   });
+
   grid.addEventListener('click',e=>{
-    const id = e.target.getAttribute('data-open');
-    if(!id) return;
-    const w = window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
-    w && w.focus();
+    const id=e.target.getAttribute('data-open'); if(!id) return;
+    const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank'); if(w) w.focus();
   });
+
+  function setOpen(open){
+    wrap.classList.toggle('is-collapsed',!open);
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+    toggle.textContent=open?'Close Reports':'Open Reports';
+  }
+  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
 })();
 
-/* ---------- Ambient sound (start/stop + tiny FFT bar) ---------- */
+/* Ambient sound */
 (function(){
-  const btn = $('#soundBtn'), stopBtn = $('#soundStopBtn'), bar = document.querySelector('#fftBar span');
+  const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
   if(!btn||!stopBtn||!bar) return;
-  let ac=null, nodes=null, on=false, analyser=null, rafId=null;
-
-  async function ensureAC(){
-    if(!ac){
-      const C = window.AudioContext || window.webkitAudioContext;
-      ac = new C({latencyHint:'interactive'});
-    }
-    if(ac.state==='suspended') await ac.resume();
-    return ac;
-  }
-  function G(v){ const g=ac.createGain(); g.gain.value=v; return g; }
-  function O(t,f){ const o=ac.createOscillator(); o.type=t; o.frequency.value=f; return o; }
-  function createIR(len=1.6,decay=2.6){
-    const sr=ac.sampleRate, n=Math.floor(sr*len);
-    const buf=ac.createBuffer(2,n,sr);
-    for(let ch=0; ch<2; ch++){
-      const d=buf.getChannelData(ch);
-      for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay);
-    }
-    return buf;
-  }
-  function draw(){
-    if(!analyser){ rafId=requestAnimationFrame(draw); return; }
-    const arr=new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteTimeDomainData(arr);
-    let avg=0; for(let i=0;i<arr.length;i++) avg+=Math.abs(arr[i]-128);
-    avg/=arr.length;
-    bar.style.width=Math.min(180, Math.max(10, avg*2.2))+'px';
-    rafId=requestAnimationFrame(draw);
-  }
-
+  let ac=null,nodes=null,on=false,analyser=null,rafId=null;
+  async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})} if(ac.state==='suspended') await ac.resume(); return ac}
+  function G(v){const g=ac.createGain();g.gain.value=v;return g}
+  function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
+  function ir(len=1.6,decay=2.6){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}return buf}
+  function draw(){if(!analyser){rafId=requestAnimationFrame(draw);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++)avg+=Math.abs(arr[i]-128);avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(draw)}
   async function start(){
-    if(on) return;
-    await ensureAC();
-    const base=G(0.12), sub=G(0.05), mid=G(0.06), shim=G(0.012);
-    const pan=ac.createStereoPanner(); let ph=0;
-    const low=O('sine',62), low2=O('sine',124), floor=O('sine',31), ch1=O('sine',432), ch2=O('sine',528);
-    const lfo1=O('sine',7.7), lfo2=O('sine',5.2);
-    const lpg=G(0.08), lpg2=G(0.06);
-    lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
-
+    if(on) return; await ensureAC();
+    const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.012),pan=ac.createStereoPanner();let ph=0;
+    const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);
+    const lfo1=O('sine',7.7),lfo2=O('sine',5.2),lpg=G(0.08),lpg2=G(0.06); lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
     const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=880; lp.Q.value=0.8;
     const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
-
-    const conv=ac.createConvolver(); conv.buffer=createIR();
-    const wet=G(0.25), dry=G(0.85);
-
-    low.connect(base).connect(bp).connect(lp);
-    low2.connect(mid).connect(bp);
-    floor.connect(sub).connect(bp);
-    ch1.connect(shim).connect(lp);
-    ch2.connect(shim).connect(lp);
-
-    lp.connect(dry).connect(pan).connect(ac.destination);
-    lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);
-    bp.connect(dry).connect(pan);
-    bp.connect(wet).connect(conv);
-
+    const conv=ac.createConvolver(); conv.buffer=ir(); const wet=G(0.25),dry=G(0.85);
+    low.connect(base).connect(bp).connect(lp); low2.connect(mid).connect(bp); floor.connect(sub).connect(bp); ch1.connect(shim).connect(lp); ch2.connect(shim).connect(lp);
+    lp.connect(dry).connect(pan).connect(ac.destination); lp.connect(wet).connect(conv).connect(pan).connect(ac.destination); bp.connect(dry).connect(pan); bp.connect(wet).connect(conv);
     analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
-
     [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
-      const t=g.value; try{ g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2); }catch{}
-    });
-
-    (function panLoop(){ if(!ac||!pan) return; ph+=0.012; try{ pan.pan.value=Math.sin(ph)*0.35; }catch{} if(on) requestAnimationFrame(panLoop); })();
-    (function breath(){ if(!ac) return; try{ lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240, ac.currentTime, 0.28); }catch{} if(on) setTimeout(breath,160); })();
-
-    nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};
-    on=true; btn.disabled=true; stopBtn.disabled=false; draw();
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}} );
+    (function panLoop(){if(!ac||!pan)return; ph+=0.012; try{pan.pan.value=Math.sin(ph)*0.35}catch{} if(on) requestAnimationFrame(panLoop)})();
+    (function breath(){if(!ac)return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160)})();
+    nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stopBtn.disabled=false; draw();
   }
-
   function stop(){
     if(!on||!nodes||!ac) return;
-    const {low,low2,floor,ch1,ch2,base,sub,mid,shim} = nodes;
-    const t = ac.currentTime;
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
-      try{ g.cancelScheduledValues(0); g.exponentialRampToValueAtTime(0.0001,t+1.6); }catch{}
-    });
-    setTimeout(()=>{ [low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}}); }, 1700);
+    const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes, t=ac.currentTime;
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
+    setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1700);
     on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px';
   }
-
-  const unlock = async()=>{ try{ await ensureAC(); }catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock); };
-  window.addEventListener('touchend',unlock,{once:true});
-  window.addEventListener('click',unlock,{once:true});
-  btn.addEventListener('click',start);
-  stopBtn.addEventListener('click',stop);
-  document.addEventListener('visibilitychange',async()=>{ if(!ac) return; if(document.hidden){ try{ await ac.suspend(); }catch{} } else if(on){ try{ await ac.resume(); }catch{} } });
+  const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock)}
+  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
+  btn.addEventListener('click',start); stopBtn.addEventListener('click',stop);
+  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
 })();
 </script>
-<!-- =================== /END PART 3 / 3 =================== -->
+</body>
+</html>

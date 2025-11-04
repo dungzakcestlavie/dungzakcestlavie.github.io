@@ -15,72 +15,45 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
-
-/* canvases */
-#waves,#trail{position:fixed;inset:0;pointer-events:none}
-#waves{z-index:0;opacity:.48}
-#trail{z-index:1;opacity:.70;mix-blend-mode:screen}
-
-/* header */
+.en,.ko{display:inherit} body.korean .en{display:none} body.english .ko{display:none} body.hybrid .ko,body.hybrid .en{display:inherit}
+#waves,#trail{position:fixed;inset:0;pointer-events:none} #waves{z-index:0;opacity:.48} #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
 header{position:sticky;top:0;z-index:5;padding:10px 12px;background:linear-gradient(180deg,rgba(9,14,30,.9),rgba(9,14,30,.7));border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
-.brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(16px,5vw,22px)}
+.brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(18px,5vw,24px)}
 nav.primary{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 12px;border-radius:12px}
 nav.primary button:hover,nav.primary button.active{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
 .lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
 .lang button{all:unset;cursor:pointer;border:1px solid #2a335f;border-radius:10px;padding:6px 12px;color:#cfe0ff}
 .lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
-
-/* sections */
-main{position:relative;z-index:2}
-section{max-width:var(--max);margin:auto;padding:72px 16px}
-h1,h2{color:var(--gold)}
-h2{margin-bottom:12px}
-.sub{color:var(--muted)}
-
-/* hero / poem */
-.hero{text-align:center;min-height:68vh}
-.hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
+main{position:relative;z-index:2} section{max-width:var(--max);margin:auto;padding:72px 16px}
+h1,h2{color:var(--gold)} h2{margin-bottom:12px} .sub{color:var(--muted)}
+.hero{text-align:center;min-height:68vh} .hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
 .poemwrap{max-width:860px;margin:18px auto 0;text-align:left;background:rgba(16,22,48,.35);border:1px solid #223;border-radius:12px;padding:14px}
 .poem p{margin:8px 0}
-
-/* works */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
 .tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
-.tabpanel{display:none;animation:fade .28s ease}
-.tabpanel.active{display:block}
+.tabpanel{display:none;animation:fade .28s ease} .tabpanel.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-
-.grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
-@media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)} @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .55s,transform .55s,box-shadow .6s}
-.card.visible{opacity:1;transform:translateY(0)}
-.card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
+.card.visible{opacity:1;transform:translateY(0)} .card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-
-/* Reports Ω — card layout */
+/* Reports */
 .reports-omega{padding:24px 0}
 .reports-omega .r-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-.reports-omega h2{margin:0;font-size:clamp(18px,2.4vw,24px);color:var(--gold)}
 .r-tabs{display:flex;gap:8px}
 .r-tab{cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
 .r-tab.is-active{outline:2px solid #6aa3ff;background:#132252}
-.r-grid{display:grid;gap:12px}
-@media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
+.r-grid{display:grid;gap:12px} @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}} @media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
 .r-card{position:relative;border:1px solid #243169;background:linear-gradient(180deg,#0d1534,#0b1128);border-radius:14px;overflow:hidden}
-.r-card .r-in{padding:14px 14px 12px}
-.r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800;letter-spacing:.2px}
-.r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8}
-.r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
+.r-card .r-in{padding:14px 14px 12px} .r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800}
+.r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8} .r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
 .r-badge{font-size:11px;border:1px solid #345;padding:2px 7px;border-radius:999px;background:#0c183b;color:#cfe0ff}
-.r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a}
-.r-body{font-size:14px;color:#d6e1ff;opacity:.95}
+.r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a} .r-body{font-size:14px;color:#d6e1ff;opacity:.95}
 .r-actions{display:flex;gap:8px;margin-top:12px}
 .r-actions a,.r-actions button{all:unset;cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
 .r-actions a:hover,.r-actions button:hover{background:#15265a}
-
 /* Lightbox */
 #lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:opacity .25s}
 #lightbox.on{opacity:1;pointer-events:auto}
@@ -89,41 +62,25 @@ h2{margin-bottom:12px}
 .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
 .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
 .lb-arrow:hover{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
-.lb-prev{left:-60px}.lb-next{right:-60px}
-@media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
+.lb-prev{left:-60px}.lb-next{right:-60px} @media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
 .lb-close{position:absolute;top:-56px;right:0;width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;cursor:pointer}
 .lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
-
-/* footer */
+/* Footer & controls */
 footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 96px}
 .links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-.links a{color:#cfe0ff;text-decoration:none}
-.links a:hover{color:#cbe0ff}
+.links a{color:#cfe0ff;text-decoration:none} .links a:hover{color:#cbe0ff}
 small{display:block;margin-top:6px;color:#9fb0d8}
-
-/* resonance controls */
 #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:8}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18)}
 .ctrlbtn[disabled]{opacity:.45;cursor:not-allowed}
 #fftBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden}
 #fftBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9}
-
-/* language visibility */
-.en,.ko{display:inherit}
-body.korean .en{display:none}
-body.english .ko{display:none}
-body.hybrid .ko,body.hybrid .en{display:inherit}
-
-/* motion reduce */
-@media(prefers-reduced-motion:reduce){#waves,#trail{display:none}}
-
-/* ===== Artist Bio modal (Ω 톤) ===== */
-#bio-modal[hidden]{display:none}
-#bio-modal{position:fixed;inset:0;z-index:9999}
+/* Bio Modal */
+#bio-modal[hidden]{display:none} #bio-modal{position:fixed;inset:0;z-index:9999}
 .bio-backdrop{position:absolute;inset:0;background:rgba(6,10,24,.62);backdrop-filter:saturate(1.1) blur(6px)}
 .bio-card{position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.2);border-radius:16px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.5)}
 .bio-head{display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.90))}
-.bio-head h2{margin:0;font-size:1.2rem;letter-spacing:.02em}
+.bio-head h2{margin:0;font-size:1.2rem}
 .bio-lang{margin-left:auto;display:flex;gap:6px}
 .bio-lang .lang{border:1px solid rgba(255,215,120,.35);background:transparent;color:#f2dca6;padding:6px 10px;border-radius:10px;cursor:pointer}
 .bio-lang .lang.active{box-shadow:0 0 8px rgba(255,215,120,.55)}
@@ -147,7 +104,6 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <button data-target="poem" class="active">Poem</button>
     <button data-target="works">Works</button>
     <button data-target="reports">Reports</button>
-    <!-- Artist Bio 탭 추가 -->
     <button id="tab-bio">Artist Bio</button>
   </nav>
   <div class="lang" aria-label="Language">
@@ -158,6 +114,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
 </header>
 
 <main>
+  <!-- POEM -->
   <section id="poem" class="hero">
     <h1 class="ko">빛 · 기억 · 존재</h1>
     <h1 class="en">Light · Memory · Being</h1>
@@ -175,16 +132,16 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p><p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
         <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p><p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
         <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p><p class="en">In that scene, the crescent moon releases a tender white smile.</p>
-        <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p><p class="en">Sharak, sharak—as the rhythm of dance expands,</p>
+        <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p><p class="en">Sharak, sharak— as the rhythm of dance expands,</p>
         <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p><p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
         <p class="ko">사랑의 입맞춤을 의식한다.</p><p class="en">Becoming aware of love’s gentle kiss.</p>
-        <p class="ko">흘러감 속에 포개진 순간,</p><p class="en">Within the flowing overlap of time,</p>
-        <p class="ko">그들은 영혼의 박제가 되어,</p><p class="en">They become taxidermies of the soul,</p>
-        <p class="ko">멈춤 속에 영원을 새긴다.</p><p class="en">Inscribing eternity into stillness.</p>
+        <p class="ko">흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어, 멈춤 속에 영원을 새긴다.</p>
+        <p class="en">Within the flowing overlap of time, they become taxidermies of the soul, inscribing eternity into stillness.</p>
       </div>
     </div>
   </section>
 
+  <!-- WORKS -->
   <section id="works" style="display:none">
     <h2>Artworks — 작품 아카이브</h2>
     <div class="tabs" role="tablist" aria-label="Art Sections">
@@ -201,6 +158,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <div id="panel-cosmos" class="tabpanel"></div>
   </section>
 
+  <!-- REPORTS -->
   <section id="reports" class="reports-omega" style="display:none">
     <div class="r-head">
       <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
@@ -214,12 +172,14 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
   </section>
 </main>
 
-<!-- ===== Artist Bio Modal (KR/EN, 전시 전체 펼침) ===== -->
+<!-- ===== ARTIST BIO MODAL ===== -->
 <div id="bio-modal" hidden>
   <div class="bio-backdrop"></div>
   <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title">
     <header class="bio-head">
-      <h2 id="bio-title">Artist Bio</h2>
+      <h2 id="bio-title" class="ko">작가 소개</h2>
+      <h2 id="bio-title" class="en">Artist Bio</h2>
+
       <div class="bio-lang">
         <button class="lang active" data-lang="KR" aria-pressed="true">KR</button>
         <button class="lang" data-lang="EN" aria-pressed="false">EN</button>
@@ -227,34 +187,37 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
       <button class="bio-close" aria-label="Close">✕</button>
     </header>
 
-    <!-- 상단 한 줄 요약 = 전시 섹션 전체 토글 버튼 -->
+    <!-- Exhibition Toggle -->
     <button id="expo-toggle" class="expo-kicker" aria-expanded="false" aria-controls="expo-blocks">
-      등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾
+      <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾</span>
+      <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
     </button>
 
-    <!-- ===== Korean ===== -->
+    <!-- ===== Korean Bio ===== -->
     <section class="bio-body" data-lang-block="KR">
-      <h3 style="margin-top:.5rem;">Artist Bio</h3>
+      <h3 style="margin-top:.5rem;">작가 소개</h3>
+
       <p>등작 燈酌 DUNGZAK CESTLAVIE는 빛과 기억, 존재의 근원을 탐구하는 한국 현대 예술가다. 그의 작업은 인간이 스쳐 지나가는 감정의 흔적, 상처를 통과한 빛의 기원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 시각 언어로 기록한다.</p>
       <p>서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바 등지에서 회화와 다매체 프로젝트를 전개해 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 “빛의 윤리”와 “기억의 존엄”을 탐구한다. 작품의 빛은 단순한 효과가 아니라 감정의 회복과 인간다움의 귀환을 촉발하는 정신적 구조로 작동한다.</p>
       <p>등작의 회화는 기도문이자 기록, 그리고 응시다. 그는 흔적과 여백을 통해 우리가 잃지 말아야 할 감정의 기초를 재구성하며, “빛·기억·존재” 미학 보고서(DCAR 시리즈)와 DUNGZAK ART UNIVERSE를 확장하고 있다.</p>
       <p>그의 세계는 상처 이후에도 남는 따스함, 사라지지 않는 기억의 힘, 그리고 인간 존엄에 대한 조용한 선언이다.</p>
 
+      <!-- EXHIBITIONS FULL LIST -->
       <div id="expo-blocks" class="slide-wrap" data-open="false">
         <details open>
           <summary><strong>국내 주요전시</strong></summary>
           <ul>
             <li>2025 구구갤러리 목동, 서울, 대한민국</li>
-            <li>2023, 2024 구구갤러리 목동, 서울, 대한민국</li>
+            <li>2023–2024 구구갤러리 목동, 서울, 대한민국</li>
             <li>2023 아트플러스 갤러리 인사동, 서울, 대한민국</li>
-            <li>2019, 2022 해양 에너지 정원 한남동, 서울,  대한민국</li>
+            <li>2019–2022 해양 에너지 정원 한남동, 서울</li>
             <li>2015 NC 갤러리 부산, 대한민국</li>
             <li>2014 갤러리 골목 이태원, 서울, 대한민국</li>
             <li>2013 프라미스 랜드 부산, 대한민국</li>
             <li>2009 아트 갤러리 유 부산, 대한민국</li>
             <li>2005 횡성 문화관 강원도, 대한민국</li>
             <li>2003 스페이스 키친 서울, 대한민국</li>
-            <li>2003 홍대 놀이터에서 봄여름 가을 겨울 사계 야외 작업과 야외 전시 서울, 대한민국</li>
+            <li>2003 홍대 놀이터 사계 야외 프로젝트 & 전시 서울</li>
             <li>2000 갤러리 소호 부산, 대한민국</li>
             <li>2000 세원백화점 부산, 대한민국</li>
           </ul>
@@ -263,107 +226,108 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <details>
           <summary><strong>국외 주요전시</strong></summary>
           <ul>
-            <li>2016 Berlin Mitte Live Concert Bar 베를린, 독일</li>
-            <li>2015 러시아 모스크바 국제공항 삶과 예술의 간격</li>
-            <li>2014 베트남에서 자유롭게 예술과 발언에 의한 즉흥적인 퍼포먼스와 작품 전시를 호찌민시 중앙 경찰서에서 열었음</li>
-            <li>2011 Open Art in Amsterdam Netherlands</li>
-            <li>2006 네덜란드 암스테르담 Linka 갤러리</li>
-            <li>2005 프랑스 파리 몽파르나스 Lune Cafe</li>
-            <li>2005 프랑스 파리 루브르 박물관 외벽 전시</li>
+            <li>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</li>
+            <li>2015 모스크바 국제공항 — 삶과 예술의 간격</li>
+            <li>2014 호찌민시 중앙 경찰서 — 즉흥 전시·퍼포먼스</li>
+            <li>2011 오픈 아트 인 암스테르담, 네덜란드</li>
+            <li>2006 Linka Gallery 암스테르담, 네덜란드</li>
+            <li>2005 Lune Cafe 몽파르나스, 파리, 프랑스</li>
+            <li>2005 루브르 박물관 외벽 전시, 파리, 프랑스</li>
           </ul>
         </details>
 
         <details>
           <summary><strong>그 외 전시</strong></summary>
           <ul>
-            <li>2025 그림따라 걷는 도시 익산 익산, 대한민국</li>
-            <li>2025 갤러리5 전국 주요 작가 초대전 인천, 대한민국</li>
-            <li>2024, 2025 구구갤러리 송년 선물전 서울, 대한민국</li>
-            <li>2022 김영우, 등작 2인전 아르템 갤러리 충무로, 서울, 대한민국</li>
-            <li>2004 광주비엔날레 The stage 광주, 대한민국</li>
-            <li>2004 하대리 여름 숲속 미술제_‘예술의 휴가’ 횡성군, 대한민국</li>
-            <li>2000 호세 델가도, 등작 2인전 서면 메트로 미술관 부산, 대한민국</li>
+            <li>2025 그림따라 걷는 도시 익산</li>
+            <li>2025 갤러리5 전국 초대전, 인천</li>
+            <li>2024–2025 구구갤러리 송년 선물전, 서울</li>
+            <li>2022 김영우·등작 2인전, 아르템 갤러리 충무로</li>
+            <li>2004 광주비엔날레 The Stage</li>
+            <li>2004 하대리 숲속 미술제 ‘예술의 휴가’</li>
+            <li>2000 José Delgado·등작 2인전, 서면 메트로 미술관</li>
           </ul>
         </details>
 
         <details>
           <summary><strong>소장</strong></summary>
-          <p>독일 베를린 시청 / 독일 훔볼트 병원 / 프랑스 파리 노트르담 대성당 / 프랑스 파리 정치대학 / 폴란드 바르샤바 국립 의료원 / 일본 도쿄 교회 / 베트남 호찌민시 중앙 경찰서 / 네덜란드 암스테르담 반 고흐 미술관 (Portfolio 소장) / 미국 뉴욕 현대 미술관 (Portfolio 소장) / 국내외 개인 소장자 다수</p>
+          <p>독일 베를린 시청 / 훔볼트 병원 / 프랑스 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 암스테르담 반 고흐 미술관(Portfolio) / 뉴욕 MoMA(Portfolio) / 개인 소장 다수</p>
         </details>
 
         <details>
           <summary><strong>저서</strong></summary>
           <ul>
-            <li>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망(2022년 발간)</li>
-            <li>예술, 그 끝없는 사랑(2024년 발간)</li>
+            <li>눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망 (2022)</li>
+            <li>예술, 그 끝없는 사랑 (2024)</li>
           </ul>
         </details>
       </div>
     </section>
 
-    <!-- ===== English ===== -->
+    <!-- ===== English Bio ===== -->
     <section class="bio-body" data-lang-block="EN" hidden>
-      <h3 style="margin-top:.5rem;">English Artist Bio</h3>
-      <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being. His practice records the traces of feeling we overlook, the genesis of light passing through wounds, and the cyclical rhythm of disappearance and rebirth.</p>
-      <p>Working from Seoul and across Berlin, Paris, Amsterdam, Warsaw, and Moscow, he integrates painting, text, sound, video, and archival forms to pursue an ethics of light and a dignity of memory. In his works, light functions not as effect but as a mental architecture that catalyzes emotional restoration and the return of humaneness.</p>
-      <p>His paintings are prayers, records, and acts of looking. Through traces and intervals, he rebuilds the foundations of feeling we must not lose, while expanding the DCAR Aesthetic Reports and the DUNGZAK ART UNIVERSE.</p>
-      <p>This world is a quiet declaration: the warmth that remains after wounding, the force of memory that does not fade, and the enduring dignity of the human.</p>
+      <h3 style="margin-top:.5rem;">Artist Bio</h3>
+
+      <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being. His practice traces fleeting emotions, the birth of light through wounds, and the cycles of disappearance and rebirth.</p>
+      <p>Based in Seoul and working across Berlin, Paris, Amsterdam, Warsaw, and Moscow, he integrates painting, text, sound, video, and archival forms to pursue an ethics of light and dignity of memory. Light in his work operates not as effect but as a mental architecture awakening emotional restoration and humaneness.</p>
+      <p>His paintings are prayers, documents, and gazes. Through traces and intervals, he reconstructs the foundations of feeling and expands the DCAR Aesthetic Reports and the DUNGZAK ART UNIVERSE.</p>
+      <p>This world is a quiet declaration: warmth that remains after pain, memory that refuses to fade, and the enduring dignity of the human.</p>
 
       <div id="expo-blocks-en" class="slide-wrap" data-open="false">
         <details open>
           <summary><strong>Major Exhibitions in Korea</strong></summary>
           <ul>
-            <li>2025 Gugu Gallery Mokdong, Seoul, Korea</li>
-            <li>2023, 2024 Gugu Gallery Mokdong, Seoul, Korea</li>
-            <li>2023 Art Plus Gallery Insadong, Seoul, Korea</li>
-            <li>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Korea</li>
-            <li>2015 NC Gallery, Busan, Korea</li>
-            <li>2014 Gallery Golmok, Itaewon, Seoul, Korea</li>
-            <li>2013 Promise Land, Busan, Korea</li>
-            <li>2009 Art Gallery You, Busan, Korea</li>
-            <li>2005 Hoengseong Cultural Center, Gangwon-do, Korea</li>
-            <li>2003 Space Kitchen, Seoul, Korea</li>
-            <li>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Korea</li>
-            <li>2000 Gallery Soho, Busan, Korea</li>
-            <li>2000 Sewon Department Store, Busan, Korea</li>
+            <li>2025 Gugu Gallery Mokdong, Seoul</li>
+            <li>2023–2024 Gugu Gallery Mokdong, Seoul</li>
+            <li>2023 Art Plus Gallery Insadong, Seoul</li>
+            <li>2019–2022 Ocean Energy Garden, Hannam-dong, Seoul</li>
+            <li>2015 NC Gallery, Busan</li>
+            <li>2014 Gallery Golmok, Itaewon, Seoul</li>
+            <li>2013 Promise Land, Busan</li>
+            <li>2009 Art Gallery You, Busan</li>
+            <li>2005 Hoengseong Cultural Center</li>
+            <li>2003 Space Kitchen, Seoul</li>
+            <li>2003 Seasonal Outdoor Project, Hongdae Playground</li>
+            <li>2000 Gallery Soho, Busan</li>
+            <li>2000 Sewon Department Store, Busan</li>
           </ul>
         </details>
 
         <details>
           <summary><strong>Major International Exhibitions</strong></summary>
           <ul>
-            <li>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</li>
-            <li>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</li>
-            <li>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</li>
-            <li>2011 Open Art in Amsterdam, Netherlands</li>
-            <li>2006 Linka Gallery, Amsterdam, Netherlands</li>
-            <li>2005 Lune Cafe, Montparnasse, Paris, France</li>
-            <li>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</li>
+            <li>2016 Berlin Mitte Live Concert Bar, Berlin</li>
+            <li>2015 Moscow International Airport — “The Distance Between Life and Art”</li>
+            <li>2014 Improvised exhibition at Ho Chi Minh City Central Police HQ</li>
+            <li>2011 Open Art in Amsterdam, Netherlands</li>
+            <li>2006 Linka Gallery, Amsterdam</li>
+            <li>2005 Lune Cafe, Montparnasse, Paris</li>
+            <li>2005 Exterior Wall Exhibition, Louvre Museum, Paris</li>
           </ul>
         </details>
 
         <details>
           <summary><strong>Selected Other Exhibitions</strong></summary>
           <ul>
-            <li>2025 Walking with Art in Iksan, Korea</li>
-            <li>2025 Gallery 5 National Invitational Exhibition, Incheon, Korea</li>
-            <li>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Korea</li>
-            <li>2022 Kim Young-woo &amp; Dungzak Two-Person Exhibition, Artem Gallery, Seoul, Korea</li>
-            <li>2004 Gwangju Biennale “The Stage”, Gwangju, Korea</li>
-            <li>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun, Korea</li>
-            <li>2000 José Delgado &amp; Dungzak Two-Person Exhibition, Seomyeon Metro Art Museum, Busan, Korea</li>
+            <li>2025 Walking with Art in Iksan</li>
+            <li>2025 Gallery 5 National Invitational Exhibition, Incheon</li>
+            <li>2024–2025 Gugu Gallery Year-End Exhibition, Seoul</li>
+            <li>2022 Kim Young-woo & Dungzak Two-Person Exhibition, Seoul</li>
+            <li>2004 Gwangju Biennale “The Stage”</li>
+            <li>2004 Summer Forest Art Festival “Art Vacation”</li>
+            <li>2000 José Delgado & Dungzak Two-Person Exhibition, Busan</li>
           </ul>
         </details>
 
         <details>
           <summary><strong>Collections</strong></summary>
-          <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland; Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum, Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); numerous private collections worldwide.</p>
+          <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral; Sciences Po Paris; National Medical Institute Warsaw; Church in Tokyo; Ho Chi Minh Police HQ; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); numerous private collections.</p>
         </details>
 
         <details>
           <summary><strong>Publications</strong></summary>
           <ul>
-            <li><em>Tears Never Stop — The Artist’s Duty and Human Desire</em> (2022)</li>
+            <li><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</li>
             <li><em>Art, the Endless Love</em> (2024)</li>
           </ul>
         </details>
@@ -372,73 +336,83 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
   </div>
 </div>
 
+<!-- LIGHTBOX & FOOTER -->
 <div id="lightbox" aria-hidden="true">
   <div class="lb-stage">
     <img id="lbImg" alt="Artwork view">
     <div class="lb-caption" id="lbCap"></div>
-    <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">◀</button>
-    <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">▶</button>
+    <button class="lb-arrow lb-prev" id="lbPrev">◀</button>
+    <button class="lb-arrow lb-next" id="lbNext">▶</button>
   </div>
-  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <button class="lb-close" id="lbClose">✕</button>
   <div class="lb-meta" id="lbMeta"></div>
 </div>
 
-<div id="fftBar" aria-hidden="true"><span></span></div>
-<div id="ctrl" aria-label="Prayer Resonance controls">
-  <button class="ctrlbtn" id="soundBtn" title="Play Prayer Resonance">✨</button>
-  <button class="ctrlbtn" id="soundStopBtn" title="Stop" disabled>🔇</button>
+<div id="fftBar"><span></span></div>
+<div id="ctrl">
+  <button class="ctrlbtn" id="soundBtn">✨</button>
+  <button class="ctrlbtn" id="soundStopBtn" disabled>🔇</button>
 </div>
 
 <footer>
   <div class="links">
-    <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">📸 Flickr</a>
-    <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">📷 Instagram</a>
-    <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">▶️ YouTube</a>
-    <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">🧭 Naver Info</a>
-    <a href="mailto:dungzakcestlavie@gmail.com">✉️ Email</a>
+    <a href="https://flickr.com/photos/dungzak" target="_blank">Flickr</a>
+    <a href="https://instagram.com/dungzakcestlavie" target="_blank">Instagram</a>
+    <a href="https://youtube.com/@dungzakcestlavie" target="_blank">YouTube</a>
+    <a href="https://naver.me/x95dk3l1" target="_blank">Naver Info</a>
+    <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
   </div>
   <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
   <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
 </footer>
 
 <script>
-const $$=(s,sc)=>Array.from((sc||document).querySelectorAll(s));
-const $=(s,sc)=>(sc||document).querySelector(s);
+/* Navigation + Lang */
+const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
+const $=(q,sc)=>(sc||document).querySelector(q);
 
-/* Sections & Language */
+/* Sections & Language (site-wide) */
 (function(){
   function showSection(id){
     ['poem','works','reports'].forEach(x=>{
       const el=document.getElementById(x);
-      el.style.display=(x===id)?'block':'none';
+      if(el) el.style.display = (x===id)?'block':'none';
     });
-    $$('nav.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+    $$('nav.primary button[data-target]').forEach(b=>{
+      b.classList.toggle('active', b.dataset.target===id);
+    });
   }
-  $$('nav.primary button[data-target]').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target)));
+  $$('nav.primary button[data-target]').forEach(b=>{
+    b.addEventListener('click',()=>showSection(b.dataset.target));
+  });
   showSection('poem');
 
   const ko=$('#koBtn'), en=$('#enBtn'), hy=$('#hyBtn');
   function setLang(lang){
     document.body.className='';
     document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
-    [ko,en,hy].forEach(b=>b.classList.remove('active'));
-    ({ko:ko,en:en,hy:hy}[lang]).classList.add('active');
+    [ko,en,hy].forEach(b=>b&&b.classList.remove('active'));
+    ({ko:ko,en:en,hy:hy}[lang]?.classList.add('active'));
     localStorage.setItem('dz_lang',lang);
     document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
   }
-  ko.onclick=()=>setLang('ko'); en.onclick=()=>setLang('en'); hy.onclick=()=>setLang('hy');
+  ko&& (ko.onclick=()=>setLang('ko'));
+  en&& (en.onclick=()=>setLang('en'));
+  hy&& (hy.onclick=()=>setLang('hy'));
   setLang(localStorage.getItem('dz_lang')||'ko');
 })();
 
 /* Background waves & trail */
 (function(){
   try{
-    const waves=document.getElementById('waves').getContext('2d',{alpha:true});
-    const trail=document.getElementById('trail').getContext('2d',{alpha:true});
+    const waves=document.getElementById('waves')?.getContext('2d',{alpha:true});
+    const trail=document.getElementById('trail')?.getContext('2d',{alpha:true});
+    if(!waves||!trail) return;
     let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
     function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));[waves,trail].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR);c.canvas.height=Math.floor(innerHeight*DPR);c.setTransform(1,0,0,1,0,0);c.scale(1/DPR,1/DPR)})}
     resize(); addEventListener('resize',resize,{passive:true}); document.addEventListener('visibilitychange',()=>visible=!document.hidden);
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true}); addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
+    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
     const ease=x=>x*x*(3-2*x);
     const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
     function frame(now){
@@ -458,10 +432,11 @@ const $=(s,sc)=>(sc||document).querySelector(s);
         g.addColorStop(.5,`hsla(45,70%,68%,.30)`);
         g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
         waves.strokeStyle=g; waves.lineWidth=1.1+k*0.45; waves.globalAlpha=0.9-k*0.12; waves.shadowBlur=16; waves.shadowColor='rgba(160,200,255,.18)';
-        waves.stroke()
+        waves.stroke();
       }
       waves.globalAlpha=1; waves.shadowBlur=0;
-      px+=(tx-px)*0.16; py+=(ty-py)*0.16; const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
+      px+=(tx-px)*0.16; py+=(ty-py)*0.16;
+      const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
       trail.fillStyle='rgba(0,0,0,.12)'; trail.fillRect(0,0,innerWidth,innerHeight);
       const grad=trail.createRadialGradient(px,py,0,px,py,r);
       grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);
@@ -474,14 +449,16 @@ const $=(s,sc)=>(sc||document).querySelector(s);
   }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* Works (works.json) */
+/* Works panels (fetch /data/works.json) */
 (async function(){
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
-  const CB=await getCB();
-  async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json 로드 실패');return r.json()}
-  const WORKS=await loadWorks();
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
   const isKR=()=>!document.body.classList.contains('english');
+
+  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
+  const CB=await getCB();
+  async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json load failed');return r.json()}
+  let WORKS={};
+  try{WORKS=await loadWorks()}catch(e){console.warn(e);return}
 
   function cardHTML(w){
     const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
@@ -494,8 +471,10 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     const alt=[title,meta,size,year].filter(Boolean).join(' · ');
     return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
   }
+
   async function renderPanel(panelId,sectionKey){
     const host=document.getElementById(panelId);
+    if(!host) return;
     const list=Array.isArray(WORKS[sectionKey])?WORKS[sectionKey].slice(0,20):[];
     host.innerHTML=`<div class="grid">${list.map(cardHTML).join('')}</div>`;
     try{
@@ -512,6 +491,7 @@ const $=(s,sc)=>(sc||document).querySelector(s);
       $$(`#${panelId} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
+
   async function renderAll(){
     await Promise.all([
       renderPanel('panel-pray',MAP.pray),
@@ -522,9 +502,9 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     ]);
   }
   await renderAll();
-
   document.addEventListener('dz-lang-change',renderAll);
 
+  /* tab click */
   $$('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
@@ -532,12 +512,15 @@ const $=(s,sc)=>(sc||document).querySelector(s);
       $$('.tabpanel').forEach(p=>p.classList.remove('active'));
       const key=b.dataset.panel;
       document.getElementById('panel-'+key)?.classList.add('active');
-      window.scrollTo({top:document.getElementById('works').offsetTop-70,behavior:'smooth'});
+      const works=document.getElementById('works');
+      if(works) window.scrollTo({top:works.offsetTop-70,behavior:'smooth'});
     });
   });
 
+  /* Lightbox */
   (function attachLightbox(){
     const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prevBtn=$('#lbPrev'),nextBtn=$('#lbNext'),closeBtn=$('#lbClose');
+    if(!lb||!img) return;
     let list=[],idx=0,zoom=1,ox=0,oy=0,drag=false,sx=0,sy=0;
     function collect(panel){list=Array.from(panel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z)}
     function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
@@ -547,22 +530,25 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     document.addEventListener('click',e=>{
       const card=e.target.closest('.card'); if(!card) return;
       const panel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');
+      if(!panel) return;
       const cards=Array.from(panel.querySelectorAll('.card')); collect(panel);
       openAt(Math.max(0,cards.indexOf(card)));
     });
-    prevBtn.addEventListener('click',prev); nextBtn.addEventListener('click',next); closeBtn.addEventListener('click',close); $('#lightbox').addEventListener('click',e=>{if(e.target===lb) close()});
+    prevBtn&&prevBtn.addEventListener('click',prev);
+    nextBtn&&nextBtn.addEventListener('click',next);
+    closeBtn&&closeBtn.addEventListener('click',close);
+    $('#lightbox')?.addEventListener('click',e=>{if(e.target===lb) close()});
     lb.addEventListener('wheel',e=>{if(!lb.classList.contains('on'))return;e.preventDefault();const d=e.deltaY>0?0.9:1.1;const pz=zoom;zoom=Math.min(5,Math.max(1,zoom*d));if(zoom===1){ox=oy=0}else{const r=img.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2-ox;const cy=e.clientY-r.top-r.height/2-oy;ox-=cx*(zoom/pz-1);oy-=cy*(zoom/pz-1)}apply()},{passive:false});
-    img.addEventListener('mousedown',e=>{if(zoom===1)return;drag=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'}); 
-    window.addEventListener('mousemove',e=>{if(!drag)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()}); 
+    img.addEventListener('mousedown',e=>{if(zoom===1)return;drag=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'});
+    window.addEventListener('mousemove',e=>{if(!drag)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()});
     window.addEventListener('mouseup',()=>{drag=false;if(zoom>1)img.style.cursor='grab'});
     window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')prev();else if(e.key==='ArrowRight')next();else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()}else if(e.key==='-'){zoom=Math.max(zoom/1.25,1);if(zoom===1){ox=oy=0}apply()}});
   })();
 })();
 
-/* Reports Ω (DCAR01~DCAR50) */
+/* Reports (DCAR01~DCAR50 listing) */
 (async function(){
-  const root=document.getElementById('reports'); if(!root) return;
-  const grid=document.getElementById('r-grid');
+  const grid=document.getElementById('r-grid'); if(!grid) return;
   const tabs=$$('.r-tab');
   const ids = Array.from({length:50},(_,i)=>`DCAR${String(i+1).padStart(2,'0')}`);
 
@@ -611,10 +597,7 @@ const $=(s,sc)=>(sc||document).querySelector(s);
   const reports=(await Promise.all(ids.map(fetchOne))).filter(Boolean);
 
   function renderCards(mode){
-    if(!reports.length){
-      grid.innerHTML = '';
-      return;
-    }
+    if(!reports.length){ grid.innerHTML = ''; return; }
     grid.innerHTML = reports.map((r,i)=>{
       const link=`/reports/print-preview.html?file=${r.id}.md`;
       const parts = r.html.split(/<h3>EN<\/h3>/i);
@@ -633,8 +616,8 @@ const $=(s,sc)=>(sc||document).querySelector(s);
           <p class="r-sub">/reports/${r.id}.md</p>
           <div class="r-body">${body}</div>
           <div class="r-actions">
-            <a href="${link}" target="_blank" rel="noopener">미리보기·인쇄</a>
-            <button data-open="${r.id}">전체 보기</button>
+            <a href="${link}" target="_blank" rel="noopener">미리보기·인쇄 / Print</a>
+            <button data-open="${r.id}">전체 보기 / Open</button>
           </div>
         </div>
       </article>`;
@@ -659,7 +642,7 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     renderCards(mode);
   });
 
-  document.getElementById('r-grid').addEventListener('click',e=>{
+  grid.addEventListener('click',e=>{
     const id=e.target.getAttribute('data-open');
     if(!id) return;
     const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
@@ -667,17 +650,35 @@ const $=(s,sc)=>(sc||document).querySelector(s);
   });
 })();
 
-/* Prayer Resonance */
+/* Prayer Resonance (Audio) */
 (function(){
   const btn=document.getElementById('soundBtn'), stop=document.getElementById('soundStopBtn'), bar=document.querySelector('#fftBar span'); if(!btn||!stop||!bar) return;
   let ac=null,nodes=null,on=false,analyser=null,rafId=null;
   async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})}if(ac.state==='suspended')await ac.resume();return ac}
-  function G(v){const g=ac.createGain();g.gain.value=v;return g} function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
-  function createIR(len=1.8,decay=2.8){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}}return buf}
-  function drawFFT(){if(!analyser){rafId=requestAnimationFrame(drawFFT);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++){avg+=Math.abs(arr[i]-128)}avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(drawFFT)}
-  async function start(){if(on)return;await ensureAC();
+  function G(v){const g=ac.createGain();g.gain.value=v;return g}
+  function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
+  function createIR(len=1.8,decay=2.8){
+    const sr=ac.sampleRate, n=Math.floor(sr*len);
+    const buf=ac.createBuffer(2,n,sr);
+    for(let ch=0; ch<2; ch++){
+      const d=buf.getChannelData(ch);
+      for(let i=0;i<n;i++){
+        d[i]=(Math.random()*2-1)*Math.pow(1 - i/n, decay);
+      }
+    }
+    return buf;
+  }
+  function drawFFT(){
+    if(!analyser){rafId=requestAnimationFrame(drawFFT);return}
+    const arr=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteTimeDomainData(arr);
+    let avg=0;for(let i=0;i<arr.length;i++){avg+=Math.abs(arr[i]-128)}avg/=arr.length;
+    bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';
+    rafId=requestAnimationFrame(drawFFT);
+  }
+  async function start(){if(on) return; await ensureAC();
     const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.010);
-    const pan=ac.createStereoPanner();let panPhase=0;
+    const pan=ac.createStereoPanner(); let panPhase=0;
     const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);
     const lfo1=O('sine',7.83),lfo2=O('sine',5.0);
     const lpg=G(0.08),lpg2=G(0.06);
@@ -708,7 +709,8 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     on=false; btn.disabled=false; stop.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px'
   }
   const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock);window.removeEventListener('click',unlock)}
-  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true}); btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
+  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
+  btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
   document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
 })();
 
@@ -716,17 +718,20 @@ const $=(s,sc)=>(sc||document).querySelector(s);
 (function(){
   const tab = document.getElementById('tab-bio');
   const modal = document.getElementById('bio-modal');
+  if(!modal||!tab) return;
   const closeBtn = modal.querySelector('.bio-close');
   const langBtns = modal.querySelectorAll('.bio-lang .lang');
   const blocks = modal.querySelectorAll('[data-lang-block]');
   const expoToggle = document.getElementById('expo-toggle');
   const expoKR = document.getElementById('expo-blocks');
   const expoEN = document.getElementById('expo-blocks-en');
+  const titleKo = modal.querySelector('h2.ko');
+  const titleEn = modal.querySelector('h2.en');
 
   function openModal(){
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
-    setLang((localStorage.getItem('bioLang')||'KR'));
+    setLang((localStorage.getItem('bioLang')|| (document.body.classList.contains('english')?'EN':'KR')));
     setExpo(false);
   }
   function closeModal(){
@@ -740,10 +745,15 @@ const $=(s,sc)=>(sc||document).querySelector(s);
       btn.classList.toggle('active', on);
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
+    titleKo.style.display = (code==='KR')?'block':'none';
+    titleEn.style.display = (code==='EN')?'block':'none';
+
+    // One-line summary sync
+    expoToggle.innerHTML = (code==='KR')
+      ? '<span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾</span>'
+      : '<span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>';
+
     localStorage.setItem('bioLang',code);
-    expoToggle.textContent = (code==='KR')
-      ? '등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾'
-      : 'DUNGZAK CESTLAVIE · Solo Exhibitions: 28 exhibitions worldwide ▾';
   }
   function setExpo(open){
     expoKR?.setAttribute('data-open', open ? 'true' : 'false');
@@ -751,14 +761,14 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     expoToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
-  tab?.addEventListener('click', openModal);
+  tab.addEventListener('click', openModal);
   closeBtn?.addEventListener('click', closeModal);
   modal.querySelector('.bio-backdrop')?.addEventListener('click', closeModal);
   langBtns.forEach(btn=>btn.addEventListener('click',()=>setLang(btn.dataset.lang)));
   expoToggle.addEventListener('click',()=> setExpo(expoToggle.getAttribute('aria-expanded')!=='true'));
   window.addEventListener('keydown',e=>{ if(e.key==='Escape' && !modal.hidden) closeModal(); });
 
-  // 사이트 전반 언어 변경과 동기화(선택값 유지)
+  // Sync with site language changes
   document.addEventListener('dz-lang-change',ev=>{
     const site = ev.detail; // 'ko' | 'en' | 'hy'
     if(site==='ko') setLang('KR');

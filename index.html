@@ -116,6 +116,25 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 
 /* motion reduce */
 @media(prefers-reduced-motion:reduce){#waves,#trail{display:none}}
+
+/* ===== Artist Bio modal (Ω 톤) ===== */
+#bio-modal[hidden]{display:none}
+#bio-modal{position:fixed;inset:0;z-index:9999}
+.bio-backdrop{position:absolute;inset:0;background:rgba(6,10,24,.62);backdrop-filter:saturate(1.1) blur(6px)}
+.bio-card{position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.2);border-radius:16px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.5)}
+.bio-head{display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.90))}
+.bio-head h2{margin:0;font-size:1.2rem;letter-spacing:.02em}
+.bio-lang{margin-left:auto;display:flex;gap:6px}
+.bio-lang .lang{border:1px solid rgba(255,215,120,.35);background:transparent;color:#f2dca6;padding:6px 10px;border-radius:10px;cursor:pointer}
+.bio-lang .lang.active{box-shadow:0 0 8px rgba(255,215,120,.55)}
+.bio-close{border:0;background:transparent;color:#fff;font-size:1.1rem;padding:6px 8px;cursor:pointer}
+.bio-body p{line-height:1.62}
+details{border:1px solid rgba(255,215,120,.16);border-radius:12px;padding:.6rem .8rem;margin:.75rem 0}
+details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
+.expo-kicker{display:block;width:100%;text-align:left;margin:.25rem 0 1rem;border:1px dashed rgba(255,215,120,.28);border-radius:10px;background:transparent;color:#f9e6b7;padding:.6rem .75rem;cursor:pointer}
+.slide-wrap{overflow:hidden;transition:max-height .45s ease;max-height:0}
+.slide-wrap[data-open="true"]{max-height:4000px}
+@media(max-width:480px){.bio-card{width:94vw;max-height:86vh}}
 </style>
 </head>
 <body class="korean">
@@ -128,6 +147,8 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
     <button data-target="poem" class="active">Poem</button>
     <button data-target="works">Works</button>
     <button data-target="reports">Reports</button>
+    <!-- Artist Bio 탭 추가 -->
+    <button id="tab-bio">Artist Bio</button>
   </nav>
   <div class="lang" aria-label="Language">
     <button id="koBtn" class="active">KR</button>
@@ -193,6 +214,164 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
   </section>
 </main>
 
+<!-- ===== Artist Bio Modal (KR/EN, 전시 전체 펼침) ===== -->
+<div id="bio-modal" hidden>
+  <div class="bio-backdrop"></div>
+  <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title">
+    <header class="bio-head">
+      <h2 id="bio-title">Artist Bio</h2>
+      <div class="bio-lang">
+        <button class="lang active" data-lang="KR" aria-pressed="true">KR</button>
+        <button class="lang" data-lang="EN" aria-pressed="false">EN</button>
+      </div>
+      <button class="bio-close" aria-label="Close">✕</button>
+    </header>
+
+    <!-- 상단 한 줄 요약 = 전시 섹션 전체 토글 버튼 -->
+    <button id="expo-toggle" class="expo-kicker" aria-expanded="false" aria-controls="expo-blocks">
+      등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾
+    </button>
+
+    <!-- ===== Korean ===== -->
+    <section class="bio-body" data-lang-block="KR">
+      <h3 style="margin-top:.5rem;">Artist Bio</h3>
+      <p>등작 燈酌 DUNGZAK CESTLAVIE는 빛과 기억, 존재의 근원을 탐구하는 한국 현대 예술가다. 그의 작업은 인간이 스쳐 지나가는 감정의 흔적, 상처를 통과한 빛의 기원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 시각 언어로 기록한다.</p>
+      <p>서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바 등지에서 회화와 다매체 프로젝트를 전개해 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 “빛의 윤리”와 “기억의 존엄”을 탐구한다. 작품의 빛은 단순한 효과가 아니라 감정의 회복과 인간다움의 귀환을 촉발하는 정신적 구조로 작동한다.</p>
+      <p>등작의 회화는 기도문이자 기록, 그리고 응시다. 그는 흔적과 여백을 통해 우리가 잃지 말아야 할 감정의 기초를 재구성하며, “빛·기억·존재” 미학 보고서(DCAR 시리즈)와 DUNGZAK ART UNIVERSE를 확장하고 있다.</p>
+      <p>그의 세계는 상처 이후에도 남는 따스함, 사라지지 않는 기억의 힘, 그리고 인간 존엄에 대한 조용한 선언이다.</p>
+
+      <div id="expo-blocks" class="slide-wrap" data-open="false">
+        <details open>
+          <summary><strong>국내 주요전시</strong></summary>
+          <ul>
+            <li>2025 구구갤러리 목동, 서울, 대한민국</li>
+            <li>2023, 2024 구구갤러리 목동, 서울, 대한민국</li>
+            <li>2023 아트플러스 갤러리 인사동, 서울, 대한민국</li>
+            <li>2019, 2022 해양 에너지 정원 한남동, 서울,  대한민국</li>
+            <li>2015 NC 갤러리 부산, 대한민국</li>
+            <li>2014 갤러리 골목 이태원, 서울, 대한민국</li>
+            <li>2013 프라미스 랜드 부산, 대한민국</li>
+            <li>2009 아트 갤러리 유 부산, 대한민국</li>
+            <li>2005 횡성 문화관 강원도, 대한민국</li>
+            <li>2003 스페이스 키친 서울, 대한민국</li>
+            <li>2003 홍대 놀이터에서 봄여름 가을 겨울 사계 야외 작업과 야외 전시 서울, 대한민국</li>
+            <li>2000 갤러리 소호 부산, 대한민국</li>
+            <li>2000 세원백화점 부산, 대한민국</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>국외 주요전시</strong></summary>
+          <ul>
+            <li>2016 Berlin Mitte Live Concert Bar 베를린, 독일</li>
+            <li>2015 러시아 모스크바 국제공항 삶과 예술의 간격</li>
+            <li>2014 베트남에서 자유롭게 예술과 발언에 의한 즉흥적인 퍼포먼스와 작품 전시를 호찌민시 중앙 경찰서에서 열었음</li>
+            <li>2011 Open Art in Amsterdam Netherlands</li>
+            <li>2006 네덜란드 암스테르담 Linka 갤러리</li>
+            <li>2005 프랑스 파리 몽파르나스 Lune Cafe</li>
+            <li>2005 프랑스 파리 루브르 박물관 외벽 전시</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>그 외 전시</strong></summary>
+          <ul>
+            <li>2025 그림따라 걷는 도시 익산 익산, 대한민국</li>
+            <li>2025 갤러리5 전국 주요 작가 초대전 인천, 대한민국</li>
+            <li>2024, 2025 구구갤러리 송년 선물전 서울, 대한민국</li>
+            <li>2022 김영우, 등작 2인전 아르템 갤러리 충무로, 서울, 대한민국</li>
+            <li>2004 광주비엔날레 The stage 광주, 대한민국</li>
+            <li>2004 하대리 여름 숲속 미술제_‘예술의 휴가’ 횡성군, 대한민국</li>
+            <li>2000 호세 델가도, 등작 2인전 서면 메트로 미술관 부산, 대한민국</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>소장</strong></summary>
+          <p>독일 베를린 시청 / 독일 훔볼트 병원 / 프랑스 파리 노트르담 대성당 / 프랑스 파리 정치대학 / 폴란드 바르샤바 국립 의료원 / 일본 도쿄 교회 / 베트남 호찌민시 중앙 경찰서 / 네덜란드 암스테르담 반 고흐 미술관 (Portfolio 소장) / 미국 뉴욕 현대 미술관 (Portfolio 소장) / 국내외 개인 소장자 다수</p>
+        </details>
+
+        <details>
+          <summary><strong>저서</strong></summary>
+          <ul>
+            <li>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망(2022년 발간)</li>
+            <li>예술, 그 끝없는 사랑(2024년 발간)</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===== English ===== -->
+    <section class="bio-body" data-lang-block="EN" hidden>
+      <h3 style="margin-top:.5rem;">English Artist Bio</h3>
+      <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being. His practice records the traces of feeling we overlook, the genesis of light passing through wounds, and the cyclical rhythm of disappearance and rebirth.</p>
+      <p>Working from Seoul and across Berlin, Paris, Amsterdam, Warsaw, and Moscow, he integrates painting, text, sound, video, and archival forms to pursue an ethics of light and a dignity of memory. In his works, light functions not as effect but as a mental architecture that catalyzes emotional restoration and the return of humaneness.</p>
+      <p>His paintings are prayers, records, and acts of looking. Through traces and intervals, he rebuilds the foundations of feeling we must not lose, while expanding the DCAR Aesthetic Reports and the DUNGZAK ART UNIVERSE.</p>
+      <p>This world is a quiet declaration: the warmth that remains after wounding, the force of memory that does not fade, and the enduring dignity of the human.</p>
+
+      <div id="expo-blocks-en" class="slide-wrap" data-open="false">
+        <details open>
+          <summary><strong>Major Exhibitions in Korea</strong></summary>
+          <ul>
+            <li>2025 Gugu Gallery Mokdong, Seoul, Korea</li>
+            <li>2023, 2024 Gugu Gallery Mokdong, Seoul, Korea</li>
+            <li>2023 Art Plus Gallery Insadong, Seoul, Korea</li>
+            <li>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Korea</li>
+            <li>2015 NC Gallery, Busan, Korea</li>
+            <li>2014 Gallery Golmok, Itaewon, Seoul, Korea</li>
+            <li>2013 Promise Land, Busan, Korea</li>
+            <li>2009 Art Gallery You, Busan, Korea</li>
+            <li>2005 Hoengseong Cultural Center, Gangwon-do, Korea</li>
+            <li>2003 Space Kitchen, Seoul, Korea</li>
+            <li>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Korea</li>
+            <li>2000 Gallery Soho, Busan, Korea</li>
+            <li>2000 Sewon Department Store, Busan, Korea</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>Major International Exhibitions</strong></summary>
+          <ul>
+            <li>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</li>
+            <li>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</li>
+            <li>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</li>
+            <li>2011 Open Art in Amsterdam, Netherlands</li>
+            <li>2006 Linka Gallery, Amsterdam, Netherlands</li>
+            <li>2005 Lune Cafe, Montparnasse, Paris, France</li>
+            <li>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>Selected Other Exhibitions</strong></summary>
+          <ul>
+            <li>2025 Walking with Art in Iksan, Korea</li>
+            <li>2025 Gallery 5 National Invitational Exhibition, Incheon, Korea</li>
+            <li>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Korea</li>
+            <li>2022 Kim Young-woo &amp; Dungzak Two-Person Exhibition, Artem Gallery, Seoul, Korea</li>
+            <li>2004 Gwangju Biennale “The Stage”, Gwangju, Korea</li>
+            <li>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun, Korea</li>
+            <li>2000 José Delgado &amp; Dungzak Two-Person Exhibition, Seomyeon Metro Art Museum, Busan, Korea</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary><strong>Collections</strong></summary>
+          <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland; Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum, Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); numerous private collections worldwide.</p>
+        </details>
+
+        <details>
+          <summary><strong>Publications</strong></summary>
+          <ul>
+            <li><em>Tears Never Stop — The Artist’s Duty and Human Desire</em> (2022)</li>
+            <li><em>Art, the Endless Love</em> (2024)</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+  </div>
+</div>
+
 <div id="lightbox" aria-hidden="true">
   <div class="lb-stage">
     <img id="lbImg" alt="Artwork view">
@@ -235,7 +414,7 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     });
     $$('nav.primary button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
   }
-  $$('nav.primary button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target)));
+  $$('nav.primary button[data-target]').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.target)));
   showSection('poem');
 
   const ko=$('#koBtn'), en=$('#enBtn'), hy=$('#hyBtn');
@@ -523,7 +702,7 @@ const $=(s,sc)=>(sc||document).querySelector(s);
     (function filterBreath(){if(!ac)return;try{lp.frequency.setTargetAtTime(700+Math.sin(ac.currentTime*0.3)*250,ac.currentTime,0.3)}catch{} if(on)setTimeout(filterBreath,160)})();
     nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stop.disabled=false; drawFFT()
   }
-  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim}=nodes;const t=ac.currentTime;
+  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes;const t=ac.currentTime;
     [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8)}catch{}});
     setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1900);
     on=false; btn.disabled=false; stop.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px'
@@ -531,6 +710,60 @@ const $=(s,sc)=>(sc||document).querySelector(s);
   const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock);window.removeEventListener('click',unlock)}
   window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true}); btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
   document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
+})();
+
+/* ===== Artist Bio interactions ===== */
+(function(){
+  const tab = document.getElementById('tab-bio');
+  const modal = document.getElementById('bio-modal');
+  const closeBtn = modal.querySelector('.bio-close');
+  const langBtns = modal.querySelectorAll('.bio-lang .lang');
+  const blocks = modal.querySelectorAll('[data-lang-block]');
+  const expoToggle = document.getElementById('expo-toggle');
+  const expoKR = document.getElementById('expo-blocks');
+  const expoEN = document.getElementById('expo-blocks-en');
+
+  function openModal(){
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setLang((localStorage.getItem('bioLang')||'KR'));
+    setExpo(false);
+  }
+  function closeModal(){
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+  function setLang(code){
+    blocks.forEach(b => b.hidden = (b.getAttribute('data-lang-block')!==code));
+    langBtns.forEach(btn=>{
+      const on = (btn.dataset.lang===code);
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    localStorage.setItem('bioLang',code);
+    expoToggle.textContent = (code==='KR')
+      ? '등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾'
+      : 'DUNGZAK CESTLAVIE · Solo Exhibitions: 28 exhibitions worldwide ▾';
+  }
+  function setExpo(open){
+    expoKR?.setAttribute('data-open', open ? 'true' : 'false');
+    expoEN?.setAttribute('data-open', open ? 'true' : 'false');
+    expoToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  tab?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+  modal.querySelector('.bio-backdrop')?.addEventListener('click', closeModal);
+  langBtns.forEach(btn=>btn.addEventListener('click',()=>setLang(btn.dataset.lang)));
+  expoToggle.addEventListener('click',()=> setExpo(expoToggle.getAttribute('aria-expanded')!=='true'));
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && !modal.hidden) closeModal(); });
+
+  // 사이트 전반 언어 변경과 동기화(선택값 유지)
+  document.addEventListener('dz-lang-change',ev=>{
+    const site = ev.detail; // 'ko' | 'en' | 'hy'
+    if(site==='ko') setLang('KR');
+    else if(site==='en') setLang('EN');
+  });
 })();
 </script>
 </body>

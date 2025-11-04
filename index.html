@@ -9,7 +9,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
 
 <style>
 :root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
@@ -272,7 +272,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>2004 하대리 숲속 미술제 “예술의 휴가”</p>
         <p>2000 José Delgado·등작 2인전, 부산</p>
         <br><p><strong>소장</strong></p>
-        <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 반 고흐 미술관(Portfolio) / MoMA(Portfolio) / 개인 소장 다수</p>
+        <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 반 고흐 미술관(Portfolio) / MoMA(Portfolio) / 메리츠 증권 / 개인 소장 다수</p>
         <br><p><strong>저서</strong></p>
         <p>《눈물은 절대 멈추지 않는다》(2022)</p>
         <p>《예술, 그 끝없는 사랑》(2024)</p>
@@ -311,14 +311,14 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
         <p>2000 Two-person Exhibition (José Delgado & Dungzak), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
         <br><p><strong>Collections</strong></p>
-        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department; Van Gogh Museum (Portfolio), Amsterdam; MoMA, New York (Portfolio); numerous private collections.</p>
+        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department; Van Gogh Museum (Portfolio), Amsterdam; MoMA, New York (Portfolio); Meritz Securities Co., Ltd., Republic of Korea; numerous private collections.</p>
         <br><p><strong>Publications</strong></p>
         <p><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
         <p><em>Art, the Endless Love</em> (2024)</p>
       </div>
     </div>
 
-    <!-- Bio main text (KR: ‘등작 燈酌 DUNGZAK CESTLAVIE’ / EN: ‘DUNGZAK CESTLAVIE’) -->
+    <!-- Bio main text -->
     <div class="bio-body">
       <div class="ko">
         <p><strong>작가 소개</strong></p>
@@ -674,8 +674,8 @@ window.DZ_BIO=(function(){
     low.connect(base).connect(bp).connect(lp); low2.connect(mid).connect(bp); floor.connect(sub).connect(bp); ch1.connect(shim).connect(lp); ch2.connect(shim).connect(lp);
     lp.connect(dry).connect(pan).connect(ac.destination); lp.connect(wet).connect(conv).connect(pan).connect(ac.destination); bp.connect(dry).connect(pan); bp.connect(wet).connect(conv);
     analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
-    [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
+    [low,low2,floor,ch1,ch2].forEach(o=>o.start());
+    [base.gain,sub.gain,mid,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
     (function panLoop(){if(!ac||!pan)return; try{pan.pan.value=Math.sin(performance.now()*0.000012)*0.35}catch{} if(on) requestAnimationFrame(panLoop)})();
     (function breath(){if(!ac)return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160)})();
     nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stopBtn.disabled=false; draw();
@@ -683,7 +683,7 @@ window.DZ_BIO=(function(){
   function stop(){
     if(!on||!nodes||!ac) return;
     const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes, t=ac.currentTime;
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
+    [base.gain,sub.gain,mid,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
     setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1700);
     on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px';
   }

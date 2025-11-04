@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.7.2</title>
+<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.8</title>
 <meta name="description" content="빛 · 기억 · 존재 — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
-<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.7.2" />
+<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.8" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
@@ -99,7 +99,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
-  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.7.2</div>
+  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.8</div>
   <nav class="primary" aria-label="Primary">
     <button data-target="poem" class="active">Poem</button>
     <button data-target="works">Works</button>
@@ -158,661 +158,606 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <div id="panel-cosmos" class="tabpanel"></div>
   </section>
 
-  <!-- REPORTS -->
-  <section id="reports" class="reports-omega" style="display:none">
-    <div class="r-head">
-      <h2>미학 보고서 · Aesthetic Reports (DCAR Series)</h2>
-      <div class="r-tabs" role="tablist" aria-label="Language filter">
-        <button class="r-tab is-active" data-lang="kr" aria-selected="true">KR</button>
-        <button class="r-tab" data-lang="en" aria-selected="false">EN</button>
-        <button class="r-tab" data-lang="both" aria-selected="false">KR+EN</button>
-      </div>
-    </div>
-    <div id="r-grid" class="r-grid" aria-live="polite"></div>
-  </section>
-</main>
-
-<!-- ===== ARTIST BIO MODAL ===== -->
+<!-- ✅ ARTIST BIO MODAL -->
 <div id="bio-modal" hidden>
   <div class="bio-backdrop"></div>
-  <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title">
-    <header class="bio-head">
-      <h2 id="bio-title" class="ko">작가 소개</h2>
-      <h2 id="bio-title" class="en">Artist Bio</h2>
+  <div class="bio-card">
+
+    <div class="bio-head">
+      <h2 class="ko">작가 소개</h2>
+      <h2 class="en">Artist Bio</h2>
 
       <div class="bio-lang">
-        <button class="lang active" data-lang="KR" aria-pressed="true">KR</button>
-        <button class="lang" data-lang="EN" aria-pressed="false">EN</button>
+        <button class="lang active" data-bio-lang="kr">KR</button>
+        <button class="lang" data-bio-lang="en">EN</button>
       </div>
-      <button class="bio-close" aria-label="Close">✕</button>
-    </header>
+      <button class="bio-close">✕</button>
+    </div>
 
-    <!-- Exhibition Toggle -->
-    <button id="expo-toggle" class="expo-kicker" aria-expanded="false" aria-controls="expo-blocks">
-      <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾</span>
+    <!-- ✅ 전시 한줄 -->
+    <button class="expo-kicker" id="expoToggle">
+      <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 28회 ▾</span>
       <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
     </button>
 
-    <!-- ===== Korean Bio ===== -->
-    <section class="bio-body" data-lang-block="KR">
-      <h3 style="margin-top:.5rem;">작가 소개</h3>
+    <!-- ✅ 전시 전체 슬라이드 -->
+    <div class="slide-wrap" id="expoSlide">
 
-      <p>등작 燈酌 DUNGZAK CESTLAVIE는 빛과 기억, 존재의 근원을 탐구하는 한국 현대 예술가다. 그의 작업은 인간이 스쳐 지나가는 감정의 흔적, 상처를 통과한 빛의 기원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 시각 언어로 기록한다.</p>
-      <p>서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바 등지에서 회화와 다매체 프로젝트를 전개해 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 “빛의 윤리”와 “기억의 존엄”을 탐구한다. 작품의 빛은 단순한 효과가 아니라 감정의 회복과 인간다움의 귀환을 촉발하는 정신적 구조로 작동한다.</p>
-      <p>등작의 회화는 기도문이자 기록, 그리고 응시다. 그는 흔적과 여백을 통해 우리가 잃지 말아야 할 감정의 기초를 재구성하며, “빛·기억·존재” 미학 보고서(DCAR 시리즈)와 DUNGZAK ART UNIVERSE를 확장하고 있다.</p>
-      <p>그의 세계는 상처 이후에도 남는 따스함, 사라지지 않는 기억의 힘, 그리고 인간 존엄에 대한 조용한 선언이다.</p>
+      <!-- Korean Exhibition List -->
+      <div class="ko bio-body">
+        <p><strong>국내 주요전시</strong></p>
+        <p>2025 구구갤러리 목동, 서울, 대한민국</p>
+        <p>2023, 2024 구구갤러리 목동, 서울, 대한민국</p>
+        <p>2023 아트플러스 갤러리 인사동, 서울, 대한민국</p>
+        <p>2019, 2022 해양 에너지 정원 한남동, 서울, 대한민국</p>
+        <p>2015 NC 갤러리 부산, 대한민국</p>
+        <p>2014 갤러리 골목 이태원, 서울, 대한민국</p>
+        <p>2013 프라미스 랜드 부산, 대한민국</p>
+        <p>2009 아트 갤러리 유 부산, 대한민국</p>
+        <p>2005 횡성 문화관 강원도, 대한민국</p>
+        <p>2003 스페이스 키친 서울, 대한민국</p>
+        <p>2003 홍대 놀이터 사계 야외 전시, 서울, 대한민국</p>
+        <p>2000 갤러리 소호 부산, 대한민국</p>
+        <p>2000 세원백화점 부산, 대한민국</p>
 
-      <!-- EXHIBITIONS FULL LIST -->
-      <div id="expo-blocks" class="slide-wrap" data-open="false">
-        <details open>
-          <summary><strong>국내 주요전시</strong></summary>
-          <ul>
-            <li>2025 구구갤러리 목동, 서울, 대한민국</li>
-            <li>2023–2024 구구갤러리 목동, 서울, 대한민국</li>
-            <li>2023 아트플러스 갤러리 인사동, 서울, 대한민국</li>
-            <li>2019–2022 해양 에너지 정원 한남동, 서울</li>
-            <li>2015 NC 갤러리 부산, 대한민국</li>
-            <li>2014 갤러리 골목 이태원, 서울, 대한민국</li>
-            <li>2013 프라미스 랜드 부산, 대한민국</li>
-            <li>2009 아트 갤러리 유 부산, 대한민국</li>
-            <li>2005 횡성 문화관 강원도, 대한민국</li>
-            <li>2003 스페이스 키친 서울, 대한민국</li>
-            <li>2003 홍대 놀이터 사계 야외 프로젝트 & 전시 서울</li>
-            <li>2000 갤러리 소호 부산, 대한민국</li>
-            <li>2000 세원백화점 부산, 대한민국</li>
-          </ul>
-        </details>
+        <br><p><strong>국외 주요전시</strong></p>
+        <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
+        <p>2015 러시아 모스크바 국제공항 『삶과 예술의 간격』</p>
+        <p>2014 호찌민시 중앙 경찰서 즉흥 퍼포먼스 전시</p>
+        <p>2011 Open Art in Amsterdam, 네덜란드</p>
+        <p>2006 Linka 갤러리, 암스테르담, 네덜란드</p>
+        <p>2005 Lune Cafe 몽파르나스, 파리, 프랑스</p>
+        <p>2005 루브르 박물관 외벽 전시, 파리, 프랑스</p>
 
-        <details>
-          <summary><strong>국외 주요전시</strong></summary>
-          <ul>
-            <li>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</li>
-            <li>2015 모스크바 국제공항 — 삶과 예술의 간격</li>
-            <li>2014 호찌민시 중앙 경찰서 — 즉흥 전시·퍼포먼스</li>
-            <li>2011 오픈 아트 인 암스테르담, 네덜란드</li>
-            <li>2006 Linka Gallery 암스테르담, 네덜란드</li>
-            <li>2005 Lune Cafe 몽파르나스, 파리, 프랑스</li>
-            <li>2005 루브르 박물관 외벽 전시, 파리, 프랑스</li>
-          </ul>
-        </details>
+        <br><p><strong>그 외 전시</strong></p>
+        <p>2025 그림따라 걷는 도시 익산, 대한민국</p>
+        <p>2025 갤러리5 전국 작가 초대전 인천, 대한민국</p>
+        <p>2024, 2025 구구갤러리 송년 선물전, 서울, 대한민국</p>
+        <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울, 대한민국</p>
+        <p>2004 광주비엔날레 『The Stage』, 광주, 대한민국</p>
+        <p>2004 하대리 숲속 미술제 『예술의 휴가』, 횡성군, 대한민국</p>
+        <p>2000 호세 델가도·등작 2인전, 부산, 대한민국</p>
 
-        <details>
-          <summary><strong>그 외 전시</strong></summary>
-          <ul>
-            <li>2025 그림따라 걷는 도시 익산</li>
-            <li>2025 갤러리5 전국 초대전, 인천</li>
-            <li>2024–2025 구구갤러리 송년 선물전, 서울</li>
-            <li>2022 김영우·등작 2인전, 아르템 갤러리 충무로</li>
-            <li>2004 광주비엔날레 The Stage</li>
-            <li>2004 하대리 숲속 미술제 ‘예술의 휴가’</li>
-            <li>2000 José Delgado·등작 2인전, 서면 메트로 미술관</li>
-          </ul>
-        </details>
+        <br><p><strong>소장처</strong></p>
+        <p>독일 베를린 시청 / 독일 훔볼트 병원</p>
+        <p>프랑스 파리 노트르담 대성당 / 파리 정치대학</p>
+        <p>폴란드 바르샤바 국립 의료원</p>
+        <p>일본 도쿄 교회</p>
+        <p>베트남 호찌민시 중앙 경찰서</p>
+        <p>네덜란드 반 고흐 미술관 (Portfolio)</p>
+        <p>미국 뉴욕 MoMA (Portfolio)</p>
+        <p>국내외 개인 소장자 다수</p>
 
-        <details>
-          <summary><strong>소장</strong></summary>
-          <p>독일 베를린 시청 / 훔볼트 병원 / 프랑스 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 암스테르담 반 고흐 미술관(Portfolio) / 뉴욕 MoMA(Portfolio) / 개인 소장 다수</p>
-        </details>
-
-        <details>
-          <summary><strong>저서</strong></summary>
-          <ul>
-            <li>눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망 (2022)</li>
-            <li>예술, 그 끝없는 사랑 (2024)</li>
-          </ul>
-        </details>
+        <br><p><strong>저서</strong></p>
+        <p>《눈물은 절대 멈추지 않는다》 (2022)</p>
+        <p>《예술, 그 끝없는 사랑》 (2024)</p>
       </div>
-    </section>
 
-    <!-- ===== English Bio ===== -->
-    <section class="bio-body" data-lang-block="EN" hidden>
-      <h3 style="margin-top:.5rem;">Artist Bio</h3>
+      <!-- English Exhibition List -->
+      <div class="en bio-body">
+        <p><strong>Major Exhibitions in Korea</strong></p>
+        <p>2025 Gugu Gallery Mokdong, Seoul, Korea</p>
+        <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Korea</p>
+        <p>2023 Art Plus Gallery, Insadong, Seoul, Korea</p>
+        <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Korea</p>
+        <p>2015 NC Gallery, Busan, Korea</p>
+        <p>2014 Gallery Golmok, Itaewon, Seoul, Korea</p>
+        <p>2013 Promise Land, Busan, Korea</p>
+        <p>2009 Art Gallery You, Busan, Korea</p>
+        <p>2005 Hoengseong Cultural Center, Korea</p>
+        <p>2003 Space Kitchen, Seoul, Korea</p>
+        <p>2003 Seasonal Outdoor Street Exhibition, Hongdae, Korea</p>
+        <p>2000 Gallery Soho, Busan, Korea</p>
+        <p>2000 Sewon Department Store, Busan, Korea</p>
 
-      <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being. His practice traces fleeting emotions, the birth of light through wounds, and the cycles of disappearance and rebirth.</p>
-      <p>Based in Seoul and working across Berlin, Paris, Amsterdam, Warsaw, and Moscow, he integrates painting, text, sound, video, and archival forms to pursue an ethics of light and dignity of memory. Light in his work operates not as effect but as a mental architecture awakening emotional restoration and humaneness.</p>
-      <p>His paintings are prayers, documents, and gazes. Through traces and intervals, he reconstructs the foundations of feeling and expands the DCAR Aesthetic Reports and the DUNGZAK ART UNIVERSE.</p>
-      <p>This world is a quiet declaration: warmth that remains after pain, memory that refuses to fade, and the enduring dignity of the human.</p>
+        <br><p><strong>Major International Exhibitions</strong></p>
+        <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
+        <p>2015 Moscow International Airport — “The Distance Between Life and Art”, Russia</p>
+        <p>2014 Improvised Performance & Exhibition, Ho Chi Minh City Police Dept, Vietnam</p>
+        <p>2011 Open Art in Amsterdam, Netherlands</p>
+        <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
+        <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
+        <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
 
-      <div id="expo-blocks-en" class="slide-wrap" data-open="false">
-        <details open>
-          <summary><strong>Major Exhibitions in Korea</strong></summary>
-          <ul>
-            <li>2025 Gugu Gallery Mokdong, Seoul</li>
-            <li>2023–2024 Gugu Gallery Mokdong, Seoul</li>
-            <li>2023 Art Plus Gallery Insadong, Seoul</li>
-            <li>2019–2022 Ocean Energy Garden, Hannam-dong, Seoul</li>
-            <li>2015 NC Gallery, Busan</li>
-            <li>2014 Gallery Golmok, Itaewon, Seoul</li>
-            <li>2013 Promise Land, Busan</li>
-            <li>2009 Art Gallery You, Busan</li>
-            <li>2005 Hoengseong Cultural Center</li>
-            <li>2003 Space Kitchen, Seoul</li>
-            <li>2003 Seasonal Outdoor Project, Hongdae Playground</li>
-            <li>2000 Gallery Soho, Busan</li>
-            <li>2000 Sewon Department Store, Busan</li>
-          </ul>
-        </details>
+        <br><p><strong>Selected Other Exhibitions</strong></p>
+        <p>2025 Walking with Art in Iksan, Korea</p>
+        <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Korea</p>
+        <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Korea</p>
+        <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul</p>
+        <p>2004 Gwangju Biennale “The Stage”, Korea</p>
+        <p>2004 Summer Forest Art Festival “Art Vacation”, Hoengseong-gun, Korea</p>
+        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Busan, Korea</p>
 
-        <details>
-          <summary><strong>Major International Exhibitions</strong></summary>
-          <ul>
-            <li>2016 Berlin Mitte Live Concert Bar, Berlin</li>
-            <li>2015 Moscow International Airport — “The Distance Between Life and Art”</li>
-            <li>2014 Improvised exhibition at Ho Chi Minh City Central Police HQ</li>
-            <li>2011 Open Art in Amsterdam, Netherlands</li>
-            <li>2006 Linka Gallery, Amsterdam</li>
-            <li>2005 Lune Cafe, Montparnasse, Paris</li>
-            <li>2005 Exterior Wall Exhibition, Louvre Museum, Paris</li>
-          </ul>
-        </details>
+        <br><p><strong>Collections</strong></p>
+        <p>Berlin City Hall / Humboldt Hospital, Germany</p>
+        <p>Notre-Dame Cathedral / Sciences Po, Paris</p>
+        <p>National Medical Institute, Warsaw</p>
+        <p>Tokyo Church, Japan</p>
+        <p>Ho Chi Minh City Police Dept, Vietnam</p>
+        <p>Van Gogh Museum, Amsterdam (Portfolio)</p>
+        <p>Museum of Modern Art, New York (Portfolio)</p>
+        <p>Private collectors worldwide</p>
 
-        <details>
-          <summary><strong>Selected Other Exhibitions</strong></summary>
-          <ul>
-            <li>2025 Walking with Art in Iksan</li>
-            <li>2025 Gallery 5 National Invitational Exhibition, Incheon</li>
-            <li>2024–2025 Gugu Gallery Year-End Exhibition, Seoul</li>
-            <li>2022 Kim Young-woo & Dungzak Two-Person Exhibition, Seoul</li>
-            <li>2004 Gwangju Biennale “The Stage”</li>
-            <li>2004 Summer Forest Art Festival “Art Vacation”</li>
-            <li>2000 José Delgado & Dungzak Two-Person Exhibition, Busan</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary><strong>Collections</strong></summary>
-          <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral; Sciences Po Paris; National Medical Institute Warsaw; Church in Tokyo; Ho Chi Minh Police HQ; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); numerous private collections.</p>
-        </details>
-
-        <details>
-          <summary><strong>Publications</strong></summary>
-          <ul>
-            <li><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</li>
-            <li><em>Art, the Endless Love</em> (2024)</li>
-          </ul>
-        </details>
+        <br><p><strong>Publications</strong></p>
+        <p>Tears Never Stop — The Artist’s Duty and Human Desire (2022)</p>
+        <p>Art, the Endless Love (2024)</p>
       </div>
-    </section>
+    </div>
+
+    <br>
+    <!-- ✅ Bio Main Text -->
+    <div class="bio-body">
+
+      <div class="ko">
+        <p><strong>작가 소개</strong></p>
+        <p>등작 燈酌 DUNGZAK CESTLAVIE는 빛과 기억, 존재의 근원을 탐구하는 한국 현대 예술가다.</p>
+        <p>그의 작업은 인간이 스쳐 지나가는 감정의 흔적, 상처를 통과한 빛의 기원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 기록한다.</p>
+        <p>서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바에서 회화와 다매체 프로젝트를 전개하며, 회화·텍스트·사운드·영상·아카이브를 결합해 “빛의 윤리”와 “기억의 존엄”을 탐구한다.</p>
+        <p>그의 회화는 기도문이자 기록이며, 흔적과 여백을 통해 감정의 근원을 되살린다.</p>
+        <p>그의 예술 세계는 상처 이후에 남는 따스함, 사라지지 않는 기억의 힘, 인간 존엄의 조용한 선언이다.</p>
+      </div>
+
+      <div class="en">
+        <p><strong>Artist Bio</strong></p>
+        <p>DUNGZAK CESTLAVIE is a Korean contemporary artist exploring the origins of light, memory, and being.</p>
+        <p>His practice documents emotional traces, the genesis of light passing through wounds, and cycles of disappearance and rebirth.</p>
+        <p>Based in Seoul, he has worked across Berlin, Paris, Amsterdam, Warsaw, and Moscow, integrating painting, text, sound, video, and archival structures to explore an “ethics of light” and “dignity of memory.”</p>
+        <p>His paintings act as prayers and records, rebuilding the foundations of feeling through traces and silence.</p>
+        <p>His world offers warmness after wounding, the persistence of memory, and the quiet dignity of the human spirit.</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- LIGHTBOX & FOOTER -->
-<div id="lightbox" aria-hidden="true">
-  <div class="lb-stage">
-    <img id="lbImg" alt="Artwork view">
-    <div class="lb-caption" id="lbCap"></div>
-    <button class="lb-arrow lb-prev" id="lbPrev">◀</button>
-    <button class="lb-arrow lb-next" id="lbNext">▶</button>
+<!-- ✅ REPORTS SECTION -->
+<section id="reports" style="display:none">
+  <h2 class="ko">미학 보고서 (DCAR Series)</h2>
+  <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+
+  <div class="reports-omega">
+    <div class="r-head">
+      <div class="r-tabs">
+        <button class="r-tab is-active" data-r="all">All</button>
+        <button class="r-tab" data-r="theory">Theory</button>
+        <button class="r-tab" data-r="archive">Archive</button>
+        <button class="r-tab" data-r="practice">Practice</button>
+      </div>
+    </div>
+    <div class="r-grid" id="reportGrid"></div>
   </div>
-  <button class="lb-close" id="lbClose">✕</button>
-  <div class="lb-meta" id="lbMeta"></div>
-</div>
+</section>
 
-<div id="fftBar"><span></span></div>
-<div id="ctrl">
-  <button class="ctrlbtn" id="soundBtn">✨</button>
-  <button class="ctrlbtn" id="soundStopBtn" disabled>🔇</button>
-</div>
-
-<footer>
-  <div class="links">
-    <a href="https://flickr.com/photos/dungzak" target="_blank">Flickr</a>
-    <a href="https://instagram.com/dungzakcestlavie" target="_blank">Instagram</a>
-    <a href="https://youtube.com/@dungzakcestlavie" target="_blank">YouTube</a>
-    <a href="https://naver.me/x95dk3l1" target="_blank">Naver Info</a>
-    <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
-  </div>
-  <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
-  <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
-</footer>
-
+<!-- ===================== PART 3 / 3 — SCRIPTS ===================== -->
 <script>
-/* Navigation + Lang */
-const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
-const $=(q,sc)=>(sc||document).querySelector(q);
+/* ---------- helpers ---------- */
+window.$$ = window.$$ || ((q, sc)=>Array.from((sc||document).querySelectorAll(q)));
+window.$  = window.$  || ((q, sc)=>(sc||document).querySelector(q));
 
-/* Sections & Language (site-wide) */
+/* ---------- site language (KR / EN / HY) ---------- */
 (function(){
-  function showSection(id){
-    ['poem','works','reports'].forEach(x=>{
-      const el=document.getElementById(x);
-      if(el) el.style.display = (x===id)?'block':'none';
+  const body = document.body;
+  const koBtn = $('#koBtn'), enBtn = $('#enBtn'), hyBtn = $('#hyBtn');
+  function setSiteLang(lang){ // 'ko' | 'en' | 'hy'
+    body.classList.remove('korean','english','hybrid');
+    body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
+    [koBtn,enBtn,hyBtn].forEach(b=>b&&b.classList.remove('active'));
+    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]?.classList.add('active'));
+    localStorage.setItem('dz_site_lang',lang);
+    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
+  }
+  koBtn && (koBtn.onclick = ()=>setSiteLang('ko'));
+  enBtn && (enBtn.onclick = ()=>setSiteLang('en'));
+  hyBtn && (hyBtn.onclick = ()=>setSiteLang('hy'));
+  setSiteLang(localStorage.getItem('dz_site_lang') || 'ko');
+})();
+
+/* ---------- primary nav (Poem / Works / Reports / Artist Bio) ---------- */
+(function(){
+  const sections = ['poem','works','reports'];
+  function show(id){
+    sections.forEach(s=>{
+      const el = document.getElementById(s);
+      if(el) el.style.display = (s===id)?'block':'none';
     });
     $$('nav.primary button[data-target]').forEach(b=>{
       b.classList.toggle('active', b.dataset.target===id);
     });
+    if(id==='works'){
+      // scroll into view (offset header)
+      const w = $('#works');
+      if(w) window.scrollTo({top:w.offsetTop-70, behavior:'smooth'});
+    }
   }
   $$('nav.primary button[data-target]').forEach(b=>{
-    b.addEventListener('click',()=>showSection(b.dataset.target));
+    b.addEventListener('click',()=>show(b.dataset.target));
   });
-  showSection('poem');
+  show('poem'); // default
+  // Artist Bio opens modal
+  $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO?.open());
+})();
 
-  const ko=$('#koBtn'), en=$('#enBtn'), hy=$('#hyBtn');
-  function setLang(lang){
-    document.body.className='';
-    document.body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
-    [ko,en,hy].forEach(b=>b&&b.classList.remove('active'));
-    ({ko:ko,en:en,hy:hy}[lang]?.classList.add('active'));
-    localStorage.setItem('dz_lang',lang);
-    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
+/* ---------- Artist Bio modal & exhibitions toggle (BUGFIXED) ---------- */
+window.DZ_BIO = (function(){
+  const modal = $('#bio-modal');
+  const closeBtn = modal?.querySelector('.bio-close');
+  const langBtns = modal? $$('.bio-lang .lang', modal): [];
+  const expoToggle = $('#expoToggle');
+  const expoSlide = $('#expoSlide');
+  const headKo = modal?.querySelector('.bio-head .ko');
+  const headEn = modal?.querySelector('.bio-head .en');
+
+  function setBioLang(code){ // 'kr' | 'en'
+    // header title
+    if(headKo) headKo.style.display = (code==='kr')?'block':'none';
+    if(headEn) headEn.style.display = (code==='en')?'block':'none';
+    // body blocks
+    $$('.bio-body .ko', modal).forEach(n => n.style.display = (code==='kr')?'block':'none');
+    $$('.bio-body .en', modal).forEach(n => n.style.display = (code==='en')?'block':'none');
+    // buttons
+    langBtns.forEach(b=>{
+      const on = (b.dataset.bioLang === code);
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on?'true':'false');
+    });
+    // one-line summary text stays bilingual; no swap needed
+    localStorage.setItem('dz_bio_lang', code);
   }
-  ko&& (ko.onclick=()=>setLang('ko'));
-  en&& (en.onclick=()=>setLang('en'));
-  hy&& (hy.onclick=()=>setLang('hy'));
-  setLang(localStorage.getItem('dz_lang')||'ko');
-})();
 
-/* Background waves & trail */
-(function(){
-  try{
-    const waves=document.getElementById('waves')?.getContext('2d',{alpha:true});
-    const trail=document.getElementById('trail')?.getContext('2d',{alpha:true});
-    if(!waves||!trail) return;
-    let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
-    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1));[waves,trail].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR);c.canvas.height=Math.floor(innerHeight*DPR);c.setTransform(1,0,0,1,0,0);c.scale(1/DPR,1/DPR)})}
-    resize(); addEventListener('resize',resize,{passive:true}); document.addEventListener('visibilitychange',()=>visible=!document.hidden);
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
-    const ease=x=>x*x*(3-2*x);
-    const waveY=(x,k,t)=>{const f1=0.0030+k*0.0007,f2=0.0060+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
-    function frame(now){
-      if(!visible){requestAnimationFrame(frame);return}
-      const T=(now/1000)%30;
-      const hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
-      waves.clearRect(0,0,innerWidth,innerHeight);
-      for(let k=0;k<4;k++){
-        waves.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){
-          const y=waveY(x,k,now*0.001);
-          x?waves.lineTo(x,y):waves.moveTo(x,y)
-        }
-        const y0=waveY(0,k,now*0.001);
-        const g=waves.createLinearGradient(0,y0-140,0,y0+140);
-        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`);
-        g.addColorStop(.5,`hsla(45,70%,68%,.30)`);
-        g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
-        waves.strokeStyle=g; waves.lineWidth=1.1+k*0.45; waves.globalAlpha=0.9-k*0.12; waves.shadowBlur=16; waves.shadowColor='rgba(160,200,255,.18)';
-        waves.stroke();
-      }
-      waves.globalAlpha=1; waves.shadowBlur=0;
-      px+=(tx-px)*0.16; py+=(ty-py)*0.16;
-      const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
-      trail.fillStyle='rgba(0,0,0,.12)'; trail.fillRect(0,0,innerWidth,innerHeight);
-      const grad=trail.createRadialGradient(px,py,0,px,py,r);
-      grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);
-      grad.addColorStop(.55,'rgba(140,185,255,.14)');
-      grad.addColorStop(1,'rgba(140,185,255,0)');
-      trail.fillStyle=grad; trail.beginPath(); trail.arc(px,py,r,0,Math.PI*2); trail.fill();
-      requestAnimationFrame(frame)
+  function setExpoOpen(open){
+    if(!expoSlide || !expoToggle) return;
+    expoSlide.setAttribute('data-open', open?'true':'false');
+    expoToggle.setAttribute('aria-expanded', open?'true':'false');
+  }
+
+  function open(){
+    if(!modal) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    // prefer saved bio-lang; else mirror site lang
+    const site = document.body.classList.contains('english') ? 'en' : 'kr';
+    setBioLang(localStorage.getItem('dz_bio_lang') || site);
+    setExpoOpen(false);
+  }
+  function close(){
+    if(!modal) return;
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  // wire
+  closeBtn?.addEventListener('click', close);
+  modal?.querySelector('.bio-backdrop')?.addEventListener('click', close);
+  langBtns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
+  expoToggle?.addEventListener('click',()=>{
+    const open = expoToggle.getAttribute('aria-expanded') !== 'true';
+    setExpoOpen(open);
+  });
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal && !modal.hidden) close(); });
+
+  // sync with site language changes (only on first open if no manual choice)
+  document.addEventListener('dz-lang-change',ev=>{
+    const pref = localStorage.getItem('dz_bio_lang');
+    if(!pref){ // if user hasn't pressed KR/EN in bio explicitly, mirror site
+      setBioLang(ev.detail==='en'?'en':'kr');
     }
-    requestAnimationFrame(frame);
-  }catch(e){console.warn('canvas init error',e)}
+  });
+
+  return {open, close, setBioLang, setExpoOpen};
 })();
 
-/* Works panels (fetch /data/works.json) */
+/* ---------- Works loader (5×20 lazy) ---------- */
 (async function(){
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
-  const isKR=()=>!document.body.classList.contains('english');
+  const panels = {
+    pray:   $('#panel-pray'),
+    human:  $('#panel-human'),
+    rebirth:$('#panel-rebirth'),
+    exist:  $('#panel-exist'),
+    cosmos: $('#panel-cosmos')
+  };
 
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
-  const CB=await getCB();
-  async function loadWorks(){const r=await fetch('/data/works.json?cb='+CB,{cache:'no-store'});if(!r.ok)throw new Error('works.json load failed');return r.json()}
-  let WORKS={};
-  try{WORKS=await loadWorks()}catch(e){console.warn(e);return}
+  async function getCB(){
+    try{
+      const r = await fetch('/data/cachebust.json',{cache:'no-store'});
+      const j = await r.json(); return j.v||j.ts||Date.now();
+    }catch{return Date.now()}
+  }
+  const CB = await getCB();
+
+  async function loadWorks(){
+    try{
+      const r = await fetch('/data/works.json?cb='+CB,{cache:'no-store'});
+      if(!r.ok) throw 0;
+      return r.json();
+    }catch{
+      // fallback minimal structure
+      return {
+        [MAP.pray]:   [],
+        [MAP.human]:  [],
+        [MAP.rebirth]:[],
+        [MAP.exist]:  [],
+        [MAP.cosmos]: []
+      };
+    }
+  }
+  const WORKS = await loadWorks();
+
+  const isKR = ()=>!document.body.classList.contains('english');
 
   function cardHTML(w){
-    const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
-    const meta =isKR()?(w.material_kr||''):(w.material_en||'');
-    const size =isKR()?(w.size_kr||''):(w.size_en||'');
-    const year = w.year||'';
-    const file=(w.image||'').replace(/\s+/g,'_');
-    const ssrc=`/images/standard/${file}?cb=${CB}`;
-    const zsrc=`/images/zoom/${file}?cb=${CB}`;
-    const alt=[title,meta,size,year].filter(Boolean).join(' · ');
+    const title = isKR() ? (w.title_kr||w.title_en||'') : (w.title_en||w.title_kr||'');
+    const meta  = isKR() ? (w.material_kr||'') : (w.material_en||'');
+    const size  = isKR() ? (w.size_kr||'') : (w.size_en||'');
+    const year  = w.year||'';
+    const file  = (w.image||'').replace(/\s+/g,'_');
+    const ssrc  = `/images/standard/${file}?cb=${CB}`;
+    const zsrc  = `/images/zoom/${file}?cb=${CB}`;
+    const alt   = [title,meta,size,year].filter(Boolean).join(' · ');
     return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
   }
 
-  async function renderPanel(panelId,sectionKey){
-    const host=document.getElementById(panelId);
+  async function renderPanel(host, key){
     if(!host) return;
-    const list=Array.isArray(WORKS[sectionKey])?WORKS[sectionKey].slice(0,20):[];
-    host.innerHTML=`<div class="grid">${list.map(cardHTML).join('')}</div>`;
+    const list = Array.isArray(WORKS[key]) ? WORKS[key].slice(0,20) : [];
+    if(!list.length){
+      host.innerHTML = `<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">No works yet. Upload /data/works.json and images.</article></div>`;
+      return;
+    }
+    host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
     try{
-      const io=new IntersectionObserver(es=>{
+      const io = new IntersectionObserver(es=>{
         es.forEach(e=>{
           if(e.isIntersecting){
             const img=e.target;
-            if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')}
+            if(img.dataset.src){img.src=img.dataset.src; img.removeAttribute('data-src');}
             img.closest('.card')?.classList.add('visible');
             io.unobserve(img);
           }
         });
       },{rootMargin:'200px'});
-      $$(`#${panelId} img[loading][data-src]`).forEach(i=>io.observe(i));
+      $$(`#${host.id} img[loading][data-src]`).forEach(i=>io.observe(i));
     }catch{}
   }
 
   async function renderAll(){
     await Promise.all([
-      renderPanel('panel-pray',MAP.pray),
-      renderPanel('panel-human',MAP.human),
-      renderPanel('panel-rebirth',MAP.rebirth),
-      renderPanel('panel-exist',MAP.exist),
-      renderPanel('panel-cosmos',MAP.cosmos)
+      renderPanel(panels.pray,    MAP.pray),
+      renderPanel(panels.human,   MAP.human),
+      renderPanel(panels.rebirth, MAP.rebirth),
+      renderPanel(panels.exist,   MAP.exist),
+      renderPanel(panels.cosmos,  MAP.cosmos)
     ]);
   }
   await renderAll();
-  document.addEventListener('dz-lang-change',renderAll);
+  document.addEventListener('dz-lang-change', renderAll);
 
-  /* tab click */
+  // tabs switch within Works
   $$('.tabs .tab').forEach(b=>{
     b.addEventListener('click',()=>{
       $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
       $$('.tabpanel').forEach(p=>p.classList.remove('active'));
-      const key=b.dataset.panel;
-      document.getElementById('panel-'+key)?.classList.add('active');
-      const works=document.getElementById('works');
-      if(works) window.scrollTo({top:works.offsetTop-70,behavior:'smooth'});
+      const key = b.dataset.panel;
+      $('#panel-'+key)?.classList.add('active');
     });
   });
-
-  /* Lightbox */
-  (function attachLightbox(){
-    const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prevBtn=$('#lbPrev'),nextBtn=$('#lbNext'),closeBtn=$('#lbClose');
-    if(!lb||!img) return;
-    let list=[],idx=0,zoom=1,ox=0,oy=0,drag=false,sx=0,sy=0;
-    function collect(panel){list=Array.from(panel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z)}
-    function openAt(i){if(!list.length)return; idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=`${idx+1} / ${list.length}`; zoom=1;ox=oy=0;apply();lb.classList.add('on');lb.setAttribute('aria-hidden','false')}
-    function close(){lb.classList.remove('on');lb.setAttribute('aria-hidden','true')}
-    function prev(){openAt(idx-1)} function next(){openAt(idx+1)}
-    function apply(){img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`;img.style.cursor=zoom>1?'grab':'zoom-in'}
-    document.addEventListener('click',e=>{
-      const card=e.target.closest('.card'); if(!card) return;
-      const panel=document.querySelector('.tabpanel.active')||document.getElementById('panel-pray');
-      if(!panel) return;
-      const cards=Array.from(panel.querySelectorAll('.card')); collect(panel);
-      openAt(Math.max(0,cards.indexOf(card)));
-    });
-    prevBtn&&prevBtn.addEventListener('click',prev);
-    nextBtn&&nextBtn.addEventListener('click',next);
-    closeBtn&&closeBtn.addEventListener('click',close);
-    $('#lightbox')?.addEventListener('click',e=>{if(e.target===lb) close()});
-    lb.addEventListener('wheel',e=>{if(!lb.classList.contains('on'))return;e.preventDefault();const d=e.deltaY>0?0.9:1.1;const pz=zoom;zoom=Math.min(5,Math.max(1,zoom*d));if(zoom===1){ox=oy=0}else{const r=img.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2-ox;const cy=e.clientY-r.top-r.height/2-oy;ox-=cx*(zoom/pz-1);oy-=cy*(zoom/pz-1)}apply()},{passive:false});
-    img.addEventListener('mousedown',e=>{if(zoom===1)return;drag=true;sx=e.clientX-ox;sy=e.clientY-oy;img.style.cursor='grabbing'});
-    window.addEventListener('mousemove',e=>{if(!drag)return;ox=e.clientX-sx;oy=e.clientY-sy;apply()});
-    window.addEventListener('mouseup',()=>{drag=false;if(zoom>1)img.style.cursor='grab'});
-    window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')prev();else if(e.key==='ArrowRight')next();else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()}else if(e.key==='-'){zoom=Math.max(zoom/1.25,1);if(zoom===1){ox=oy=0}apply()}});
-  })();
 })();
 
-/* Reports (DCAR01~DCAR50 listing) */
-(async function(){
-  const grid=document.getElementById('r-grid'); if(!grid) return;
-  const tabs=$$('.r-tab');
-  const ids = Array.from({length:50},(_,i)=>`DCAR${String(i+1).padStart(2,'0')}`);
+/* ---------- Lightbox (zoom/drag/keys) ---------- */
+(function(){
+  const lb = $('#lightbox'), img = $('#lbImg'), cap = $('#lbCap'), meta = $('#lbMeta');
+  const prevBtn=$('#lbPrev'), nextBtn=$('#lbNext'), closeBtn=$('#lbClose');
+  if(!lb||!img) return;
+  let list=[], idx=0, zoom=1, ox=0, oy=0, drag=false, sx=0, sy=0;
 
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
-  const CB=await getCB();
-
-  function stripFM(md){return md.replace(/^---[\s\S]*?---\s*/,'')}
-  function parseTitle(md,key){
-    const head=md.match(/^---\s*([\s\S]*?)---/); if(!head) return '';
-    const line=head[1].split(/\r?\n/).find(l=>l.trim().startsWith(key+':'));
-    if(!line) return '';
-    const m=line.match(/:\s*"(.*)"\s*$/) || line.match(/:\s*(.*)\s*$/);
-    return (m?m[1]:'').trim();
+  function collect(){
+    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
+    if(!panel) return list=[];
+    list = Array.from(panel.querySelectorAll('.card'))
+      .map(c=>({z:c.getAttribute('data-zoom'), alt:c.querySelector('img')?.alt||''}))
+      .filter(x=>x.z);
   }
-  function excerpt(html,limit=260){
-    const t=html.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
-    return t.length>limit? t.slice(0,limit)+'…' : t;
+  function openAt(i){
+    if(!list.length) return;
+    idx = (i+list.length)%list.length;
+    img.src = list[idx].z;
+    cap.textContent = list[idx].alt;
+    meta.textContent = `${idx+1} / ${list.length}`;
+    zoom=1; ox=oy=0; apply();
+    lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
   }
-  function md2html(md){
-    md=stripFM(md);
-    return md
-      .replace(/^#\s*\(KR\)\s*$/gim,'<h3>KR</h3>')
-      .replace(/^#\s*\(EN\)\s*$/gim,'<h3>EN</h3>')
-      .replace(/^###\s+(.*)$/gim,'<h4>$1</h4>')
-      .replace(/^##\s+(.*)$/gim,'<h3>$1</h3>')
-      .replace(/^#\s+(.*)$/gim,'<h2>$1</h2>')
-      .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
-      .replace(/\*(.*?)\*/g,'<i>$1</i>')
-      .replace(/\n/g,'<br>');
-  }
+  function apply(){ img.style.transform=`translate(${ox}px,${oy}px) scale(${zoom})`; img.style.cursor = (zoom>1?'grab':'zoom-in'); }
+  function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); }
 
-  async function fetchOne(id){
-    try{
-      const r=await fetch(`/reports/${id}.md?cb=${CB}`,{cache:'no-store'});
-      if(!r.ok) return null;
-      const md=await r.text();
-      return {
-        id,
-        titleKR: parseTitle(md,'title_kr') || id,
-        titleEN: parseTitle(md,'title_en') || id,
-        html: md2html(md)
-      };
-    }catch{ return null }
-  }
+  document.addEventListener('click',e=>{
+    const card = e.target.closest('.card');
+    if(!card) return;
+    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
+    if(!panel) return;
+    const cards = Array.from(panel.querySelectorAll('.card'));
+    collect();
+    openAt(Math.max(0, cards.indexOf(card)));
+  });
 
-  const reports=(await Promise.all(ids.map(fetchOne))).filter(Boolean);
+  prevBtn?.addEventListener('click',()=>openAt(idx-1));
+  nextBtn?.addEventListener('click',()=>openAt(idx+1));
+  closeBtn?.addEventListener('click',close);
+  $('#lightbox')?.addEventListener('click',e=>{ if(e.target===lb) close(); });
 
-  function renderCards(mode){
-    if(!reports.length){ grid.innerHTML = ''; return; }
-    grid.innerHTML = reports.map((r,i)=>{
-      const link=`/reports/print-preview.html?file=${r.id}.md`;
-      const parts = r.html.split(/<h3>EN<\/h3>/i);
-      const bodyKR = excerpt(parts[0] || r.html);
-      const bodyEN = excerpt(parts[1] || r.html);
-      const title = mode==='en' ? r.titleEN : (mode==='kr' ? r.titleKR : `${r.titleKR} · ${r.titleEN}`);
-      const body  = mode==='en' ? bodyEN : (mode==='kr' ? bodyKR : `<div class="ko">${bodyKR}</div><hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0"><div class="en">${bodyEN}</div>`);
-      return `
+  lb.addEventListener('wheel',e=>{
+    if(!lb.classList.contains('on')) return;
+    e.preventDefault();
+    const d = e.deltaY>0 ? 0.9 : 1.1;
+    const pz = zoom;
+    zoom = Math.min(5, Math.max(1, zoom*d));
+    if(zoom===1){ ox=oy=0; }
+    else{
+      const r = img.getBoundingClientRect();
+      const cx = e.clientX - r.left - r.width/2 - ox;
+      const cy = e.clientY - r.top  - r.height/2 - oy;
+      ox -= cx*(zoom/pz - 1);
+      oy -= cy*(zoom/pz - 1);
+    }
+    apply();
+  },{passive:false});
+
+  img.addEventListener('mousedown',e=>{ if(zoom===1) return; drag=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing'; });
+  window.addEventListener('mousemove',e=>{ if(!drag) return; ox=e.clientX-sx; oy=e.clientY-sy; apply(); });
+  window.addEventListener('mouseup',()=>{ drag=false; if(zoom>1) img.style.cursor='grab'; });
+
+  window.addEventListener('keydown',e=>{
+    if(!lb.classList.contains('on')) return;
+    if(e.key==='Escape') close();
+    else if(e.key==='ArrowLeft')  openAt(idx-1);
+    else if(e.key==='ArrowRight') openAt(idx+1);
+    else if(e.key==='+'){ zoom=Math.min(zoom*1.25,5); apply(); }
+    else if(e.key==='-'){ zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply(); }
+  });
+})();
+
+/* ---------- Reports (simple hydrated list, can be replaced by real fetch) ---------- */
+(function(){
+  const grid = $('#reportGrid');
+  if(!grid) return;
+  const items = Array.from({length:12},(_,i)=>({
+    id:`DCAR${String(i+1).padStart(2,'0')}`,
+    title_kr:`DCAR-${String(i+1).padStart(2,'0')} — (KR) 제목 예시`,
+    title_en:`DCAR-${String(i+1).padStart(2,'0')} — (EN) Sample Title`,
+    snippet_kr:`(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.`,
+    snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`
+  }));
+  function render(mode){ // 'all' 'theory' 'archive' 'practice' (demo uses same list)
+    grid.innerHTML = items.map((r,idx)=>`
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
-            <span class="r-badge">DCAR-${String(i+1).padStart(2,'0')}-2025</span>
+            <span class="r-badge">DCAR-${String(idx+1).padStart(2,'0')}-2025</span>
             <span class="r-badge pdf">PDF</span>
           </div>
-          <h3 class="r-title">${title}</h3>
+          <h3 class="r-title">${r.title_kr} · ${r.title_en}</h3>
           <p class="r-sub">/reports/${r.id}.md</p>
-          <div class="r-body">${body}</div>
+          <div class="r-body">
+            <div class="ko">${r.snippet_kr}</div>
+            <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
+            <div class="en">${r.snippet_en}</div>
+          </div>
           <div class="r-actions">
-            <a href="${link}" target="_blank" rel="noopener">미리보기·인쇄 / Print</a>
+            <a href="/reports/print-preview.html?file=${r.id}.md" target="_blank" rel="noopener">미리보기·인쇄 / Print</a>
             <button data-open="${r.id}">전체 보기 / Open</button>
           </div>
         </div>
-      </article>`;
-    }).join('');
+      </article>
+    `).join('');
   }
-
-  let mode='kr'; renderCards(mode);
-  tabs.forEach(t=>{
+  render('all');
+  $$('.r-tab').forEach(t=>{
     t.addEventListener('click',()=>{
-      tabs.forEach(x=>x.classList.remove('is-active'));
+      $$('.r-tab').forEach(x=>x.classList.remove('is-active'));
       t.classList.add('is-active');
-      mode=t.dataset.lang; renderCards(mode);
+      render(t.dataset.r);
     });
   });
-
-  document.addEventListener('dz-lang-change',()=>{
-    const b=document.body;
-    mode = b.classList.contains('english') ? 'en' : (b.classList.contains('hybrid') ? 'both' : 'kr');
-    tabs.forEach(x=>x.classList.remove('is-active'));
-    const cur = document.querySelector(`.r-tab[data-lang="${mode}"]`);
-    if(cur) cur.classList.add('is-active');
-    renderCards(mode);
-  });
-
   grid.addEventListener('click',e=>{
-    const id=e.target.getAttribute('data-open');
+    const id = e.target.getAttribute('data-open');
     if(!id) return;
-    const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
-    if(w) w.focus();
+    const w = window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
+    w && w.focus();
   });
 })();
 
-/* Prayer Resonance (Audio) */
+/* ---------- Ambient sound (start/stop + tiny FFT bar) ---------- */
 (function(){
-  const btn=document.getElementById('soundBtn'), stop=document.getElementById('soundStopBtn'), bar=document.querySelector('#fftBar span'); if(!btn||!stop||!bar) return;
-  let ac=null,nodes=null,on=false,analyser=null,rafId=null;
-  async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})}if(ac.state==='suspended')await ac.resume();return ac}
-  function G(v){const g=ac.createGain();g.gain.value=v;return g}
-  function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
-  function createIR(len=1.8,decay=2.8){
+  const btn = $('#soundBtn'), stopBtn = $('#soundStopBtn'), bar = document.querySelector('#fftBar span');
+  if(!btn||!stopBtn||!bar) return;
+  let ac=null, nodes=null, on=false, analyser=null, rafId=null;
+
+  async function ensureAC(){
+    if(!ac){
+      const C = window.AudioContext || window.webkitAudioContext;
+      ac = new C({latencyHint:'interactive'});
+    }
+    if(ac.state==='suspended') await ac.resume();
+    return ac;
+  }
+  function G(v){ const g=ac.createGain(); g.gain.value=v; return g; }
+  function O(t,f){ const o=ac.createOscillator(); o.type=t; o.frequency.value=f; return o; }
+  function createIR(len=1.6,decay=2.6){
     const sr=ac.sampleRate, n=Math.floor(sr*len);
     const buf=ac.createBuffer(2,n,sr);
     for(let ch=0; ch<2; ch++){
       const d=buf.getChannelData(ch);
-      for(let i=0;i<n;i++){
-        d[i]=(Math.random()*2-1)*Math.pow(1 - i/n, decay);
-      }
+      for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay);
     }
     return buf;
   }
-  function drawFFT(){
-    if(!analyser){rafId=requestAnimationFrame(drawFFT);return}
+  function draw(){
+    if(!analyser){ rafId=requestAnimationFrame(draw); return; }
     const arr=new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteTimeDomainData(arr);
-    let avg=0;for(let i=0;i<arr.length;i++){avg+=Math.abs(arr[i]-128)}avg/=arr.length;
-    bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';
-    rafId=requestAnimationFrame(drawFFT);
+    let avg=0; for(let i=0;i<arr.length;i++) avg+=Math.abs(arr[i]-128);
+    avg/=arr.length;
+    bar.style.width=Math.min(180, Math.max(10, avg*2.2))+'px';
+    rafId=requestAnimationFrame(draw);
   }
-  async function start(){if(on) return; await ensureAC();
-    const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.010);
-    const pan=ac.createStereoPanner(); let panPhase=0;
-    const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);
-    const lfo1=O('sine',7.83),lfo2=O('sine',5.0);
-    const lpg=G(0.08),lpg2=G(0.06);
+
+  async function start(){
+    if(on) return;
+    await ensureAC();
+    const base=G(0.12), sub=G(0.05), mid=G(0.06), shim=G(0.012);
+    const pan=ac.createStereoPanner(); let ph=0;
+    const low=O('sine',62), low2=O('sine',124), floor=O('sine',31), ch1=O('sine',432), ch2=O('sine',528);
+    const lfo1=O('sine',7.7), lfo2=O('sine',5.2);
+    const lpg=G(0.08), lpg2=G(0.06);
     lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
-    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=0.8;
+
+    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=880; lp.Q.value=0.8;
     const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
+
     const conv=ac.createConvolver(); conv.buffer=createIR();
-    const wet=G(0.25),dry=G(0.85);
+    const wet=G(0.25), dry=G(0.85);
+
     low.connect(base).connect(bp).connect(lp);
     low2.connect(mid).connect(bp);
     floor.connect(sub).connect(bp);
     ch1.connect(shim).connect(lp);
     ch2.connect(shim).connect(lp);
+
     lp.connect(dry).connect(pan).connect(ac.destination);
     lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);
     bp.connect(dry).connect(pan);
     bp.connect(wet).connect(conv);
+
     analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
+
     [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{const t=g.value;try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime);g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
-    (function panLoop(){if(!ac||!pan)return;panPhase+=0.012;try{pan.pan.value=Math.sin(panPhase)*0.35}catch{} if(on)requestAnimationFrame(panLoop)})();
-    (function filterBreath(){if(!ac)return;try{lp.frequency.setTargetAtTime(700+Math.sin(ac.currentTime*0.3)*250,ac.currentTime,0.3)}catch{} if(on)setTimeout(filterBreath,160)})();
-    nodes={low,low2,floor,ch1,ch2,lfo1,lfo2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stop.disabled=false; drawFFT()
-  }
-  function stopAll(){if(!on||!nodes||!ac)return;const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes;const t=ac.currentTime;
-    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.8)}catch{}});
-    setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1900);
-    on=false; btn.disabled=false; stop.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px'
-  }
-  const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock);window.removeEventListener('click',unlock)}
-  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
-  btn.addEventListener('click',start); stop.addEventListener('click',stopAll);
-  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
-})();
-
-/* ===== Artist Bio interactions ===== */
-(function(){
-  const tab = document.getElementById('tab-bio');
-  const modal = document.getElementById('bio-modal');
-  if(!modal||!tab) return;
-  const closeBtn = modal.querySelector('.bio-close');
-  const langBtns = modal.querySelectorAll('.bio-lang .lang');
-  const blocks = modal.querySelectorAll('[data-lang-block]');
-  const expoToggle = document.getElementById('expo-toggle');
-  const expoKR = document.getElementById('expo-blocks');
-  const expoEN = document.getElementById('expo-blocks-en');
-  const titleKo = modal.querySelector('h2.ko');
-  const titleEn = modal.querySelector('h2.en');
-
-  function openModal(){
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    setLang((localStorage.getItem('bioLang')|| (document.body.classList.contains('english')?'EN':'KR')));
-    setExpo(false);
-  }
-  function closeModal(){
-    modal.hidden = true;
-    document.body.style.overflow = '';
-  }
-  function setLang(code){
-    blocks.forEach(b => b.hidden = (b.getAttribute('data-lang-block')!==code));
-    langBtns.forEach(btn=>{
-      const on = (btn.dataset.lang===code);
-      btn.classList.toggle('active', on);
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
+      const t=g.value; try{ g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2); }catch{}
     });
-    titleKo.style.display = (code==='KR')?'block':'none';
-    titleEn.style.display = (code==='EN')?'block':'none';
 
-    // One-line summary sync
-    expoToggle.innerHTML = (code==='KR')
-      ? '<span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인 전시 28회 ▾</span>'
-      : '<span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>';
+    (function panLoop(){ if(!ac||!pan) return; ph+=0.012; try{ pan.pan.value=Math.sin(ph)*0.35; }catch{} if(on) requestAnimationFrame(panLoop); })();
+    (function breath(){ if(!ac) return; try{ lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240, ac.currentTime, 0.28); }catch{} if(on) setTimeout(breath,160); })();
 
-    localStorage.setItem('bioLang',code);
-  }
-  function setExpo(open){
-    expoKR?.setAttribute('data-open', open ? 'true' : 'false');
-    expoEN?.setAttribute('data-open', open ? 'true' : 'false');
-    expoToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan};
+    on=true; btn.disabled=true; stopBtn.disabled=false; draw();
   }
 
-  tab.addEventListener('click', openModal);
-  closeBtn?.addEventListener('click', closeModal);
-  modal.querySelector('.bio-backdrop')?.addEventListener('click', closeModal);
-  langBtns.forEach(btn=>btn.addEventListener('click',()=>setLang(btn.dataset.lang)));
-  expoToggle.addEventListener('click',()=> setExpo(expoToggle.getAttribute('aria-expanded')!=='true'));
-  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && !modal.hidden) closeModal(); });
+  function stop(){
+    if(!on||!nodes||!ac) return;
+    const {low,low2,floor,ch1,ch2,base,sub,mid,shim} = nodes;
+    const t = ac.currentTime;
+    [base.gain,sub.gain,mid.gain,shim.gain].forEach(g=>{
+      try{ g.cancelScheduledValues(0); g.exponentialRampToValueAtTime(0.0001,t+1.6); }catch{}
+    });
+    setTimeout(()=>{ [low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}}); }, 1700);
+    on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px';
+  }
 
-  // Sync with site language changes
-  document.addEventListener('dz-lang-change',ev=>{
-    const site = ev.detail; // 'ko' | 'en' | 'hy'
-    if(site==='ko') setLang('KR');
-    else if(site==='en') setLang('EN');
-  });
+  const unlock = async()=>{ try{ await ensureAC(); }catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock); };
+  window.addEventListener('touchend',unlock,{once:true});
+  window.addEventListener('click',unlock,{once:true});
+  btn.addEventListener('click',start);
+  stopBtn.addEventListener('click',stop);
+  document.addEventListener('visibilitychange',async()=>{ if(!ac) return; if(document.hidden){ try{ await ac.suspend(); }catch{} } else if(on){ try{ await ac.resume(); }catch{} } });
 })();
 </script>
-
-<!-- Artist Bio & Exhibition Toggle Script -->
-<script>
-/* 언어 토글 버튼 연결 (ID가 반드시 존재해야 함: kr-btn, en-btn) */
-const bioKR = document.getElementById("bio-kr");
-const bioEN = document.getElementById("bio-en");
-const btnKR = document.getElementById("kr-btn");
-const btnEN = document.getElementById("en-btn");
-
-if(btnKR){
-btnKR.onclick = () => {
-  bioKR.style.display = "block";
-  bioEN.style.display = "none";
-};
-}
-
-if(btnEN){
-btnEN.onclick = () => {
-  bioKR.style.display = "none";
-  bioEN.style.display = "block";
-};
-}
-
-/* 전시 펼침 토글 (ID: exhibition-toggle, exhibition-full) */
-const exBtn = document.getElementById("exhibition-toggle");
-const exList = document.getElementById("exhibition-full");
-
-if(exBtn){
-exBtn.onclick = () => {
-  const isClosed = exList.style.display === "none" || exList.style.display === "";
-  exList.style.display = isClosed ? "block" : "none";
-  exBtn.innerText = isClosed
-    ? "DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▲"
-    : "DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▼";
-};
-}
-</script>
-
-</body>
-</html>
+<!-- =================== /END PART 3 / 3 =================== -->

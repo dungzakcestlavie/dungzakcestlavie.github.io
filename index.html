@@ -1,21 +1,37 @@
-<!DOCTYPE html>
-<html lang="ko">
+<!-- ===== HEAD / STYLE ===== -->
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.8</title>
+<title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.8.2</title>
 <meta name="description" content="빛 · 기억 · 존재 — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
-<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.8" />
+<meta property="og:title" content="DUNGZAK CESTLAVIE — Lightflow Ω.8.2" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dungzak.art" />
 <meta name="theme-color" content="#070c1a" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
+
+<!-- Early Lang Boot: 첫 페인트 전 언어 클래스/attr 세팅 (FOUC 방지) -->
+<script>
+(function(){
+  try{
+    var q=new URLSearchParams(location.search).get('lang');
+    var saved=localStorage.getItem('dz_site_lang');
+    var lang=(q==='ko'||q==='en'||q==='hy')?q:(saved||((/^(ko)/i).test(navigator.language||'')?'ko':'en'));
+    document.documentElement.setAttribute('lang', lang==='en'?'en':'ko');
+    var cls=lang==='ko'?'korean':lang==='en'?'english':'hybrid';
+    document.addEventListener('DOMContentLoaded',function(){ document.body.classList.add(cls); });
+  }catch(e){}
+})();
+</script>
 
 <style>
-:root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
+:root{
+  --bg:#070c1a; --fg:#eaf2ff; --gold:#e6c777; --muted:#b6c4ee;
+  --panel:#0e152f; --line:#1c2955; --max:1180px
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font:16px/1.68 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
 .en,.ko{display:inherit}
 body.korean .en{display:none}
 body.english .ko{display:none}
@@ -29,12 +45,22 @@ body.hybrid .ko,body.hybrid .en{display:inherit}
 /* header */
 header{position:sticky;top:0;z-index:5;padding:10px 12px;background:linear-gradient(180deg,rgba(9,14,30,.9),rgba(9,14,30,.7));border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
 .brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(18px,5vw,24px)}
-nav.primary{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:6px 12px;border-radius:12px}
-nav.primary button:hover,nav.primary button.active{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
-.lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
-.lang button{all:unset;cursor:pointer;border:1px solid #2a335f;border-radius:10px;padding:6px 12px;color:#cfe0ff}
-.lang button.active,.lang button:hover{background:#1a2144;color:var(--gold);border-color:#3a447a}
+nav.primary{display:flex;gap:16px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+nav.primary button{all:unset;cursor:pointer;color:var(--fg);font-weight:700;padding:8px 14px;border-radius:12px;transition:background .18s,color .18s,box-shadow .18s}
+nav.primary button:hover{color:#fff}
+nav.primary button.active{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230;box-shadow:0 8px 16px rgba(230,199,119,.20);position:relative}
+nav.primary button.active::after{content:"";position:absolute;left:12px;right:12px;bottom:-4px;height:2px;border-radius:2px;background:linear-gradient(90deg,#9fc6ff66,#f3c96999);filter:drop-shadow(0 0 6px rgba(240,210,120,.45))}
+
+/* Language segmented control */
+.langseg{--h:40px;display:flex;justify-content:center;margin:10px auto 0;width:min(360px,92vw);position:relative}
+.langseg .rail{height:var(--h);width:100%;background:linear-gradient(180deg,#0f1838,#0b1432);border:1px solid #2a3765;border-radius:999px;display:flex;position:relative;overflow:hidden}
+.langseg button{all:unset;cursor:pointer;flex:1;display:grid;place-items:center;color:#cfe1ff;font-weight:800;letter-spacing:.2px}
+.langseg .thumb{position:absolute;top:2px;bottom:2px;width:33.33%;left:2px;border-radius:999px;background:linear-gradient(180deg,#f7e4a5,#e6c777);box-shadow:0 0 0 1px rgba(230,199,119,.45),0 6px 16px rgba(230,199,119,.22);transition:left .18s ease}
+.langseg[data-active="ko"] .thumb{left:2px}
+.langseg[data-active="en"] .thumb{left:calc(33.33% + 2px)}
+.langseg[data-active="hy"] .thumb{left:calc(66.66% + 2px)}
+.langseg .label{position:relative;z-index:1}
+.langseg [aria-pressed="true"]{color:#0a1230}
 
 /* layout */
 main{position:relative;z-index:2}
@@ -46,24 +72,24 @@ h2{margin-bottom:12px}
 .hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
 
 /* poem */
-.poemwrap{max-width:860px;margin:18px auto 0;text-align:left;background:rgba(16,22,48,.35);border:1px solid #223;border-radius:12px;padding:14px}
-.poem p{margin:8px 0}
+.poemwrap{max-width:860px;margin:18px auto 0;text-align:left;background:linear-gradient(180deg,rgba(16,22,48,.42),rgba(10,16,36,.36));backdrop-filter:blur(5px);border:1px solid #223a66;border-radius:14px;padding:26px}
+.poem p{margin:14px 0;line-height:1.78}
 
 /* works */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
 .tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
 .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
-.tabpanel{display:none;animation:fade .28s ease}
+.tabpanel{display:none;animation:fade .20s ease}
 .tabpanel.active{display:block}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .55s,transform .55s,box-shadow .6s}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s,box-shadow .6s}
 .card.visible{opacity:1;transform:translateY(0)}
-.card:hover{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
+.card:active{box-shadow:0 0 16px rgba(230,199,119,.28);border-color:var(--gold)}
 .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 
-/* reports (cards + collapsed bar) */
+/* reports */
 .reports-omega{padding:24px 0}
 .reports-omega .r-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
 .r-tabs{display:flex;gap:8px}
@@ -104,10 +130,10 @@ h2{margin-bottom:12px}
 .lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
 
 /* footer & sound controls */
-footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 96px}
-.links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-.links a{color:#cfe0ff;text-decoration:none}
-.links a:hover{color:#cbe0ff}
+footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:44px 12px 104px}
+.links{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.links a{color:#cfe0ff;text-decoration:none;letter-spacing:.3px;display:inline-flex;gap:8px;align-items:center}
+.links a:hover{color:#ffe9b8;text-shadow:0 0 8px rgba(240,210,120,.25)}
 small{display:block;margin-top:6px;color:#9fb0d8}
 #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:8}
 .ctrlbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer;box-shadow:0 0 8px rgba(120,170,255,.18)}
@@ -115,42 +141,59 @@ small{display:block;margin-top:6px;color:#9fb0d8}
 #fftBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden}
 #fftBar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9}
 
-/* bio modal */
+/* Bio modal */
 #bio-modal[hidden]{display:none}
 #bio-modal{position:fixed;inset:0;z-index:9999}
 .bio-backdrop{position:absolute;inset:0;background:rgba(6,10,24,.62);backdrop-filter:saturate(1.1) blur(6px)}
-.bio-card{position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.2);border-radius:16px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.5)}
-.bio-head{display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.90))}
+.bio-card{position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.28);border-radius:20px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.55)}
+.bio-head{display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.92));border-bottom:1px solid rgba(255,255,255,.04)}
 .bio-head h2{margin:0;font-size:1.2rem}
-.bio-lang{margin-left:auto;display:flex;gap:6px}
-.bio-lang .lang{border:1px solid rgba(255,215,120,.35);background:transparent;color:#f2dca6;padding:6px 10px;border-radius:10px;cursor:pointer}
-.bio-lang .lang.active{box-shadow:0 0 8px rgba(255,215,120,.55)}
 .bio-close{border:0;background:transparent;color:#fff;font-size:1.1rem;padding:6px 8px;cursor:pointer}
-.bio-body p{line-height:1.62}
+.bio-body p{line-height:1.78}
 details{border:1px solid rgba(255,215,120,.16);border-radius:12px;padding:.6rem .8rem;margin:.75rem 0}
 details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
-.expo-kicker{display:block;width:100%;text-align:left;margin:.25rem 0 1rem;border:1px dashed rgba(255,215,120,.28);border-radius:10px;background:transparent;color:#f9e6b7;padding:.6rem .75rem;cursor:pointer}
-.slide-wrap{overflow:hidden;transition:max-height .45s ease;max-height:0}
+.expo-kicker{display:block;width:100%;text-align:left;margin:.25rem 0 1rem;border:1px dashed rgba(255,215,120,.28);border-radius:10px;background:transparent;color:#f9e6b7;padding:.6rem .75rem;cursor:pointer;position:relative}
+.expo-kicker:hover{background:rgba(255,215,120,.06);border-color:rgba(255,215,120,.46)}
+.slide-wrap{overflow:hidden;transition:max-height .35s ease;max-height:0}
 .slide-wrap[data-open="true"]{max-height:4000px}
-@media(max-width:480px){.bio-card{width:94vw;max-height:86vh}}
+
+/* Focus ring */
+:focus-visible{outline:2px solid #f0da9a;outline-offset:2px;border-radius:12px;box-shadow:0 0 0 2px rgba(20,30,60,.6)}
+
+/* Bottom progress hint */
+body::after{content:"";position:fixed;left:8%;right:8%;bottom:86px;height:4px;border-radius:4px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);pointer-events:none;z-index:8;transform-origin:left center;transform:scaleX(var(--scrollX,.06))}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  #waves,#trail{display:none !important}
+  html{scroll-behavior:auto}
+  *{transition:none !important}
+}
 </style>
 </head>
+
+<!-- ===== BODY / HTML ===== -->
 <body class="korean">
 <canvas id="waves" aria-hidden="true"></canvas>
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <header>
-  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.8</div>
+  <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.8.2</div>
   <nav class="primary" aria-label="Primary">
-    <button data-target="poem" class="active">Poem</button>
-    <button data-target="works">Works</button>
-    <button data-target="reports">Reports</button>
-    <button id="tab-bio">Artist Bio</button>
+    <button type="button" data-target="poem" class="active">Poem</button>
+    <button type="button" data-target="works">Works</button>
+    <button type="button" data-target="reports">Reports</button>
+    <button type="button" id="tab-bio">Artist Bio</button>
   </nav>
-  <div class="lang" aria-label="Language">
-    <button id="koBtn" class="active">KR</button>
-    <button id="enBtn">EN</button>
-    <button id="hyBtn">KR+EN</button>
+
+  <!-- Language segmented control -->
+  <div class="langseg" id="langseg" data-active="ko" aria-label="Language">
+    <div class="rail">
+      <button id="koBtn" aria-pressed="true"><span class="label">KR</span></button>
+      <button id="enBtn" aria-pressed="false"><span class="label">EN</span></button>
+      <button id="hyBtn" aria-pressed="false"><span class="label">KR+EN</span></button>
+      <div class="thumb" aria-hidden="true"></div>
+    </div>
   </div>
 </header>
 
@@ -225,10 +268,17 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
     <div class="bio-head">
       <h2 id="bio-title" class="ko">작가 소개</h2>
       <h2 class="en">Artist Bio</h2>
-      <div class="bio-lang">
-        <button class="lang active" data-bio-lang="kr" aria-pressed="true">KR</button>
-        <button class="lang" data-bio-lang="en" aria-pressed="false">EN</button>
+
+      <!-- Bio language mini segment -->
+      <div class="langseg" id="bioLang" data-active="kr" aria-label="Bio Language" style="width:210px;--h:36px;margin-left:auto">
+        <div class="rail">
+          <button class="lang" data-bio-lang="kr" aria-pressed="true"><span class="label">KR</span></button>
+          <button class="lang" data-bio-lang="en" aria-pressed="false"><span class="label">EN</span></button>
+          <button class="lang" data-bio-lang="hy" aria-pressed="false"><span class="label">KR+EN</span></button>
+          <div class="thumb" aria-hidden="true" style="width:33.33%"></div>
+        </div>
       </div>
+
       <button class="bio-close" aria-label="Close">✕</button>
     </div>
 
@@ -279,7 +329,7 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>《예술, 그 끝없는 사랑》(2024)</p>
       </div>
 
-      <!-- English list (Republic of Korea) -->
+      <!-- English list -->
       <div class="bio-body en">
         <p><strong>Major Exhibitions in Korea</strong></p>
         <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
@@ -370,30 +420,65 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
   <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
 </footer>
 
-<!-- ===================== SCRIPTS ===================== -->
+<!-- ===== SCRIPTS ===== -->
 <script>
-/* helpers */
+/* Helpers */
 const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
 const $=(q,sc)=>(sc||document).querySelector(q);
 
-/* site language */
+/* Site language — segmented control (instant + remembered + synced) */
 (function(){
-  const body=document.body, koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
-  function setSiteLang(lang){ // 'ko'|'en'|'hy'
-    body.classList.remove('korean','english','hybrid');
-    body.classList.add(lang==='ko'?'korean':lang==='en'?'english':'hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>b&&b.classList.remove('active'));
-    ({ko:koBtn,en:enBtn,hy:hyBtn}[lang]?.classList.add('active'));
-    localStorage.setItem('dz_site_lang',lang);
-    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:lang}));
+  const LANG_KEY='dz_site_lang';
+  const body=document.body, html=document.documentElement;
+  const seg=$('#langseg');
+  const koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
+
+  function setButtons(code){
+    const map={ko:koBtn,en:enBtn,hy:hyBtn};
+    [koBtn,enBtn,hyBtn].forEach(b=>b&&b.setAttribute('aria-pressed','false'));
+    (map[code]||koBtn)?.setAttribute('aria-pressed','true');
+    seg?.setAttribute('data-active', code);
   }
-  if(koBtn) koBtn.onclick=()=>setSiteLang('ko');
-  if(enBtn) enBtn.onclick=()=>setSiteLang('en');
-  if(hyBtn) hyBtn.onclick=()=>setSiteLang('hy');
-  setSiteLang(localStorage.getItem('dz_site_lang')||'ko');
+  function setBodyClass(code){
+    body.classList.remove('korean','english','hybrid');
+    body.classList.add(code==='ko'?'korean':code==='en'?'english':'hybrid');
+    html.setAttribute('lang', code==='en'?'en':'ko');
+    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:code}));
+  }
+  function setLang(code, persist=true){
+    if(!['ko','en','hy'].includes(code)) code='ko';
+    setButtons(code); setBodyClass(code);
+    persist && localStorage.setItem(LANG_KEY, code);
+  }
+  function pickInitial(){
+    const q=new URLSearchParams(location.search).get('lang');
+    if(q==='ko'||q==='en'||q==='hy') return q;
+    const saved=localStorage.getItem(LANG_KEY);
+    if(saved) return saved;
+    const nav=navigator.languages?.[0]||navigator.language||'en';
+    return /^ko/i.test(nav)?'ko':'en';
+  }
+  const init=pickInitial(); setLang(init,false);
+
+  // bindings
+  koBtn?.addEventListener('click',()=>setLang('ko'));
+  enBtn?.addEventListener('click',()=>setLang('en'));
+  hyBtn?.addEventListener('click',()=>setLang('hy'));
+
+  // keyboard
+  [koBtn,enBtn,hyBtn].forEach(b=>{
+    if(!b) return; b.setAttribute('role','button'); b.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault(); b.click();}
+    });
+  });
+
+  // sync other tabs
+  window.addEventListener('storage',e=>{
+    if(e.key===LANG_KEY && e.newValue){ setLang(e.newValue,false); }
+  });
 })();
 
-/* primary nav */
+/* Primary nav show/hide with smooth scroll */
 (function(){
   const sections=['poem','works','reports'];
   function show(id){
@@ -402,14 +487,14 @@ const $=(q,sc)=>(sc||document).querySelector(q);
       if(el) el.style.display=(s===id)?'block':'none';
     });
     $$('nav.primary button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
-    if(id==='works'){ const w=$('#works'); if(w) window.scrollTo({top:w.offsetTop-70,behavior:'smooth'}); }
+    const target=$('#'+id); if(target) window.scrollTo({top:target.offsetTop-70,behavior:'smooth'});
   }
   $$('nav.primary button[data-target]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
   show('poem');
   $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO?.open());
 })();
 
-/* background waves & trail */
+/* Background waves & trail (safe + reduced-motion aware) */
 (function(){
   try{
     const wcv=$('#waves'), tcv=$('#trail');
@@ -455,53 +540,67 @@ const $=(q,sc)=>(sc||document).querySelector(q);
   }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* Artist Bio modal */
+/* Artist Bio modal + focus trap + language mini segment */
 window.DZ_BIO=(function(){
   const modal=$('#bio-modal');
   const closeBtn=modal?.querySelector('.bio-close');
-  const langBtns=modal? $$('.bio-lang .lang',modal):[];
   const expoToggle=$('#expoToggle');
   const expoSlide=$('#expoSlide');
   const headKo=modal?.querySelector('.bio-head .ko');
   const headEn=modal?.querySelector('.bio-head .en');
 
-  function setBioLang(code){ // 'kr' | 'en'
-    if(headKo) headKo.style.display=(code==='kr')?'block':'none';
-    if(headEn) headEn.style.display=(code==='en')?'block':'none';
-    $$('.bio-body.ko',modal).forEach(n=>n.style.display=(code==='kr')?'block':'none');
-    $$('.bio-body.en',modal).forEach(n=>n.style.display=(code==='en')?'block':'none');
-    langBtns.forEach(b=>{const on=(b.dataset.bioLang===code); b.classList.toggle('active',on); b.setAttribute('aria-pressed',on?'true':'false')});
-    localStorage.setItem('dz_bio_lang',code);
+  // mini segment
+  const seg=$('#bioLang');
+  const btns=seg?$$('.lang',seg):[];
+  function setThumb(code){
+    seg?.setAttribute('data-active', code==='en'?'en':code==='hy'?'hy':'kr');
+    btns.forEach(b=>b.setAttribute('aria-pressed','false'));
+    (btns.find(b=>b.dataset.bioLang===code)||btns[0])?.setAttribute('aria-pressed','true');
   }
-  function setExpoOpen(open){
-    if(!expoSlide||!expoToggle) return;
-    expoSlide.setAttribute('data-open',open?'true':'false');
-    expoToggle.setAttribute('aria-expanded',open?'true':'false');
-  }
+  function showKR(){ headKo.style.display='block'; headEn.style.display='none';
+    $$('.bio-body.ko',modal).forEach(n=>n.style.display='block');
+    $$('.bio-body.en',modal).forEach(n=>n.style.display='none'); }
+  function showEN(){ headKo.style.display='none'; headEn.style.display='block';
+    $$('.bio-body.ko',modal).forEach(n=>n.style.display='none');
+    $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
+  function showHY(){ headKo.style.display='block'; headEn.style.display='block';
+    $$('.bio-body.ko',modal).forEach(n=>n.style.display='block');
+    $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
+  function setBioLang(c){ setThumb(c); if(c==='en') showEN(); else if(c==='hy') showHY(); else showKR(); localStorage.setItem('dz_bio_lang',c); }
+
+  btns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
+
+  function setExpoOpen(open){ expoSlide?.setAttribute('data-open',open?'true':'false'); expoToggle?.setAttribute('aria-expanded',open?'true':'false'); }
   function open(){
     if(!modal) return;
     modal.hidden=false; document.body.style.overflow='hidden';
-    const site=document.body.classList.contains('english')?'en':'kr';
+    const site=document.body.classList.contains('english')?'en':document.body.classList.contains('hybrid')?'hy':'kr';
     setBioLang(localStorage.getItem('dz_bio_lang')||site);
     setExpoOpen(false);
+    // focus trap
+    const focusables=()=>Array.from(modal.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])')).filter(x=>x.offsetParent!==null);
+    const first=()=>focusables()[0], last=()=>focusables().slice(-1)[0];
+    modal.addEventListener('keydown',trap); first()?.focus();
+    function trap(e){ if(e.key!=='Tab')return; const f=focusables(); if(!f.length)return;
+      if(e.shiftKey && document.activeElement===f[0]){e.preventDefault(); last().focus()}
+      else if(!e.shiftKey && document.activeElement===last()){e.preventDefault(); first().focus()}
+    }
   }
   function close(){ if(!modal) return; modal.hidden=true; document.body.style.overflow=''; }
 
   closeBtn?.addEventListener('click',close);
   modal?.querySelector('.bio-backdrop')?.addEventListener('click',close);
-  langBtns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
   expoToggle?.addEventListener('click',()=>setExpoOpen(expoToggle.getAttribute('aria-expanded')!=='true'));
-  window.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal && !modal.hidden) close(); });
 
+  // sync with site language if user didn't set bio preference
   document.addEventListener('dz-lang-change',ev=>{
-    const pref=localStorage.getItem('dz_bio_lang');
-    if(!pref){ setBioLang(ev.detail==='en'?'en':'kr'); }
+    const pref=localStorage.getItem('dz_bio_lang'); if(!pref){ setBioLang(ev.detail==='en'?'en':ev.detail==='hy'?'hy':'kr'); }
   });
 
-  return {open,close,setBioLang,setExpoOpen};
+  return {open,close};
 })();
 
-/* Works loader (5×20) — 파일명 이중 지원(버그 대비) */
+/* Works loader (5×20) */
 (async function(){
   const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
   const panels={pray:$('#panel-pray'),human:$('#panel-human'),rebirth:$('#panel-rebirth'),exist:$('#panel-exist'),cosmos:$('#panel-cosmos')};
@@ -518,7 +617,7 @@ window.DZ_BIO=(function(){
     const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
     const meta=isKR()?(w.material_kr||''):(w.material_en||'');
     const size=isKR()?(w.size_kr||''):(w.size_en||'');
-    const year=w.year||''; const file=(w.image||'').replace(/\s+/g,'_');
+    const year=w.year||''; const file=encodeURIComponent((w.image||'').trim());
     const ssrc=`/images/standard/${file}?cb=${CB}`; const zsrc=`/images/zoom/${file}?cb=${CB}`;
     const alt=[title,meta,size,year].filter(Boolean).join('·');
     return `<article class="card" data-zoom="${zsrc}"><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
@@ -594,29 +693,29 @@ window.DZ_BIO=(function(){
   window.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return; if(e.key==='Escape')hide(); else if(e.key==='ArrowLeft')openAt(idx-1); else if(e.key==='ArrowRight')openAt(idx+1); else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()} else if(e.key==='-'){zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply()}});
 })();
 
-/* Reports: collapsed → open + filter */
+/* Reports demo & filter */
 (function(){
   const wrap=$('.reports-omega'); const grid=$('#reportGrid'); const toggle=$('#reportsToggle');
   if(!wrap||!grid||!toggle) return;
   wrap.classList.add('is-collapsed');
 
-  // demo data
   const items=Array.from({length:12},(_,i)=>({
     id:`DCAR${String(i+1).padStart(2,'0')}`,
     title_kr:`DCAR-${String(i+1).padStart(2,'0')} — (KR) 제목 예시`,
     title_en:`DCAR-${String(i+1).padStart(2,'0')} — (EN) Sample Title`,
     snippet_kr:`(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.`,
     snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`,
-    cat:(i%3===0?'theory':i%3===1?'archive':'practice')
+    cat:(i%3===0?'theory':i%3===1?'archive':'practice'),
+    n:i+1
   }));
 
   function render(cat){
     const list=(cat==='all')?items:items.filter(x=>x.cat===cat);
-    grid.innerHTML=list.map((r,idx)=>`
+    grid.innerHTML=list.map(r=>`
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
-            <span class="r-badge">DCAR-${String(idx+1).padStart(2,'0')}-2025</span>
+            <span class="r-badge">DCAR-${String(r.n).padStart(2,'0')}-2025</span>
             <span class="r-badge pdf">PDF</span>
           </div>
           <h3 class="r-title">${r.title_kr} · ${r.title_en}</h3>
@@ -642,12 +741,10 @@ window.DZ_BIO=(function(){
       t.classList.add('is-active'); render(t.dataset.r);
     });
   });
-
   grid.addEventListener('click',e=>{
     const id=e.target.getAttribute('data-open'); if(!id) return;
     const w=window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank'); if(w) w.focus();
   });
-
   function setOpen(open){
     wrap.classList.toggle('is-collapsed',!open);
     toggle.setAttribute('aria-expanded',open?'true':'false');
@@ -656,7 +753,7 @@ window.DZ_BIO=(function(){
   toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
 })();
 
-/* Ambient sound */
+/* Ambient sound (same behavior) + progress hint width */
 (function(){
   const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
   if(!btn||!stopBtn||!bar) return;
@@ -693,8 +790,13 @@ window.DZ_BIO=(function(){
   const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock)}
   window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
   btn.addEventListener('click',start); stopBtn.addEventListener('click',stop);
-  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
+
+  // bottom progress hint width
+  function upd(){
+    const h=document.documentElement;
+    const scrolled=(h.scrollTop)/(h.scrollHeight-h.clientHeight);
+    h.style.setProperty('--scrollX',Math.max(.06,Math.min(1,scrolled||0.0001)));
+  }
+  document.addEventListener('scroll',upd,{passive:true}); window.addEventListener('resize',upd,{passive:true}); upd();
 })();
 </script>
-</body>
-</html>

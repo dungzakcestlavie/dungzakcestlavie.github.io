@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>DUNGZAK CESTLAVIE · Admin Ω.16 — Works & DCAR (KR/EN)</title>
+<title>DUNGZAK CESTLAVIE · Admin Ω.16.1 — Works & DCAR (KR/EN)</title>
 <meta name="color-scheme" content="dark light">
 <style>
 :root{
@@ -36,10 +36,13 @@ hr.sep{border:0;border-top:1px dashed #31407a;margin:12px 0}
 kbd{padding:.2em .45em;border:1px solid #4455aa;border-bottom-width:2px;border-radius:6px;background:#0b1438}
 .status{font-size:13px;color:#cfe0ff}
 footer{opacity:.8;text-align:center;padding:16px 0}
+.alert{border-left:4px solid #ffb454;background:#221a0c;color:#ffe7c2;padding:8px 10px;border-radius:8px}
 @media(min-width:880px){ .row.cols-2{grid-template-columns:1fr 1fr} .row.cols-3{grid-template-columns:1fr 1fr 1fr}}
+#worksTableWrap{overflow:auto;max-height:52vh;margin-top:8px;-webkit-overflow-scrolling:touch}
 </style>
 </head>
 <body>
+
 <div class="wrap">
 
   <!-- 1) 연결 -->
@@ -51,25 +54,53 @@ footer{opacity:.8;text-align:center;padding:16px 0}
       <div><label>Branch</label><input id="branch" placeholder="main"></div>
     </div>
     <div class="row">
-      <div><label>Token (local only)</label><input id="token" placeholder="github_pat_xxxxx"></div>
-      <div class="btns">
+      <div><label>Token (local/session)</label><input id="token" placeholder="github_pat_xxxxx"></div>
+      <div class="btns" style="align-items:center">
+        <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="remember"> 토큰 기억하기</label>
         <button class="btn primary" onclick="saveSettings()">저장</button>
         <button class="btn" onclick="test()">연결 테스트</button>
         <span id="status" class="status"></span>
       </div>
-      <div class="note">토큰 권한: <span class="tag">Contents: Read &amp; write</span> <span class="tag">repo</span> 필요.</div>
+      <div class="note">토큰 권한: <span class="tag">Contents: Read &amp; write</span> <span class="tag">repo</span></div>
+      <div class="alert">주의: 토큰을 공개 저장소에 커밋하지 마세요. 이 페이지는 로컬에서만 사용하세요.</div>
     </div>
   </div>
 
-  <!-- 2) 작품 메타데이터 -->
+  <!-- 2) 이미지 업로드 -->
   <div class="panel">
-    <h1>2) Works — 작품(5섹션 × 20) · <code>data/works.json</code></h1>
-    <div class="note">필드: title_kr / title_en / material_kr / material_en / size_kr / size_en / year / image / zoom. 이미지는 <code>images/standard/</code>와 <code>images/zoom/</code>에 같은 파일명으로 업로드.</div>
+    <h1>2) 이미지 업로드 · <code>images/standard/</code> · <code>images/zoom/</code></h1>
+    <div class="row cols-2">
+      <div>
+        <label>Standard 이미지 선택(다중)</label>
+        <input id="imgStd" type="file" multiple accept=".jpg,.jpeg,.png,.webp">
+        <div class="btns" style="margin-top:8px">
+          <button class="btn primary" onclick="uploadImages('standard')">Standard 업로드</button>
+        </div>
+      </div>
+      <div>
+        <label>Zoom 이미지 선택(다중)</label>
+        <input id="imgZoom" type="file" multiple accept=".jpg,.jpeg,.png,.webp">
+        <div class="btns" style="margin-top:8px">
+          <button class="btn primary" onclick="uploadImages('zoom')">Zoom 업로드</button>
+        </div>
+      </div>
+    </div>
+    <div class="note">파일명은 작품 메타의 <code>image</code>/<code>zoom</code>와 동일하게 맞추면 Index가 즉시 매칭합니다.</div>
+    <div id="upStatus" class="status"></div>
+  </div>
+
+  <!-- 3) 작품 메타데이터 -->
+  <div class="panel">
+    <h1>3) Works — 작품(5섹션 × 20) · <code>data/works.json</code></h1>
+    <div class="note">필드: title_kr / title_en / material_kr / material_en / size_kr / size_en / year / image / zoom</div>
     <div class="btns" style="margin:8px 0">
       <button class="btn" onclick="loadWorks()">불러오기</button>
       <button class="btn primary" onclick="saveWorks()">저장</button>
       <button class="btn" onclick="downloadJSON()">내보내기(JSON)</button>
       <button class="btn" onclick="openImporter()">붙여넣기(표/CSV)</button>
+      <button class="btn ok" onclick="padTo20()">빈행 채우기(20)</button>
+      <button class="btn warn" onclick="trimTo20()">20개 초과분 제거</button>
+      <button class="btn" onclick="bust(true)">캐시 갱신</button>
     </div>
 
     <div class="row cols-2">
@@ -79,20 +110,19 @@ footer{opacity:.8;text-align:center;padding:16px 0}
       </div>
       <div class="btns">
         <button class="btn ok" onclick="addRow()">+ 행 추가</button>
-        <button class="btn warn" onclick="capTo20()">20개로 맞추기</button>
         <button class="btn err" onclick="delChecked()">선택 삭제</button>
       </div>
     </div>
 
-    <div id="worksTableWrap" style="overflow:auto;max-height:52vh;margin-top:8px">
+    <div id="worksTableWrap">
       <table class="table" id="worksTable"></table>
     </div>
-    <div class="note">팁: iPhone에서 제목/재료/크기/년도 빠르게 입력 후 저장 → <kbd>캐시 갱신</kbd>을 누르면 Index에 즉시 반영.</div>
+    <div class="note">팁: iPhone에서 빠르게 입력 후 저장 → 캐시 갱신을 누르면 Index에 즉시 반영.</div>
   </div>
 
-  <!-- 3) 미학 보고서 -->
+  <!-- 4) 미학 보고서 -->
   <div class="panel">
-    <h1>3) Aesthetic Reports (DCAR01–08) · <code>reports/DCARxx.md</code></h1>
+    <h1>4) Aesthetic Reports (DCAR01–09) · <code>reports/DCARxx.md</code></h1>
     <div class="row cols-3">
       <div>
         <label>Report</label>
@@ -115,31 +145,31 @@ footer{opacity:.8;text-align:center;padding:16px 0}
       <button class="btn" onclick="loadReport()">불러오기</button>
       <button class="btn primary" onclick="saveReport()">저장</button>
       <button class="btn" onclick="openPrint()">미리보기·출력</button>
+      <button class="btn" onclick="bust(true)">캐시 갱신</button>
     </div>
   </div>
 
-  <!-- 4) 캐시 무효화 -->
+  <!-- 5) 캐시 무효화 -->
   <div class="panel">
-    <h1>4) 캐시 무효화 · <code>data/cachebust.json</code></h1>
+    <h1>5) 캐시 무효화 · <code>data/cachebust.json</code></h1>
     <div class="btns">
-      <button class="btn primary" onclick="bust()">지금 갱신</button>
+      <button class="btn primary" onclick="bust(true)">지금 갱신</button>
       <span id="cache" class="status"></span>
     </div>
   </div>
 
-  <footer class="note">© 2025 DUNGZAK CESTLAVIE · Admin Ω.16 — Self-Healing</footer>
+  <footer class="note">© 2025 DUNGZAK CESTLAVIE · Admin Ω.16.1 — Self-Healing</footer>
 </div>
 
 <script>
 /* ========= Utilities ========= */
 const $=sel=>document.querySelector(sel);
 const $$=sel=>Array.from(document.querySelectorAll(sel));
-const L={
-  get:k=>localStorage.getItem(k)||'',
-  set:(k,v)=>localStorage.setItem(k,v),
+const L={ get:k=>localStorage.getItem(k)||'', set:(k,v)=>localStorage.setItem(k,v),
   jget:(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'')}catch{return d}},
-  jset:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
-};
+  jset:(k,v)=>localStorage.setItem(k,JSON.stringify(v)) };
+const S={ get:k=>sessionStorage.getItem(k)||'', set:(k,v)=>sessionStorage.setItem(k,v), del:k=>sessionStorage.removeItem(k) };
+
 const DEF_SECTIONS=[
   {key:'pray',  name:'Ⅰ 우리를 위해 기도해 주세요 · Pray for Us'},
   {key:'human', name:'Ⅱ 인간 · Human Being'},
@@ -147,68 +177,103 @@ const DEF_SECTIONS=[
   {key:'exist', name:'Ⅳ 존재의 회복 · Restoration of Being'},
   {key:'cosmos',name:'Ⅴ 빛의 초의식 · Metaconsciousness of Light'}
 ];
-const REPORTS=['DCAR01','DCAR02','DCAR03','DCAR04','DCAR05','DCAR06','DCAR07','DCAR08'];
+const REPORTS=['DCAR01','DCAR02','DCAR03','DCAR04','DCAR05','DCAR06','DCAR07','DCAR08','DCAR09'];
 
-/* ========= Settings ========= */
-const owner=$('#owner'), repo=$('#repo'), branch=$('#branch'), token=$('#token');
+/* UTF-8 <-> Base64 */
+function b64encodeUTF8(str){
+  const bytes = new TextEncoder().encode(str); let bin = "";
+  bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin);
+}
+function b64decodeUTF8(b64){
+  const bin = atob(b64||""); const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+/* Settings */
+const owner=$('#owner'), repo=$('#repo'), branch=$('#branch'), token=$('#token'), remember=$('#remember');
+function apiBase(){ return `https://api.github.com/repos/${L.get('o')}/${L.get('r')}`; }
+function headers(){ const h={Accept:'application/vnd.github+json'}; const t=S.get('t')||L.get('t'); if(t) h.Authorization = `token ${t}`; return h; }
 function initSettings(){
   owner.value = L.get('o') || 'dungzakcestlavie';
   repo.value  = L.get('r') || 'dungzakcestlavie.github.io';
   branch.value= L.get('b') || 'main';
-  token.value = L.get('t') || '';
-  // dropdowns
-  const sSel = $('#sectionSel');
-  sSel.innerHTML = DEF_SECTIONS.map(s=>`<option value="${s.key}">${s.name}</option>`).join('');
-  const rSel = $('#reportId');
-  rSel.innerHTML = REPORTS.map(x=>`<option value="${x}">${x}</option>`).join('');
+  token.value = S.get('t') || L.get('t') || '';
+  remember.checked = !!L.get('t');
+  $('#sectionSel').innerHTML = DEF_SECTIONS.map(s=>`<option value="${s.key}">${s.name}</option>`).join('');
+  $('#reportId').innerHTML = REPORTS.map(x=>`<option value="${x}">${x}</option>`).join('');
 }
 function saveSettings(){
-  L.set('o',owner.value.trim()); L.set('r',repo.value.trim());
-  L.set('b',branch.value.trim()); L.set('t',token.value.trim());
+  L.set('o',owner.value.trim()); L.set('r',repo.value.trim()); L.set('b',branch.value.trim());
+  S.set('t', token.value.trim()); if(remember.checked) L.set('t', token.value.trim()); else localStorage.removeItem('t');
   alert('연결 정보 저장됨');
 }
-function headers(){
-  const h={Accept:'application/vnd.github+json'};
-  const t=L.get('t'); if(t) h.Authorization = `token ${t}`;
-  return h;
-}
-/* GH helpers */
+
+/* GitHub helpers */
 async function repoInfo(){
-  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}`;
-  const r=await fetch(url,{headers:headers()});
+  const r=await fetch(apiBase(),{headers:headers()});
   return {ok:r.ok,status:r.status,json:await r.json().catch(()=>({}))};
 }
 async function getFile(path){
-  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(L.get('b'))}`;
-  const r=await fetch(url,{headers:headers()});
-  if(!r.ok) return null;
-  const j=await r.json();
-  return {sha:j.sha, text: atob(j.content||"")};
+  const url=`${apiBase()}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(L.get('b'))}`;
+  const r=await fetch(url,{headers:headers()}); if(!r.ok) return null;
+  const j=await r.json(); return {sha:j.sha, text: b64decodeUTF8(j.content||"")};
 }
 async function putFile(path,text,sha){
-  const url=`https://api.github.com/repos/${L.get('o')}/${L.get('r')}/contents/${encodeURIComponent(path)}`;
-  const body={message:`update ${path}`, content:btoa(unescape(encodeURIComponent(text))), branch:L.get('b')};
-  if(sha) body.sha=sha;
+  const url=`${apiBase()}/contents/${encodeURIComponent(path)}`;
+  const body={message:`update ${path}`, content:b64encodeUTF8(text), branch:L.get('b')}; if(sha) body.sha=sha;
   const r=await fetch(url,{method:'PUT',headers:{...headers(),'Content-Type':'application/json'},body:JSON.stringify(body)});
   if(!r.ok){ const e=await r.json().catch(()=>({message:''})); throw new Error(`GitHub ${r.status}: ${e.message||'권한/경로 확인'}`) }
   return r.json();
 }
+async function putBinaryFile(path, file){
+  const buf = await file.arrayBuffer(); let bin = ""; const bytes = new Uint8Array(buf);
+  for(let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  const content = btoa(bin);
+  const url=`${apiBase()}/contents/${encodeURIComponent(path)}`;
+  const body={message:`upload ${path}`, content, branch:L.get('b')};
+  const r=await fetch(url,{method:'PUT',headers:{...headers(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){ const e=await r.json().catch(()=>({message:''})); throw new Error(`GitHub ${r.status}: ${e.message||'권한/경로/용량 확인'}`) }
+  return r.json();
+}
+async function safePut(path, text){
+  let f = await getFile(path);
+  try{ return await putFile(path,text,f?f.sha:null); }
+  catch(e){
+    if(String(e.message).includes('409')||String(e.message).includes('sha')){ f = await getFile(path); return await putFile(path,text,f?f.sha:null); }
+    if(String(e.message).toLowerCase().includes('secondary rate limit')){ await new Promise(r=>setTimeout(r,1200)); return await putFile(path,text,f?f.sha:null); }
+    throw e;
+  }
+}
+
 /* Test */
 async function test(){
-  const s=$('#status'); s.textContent='테스트 중…';
+  const s=$('#status'); s.textContent='테스트 중...';
   try{
     const info=await repoInfo();
     if(info.ok){ s.textContent=`연결 성공 · default=${info.json.default_branch}`; }
-    else{ s.textContent=`실패(${info.status}) · ${info.json.message||''}`; alert(s.textContent); }
+    else{
+      const tip = ({401:'토큰 불일치/만료',403:'권한 부족 또는 레이트 리밋',404:'owner/repo/branch 확인',409:'브랜치 보호 설정 확인',422:'경로/브랜치 유효성 재확인'})[info.status] || '네트워크/설정 확인';
+      s.textContent=`실패(${info.status}) · ${tip}`; alert(`${s.textContent}\n${info.json.message||''}`);
+    }
   }catch(e){ s.textContent='실패: 네트워크/토큰 문제'; alert(e.message||e); }
 }
 
-/* ========= Works editor ========= */
+/* 이미지 업로드 */
+async function uploadImages(kind){
+  try{
+    const input = kind==='standard' ? $('#imgStd') : $('#imgZoom');
+    const files = Array.from(input.files||[]); if(!files.length){ alert('파일을 선택하세요.'); return; }
+    $('#upStatus').textContent = `${kind}: ${files.length}개 업로드 중...`;
+    for(const f of files){ const path = `images/${kind}/${f.name}`; await putBinaryFile(path, f); }
+    $('#upStatus').textContent = `${kind}: 업로드 완료`; await bust();
+  }catch(e){ alert(e.message||e); }
+}
+
+/* Works editor */
 let WORKS = {pray:[],human:[],rebirth:[],exist:[],cosmos:[]};
 const FIELDS=['title_kr','title_en','material_kr','material_en','size_kr','size_en','year','image','zoom'];
-function rowTemplate(){
-  return {title_kr:'',title_en:'',material_kr:'',material_en:'',size_kr:'',size_en:'',year:'',image:'',zoom:''}
-}
+function rowTemplate(){ return {title_kr:'',title_en:'',material_kr:'',material_en:'',size_kr:'',size_en:'',year:'',image:'',zoom:''} }
+function sanitizeCell(val){ return String(val||'').replace(/\u00A0/g,' ').replace(/\r?\n+/g,' ').trim(); }
 function renderTable(){
   const key = $('#sectionSel').value;
   const list = WORKS[key]||(WORKS[key]=[]);
@@ -224,59 +289,67 @@ function renderTable(){
     </tr>`).join('');
   $('#worksTable').innerHTML = thead + rows;
 }
-function cellEdit(key,i,field,val){ WORKS[key][i][field]=val.trim(); }
+function cellEdit(key,i,field,val){ WORKS[key][i][field]=sanitizeCell(val); }
 function addRow(){ const key=$('#sectionSel').value; (WORKS[key]||(WORKS[key]=[])).push(rowTemplate()); renderTable(); }
-function capTo20(){ const key=$('#sectionSel').value; WORKS[key]=(WORKS[key]||[]).slice(0,20); while(WORKS[key].length<20) WORKS[key].push(rowTemplate()); renderTable(); }
+function trimTo20(){ const key=$('#sectionSel').value; WORKS[key]=(WORKS[key]||[]).slice(0,20); renderTable(); }
+function padTo20(){ const key=$('#sectionSel').value; while((WORKS[key]||[]).length<20)(WORKS[key]=WORKS[key]||[]).push(rowTemplate()); renderTable(); }
 function delChecked(){
   const key=$('#sectionSel').value; const list=WORKS[key]||[];
   const checks=$$('#worksTable input[type=checkbox][data-i]').filter(c=>c.checked).map(c=>+c.dataset.i);
   WORKS[key]=list.filter((_,i)=>!checks.includes(i)); renderTable();
 }
 function toggleAll(m){ $$('#worksTable input[type=checkbox][data-i]').forEach(c=>c.checked=m.checked); }
-
+$('#worksTableWrap').addEventListener('change', e=>{
+  if(e.target.matches('input[type=checkbox][data-i]')){
+    const boxes = $$('#worksTable input[type=checkbox][data-i]'); const all = $('#chkAll'); if(all) all.checked = boxes.every(b=>b.checked);
+  }
+});
 async function loadWorks(){
   const f=await getFile('data/works.json');
   WORKS = f ? JSON.parse(f.text||'{}') : {pray:[],human:[],rebirth:[],exist:[],cosmos:[]};
-  // 안전 장치
   for(const s of DEF_SECTIONS){ if(!Array.isArray(WORKS[s.key])) WORKS[s.key]=[]; }
   $('#sectionSel').value = DEF_SECTIONS[0].key;
-  renderTable();
-  alert('works.json 불러오기 완료');
+  renderTable(); alert('works.json 불러오기 완료');
 }
 async function saveWorks(){
   try{
-    // 각 섹션 최대 20로 제한(넘치면 잘라줌)
     for(const s of DEF_SECTIONS){ if(WORKS[s.key].length>20) WORKS[s.key]=WORKS[s.key].slice(0,20); }
-    const text=JSON.stringify(WORKS,null,2);
-    const f=await getFile('data/works.json');
-    await putFile('data/works.json',text,f?f.sha:null);
-    alert('works.json 저장 완료');
+    const text=JSON.stringify(WORKS,null,2); await safePut('data/works.json', text);
+    $('#status').textContent = `마지막 저장: ${new Date().toLocaleString('ko-KR')}`;
+    alert('works.json 저장 완료'); await bust();
   }catch(e){ alert(e.message); }
 }
 function downloadJSON(){
   const blob=new Blob([JSON.stringify(WORKS,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='works.json'; a.click();
 }
-/* Paste importer (CSV/TSV/표) */
+function parseRows(raw){
+  const lines = raw.split(/\r?\n/).filter(x=>x.trim());
+  return lines.map(line=>{
+    if(/\t/.test(line)) return line.split('\t');
+    const out=[]; let cur='', q=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='"' ){ if(line[i+1]==='"'){cur+='"'; i++;} else q=!q; }
+      else if(c===',' && !q){ out.push(cur); cur=''; }
+      else cur+=c;
+    }
+    out.push(cur); return out;
+  });
+}
 function openImporter(){
   const raw=prompt('표/CSV/탭 구분 텍스트를 붙여넣으세요.\n열 순서: '+FIELDS.join(', '));
   if(!raw) return;
-  const lines=raw.split(/\r?\n/).filter(x=>x.trim());
-  const rows=lines.map(l=>l.split(/\t|,/));
-  const list=rows.map(c=>{
-    const o=rowTemplate(); FIELDS.forEach((f,i)=>o[f]=c[i]?String(c[i]).trim():''); return o;
-  });
-  const key=$('#sectionSel').value;
-  WORKS[key]=list.slice(0,20);
-  renderTable();
+  const rows=parseRows(raw);
+  const list=rows.map(c=>{ const o=rowTemplate(); FIELDS.forEach((f,i)=>o[f]=c[i]?String(c[i]).trim():''); return o; });
+  const key=$('#sectionSel').value; WORKS[key]=list.slice(0,20); renderTable();
 }
 
-/* ========= Reports ========= */
+/* Reports (DCAR01–09) */
 function fmBuild(id,kr,en,bodyKr,bodyEn){
   return `---\nid: ${id}\ntitle_kr: "${kr.replace(/"/g,'\\"')}"\ntitle_en: "${en.replace(/"/g,'\\"')}"\n---\n\n# (KR)\n${bodyKr}\n\n# (EN)\n${bodyEn}\n`;
 }
 function fmParse(text){
-  // very light parser
   const m = text.match(/^---\s*[\r\n]+([\s\S]*?)---\s*([\s\S]*)$/);
   let meta={}, rest=text;
   if(m){ const head=m[1], body=m[2]; rest=body;
@@ -285,7 +358,7 @@ function fmParse(text){
       if(mm) meta[mm[1]]=mm[2];
     });
   }
-  const mk = rest.split(/\n# \(EN\)\n/); // split bodies
+  const mk = rest.split(/\n# \(EN\)\n/);
   const bodyKr = mk[0].replace(/^# \(KR\)\n/,'');
   const bodyEn = mk[1]||'';
   return {meta, bodyKr, bodyEn};
@@ -295,14 +368,11 @@ async function loadReport(){
   const f=await getFile(`reports/${id}.md`);
   if(f){
     const {meta,bodyKr,bodyEn}=fmParse(f.text);
-    $('#rTitleKr').value = meta.title_kr||'';
-    $('#rTitleEn').value = meta.title_en||'';
-    $('#rBodyKr').value = bodyKr.trim();
-    $('#rBodyEn').value = bodyEn.trim();
+    $('#rTitleKr').value = meta.title_kr||''; $('#rTitleEn').value = meta.title_en||'';
+    $('#rBodyKr').value = (bodyKr||'').trim(); $('#rBodyEn').value = (bodyEn||'').trim();
     alert(`${id} 불러오기 완료`);
   }else{
-    $('#rTitleKr').value=''; $('#rTitleEn').value='';
-    $('#rBodyKr').value='';  $('#rBodyEn').value='';
+    $('#rTitleKr').value=''; $('#rTitleEn').value=''; $('#rBodyKr').value='';  $('#rBodyEn').value='';
     alert(`${id} 파일이 없어 새로 작성합니다.`);
   }
 }
@@ -310,24 +380,22 @@ async function saveReport(){
   try{
     const id=$('#reportId').value;
     const text=fmBuild(id,$('#rTitleKr').value,$('#rTitleEn').value,$('#rBodyKr').value,$('#rBodyEn').value);
-    const f=await getFile(`reports/${id}.md`);
-    await putFile(`reports/${id}.md`,text,f?f.sha:null);
-    alert(`${id} 저장 완료`);
+    await safePut(`reports/${id}.md`, text); alert(`${id} 저장 완료`); await bust();
   }catch(e){ alert(e.message); }
 }
 function openPrint(){
   const id=$('#reportId').value;
-  window.open(`/reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
+  window.open(`reports/print-preview.html?file=${encodeURIComponent(id+'.md')}`,'_blank');
 }
 
-/* ========= Cache bust ========= */
-async function bust(){
+/* Cache bust */
+async function bust(showToast){
   try{
     const v=Date.now();
-    const f=await getFile('data/cachebust.json'); // allow overwrite
-    await putFile('data/cachebust.json',JSON.stringify({v}),f?f.sha:null);
-    $('#cache').textContent='cache: '+v;
-    alert('캐시 갱신 완료');
+    await safePut('data/cachebust.json', JSON.stringify({v}));
+    $('#cache').textContent=`cache: ${v} · ${new Date().toLocaleString('ko-KR')}`;
+    if(showToast) alert('캐시 갱신 완료');
+    try{ fetch(`/?_bust=${v}`,{mode:'no-cors'}); }catch{}
   }catch(e){ alert(e.message) }
 }
 

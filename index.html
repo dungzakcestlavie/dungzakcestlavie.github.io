@@ -1,4 +1,5 @@
-<!-- ===== HEAD / STYLE ===== -->
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
@@ -10,7 +11,7 @@
 <meta name="theme-color" content="#070c1a" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
 
-<!-- Early Lang Boot: 첫 페인트 전 언어 클래스/attr 세팅 (FOUC 방지) -->
+<!-- Early Lang Boot: 첫 페인트 전 언어 고정 (FOUC 방지) -->
 <script>
 (function(){
   try{
@@ -25,10 +26,7 @@
 </script>
 
 <style>
-:root{
-  --bg:#070c1a; --fg:#eaf2ff; --gold:#e6c777; --muted:#b6c4ee;
-  --panel:#0e152f; --line:#1c2955; --max:1180px
-}
+:root{ --bg:#070c1a; --fg:#eaf2ff; --gold:#e6c777; --muted:#b6c4ee; --panel:#0e152f; --line:#1c2955; --max:1180px }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--fg);font:16px/1.68 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
@@ -172,7 +170,6 @@ body::after{content:"";position:fixed;left:8%;right:8%;bottom:86px;height:4px;bo
 </style>
 </head>
 
-<!-- ===== BODY / HTML ===== -->
 <body class="korean">
 <canvas id="waves" aria-hidden="true"></canvas>
 <canvas id="trail" aria-hidden="true"></canvas>
@@ -270,9 +267,9 @@ body::after{content:"";position:fixed;left:8%;right:8%;bottom:86px;height:4px;bo
       <h2 class="en">Artist Bio</h2>
 
       <!-- Bio language mini segment -->
-      <div class="langseg" id="bioLang" data-active="kr" aria-label="Bio Language" style="width:210px;--h:36px;margin-left:auto">
+      <div class="langseg" id="bioLang" data-active="ko" aria-label="Bio Language" style="width:210px;--h:36px;margin-left:auto">
         <div class="rail">
-          <button class="lang" data-bio-lang="kr" aria-pressed="true"><span class="label">KR</span></button>
+          <button class="lang" data-bio-lang="ko" aria-pressed="true"><span class="label">KR</span></button>
           <button class="lang" data-bio-lang="en" aria-pressed="false"><span class="label">EN</span></button>
           <button class="lang" data-bio-lang="hy" aria-pressed="false"><span class="label">KR+EN</span></button>
           <div class="thumb" aria-hidden="true" style="width:33.33%"></div>
@@ -282,7 +279,7 @@ body::after{content:"";position:fixed;left:8%;right:8%;bottom:86px;height:4px;bo
       <button class="bio-close" aria-label="Close">✕</button>
     </div>
 
-    <!-- one-line summary (KR/EN 동기화) -->
+    <!-- one-line summary -->
     <button class="expo-kicker" id="expoToggle" aria-expanded="false">
       <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 28회 ▾</span>
       <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
@@ -420,72 +417,46 @@ body::after{content:"";position:fixed;left:8%;right:8%;bottom:86px;height:4px;bo
   <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
 </footer>
 
-<!-- ===== SCRIPTS ===== -->
 <script>
-/* Helpers */
+/* helpers */
 const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
 const $=(q,sc)=>(sc||document).querySelector(q);
 
-/* Site language — segmented control (instant + remembered + synced) */
+/* Language segmented control (instant + remember + tab sync) */
 (function(){
-  const LANG_KEY='dz_site_lang';
-  const body=document.body, html=document.documentElement;
-  const seg=$('#langseg');
-  const koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
+  const KEY='dz_site_lang';
+  const html=document.documentElement, body=document.body;
+  const seg=$('#langseg'), ko=$('#koBtn'), en=$('#enBtn'), hy=$('#hyBtn');
 
-  function setButtons(code){
-    const map={ko:koBtn,en:enBtn,hy:hyBtn};
-    [koBtn,enBtn,hyBtn].forEach(b=>b&&b.setAttribute('aria-pressed','false'));
-    (map[code]||koBtn)?.setAttribute('aria-pressed','true');
+  function setBtns(code){
+    [ko,en,hy].forEach(b=>b&&b.setAttribute('aria-pressed','false'));
+    ({ko,en,hy}[code]||ko)?.setAttribute('aria-pressed','true');
     seg?.setAttribute('data-active', code);
   }
-  function setBodyClass(code){
+  function setBody(code){
     body.classList.remove('korean','english','hybrid');
-    body.classList.add(code==='ko'?'korean':code==='en'?'english':'hybrid');
-    html.setAttribute('lang', code==='en'?'en':'ko');
+    body.classList.add(code==='en'?'english':code==='hy'?'hybrid':'korean');
+    html.setAttribute('lang',code==='en'?'en':'ko');
     document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:code}));
   }
-  function setLang(code, persist=true){
-    if(!['ko','en','hy'].includes(code)) code='ko';
-    setButtons(code); setBodyClass(code);
-    persist && localStorage.setItem(LANG_KEY, code);
-  }
-  function pickInitial(){
-    const q=new URLSearchParams(location.search).get('lang');
-    if(q==='ko'||q==='en'||q==='hy') return q;
-    const saved=localStorage.getItem(LANG_KEY);
-    if(saved) return saved;
-    const nav=navigator.languages?.[0]||navigator.language||'en';
-    return /^ko/i.test(nav)?'ko':'en';
-  }
-  const init=pickInitial(); setLang(init,false);
+  function setLang(code,save=true){ if(!['ko','en','hy'].includes(code)) code='ko'; setBtns(code); setBody(code); if(save) localStorage.setItem(KEY,code) }
+  function initFrom(){ const q=new URLSearchParams(location.search).get('lang'); if(q) return q; const s=localStorage.getItem(KEY); if(s) return s; return (/^ko/i).test(navigator.language||'')?'ko':'en'; }
+  setLang(initFrom(),false);
 
-  // bindings
-  koBtn?.addEventListener('click',()=>setLang('ko'));
-  enBtn?.addEventListener('click',()=>setLang('en'));
-  hyBtn?.addEventListener('click',()=>setLang('hy'));
+  ko?.addEventListener('click',()=>setLang('ko'));
+  en?.addEventListener('click',()=>setLang('en'));
+  hy?.addEventListener('click',()=>setLang('hy'));
 
-  // keyboard
-  [koBtn,enBtn,hyBtn].forEach(b=>{
-    if(!b) return; b.setAttribute('role','button'); b.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault(); b.click();}
-    });
-  });
+  [ko,en,hy].forEach(b=>b&&b.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault(); b.click()} }));
 
-  // sync other tabs
-  window.addEventListener('storage',e=>{
-    if(e.key===LANG_KEY && e.newValue){ setLang(e.newValue,false); }
-  });
+  window.addEventListener('storage',e=>{ if(e.key===KEY && e.newValue) setLang(e.newValue,false) });
 })();
 
-/* Primary nav show/hide with smooth scroll */
+/* Primary nav */
 (function(){
   const sections=['poem','works','reports'];
   function show(id){
-    sections.forEach(s=>{
-      const el=document.getElementById(s);
-      if(el) el.style.display=(s===id)?'block':'none';
-    });
+    sections.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display=(s===id)?'block':'none' });
     $$('nav.primary button[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
     const target=$('#'+id); if(target) window.scrollTo({top:target.offsetTop-70,behavior:'smooth'});
   }
@@ -494,7 +465,7 @@ const $=(q,sc)=>(sc||document).querySelector(q);
   $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO?.open());
 })();
 
-/* Background waves & trail (safe + reduced-motion aware) */
+/* Background waves & trail */
 (function(){
   try{
     const wcv=$('#waves'), tcv=$('#trail');
@@ -505,11 +476,7 @@ const $=(q,sc)=>(sc||document).querySelector(q);
     const ease=x=>x*x*(3-2*x);
     function resize(){
       DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
-      [wctx,tctx].forEach(c=>{
-        c.canvas.width=Math.floor(innerWidth*DPR);
-        c.canvas.height=Math.floor(innerHeight*DPR);
-        c.setTransform(1,0,0,1,0,0); c.scale(1/DPR,1/DPR);
-      });
+      [wctx,tctx].forEach(c=>{ c.canvas.width=Math.floor(innerWidth*DPR); c.canvas.height=Math.floor(innerHeight*DPR); c.setTransform(1,0,0,1,0,0); c.scale(1/DPR,1/DPR); });
     }
     function waveY(x,k,t){const f1=0.003+k*0.0007,f2=0.006+k*0.0006,a1=26+k*12,a2=14+k*8,dr=t*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(t*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
     function frame(now){
@@ -540,61 +507,48 @@ const $=(q,sc)=>(sc||document).querySelector(q);
   }catch(e){console.warn('canvas init error',e)}
 })();
 
-/* Artist Bio modal + focus trap + language mini segment */
+/* Bio modal + mini language segment */
 window.DZ_BIO=(function(){
   const modal=$('#bio-modal');
   const closeBtn=modal?.querySelector('.bio-close');
-  const expoToggle=$('#expoToggle');
-  const expoSlide=$('#expoSlide');
+  const seg=$('#bioLang');
+  const btns=seg?$$('.lang',seg):[];
+  const expoToggle=$('#expoToggle'), expoSlide=$('#expoSlide');
   const headKo=modal?.querySelector('.bio-head .ko');
   const headEn=modal?.querySelector('.bio-head .en');
 
-  // mini segment
-  const seg=$('#bioLang');
-  const btns=seg?$$('.lang',seg):[];
-  function setThumb(code){
-    seg?.setAttribute('data-active', code==='en'?'en':code==='hy'?'hy':'kr');
-    btns.forEach(b=>b.setAttribute('aria-pressed','false'));
-    (btns.find(b=>b.dataset.bioLang===code)||btns[0])?.setAttribute('aria-pressed','true');
+  function setThumb(code){ seg?.setAttribute('data-active', code); btns.forEach(b=>b.setAttribute('aria-pressed','false')); (btns.find(b=>b.dataset.bioLang===code)||btns[0])?.setAttribute('aria-pressed','true') }
+  function setBioLang(c){
+    setThumb(c);
+    const showKR = c==='ko' || c==='hy', showEN = c==='en' || c==='hy';
+    headKo.style.display=showKR?'block':'none'; headEn.style.display=showEN?'block':'none';
+    $$('.bio-body.ko',modal).forEach(n=>n.style.display=showKR?'block':'none');
+    $$('.bio-body.en',modal).forEach(n=>n.style.display=showEN?'block':'none');
+    localStorage.setItem('dz_bio_lang',c);
   }
-  function showKR(){ headKo.style.display='block'; headEn.style.display='none';
-    $$('.bio-body.ko',modal).forEach(n=>n.style.display='block');
-    $$('.bio-body.en',modal).forEach(n=>n.style.display='none'); }
-  function showEN(){ headKo.style.display='none'; headEn.style.display='block';
-    $$('.bio-body.ko',modal).forEach(n=>n.style.display='none');
-    $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
-  function showHY(){ headKo.style.display='block'; headEn.style.display='block';
-    $$('.bio-body.ko',modal).forEach(n=>n.style.display='block');
-    $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
-  function setBioLang(c){ setThumb(c); if(c==='en') showEN(); else if(c==='hy') showHY(); else showKR(); localStorage.setItem('dz_bio_lang',c); }
-
   btns.forEach(b=>b.addEventListener('click',()=>setBioLang(b.dataset.bioLang)));
 
   function setExpoOpen(open){ expoSlide?.setAttribute('data-open',open?'true':'false'); expoToggle?.setAttribute('aria-expanded',open?'true':'false'); }
   function open(){
     if(!modal) return;
     modal.hidden=false; document.body.style.overflow='hidden';
-    const site=document.body.classList.contains('english')?'en':document.body.classList.contains('hybrid')?'hy':'kr';
+    const site=document.body.classList.contains('english')?'en':document.body.classList.contains('hybrid')?'hy':'ko';
     setBioLang(localStorage.getItem('dz_bio_lang')||site);
     setExpoOpen(false);
-    // focus trap
-    const focusables=()=>Array.from(modal.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])')).filter(x=>x.offsetParent!==null);
-    const first=()=>focusables()[0], last=()=>focusables().slice(-1)[0];
-    modal.addEventListener('keydown',trap); first()?.focus();
-    function trap(e){ if(e.key!=='Tab')return; const f=focusables(); if(!f.length)return;
-      if(e.shiftKey && document.activeElement===f[0]){e.preventDefault(); last().focus()}
-      else if(!e.shiftKey && document.activeElement===last()){e.preventDefault(); first().focus()}
-    }
+    // simple focus trap
+    const f=()=>Array.from(modal.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])')).filter(x=>x.offsetParent!==null);
+    const first=()=>f()[0], last=()=>f().slice(-1)[0];
+    modal.addEventListener('keydown',function trap(e){ if(e.key!=='Tab')return; const a=f(); if(!a.length)return;
+      if(e.shiftKey&&document.activeElement===a[0]){e.preventDefault(); last().focus()} else if(!e.shiftKey&&document.activeElement===last()){e.preventDefault(); first().focus()} });
+    first()?.focus();
   }
-  function close(){ if(!modal) return; modal.hidden=true; document.body.style.overflow=''; }
-
+  function close(){ modal.hidden=true; document.body.style.overflow=''; }
   closeBtn?.addEventListener('click',close);
   modal?.querySelector('.bio-backdrop')?.addEventListener('click',close);
   expoToggle?.addEventListener('click',()=>setExpoOpen(expoToggle.getAttribute('aria-expanded')!=='true'));
 
-  // sync with site language if user didn't set bio preference
   document.addEventListener('dz-lang-change',ev=>{
-    const pref=localStorage.getItem('dz_bio_lang'); if(!pref){ setBioLang(ev.detail==='en'?'en':ev.detail==='hy'?'hy':'kr'); }
+    const pref=localStorage.getItem('dz_bio_lang'); if(!pref){ setBioLang(ev.detail) }
   });
 
   return {open,close};
@@ -753,7 +707,7 @@ window.DZ_BIO=(function(){
   toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
 })();
 
-/* Ambient sound (same behavior) + progress hint width */
+/* Ambient sound + bottom progress hint */
 (function(){
   const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
   if(!btn||!stopBtn||!bar) return;
@@ -800,3 +754,5 @@ window.DZ_BIO=(function(){
   document.addEventListener('scroll',upd,{passive:true}); window.addEventListener('resize',upd,{passive:true}); upd();
 })();
 </script>
+</body>
+</html>

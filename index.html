@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.8.9</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.9</title>
 
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE" />
   <meta name="google" content="notranslate" />
@@ -11,250 +11,162 @@
 
   <style>
     :root{
-      --bg:#070c1a;
-      --fg:#eaf0ff;
-      --gold:#e6c777;
-      --muted:#a8b7e8;
-      --panel:#0f1630;
-      --line:#1b2652;
-      --max:1180px;
-      --shadow:0 12px 28px rgba(0,0,0,.35);
+      --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
+      --panel:#0f1630; --line:#1b2652; --max:1180px; --shadow:0 12px 28px rgba(0,0,0,.35);
     }
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{
-      background:var(--bg);
-      color:var(--fg);
-      font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif;
-      overflow-x:hidden;
-    }
+    html,[translate="no"]{unicode-bidi:plaintext}
+    body{background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
+
+    /* 언어 가시성 */
     .ko,.en{display:block}
     body.korean .en{display:none}
     body.english .ko{display:none}
-    body.hybrid .ko,body.hybrid .en{display:block}
+    body.hybrid .ko, body.hybrid .en{display:block}
 
-    /* 배경 캔버스 */
-    #waves,#trail{
-      position:fixed; inset:0; pointer-events:none;
-    }
-    #waves{z-index:0; opacity:.55}
-    #trail{z-index:1; opacity:.85; mix-blend-mode:screen}
+    /* 배경 캔버스: 파도 + 라이트 트레일 */
+    #waves,#trail{position:fixed;inset:0;pointer-events:none}
+    #waves{z-index:0;opacity:.52}
+    #trail{z-index:1;opacity:.82;mix-blend-mode:screen}
 
     /* 헤더 */
     header{
-      position:sticky; top:0; z-index:10;
-      padding:12px 14px;
+      position:sticky;top:0;z-index:10;padding:12px 14px;
       background:linear-gradient(180deg,rgba(10,14,30,.9),rgba(10,14,30,.7));
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(255,255,255,.07);
+      backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)
     }
-    .brand{
-      text-align:center;
-      color:var(--gold);
-      font-weight:900;
-      font-size:clamp(18px,4.7vw,24px);
-    }
-    nav.primary{
-      display:flex; gap:10px;
-      justify-content:center; margin-top:10px;
-    }
+    .brand{color:var(--gold);font-weight:900;text-align:center;font-size:clamp(18px,4.6vw,24px)}
+    nav.primary{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
     nav.primary button{
-      all:unset; cursor:pointer;
-      padding:7px 14px; border-radius:12px;
-      font-weight:800; color:var(--fg);
-      border:1px solid transparent;
+      all:unset;cursor:pointer;padding:7px 14px;border-radius:12px;
+      font-weight:800;color:var(--fg);border:1px solid transparent
     }
-    nav.primary button.active,
-    nav.primary button:hover{
-      background:linear-gradient(180deg,#fae9b8,#e6c777);
-      color:#0a1230; border-color:#d9c16a;
-      box-shadow:0 0 14px rgba(230,199,119,.3);
+    nav.primary button.active, nav.primary button:hover{
+      background:linear-gradient(180deg,#fae9b8,#e6c777);color:#0a1230;border-color:#d9c16a;
+      box-shadow:0 0 14px rgba(230,199,119,.3)
     }
-
-    .lang{
-      display:flex; gap:8px;
-      justify-content:center; margin-top:8px;
-    }
+    .lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
     .lang button{
-      all:unset; cursor:pointer;
-      padding:6px 12px; border-radius:12px;
-      border:1px solid #35406b;
-      color:#dfe8ff;
+      all:unset;cursor:pointer;padding:6px 12px;border-radius:12px;border:1px solid #35406b;color:#dfe8ff
     }
     .lang button.active,.lang button:hover{
-      background:#151d3a;
-      color:var(--gold);
-      border-color:#4a5585;
-      box-shadow:0 0 10px rgba(230,199,119,.25);
+      background:#151d3a;color:var(--gold);border-color:#4a5585;box-shadow:0 0 10px rgba(230,199,119,.25)
     }
 
-    main{position:relative; z-index:2}
-    section{max-width:var(--max); margin:auto; padding:56px 16px}
+    main{position:relative;z-index:2}
+    section{max-width:var(--max);margin:auto;padding:56px 16px}
     h1,h2{color:var(--gold)}
 
-    /* Poem */
+    /* POEM */
     .poemwrap{
-      background:rgba(16,22,48,.3);
-      border:1px solid #1f2640;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      max-width:860px;
-      margin:12px auto 0;
+      background:rgba(16,22,48,.3);border:1px solid #1f2640;border-radius:14px;
+      padding:18px;box-shadow:var(--shadow);max-width:860px;margin:12px auto 0
     }
     .poem p{margin:8px 0}
 
     /* 사운드 */
-    .audio-bar{
-      display:flex; gap:10px;
-      margin-top:12px;
-    }
+    .audio-bar{display:flex;gap:10px;margin-top:12px;align-items:center}
     .ctrlbtn{
-      width:42px;height:42px; cursor:pointer;
-      border-radius:50%;
+      width:42px;height:42px;cursor:pointer;border-radius:50%;
       border:1px solid rgba(230,199,119,.45);
       background:radial-gradient(circle at 30% 30%,rgba(255,240,180,.45),rgba(12,19,48,.7));
-      box-shadow:0 0 12px rgba(230,199,119,.25);
+      box-shadow:0 0 12px rgba(230,199,119,.25)
     }
-    #fftBar{height:6px;background:#233;color:#fff;border-radius:8px;margin-top:8px;overflow:hidden}
-    #fftBar span{display:block;height:100%;background:linear-gradient(90deg,#b7d4ff,#f7da91);width:0;transition:width .12s}
+    .ctrlbtn[disabled]{opacity:.5;cursor:not-allowed}
+    #fftBar{height:6px;background:#233;border-radius:8px;margin-top:8px;overflow:hidden;width:180px}
+    #fftBar span{display:block;height:100%;background:linear-gradient(90deg,#b7d4ff,#f7da91);width:0}
 
-    /* Works */
-    .tabs{
-      display:flex;flex-wrap:wrap;gap:8px;
-      margin-bottom:14px;justify-content:center;
-    }
+    /* WORKS */
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px;justify-content:center}
     .tab{
-      cursor:pointer;
-      background:#10183a;
-      border-radius:999px;
-      padding:8px 14px;
-      border:1px solid var(--line);
-      color:#cbd9ff;
+      cursor:pointer;background:#10183a;border-radius:999px;padding:8px 14px;border:1px solid var(--line);color:#cbd9ff;font-size:.95rem;white-space:nowrap
     }
-    .tab.active{
-      background:linear-gradient(180deg,#f9e8aa,#e6c777);
-      color:#0a1230;
-      border-color:#d9c16a;
-    }
+    .tab.active{background:linear-gradient(180deg,#f9e8aa,#e6c777);color:#0a1230;border-color:#d9c16a}
     .tabpanel{display:none}
     .tabpanel.active{display:block}
-
-    .grid{
-      display:grid; gap:10px;
-      grid-template-columns:repeat(2,1fr);
-    }
-    @media(min-width:1000px){
-      .grid{grid-template-columns:repeat(4,1fr)}
-    }
+    .grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+    @media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
     .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:10px;
-      overflow:hidden;
-      opacity:0; transform:translateY(8px);
-      transition:opacity .45s,transform .45s;
+      background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+      opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s
     }
-    .card.visible{opacity:1; transform:translateY(0)}
-    .card img{width:100%;aspect-ratio:1/1;object-fit:cover}
+    .card.visible{opacity:1;transform:translateY(0)}
+    .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 
-    /* Lightbox */
-    #lightbox{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.88);
-      display:flex; align-items:center; justify-content:center;
-      opacity:0; pointer-events:none;
-      transition:opacity .2s; z-index:30;
-    }
-    #lightbox.on{opacity:1; pointer-events:auto}
-    .lb-stage{
-      position:relative; max-width:95vw; max-height:90vh;
-      border:2px solid var(--gold);
-      border-radius:12px; overflow:hidden;
-      background:#000;
-    }
-    #lbImg{max-width:100%;max-height:90vh;cursor:zoom-in}
-    .lb-arrow{
-      position:absolute; top:50%; transform:translateY(-50%);
-      width:46px;height:46px;border-radius:50%;
-      background:rgba(18,24,48,.6);
-      border:1px solid rgba(230,199,119,.4);
-      color:white; display:grid; place-items:center;
-      cursor:pointer;
-    }
-    .lb-prev{left:8px}
-    .lb-next{right:8px}
-    .lb-close{
-      position:absolute; top:-50px; right:0;
-      width:40px;height:40px;
-      border-radius:50%; background:rgba(18,24,48,.6);
-      border:1px solid rgba(230,199,119,.4);
-      color:#fff; cursor:pointer;
-    }
+    /* LIGHTBOX */
+    #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+    #lightbox.on{opacity:1;pointer-events:auto}
+    .lb-stage{position:relative;max-width:95vw;max-height:90vh;border:2px solid var(--gold);border-radius:12px;overflow:hidden;background:#000}
+    #lbImg{max-width:100%;max-height:90vh;cursor:zoom-in;transform:translate(0,0) scale(1);transition:transform .2s}
+    .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
+    .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(18,24,48,.6);border:1px solid rgba(230,199,119,.4);color:white;display:grid;place-items:center;cursor:pointer}
+    .lb-prev{left:8px}.lb-next{right:8px}
+    .lb-close{position:absolute;top:-50px;right:0;width:40px;height:40px;border-radius:50%;background:rgba(18,24,48,.6);border:1px solid rgba(230,199,119,.4);color:#fff;cursor:pointer}
+    .lb-meta{position:absolute;top:-50px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
 
-    /* Artist Bio */
-    .bio-block{
-      background:linear-gradient(180deg,#11193a,#0a1128);
-      border:1px solid #2b3564;
-      padding:18px;border-radius:14px;
-      box-shadow:var(--shadow);
-    }
-    .expo-kicker{
-      background:linear-gradient(180deg,#f7e7aa,#d9b860);
-      color:#0a1020; font-weight:900;
-      padding:10px 14px; border-radius:999px;
-      cursor:pointer;border:none;
-      display:flex;align-items:center;gap:8px;
-    }
-    .slide-wrap{
-      overflow:hidden; max-height:0;
-      transition:max-height .45s ease;
-    }
-    .slide-wrap[data-open="true"]{max-height:4000px}
+    /* ARTIST BIO (페이지 고정 섹션) */
+    .bio-block{background:linear-gradient(180deg,#11193a,#0a1128);border:1px solid #2b3564;padding:18px;border-radius:14px;box-shadow:var(--shadow)}
+    .bio-headline{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .bio-lang{margin-left:auto;display:flex;gap:6px}
+    .bio-lang .btn{all:unset;cursor:pointer;border:1px solid rgba(255,215,120,.35);color:#f2dca6;padding:6px 10px;border-radius:10px}
+    .bio-lang .btn.active{box-shadow:0 0 8px rgba(255,215,120,.55)}
+    .expo-kicker{display:inline-flex;gap:8px;align-items:center;color:#0b1020;background:linear-gradient(180deg,#f7e7aa,#d9b860);font-weight:900;border-radius:999px;padding:10px 14px;border:none;cursor:pointer}
+    .slide-wrap{overflow:hidden;transition:max-height .45s ease;max-height:0}
+    .slide-wrap[data-open="true"]{max-height:5000px}
+    .bio-body p{line-height:1.68;margin:10px 0}
 
-    /* footer links */
-    footer{
-      border-top:1px solid rgba(255,255,255,.07);
-      background:#0a1024;
-      padding:52px 12px 100px;
-      text-align:center;
-    }
-    .links{
-      display:flex; gap:14px;flex-wrap:wrap;
-      justify-content:center; margin-bottom:20px;
-    }
-    .linkbtn{
-      padding:6px 10px;border-radius:10px;
-      border:1px solid rgba(230,199,119,.3);
-      display:inline-flex; gap:6px;align-items:center;
-      color:#cfe0ff; text-decoration:none;
-    }
+    /* REPORTS */
+    .reports-omega{padding:24px 0}
+    .r-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .r-tabs{display:flex;gap:8px}
+    .r-tab{cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
+    .r-tab.is-active{outline:2px solid #6aa3ff;background:#132252}
+    .r-grid{display:grid;gap:12px}
+    @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1024px){.r-grid{grid-template-columns:repeat(3,1fr)}}
+    .r-card{border:1px solid #243169;background:linear-gradient(180deg,#0d1534,#0b1128);border-radius:14px;overflow:hidden}
+    .r-card .r-in{padding:14px 14px 12px}
+    .r-title{margin:2px 0 6px;font-size:16px;color:#eaf0ff;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .r-sub{margin:0 0 10px;font-size:13px;color:#a9b7e8}
+    .r-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 8px}
+    .r-badge{font-size:11px;border:1px solid #345;padding:2px 7px;border-radius:999px;background:#0c183b;color:#cfe0ff}
+    .r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a}
+    .r-body{font-size:14px;color:#d6e1ff;opacity:.95;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .r-actions{display:flex;gap:8px;margin-top:12px}
+    .r-actions a,.r-actions button{all:unset;cursor:pointer;border:1px solid #2a366b;background:#0e1840;color:#dfe7ff;border-radius:10px;padding:8px 12px;font-weight:700}
+    .r-actions a:hover,.r-actions button:hover{background:#15265a}
+
+    /* footer */
+    footer{border-top:1px solid rgba(255,255,255,.07);background:#0a1024;padding:52px 12px 100px;text-align:center}
+    .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+    .linkbtn{padding:6px 10px;border-radius:10px;border:1px solid rgba(230,199,119,.3);display:inline-flex;gap:6px;align-items:center;color:#cfe0ff;text-decoration:none}
     .ico{width:16px;height:16px;fill:#f5e3a0}
-    .linkbtn:hover{
-      border-color:rgba(230,199,119,.5);
-      color:white; box-shadow:0 0 10px rgba(230,199,119,.25);
-    }
+    .linkbtn:hover{border-color:rgba(230,199,119,.5);color:white;box-shadow:0 0 10px rgba(230,199,119,.25)}
 
-    /* 구글번역 제거 */
+    /* 구글 번역 막기 */
     .goog-te-banner-frame,.goog-te-balloon-frame,#goog-gt-tt{display:none!important}
     body{top:0!important}
   </style>
 </head>
 
 <body class="korean" translate="no">
-  <!-- 배경 캔버스 -->
+  <!-- 배경: 파도 / 커서 라이트 트레일 -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
 
-  <!-- 헤더 -->
+  <!-- 고정 헤더 -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.8.9</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.9</div>
+
     <nav class="primary" aria-label="Primary">
       <button data-target="poem" class="active">Poem</button>
       <button data-target="works">Works</button>
       <button data-target="reports">Reports</button>
       <button data-target="bio">Artist Bio</button>
     </nav>
+
+    <!-- 언어 3분할 -->
     <div class="lang" aria-label="Language">
       <button id="koBtn" class="active">KR</button>
       <button id="enBtn">EN</button>
@@ -264,7 +176,7 @@
 
   <main>
     <!-- 1) POEM -->
-    <section id="poem" class="hero">
+    <section id="poem">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
 
@@ -313,11 +225,11 @@
         </div>
 
         <!-- Ambient Sound -->
-        <div class="audio-bar">
+        <div class="audio-bar" aria-label="Ambient sound controls">
           <button class="ctrlbtn" id="soundBtn" aria-label="Play ambient">✨</button>
           <button class="ctrlbtn" id="soundStopBtn" aria-label="Stop ambient" disabled>🔇</button>
+          <div id="fftBar" aria-hidden="true"><span></span></div>
         </div>
-        <div id="fftBar" aria-hidden="true"><span></span></div>
       </div>
     </section>
 
@@ -326,6 +238,7 @@
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
 
+      <!-- 5섹션 탭 -->
       <div class="tabs" role="tablist" aria-label="Art Sections">
         <button class="tab active" data-panel="pray">Ⅰ 빛과 기억 · Light & Memory</button>
         <button class="tab" data-panel="human">Ⅱ 인간 기도 · Human Prayer</button>
@@ -334,6 +247,7 @@
         <button class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
 
+      <!-- 5×20 패널 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -341,7 +255,7 @@
       <div id="panel-cosmos" class="tabpanel"></div>
     </section>
 
-    <!-- 라이트박스 -->
+    <!-- Lightbox -->
     <div id="lightbox" aria-hidden="true">
       <div class="lb-stage">
         <img id="lbImg" alt="Artwork view">
@@ -366,8 +280,9 @@
             <button class="r-tab" data-r="archive">Archive</button>
             <button class="r-tab" data-r="practice">Practice</button>
           </div>
-          <button class="r-toggle" id="reportsToggle" aria-expanded="false">Open Reports</button>
+          <button class="r-tab" id="reportsToggle" data-r="toggle">Open/Close</button>
         </div>
+
         <div class="r-grid" id="reportGrid"></div>
       </div>
     </section>
@@ -377,458 +292,453 @@
       <h2 class="ko">작가 소개</h2>
       <h2 class="en">Artist Bio</h2>
 
-      <!-- 한 줄 요약 -->
+      <!-- 요약 1줄 -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">국내외 개인전 28회 ▾</span>
         <span class="en">28 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- 소개 본문 -->
+      <!-- 본문 소개 -->
       <div class="bio-block" id="bioAbout">
-        <div class="ko">
-          <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong>는 빛·기억·존재의 기원을 탐구하는 한국 현대예술가다. 그의 작업은 인간이 남기는 감정의 흔적, 상처를 통과하며 드러나는 빛의 근원, 소멸과 탄생의 순환을 기록한다.</p>
-          <p>회화·텍스트·사운드·아카이브를 결합한 다매체 프로젝트를 전개하며, 서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바 등에서 활동해 왔다. 회화는 기도문이자 기록으로서 존재의 여백에 새겨진 감정의 근원을 되살린다. 그는 “빛의 윤리”와 “기억의 존엄”을 사유하며 상처 이후의 따스함과 기억의 지속, 인간 존엄의 조용한 선언을 작품에 담는다.</p>
-          <p>국내외 개인전은 총 28회. 주요 전시는 구구갤러리(서울 목동, 2025·2023·2024), 해양 에너지 정원(한남동, 2019·2022), Berlin Mitte Live Concert Bar(2016), NC갤러리(부산, 2015), Promise Land(부산, 2013), Linka Gallery(암스테르담, 2006), Montparnasse Lune Café(파리, 2005), 루브르 외벽 전시(파리, 2005) 등.</p>
-          <p>저서로 <strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong>(2022), <strong>예술, 그 끝없는 사랑</strong>(2024)이 있다.</p>
+        <div class="bio-body ko">
+          <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong>는 빛, 기억, 존재의 기원을 탐구하는 한국 현대예술가다. 그의 작업은 인간이 지나가는 동안 남기는 감정의 흔적, 상처를 통과하며 드러나는 빛의 근원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 기록하는 데 중심을 둔다.</p>
+          <p>회화, 텍스트, 사운드, 아카이브를 결합한 다매체 예술 세계를 구축하며, 서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등 다양한 도시에서 프로젝트를 전개해 왔다. 그의 회화는 기도문이자 기록이며, 존재의 여백에 새겨지는 감정의 근원을 되살리는 빛의 언어이다.</p>
+          <p>저서로는 <strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong>(2022), <strong>예술, 그 끝없는 사랑</strong>(2024)이 있다.</p>
         </div>
-
-        <div class="en">
-          <p><strong>DUNGZAK CESTLAVIE</strong> is a Korean contemporary artist exploring the origins of light, memory, and being. His practice documents emotional traces, the luminous core revealed through wounds, and the cyclical rhythm of disappearance and rebirth.</p>
-          <p>Integrating painting, text, sound, and archival structures, he works from Seoul across Berlin, Paris, Amsterdam, Warsaw, and Moscow. His paintings act as both prayer and record, reviving the roots of feeling in the quiet margins of existence, reflecting on the “ethics of light” and the “dignity of memory.”</p>
-          <p>He has held 28 solo exhibitions worldwide, including GUGU Gallery (Seoul Mokdong, 2025/2023/2024), Ocean Energy Garden (Hannam-dong, 2019/2022), Berlin Mitte Live Concert Bar (2016), NC Gallery (Busan, 2015), Promise Land (Busan, 2013), Linka Gallery (Amsterdam, 2006), Montparnasse Lune Café (Paris, 2005), and the Louvre Exterior Installation (Paris, 2005).</p>
-          <p>Books include <strong>1 Tears Never Cease — The Artist’s Duty and Human Desire</strong> (2022) and <strong>Art, That Endless Love</strong> (2024).</p>
+        <div class="bio-body en">
+          <p><strong>DUNGZAK CESTLAVIE</strong> is a Korean contemporary artist whose work explores the origins of light, memory, and being. His practice traces human affect, the luminous core revealed through wounds, and the cyclical rhythm of disappearance and renewal.</p>
+          <p>He builds a multi-media world of painting, text, sound, and archive, expanding projects from Seoul to Berlin, Paris, Amsterdam, Warsaw, and Moscow. His paintings are both prayer and record, a language of light that reawakens the emotional roots of existence.</p>
+          <p>Publications include <strong>1 Tears Never Cease — The Artist’s Duty and Human Desire</strong> (2022) and <strong>Art, That Endless Love</strong> (2024).</p>
         </div>
       </div>
 
-      <!-- 전시/소장/저서 상세 (요약 클릭 시 펼침) -->
+      <!-- 전시/소장/저서: 요약 클릭 시 열림 -->
       <div class="slide-wrap" id="expoSlide" data-open="false" aria-hidden="true">
         <!-- KR -->
         <div class="bio-body ko">
+          <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong></p>
+          <p><strong>국내외 개인 전시 28회</strong></p>
+
           <p><strong>국내 주요전시</strong></p>
-          <p>2025 구구갤러리 목동, 서울</p>
-          <p>2023, 2024 구구갤러리 목동, 서울</p>
-          <p>2023 아트플러스 갤러리 인사동, 서울</p>
-          <p>2019, 2022 해양 에너지 정원, 한남동, 서울</p>
-          <p>2015 NC 갤러리, 부산</p>
-          <p>2014 갤러리 골목, 이태원, 서울</p>
-          <p>2013 프라미스 랜드, 부산</p>
-          <p>2009 아트 갤러리 유, 부산</p>
-          <p>2005 횡성 문화관, 강원</p>
-          <p>2003 스페이스 키친, 서울</p>
-          <p>2003 홍대 놀이터 사계 야외 전시, 서울</p>
-          <p>2000 갤러리 소호, 부산</p>
-          <p>2000 세원백화점, 부산</p>
+          <p>2025 구구갤러리 목동, 서울, 대한민국</p>
+          <p>2023, 2024 구구갤러리 목동, 서울, 대한민국</p>
+          <p>2023 아트플러스 갤러리 인사동, 서울, 대한민국</p>
+          <p>2019, 2022 해양 에너지 정원 한남동, 서울, 대한민국</p>
+          <p>2015 NC 갤러리 부산, 대한민국</p>
+          <p>2014 갤러리 골목 이태원, 서울, 대한민국</p>
+          <p>2013 프라미스 랜드 부산, 대한민국</p>
+          <p>2009 아트 갤러리 유 부산, 대한민국</p>
+          <p>2005 횡성 문화관 강원도, 대한민국</p>
+          <p>2003 스페이스 키친 서울, 대한민국</p>
+          <p>2003 홍대 놀이터에서 봄여름 가을 겨울 사계 야외 작업과 야외 전시 서울, 대한민국</p>
+          <p>2000 갤러리 소호 부산, 대한민국</p>
+          <p>2000 세원백화점 부산, 대한민국</p>
 
           <br><p><strong>국외 주요전시</strong></p>
-          <p>2016 Berlin Mitte Live Concert Bar, 베를린</p>
-          <p>2015 모스크바 국제공항 「삶과 예술의 간격」</p>
-          <p>2014 호찌민 중앙 경찰서 즉흥 퍼포먼스</p>
-          <p>2011 Open Art in Amsterdam, 네덜란드</p>
-          <p>2006 Linka Gallery, 암스테르담</p>
-          <p>2005 Lune Café, 몽파르나스, 파리</p>
-          <p>2005 루브르 박물관 외벽 전시, 파리</p>
+          <p>2016 Berlin Mitte Live Concert Bar 베를린, 독일</p>
+          <p>2015 러시아 모스크바 국제공항 삶과 예술의 간격</p>
+          <p>2014 베트남에서 자유롭게 예술과 발언에 의한 즉흥적인 퍼포먼스와 작품 전시를 호찌민시 중앙 경찰서에서 열었음</p>
+          <p>2011 Open Art in Amsterdam Netherlands</p>
+          <p>2006 네덜란드 암스테르담 Linka 갤러리</p>
+          <p>2005 프랑스 파리 몽파르나스 Lune Cafe</p>
+          <p>2005 프랑스 파리 루브르 박물관 외벽 전시</p>
 
           <br><p><strong>그 외 전시</strong></p>
-          <p>2025 그림따라 걷는 도시, 익산</p>
-          <p>2025 갤러리5 전국 초대전, 인천</p>
-          <p>2024, 2025 구구갤러리 송년 선물전, 서울</p>
-          <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울</p>
-          <p>2004 광주비엔날레 “The Stage”</p>
-          <p>2004 하대리 숲속 미술제 “예술의 휴가”</p>
-          <p>2000 José Delgado·등작 2인전, 부산</p>
+          <p>2025 그림따라 걷는 도시 익산 익산, 대한민국</p>
+          <p>2025 갤러리5 전국 주요 작가 초대전 인천, 대한민국</p>
+          <p>2024, 2025 구구갤러리 송년 선물전 서울, 대한민국</p>
+          <p>2022 김영우, 등작 2인전 아르템 갤러리 충무로, 서울, 대한민국</p>
+          <p>2004 광주비엔날레 The stage 광주, 대한민국</p>
+          <p>2004 하대리 여름 숲속 미술제_‘예술의 휴가’ 횡성군, 대한민국</p>
+          <p>2000 호세 델가도, 등작 2인전 서면 메트로 미술관 부산, 대한민국</p>
 
           <br><p><strong>소장</strong></p>
-          <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 반 고흐 미술관(Portfolio) / MoMA(Portfolio) / 메리츠 증권 / 개인 소장 다수</p>
+          <p>독일 베를린 시청 / 독일 훔볼트 병원 / 프랑스 파리 노트르담 대성당 / 프랑스 파리 정치대학 / 폴란드 바르샤바 국립 의료원 / 일본 도쿄 교회 / 베트남 호찌민시 중앙 경찰서 / 네덜란드 암스테르담 반 고흐 미술관 (포트폴리오 소장) / 미국 뉴욕 현대 미술관 (포트폴리오 소장) / 메리츠 증권 / 국내외 개인 소장자 다수</p>
 
           <br><p><strong>저서</strong></p>
-          <p><strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong> (2022)</p>
-          <p><strong>예술, 그 끝없는 사랑</strong> (2024)</p>
+          <p><strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong> (2022년 발간)</p>
+          <p><strong>예술, 그 끝없는 사랑</strong> (2024년 발간)</p>
         </div>
 
         <!-- EN -->
         <div class="bio-body en">
+          <p><strong>DUNGZAK 燈酌 DUNGZAK CESTLAVIE</strong></p>
+          <p><strong>Solo Exhibitions: 28 exhibitions worldwide</strong></p>
+
           <p><strong>Major Exhibitions in Korea</strong></p>
-          <p>2025 GUGU Gallery, Mokdong, Seoul</p>
-          <p>2023, 2024 GUGU Gallery, Mokdong, Seoul</p>
-          <p>2023 Art Plus Gallery, Insadong, Seoul</p>
-          <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul</p>
-          <p>2015 NC Gallery, Busan</p>
-          <p>2014 Gallery Golmok, Itaewon, Seoul</p>
-          <p>2013 Promise Land, Busan</p>
-          <p>2009 Art Gallery U, Busan</p>
-          <p>2005 Hoengseong Cultural Center, Gangwon</p>
-          <p>2003 Space Kitchen, Seoul</p>
-          <p>2003 Hongdae Playground Four-Seasons Outdoor Exhibition, Seoul</p>
-          <p>2000 Gallery Soho, Busan</p>
-          <p>2000 Sewon Department Store, Busan</p>
+          <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
+          <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
+          <p>2023 Art Plus Gallery Insadong, Seoul, Republic of Korea</p>
+          <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Republic of Korea</p>
+          <p>2015 NC Gallery, Busan, Republic of Korea</p>
+          <p>2014 Gallery Golmok, Itaewon, Seoul, Republic of Korea</p>
+          <p>2013 Promise Land, Busan, Republic of Korea</p>
+          <p>2009 Art Gallery You, Busan, Republic of Korea</p>
+          <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
+          <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
+          <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+          <p>2000 Gallery Soho, Busan, Republic of Korea</p>
+          <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
 
           <br><p><strong>Major International Exhibitions</strong></p>
-          <p>2016 Berlin Mitte Live Concert Bar, Berlin</p>
-          <p>2015 Moscow International Airport, “The Distance Between Life and Art”</p>
-          <p>2014 Ho Chi Minh Central Police Station, improvised performance</p>
-          <p>2011 Open Art in Amsterdam, Netherlands</p>
-          <p>2006 Linka Gallery, Amsterdam</p>
-          <p>2005 Lune Café, Montparnasse, Paris</p>
-          <p>2005 Louvre Museum Exterior Installation, Paris</p>
+          <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
+          <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
+          <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
+          <p>2011 Open Art in Amsterdam, Netherlands</p>
+          <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
+          <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
+          <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
 
           <br><p><strong>Selected Other Exhibitions</strong></p>
-          <p>2025 City Walking with Paintings, Iksan</p>
-          <p>2025 Gallery 5 National Invitational, Incheon</p>
-          <p>2024, 2025 GUGU Gallery Year-End Gift Exhibition, Seoul</p>
-          <p>2022 Two-person show (Kim Young-Woo × DUNGZAK), ArTem Gallery, Seoul</p>
-          <p>2004 Gwangju Biennale “The Stage”</p>
-          <p>2004 Forest Art Festival “Art Vacation,” Hadaeri</p>
-          <p>2000 José Delgado × DUNGZAK, two-person show, Busan</p>
+          <p>2025 Walking with Art in Iksan, Republic of Korea</p>
+          <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
+          <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Republic of Korea</p>
+          <p>2022 Kim Young-woo & Dungzak Two-Person Exhibition, Artem Gallery, Seoul, Republic of Korea</p>
+          <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
+          <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
+          <p>2000 José Delgado & Dungzak Two-Person Exhibition, Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
 
           <br><p><strong>Collections</strong></p>
-          <p>Berlin City Hall; Humboldt Hospital Berlin; Notre-Dame Cathedral; Sciences Po, Paris; National Medical Institute, Warsaw; a church in Tokyo; Ho Chi Minh Central Police Station; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); Meritz Securities; numerous private collections.</p>
+          <p>Berlin City Hall, Germany • Humboldt Hospital, Germany • Notre-Dame Cathedral, Paris, France • Sciences Po, Paris, France • National Medical Institute, Warsaw, Poland • Church in Tokyo, Japan • Ho Chi Minh City Central Police Department, Vietnam • Van Gogh Museum, Amsterdam, Netherlands (Portfolio Collection) • Museum of Modern Art, New York, USA (Portfolio Collection) • Meritz Securities Co., Ltd., Republic of Korea • Numerous private collections worldwide</p>
 
-          <br><p><strong>Books</strong></p>
+          <br><p><strong>Publications</strong></p>
           <p><strong>1 Tears Never Cease — The Artist’s Duty and Human Desire</strong> (2022)</p>
-          <p><strong>Art, That Endless Love</strong> (2024)</p>
+          <p><strong>Art, the Endless Love</strong> (2024)</p>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- 푸터 -->
+  <!-- 푸터: 금빛 아이콘 + 영문 병기 -->
   <footer>
     <div class="links">
       <a class="linkbtn" href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="5"/></svg> Flickr
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="5"/></svg>
+        Flickr
       </a>
       <a class="linkbtn" href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.3"/></svg> Instagram
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.3"/></svg>
+        Instagram
       </a>
       <a class="linkbtn" href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M22 12s0-4-1-5-5-1-9-1-8 0-9 1-1 5-1 5 0 4 1 5 5 1 9 1 8 0 9-1 1-5 1-5Z"/><path d="M10 8l6 4-6 4V8z" fill="#0b1020"/></svg> YouTube
+        <svg class="ico" viewBox="0 0 24 24"><path d="M22 12s0-4-1-5-5-1-9-1-8 0-9 1-1 5-1 5 0 4 1 5 5 1 9 1 8 0 9-1 1-5 1-5Z"/><path d="M10 8l6 4-6 4V8z" fill="#0b1020"/></svg>
+        YouTube
       </a>
       <a class="linkbtn" href="https://people.search.naver.com/search.naver?where=nexearch&sm=tab_etc&query=등작" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M4 4h5l5 7V4h6v16h-5l-5-7v7H4z"/></svg> Naver Info
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 4h5l5 7V4h6v16h-5l-5-7v7H4z"/></svg>
+        Naver Info
       </a>
-      <a class="linkbtn" href="mailto:dungzakcestlavie@gmail.com">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 7l9 7 9-7" fill="#0b1020"/></svg> Email
+      <a class="linkbtn" href="mailto:dungzak@naver.com">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 7l9 7 9-7" fill="#0b1020"/></svg>
+        Email
       </a>
     </div>
 
     <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
-</footer>
+  </footer>
+
+  <!-- 오디오 엘리먼트 (자동재생 없음) -->
+  <audio id="ambientSrc" src="/media/ambient.mp3" preload="auto" crossorigin="anonymous"></audio>
 </body>
 
-<!-- ③ SCRIPTS -->
 <script>
-/* ===== Short helpers ===== */
-const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
-const $=(q,sc)=>(sc||document).querySelector(q);
+/* ---------- 공통 DOM ---------- */
+const root = document.body;
+const sections = {
+  poem: document.getElementById("poem"),
+  works: document.getElementById("works"),
+  reports: document.getElementById("reports"),
+  bio: document.getElementById("bio")
+};
 
-/* ===== Sections & Nav ===== */
-const sections={poem:$('#poem'),works:$('#works'),reports:$('#reports'),bio:$('#bio')};
-
-$$('header nav.primary button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    $$('header nav.primary button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const id=btn.dataset.target;
-    Object.keys(sections).forEach(k=>sections[k].style.display=(k===id)?'block':'none');
-    sections[id].scrollIntoView({behavior:'smooth',block:'start'});
+/* ---------- 1) 메인 네비 ---------- */
+document.querySelectorAll("header nav.primary button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("header nav.primary button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const target = btn.dataset.target;
+    Object.keys(sections).forEach(id => {
+      sections[id].style.display = (id === target) ? "block" : "none";
+    });
+    sections[target].scrollIntoView({behavior:"smooth", block:"start"});
   });
 });
 
-/* ===== Language switch (KR / EN / KR+EN) ===== */
-(function(){
-  const body=document.body, koBtn=$('#koBtn'), enBtn=$('#enBtn'), hyBtn=$('#hyBtn');
-  function setLang(mode){
-    body.classList.remove('korean','english','hybrid');
-    body.classList.add(mode==='ko'?'korean':mode==='en'?'english':'hybrid');
-    [koBtn,enBtn,hyBtn].forEach(b=>b.classList.remove('active'));
-    (mode==='ko'?koBtn:mode==='en'?enBtn:hyBtn).classList.add('active');
-    localStorage.setItem('dz_site_lang',mode);
-    document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:mode}));
-  }
-  koBtn.addEventListener('click',()=>setLang('ko'));
-  enBtn.addEventListener('click',()=>setLang('en'));
-  hyBtn.addEventListener('click',()=>setLang('hy'));
-  setLang(localStorage.getItem('dz_site_lang')||'ko');
-})();
+/* ---------- 2) 언어 전환 (KR / EN / KR+EN) ---------- */
+const koBtn = document.getElementById("koBtn");
+const enBtn = document.getElementById("enBtn");
+const hyBtn = document.getElementById("hyBtn");
 
-/* ===== Background: waves + light trail (빛 물결 & 라이트) ===== */
-(function(){
-  try{
-    const wcv=$('#waves'), tcv=$('#trail');
-    const wctx=wcv.getContext('2d',{alpha:true});
-    const tctx=tcv.getContext('2d',{alpha:true});
-    let DPR=1, mx=innerWidth/2, my=innerHeight/2, tx=mx, ty=my, visible=true;
-    const ease=x=>x*x*(3-2*x);
+function setLang(mode){
+  root.classList.remove("korean","english","hybrid");
+  if(mode==="ko") root.classList.add("korean");
+  if(mode==="en") root.classList.add("english");
+  if(mode==="hy") root.classList.add("hybrid");
+  koBtn.classList.toggle("active",mode==="ko");
+  enBtn.classList.toggle("active",mode==="en");
+  hyBtn.classList.toggle("active",mode==="hy");
+}
+koBtn.onclick=()=>setLang("ko");
+enBtn.onclick=()=>setLang("en");
+hyBtn.onclick=()=>setLang("hy");
+setLang("ko"); // 기본값
 
-    function resize(){
-      DPR=Math.max(1,Math.min(2,devicePixelRatio||1));
-      [wctx,tctx].forEach(ctx=>{
-        ctx.canvas.width=Math.floor(innerWidth*DPR);
-        ctx.canvas.height=Math.floor(innerHeight*DPR);
-        ctx.setTransform(1,0,0,1,0,0);
-        ctx.scale(1/DPR,1/DPR);
-      });
+/* ---------- 3) Background: 파도 ---------- */
+const waves = document.getElementById('waves');
+const wctx = waves.getContext('2d');
+let wW = innerWidth, wH = innerHeight;
+function resizeWaves(){
+  wW = innerWidth; wH = innerHeight;
+  waves.width = wW; waves.height = wH;
+}
+addEventListener('resize', resizeWaves);
+resizeWaves();
+
+let t = 0;
+function drawWaves(){
+  wctx.clearRect(0,0,wW,wH);
+  const layers = 3;
+  for(let l=0;l<layers;l++){
+    const amp = 12 + l*9;
+    const yBase = wH*0.35 + l*40;
+    wctx.beginPath();
+    for(let x=0;x<wW;x++){
+      const y = yBase + Math.sin((x*0.008)+(t*0.015+l*0.6))*amp;
+      if(x===0) wctx.moveTo(x,y); else wctx.lineTo(x,y);
     }
-    resize(); addEventListener('resize',resize,{passive:true});
-
-    function waveY(x,k,t){
-      const f1=0.003+k*0.0007, f2=0.006+k*0.0006;
-      const a1=26+k*12, a2=14+k*8, dr=t*(0.7+k*0.18);
-      const base=innerHeight*0.28+k*110+Math.sin(t*0.4+k)*12;
-      const curve=0.9+ease(x/innerWidth)*0.2;
-      return base + Math.sin(x*f1+dr*1.1+Math.sin(dr*0.6+k)*.25)*a1*curve + Math.sin(x*f2+dr*.85)*a2;
-    }
-
-    function frame(now){
-      if(!visible){requestAnimationFrame(frame);return}
-      const t=now*0.001, hue=(t*12)%360;
-      wctx.clearRect(0,0,innerWidth,innerHeight);
-      for(let k=0;k<4;k++){
-        wctx.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){
-          const y=waveY(x,k,t);
-          x?wctx.lineTo(x,y):wctx.moveTo(x,y);
-        }
-        const y0=waveY(0,k,t);
-        const g=wctx.createLinearGradient(0,y0-140,0,y0+140);
-        g.addColorStop(0,`hsla(${(hue+k*10)%360},65%,72%,.10)`);
-        g.addColorStop(.5,'hsla(45,70%,68%,.32)');
-        g.addColorStop(1,`hsla(${(hue+60+k*10)%360},60%,62%,.10)`);
-        wctx.strokeStyle=g; wctx.lineWidth=1.1+k*0.45; wctx.globalAlpha=0.9-k*0.12;
-        wctx.shadowBlur=16; wctx.shadowColor='rgba(160,200,255,.18)';
-        wctx.stroke();
-      }
-      wctx.globalAlpha=1; wctx.shadowBlur=0;
-
-      // Light trail (halo)
-      mx+=(tx-mx)*0.16; my+=(ty-my)*0.16;
-      tctx.fillStyle='rgba(0,0,0,.12)';
-      tctx.fillRect(0,0,innerWidth,innerHeight);
-      const r=120;
-      const grad=tctx.createRadialGradient(mx,my,0,mx,my,r);
-      grad.addColorStop(0,'rgba(240,220,150,.28)');
-      grad.addColorStop(.55,'rgba(140,185,255,.14)');
-      grad.addColorStop(1,'rgba(140,185,255,0)');
-      tctx.fillStyle=grad;
-      tctx.beginPath(); tctx.arc(mx,my,r,0,Math.PI*2); tctx.fill();
-
-      requestAnimationFrame(frame);
-    }
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-    addEventListener('touchmove',e=>{const p=e.touches[0]; tx=p.clientX; ty=p.clientY},{passive:true});
-    document.addEventListener('visibilitychange',()=>visible=!document.hidden);
-    requestAnimationFrame(frame);
-  }catch(e){console.warn('canvas init error',e)}
-})();
-
-/* ===== Artist Bio: summary slide ===== */
-(function(){
-  const toggle=$('#expoToggle'), slide=$('#expoSlide');
-  if(!toggle||!slide) return;
-  function setOpen(open){
-    slide.setAttribute('data-open',open?'true':'false');
-    slide.setAttribute('aria-hidden',open?'false':'true');
-    toggle.setAttribute('aria-expanded',open?'true':'false');
+    const g = wctx.createLinearGradient(0,0,0,wH);
+    g.addColorStop(0, 'rgba(120,160,255,0.08)');
+    g.addColorStop(1, 'rgba(230,199,119,0.12)');
+    wctx.strokeStyle = g;
+    wctx.lineWidth = 1.6;
+    wctx.stroke();
   }
-  toggle.addEventListener('click',()=>setOpen(slide.getAttribute('aria-hidden')==='true'));
-  setOpen(false);
-})();
+  t+=1;
+  requestAnimationFrame(drawWaves);
+}
+drawWaves();
 
-/* ===== Works: 5×20 grid + lazy + reveal ===== */
-(function(){
-  const panels={pray:$('#panel-pray'),human:$('#panel-human'),rebirth:$('#panel-rebirth'),exist:$('#panel-exist'),cosmos:$('#panel-cosmos')};
-  function cardHTML(sec, i){
-    const num=String(i).padStart(2,'0');
-    const src=`/works/${sec}/${num}.jpg`;
-    const capKR=`${sec} ${num}`;
-    const capEN=`${sec} ${num}`;
-    return `
-      <article class="card witem" data-big="${src}" data-cap-ko="${capKR}" data-cap-en="${capEN}">
-        <img loading="lazy" decoding="async" data-src="${src}" alt="${capKR}">
-      </article>
-    `;
-  }
-  function render(sec){
-    const host=panels[sec]; if(!host) return;
-    host.innerHTML=`<div class="grid">${Array.from({length:20},(_,k)=>cardHTML(sec,k+1)).join('')}</div>`;
-    // lazy + reveal
-    try{
-      const io=new IntersectionObserver(es=>{
-        es.forEach(e=>{
-          if(e.isIntersecting){
-            const img=e.target;
-            if(img.dataset.src){img.src=img.dataset.src; img.removeAttribute('data-src')}
-            img.closest('.card')?.classList.add('visible');
-            io.unobserve(img);
-          }
-        });
-      },{rootMargin:'200px'});
-      $(`#panel-${sec}`).querySelectorAll('img[data-src]').forEach(i=>io.observe(i));
-    }catch{}
-  }
-  ['pray','human','rebirth','exist','cosmos'].forEach(render);
+/* ---------- 4) Background: 커서 라이트 트레일 ---------- */
+const trail = document.getElementById('trail');
+const tctx = trail.getContext('2d');
+let pW=innerWidth, pH=innerHeight;
+function resizeTrail(){
+  pW = innerWidth; pH = innerHeight;
+  trail.width = pW; trail.height = pH;
+}
+addEventListener('resize', resizeTrail);
+resizeTrail();
 
-  // tabs
-  $$('.tabs .tab').forEach(b=>{
-    b.addEventListener('click',()=>{
-      $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      $$('.tabpanel').forEach(p=>p.classList.remove('active'));
-      $('#panel-'+b.dataset.panel)?.classList.add('active');
+const sparks = [];
+addEventListener('pointermove', e=>{
+  for(let i=0;i<6;i++){
+    sparks.push({
+      x: e.clientX, y: e.clientY,
+      vx: (Math.random()-0.5)*1.6,
+      vy: (Math.random()-0.5)*1.6,
+      life: 1, size: 1.2 + Math.random()*2.0
     });
-  });
-
-  // relabel captions on language change
-  document.addEventListener('dz-lang-change',ev=>{
-    const isEN=(ev.detail==='en');
-    $$('.witem').forEach(it=>{
-      const cap=isEN?it.dataset.capEn:it.dataset.capKo;
-      const img=it.querySelector('img');
-      if(img) img.alt=cap;
-    });
-  });
-})();
-
-/* ===== Lightbox ===== */
-(function(){
-  const lb=$('#lightbox'), img=$('#lbImg'), cap=$('#lbCap'), meta=$('#lbMeta');
-  const prev=$('#lbPrev'), next=$('#lbNext'), close=$('#lbClose');
-  let list=[], idx=0;
-  function collect(){
-    const activePanel=$('.tabpanel.active')||$('#panel-pray');
-    list=Array.from(activePanel.querySelectorAll('.witem'));
   }
-  function openAt(i){
-    if(!list.length) return;
-    idx=(i+list.length)%list.length;
-    const it=list[idx];
-    img.src=it.dataset.big;
-    const isEN=document.body.classList.contains('english');
-    cap.textContent=isEN?(it.dataset.capEn||it.dataset.capKo):(it.dataset.capKo||it.dataset.capEn);
-    meta.textContent=`${idx+1} / ${list.length}`;
-    lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
-  }
-  function hide(){lb.classList.remove('on'); lb.setAttribute('aria-hidden','true')}
-  document.addEventListener('click',e=>{
-    const card=e.target.closest('.witem'); if(!card) return;
-    collect();
-    const cards=Array.from(($('.tabpanel.active')||$('#panel-pray')).querySelectorAll('.witem'));
-    openAt(cards.indexOf(card));
-  });
-  prev.addEventListener('click',()=>openAt(idx-1));
-  next.addEventListener('click',()=>openAt(idx+1));
-  close.addEventListener('click',hide);
-  $('#lightbox').addEventListener('click',e=>{if(e.target===e.currentTarget) hide()});
-  window.addEventListener('keydown',e=>{
-    if(lb.getAttribute('aria-hidden')==='true') return;
-    if(e.key==='Escape') hide();
-    else if(e.key==='ArrowLeft') openAt(idx-1);
-    else if(e.key==='ArrowRight') openAt(idx+1);
-  });
-})();
+});
 
-/* ===== Reports (demo) ===== */
-(function(){
-  const grid=$('#reportGrid'), wrap=$('.reports-omega'), toggle=$('#reportsToggle');
-  const items=[
-    {id:'DCAR-01-2025',cat:'theory',title_ko:'존재의 회복 — 개요',title_en:'Restoration of Being — Outline',file:'/reports/DCAR-01-2025.pdf'},
-    {id:'DCAR-02-2025',cat:'archive',title_ko:'빛의 윤리 — 노트',title_en:'Ethics of Light — Notes',file:'/reports/DCAR-02-2025.pdf'},
-    {id:'DCAR-03-2025',cat:'practice',title_ko:'정신의 재탄생 — 사례',title_en:'Rebirth of Mind — Cases',file:'/reports/DCAR-03-2025.pdf'}
-  ];
-  function render(cat='all'){
-    const list=(cat==='all')?items:items.filter(x=>x.cat===cat);
-    grid.innerHTML=list.map(r=>`
-      <article class="r-card">
-        <div class="r-in">
-          <div class="r-meta">
-            <span class="r-badge">PDF</span>
-          </div>
-          <h3 class="r-title"><span class="ko">${r.title_ko}</span> · <span class="en">${r.title_en}</span></h3>
-          <div class="r-actions">
-            <a href="${r.file}" target="_blank" rel="noopener">Open</a>
-          </div>
+function drawTrail(){
+  tctx.fillStyle = 'rgba(0,0,0,0.08)';
+  tctx.fillRect(0,0,pW,pH);
+
+  for(let i=sparks.length-1;i>=0;i--){
+    const s = sparks[i];
+    s.x += s.vx;
+    s.y += s.vy;
+    s.life -= 0.02;
+    if(s.life<=0){ sparks.splice(i,1); continue; }
+    const r = 250, g = 220, b = 150; // 금빛
+    tctx.beginPath();
+    tctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+    tctx.fillStyle = `rgba(${r},${g},${b},${0.45*s.life})`;
+    tctx.shadowColor = 'rgba(230,199,119,0.6)';
+    tctx.shadowBlur = 14;
+    tctx.fill();
+  }
+  requestAnimationFrame(drawTrail);
+}
+drawTrail();
+
+/* ---------- 5) WORKS 렌더링 + 라이트박스 ---------- */
+const workPanels = {
+  pray: document.getElementById("panel-pray"),
+  human: document.getElementById("panel-human"),
+  rebirth: document.getElementById("panel-rebirth"),
+  exist: document.getElementById("panel-exist"),
+  cosmos: document.getElementById("panel-cosmos")
+};
+function renderWorks(){
+  Object.keys(workPanels).forEach((key)=>{
+    const panel = workPanels[key];
+    let html = `<div class="grid">`;
+    for(let i=1;i<=20;i++){
+      const num = (i<10?`0${i}`:i);
+      const src = `/works/${key}/${num}.jpg`;
+      html += `
+        <figure class="card witem" data-big="${src}" data-cap="${key} ${num}">
+          <img src="${src}" alt="${key} ${num}">
+        </figure>`;
+    }
+    html += `</div>`;
+    panel.innerHTML = html;
+  });
+}
+renderWorks();
+
+document.querySelectorAll(".tabs .tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    const panel = t.dataset.panel;
+    document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("panel-"+panel).classList.add("active");
+  });
+});
+
+const lb = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbCap = document.getElementById("lbCap");
+const lbClose = document.getElementById("lbClose");
+const lbPrev = document.getElementById("lbPrev");
+const lbNext = document.getElementById("lbNext");
+let lbItems=[], lbIndex=0;
+
+function bindLB(){
+  lbItems = Array.from(document.querySelectorAll(".witem"));
+  lbItems.forEach((it,idx)=>{
+    it.addEventListener("click", ()=> openLB(idx));
+    // 가벼운 인터섹션 페이드인
+    const ob = new IntersectionObserver(([ent])=>{
+      if(ent.isIntersecting){ it.classList.add("visible"); ob.disconnect(); }
+    },{threshold:.2});
+    ob.observe(it);
+  });
+}
+function openLB(i){
+  lbIndex = i;
+  const it = lbItems[i];
+  lbImg.src = it.dataset.big;
+  lbCap.textContent = it.dataset.cap;
+  lb.classList.add("on");
+  lb.setAttribute("aria-hidden","false");
+}
+function closeLB(){ lb.classList.remove("on"); lb.setAttribute("aria-hidden","true"); }
+function nextLB(){ lbIndex = (lbIndex+1)%lbItems.length; openLB(lbIndex); }
+function prevLB(){ lbIndex = (lbIndex-1+lbItems.length)%lbItems.length; openLB(lbIndex); }
+lbClose.onclick = closeLB; lbNext.onclick = nextLB; lbPrev.onclick = prevLB;
+lb.addEventListener("click",(e)=>{ if(e.target===lb) closeLB(); });
+document.addEventListener("keydown",e=>{
+  if(lb.classList.contains("on")){
+    if(e.key==="Escape") closeLB();
+    if(e.key==="ArrowRight") nextLB();
+    if(e.key==="ArrowLeft") prevLB();
+  }
+});
+bindLB();
+
+/* ---------- 6) REPORTS 카드 ---------- */
+const reportGrid = document.getElementById("reportGrid");
+const reportsData = [
+  { id:"DCAR-01-2025", cat:"theory",   title_ko:"존재의 회복(초판)", title_en:"The Restoration of Being (First Ed.)", file:"/reports/DCAR01.pdf", summary:"존재·기억·빛의 재배열" },
+  { id:"DCAR-02-2025", cat:"theory",   title_ko:"빛의 기억학",       title_en:"Mnemonics of Light",              file:"/reports/DCAR02.pdf", summary:"기억과 빛의 상관성" },
+  { id:"DCAR-03-2025", cat:"practice", title_ko:"정신의 재탄생",     title_en:"The Rebirth of Mind",            file:"/reports/DCAR03.pdf", summary:"작업 노트와 사례" },
+  { id:"DCAR-04-2025", cat:"archive",  title_ko:"Lightflow 기록",    title_en:"Lightflow Archive",              file:"/reports/DCAR04.pdf", summary:"제작 아카이브" },
+  { id:"DCAR-05-2025", cat:"theory",   title_ko:"신경-정서 진동",     title_en:"Neuro-Affective Tremor",         file:"/reports/DCAR05.pdf", summary:"뇌·정서·빛" },
+  { id:"DCAR-06-2025", cat:"practice", title_ko:"작업 방법론",       title_en:"Methods of Making",              file:"/reports/DCAR06.pdf", summary:"재료·형식" },
+  { id:"DCAR-07-2025", cat:"archive",  title_ko:"전시 자료집",       title_en:"Exhibition Dossier",             file:"/reports/DCAR07.pdf", summary:"사진·텍스트" },
+  { id:"DCAR-08-2025", cat:"theory",   title_ko:"기억의 존엄",       title_en:"Dignity of Memory",              file:"/reports/DCAR08.pdf", summary:"윤리·미학" },
+  { id:"DCAR-09-2025", cat:"theory",   title_ko:"해체 이후의 회화 — 존재 감응의 귀환", title_en:"After Deconstruction — Return of Affective Being", file:"/reports/DCAR09.pdf", summary:"계보: Kandinsky·Picasso·Rothko·Richter" }
+];
+function renderReports(filter="all"){
+  const list = reportsData.filter(r=>filter==="all"? true : r.cat===filter);
+  reportGrid.innerHTML = list.map(r=>`
+    <article class="r-card">
+      <div class="r-in">
+        <div class="r-title">
+          <span class="ko">${r.title_ko}</span>
+          <span class="en">${r.title_en}</span>
         </div>
-      </article>`).join('');
+        <div class="r-sub">${r.id}</div>
+        <div class="r-meta">
+          <span class="r-badge">${r.cat}</span>
+          <span class="r-badge pdf">PDF</span>
+        </div>
+        <div class="r-body">${r.summary}</div>
+        <div class="r-actions">
+          <a href="${r.file}" target="_blank" rel="noopener">Open PDF</a>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+renderReports();
+document.querySelectorAll(".r-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    const f = tab.dataset.r;
+    if(f==="toggle"){
+      document.getElementById("reports").style.display =
+        (document.getElementById("reports").style.display==="none") ? "block" : "none";
+      return;
+    }
+    document.querySelectorAll(".r-tab").forEach(x=>x.classList.remove("is-active"));
+    tab.classList.add("is-active");
+    renderReports(f);
+  });
+});
+
+/* ---------- 7) Artist Bio — 요약 슬라이드 ---------- */
+const expoToggle = document.getElementById("expoToggle");
+const expoSlide  = document.getElementById("expoSlide");
+expoToggle.addEventListener("click",()=>{
+  const open = expoSlide.getAttribute("data-open")==="true";
+  expoSlide.setAttribute("data-open", String(!open));
+  expoSlide.setAttribute("aria-hidden", open ? "true" : "false");
+});
+
+/* ---------- 8) Ambient Sound + FFT ---------- */
+const ambienceEl = document.getElementById("ambientSrc");
+const btnPlay = document.getElementById("soundBtn");
+const btnStop = document.getElementById("soundStopBtn");
+const fftSpan = document.querySelector("#fftBar span");
+
+let audioCtx, sourceNode, analyser;
+btnPlay.addEventListener("click", async ()=>{
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sourceNode = audioCtx.createMediaElementSource(ambienceEl);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
   }
-  render('all');
-  $$('.r-tab').forEach(t=>t.addEventListener('click',()=>{
-    $$('.r-tab').forEach(x=>x.classList.remove('is-active'));
-    t.classList.add('is-active'); render(t.dataset.r);
-  }));
-  function setOpen(open){
-    wrap.classList.toggle('is-collapsed',!open);
-    toggle.setAttribute('aria-expanded',open?'true':'false');
-    toggle.textContent=open?'Close Reports':'Open Reports';
-  }
-  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
-  setOpen(false);
-})();
+  await audioCtx.resume();
+  ambienceEl.play();
+  btnPlay.disabled = true;
+  btnStop.disabled = false;
+  animateFFT();
+});
+btnStop.addEventListener("click", ()=>{
+  ambienceEl.pause();
+  btnPlay.disabled = false;
+  btnStop.disabled = true;
+});
 
-/* ===== Ambient Sound (WebAudio synth) + FFT bar ===== */
-(function(){
-  const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
-  if(!btn||!stopBtn||!bar) return;
-  let ac=null, nodes=null, on=false, analyser=null, rafId=null;
-  async function ensureAC(){ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; ac=new C({latencyHint:'interactive'}); } if(ac.state==='suspended') await ac.resume(); return ac; }
-  function G(v){const g=ac.createGain(); g.gain.value=v; return g;}
-  function O(t,f){const o=ac.createOscillator(); o.type=t; o.frequency.value=f; return o;}
-  function impulse(len=1.6,decay=2.6){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}return buf;}
+function animateFFT(){
+  if(ambienceEl.paused) return;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const avg = data.reduce((a,b)=>a+b,0)/data.length;
+  fftSpan.style.width = Math.min(100, avg*1.6) + "%";
+  requestAnimationFrame(animateFFT);
+}
 
-  function draw(){
-    if(!analyser){rafId=requestAnimationFrame(draw);return}
-    const arr=new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteTimeDomainData(arr);
-    let avg=0; for(let i=0;i<arr.length;i++) avg+=Math.abs(arr[i]-128);
-    avg/=arr.length; bar.style.width=Math.min(100,Math.max(4,avg*1.2))+'%';
-    rafId=requestAnimationFrame(draw);
-  }
-
-  async function start(){
-    if(on) return;
-    await ensureAC();
-    const base=G(0.12), sub=G(0.05), mid=G(0.06), air=G(0.015), pan=ac.createStereoPanner();
-    const low=O('sine',62), low2=O('sine',124), floor=O('sine',31), ch1=O('sine',432), ch2=O('sine',528);
-    const lfo1=O('sine',7.7), lfo2=O('sine',5.2), lpg=G(0.08), lpg2=G(0.06); lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
-    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=880; lp.Q.value=0.8;
-    const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
-    const conv=ac.createConvolver(); conv.buffer=impulse(); const wet=G(0.25), dry=G(0.85);
-
-    low.connect(base).connect(bp).connect(lp);
-    low2.connect(mid).connect(bp);
-    floor.connect(sub).connect(bp);
-    ch1.connect(air).connect(lp);
-    ch2.connect(air).connect(lp);
-
-    lp.connect(dry).connect(pan).connect(ac.destination);
-    lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);
-    bp.connect(dry).connect(pan);
-    bp.connect(wet).connect(conv);
-
-    analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
-
-    [low,low2,floor,ch1,ch2,lfo1,lfo2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid.gain,air.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
-    (function panLoop(){ if(!ac||!pan) return; try{pan.pan.value=Math.sin(performance.now()*0.000012)*0.35}catch{} if(on) requestAnimationFrame(panLoop); })();
-    (function breath(){ if(!ac) return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160); })();
-
-    nodes={low,low2,floor,ch1,ch2,base,sub,mid,air,lp,bp,conv,wet,dry,pan}; on=true;
-    btn.disabled=true; stopBtn.disabled=false; draw();
-  }
-
-  function stop(){
-    if(!on||!nodes||!ac) return;
-    const {low,low2,floor,ch1,ch2,base,sub,mid,air}=nodes, t=ac.currentTime;
-    [base.gain,sub.gain,mid.gain,air.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
-    setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1700);
-    on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0';
-  }
-
-  const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock)}
-  window.addEventListener('touchend',unlock,{once:true});
-  window.addEventListener('click',unlock,{once:true});
-  btn.addEventListener('click',start);
-  stopBtn.addEventListener('click',stop);
-  document.addEventListener('visibilitychange',async()=>{if(!ac)return; if(document.hidden){try{await ac.suspend()}catch{}} else if(on){try{await ac.resume()}catch{}}});
-})();
+/* ---------- 9) 접근성/번역 차단 ---------- */
+document.documentElement.setAttribute("translate","no");
+Array.from(document.querySelectorAll("body,section,nav,div,p,span,button,h1,h2,small"))
+  .forEach(el=>el.setAttribute("translate","no"));
 </script>

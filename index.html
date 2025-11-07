@@ -113,65 +113,6 @@ body.hybrid .ko, body.hybrid .en{display:inherit}
 }
 </style>
 
- 
-/* Bio 섹션 제목 간격 */
-.bio-section-title {
-  margin: 1.4rem 0 0.7rem;
-  font-weight: 600;
-  color: var(--gold);
-}
-
-/* 본문 전체 여백 균형 */
-.bio-body {
-  padding-bottom: 2rem;
-}
-
-/* 기본 컬러 및 전체 시스템 */
-:root{
-  --bg:#070c1a;
-  --fg:#eaf0ff;
-  --gold:#e6c777;
-  --muted:#a8b7e8;
-  --panel:#0f1630;
-  --line:#1b2652;
-  --max:1180px;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  background:#070c1a;
-  color:var(--fg);
-  font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-  overscroll-behavior-y:none;
-  overflow-x:hidden;
-}
-
-/* 언어 표시 기본 */
-.en,.ko{
-  display:inherit;
-}
-
-/* 모드별 언어 제어 */
-body.korean .en{
-  display:none;
-}
-body.english .ko{
-  display:none;
-}
-body.hybrid .ko,
-body.hybrid .en{
-  display:inherit;
-}
-
 /* Bio 언어 전환 버튼 */
 .bio-head .lang {
   border:1px solid var(--gold);

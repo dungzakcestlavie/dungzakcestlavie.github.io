@@ -13,14 +13,97 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 
 <style>
-:root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:#070c1a;color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;overscroll-behavior-y:none;overflow-x:hidden}
-.en,.ko{display:inherit}
-body.korean .en{display:none}
-body.english .ko{display:none}
-body.hybrid .ko,body.hybrid .en{display:inherit}
+/* Bio 본문 안정화 */
+.bio-body p {
+  margin: 0.55rem 0;
+  line-height: 1.62;
+  word-break: keep-all;
+}
+
+/* Bio 섹션 제목 간격 */
+.bio-section-title {
+  margin: 1.4rem 0 0.7rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+/* 본문 전체 여백 균형 */
+.bio-body {
+  padding-bottom: 2rem;
+}
+
+/* 기본 컬러 및 전체 시스템 */
+:root{
+  --bg:#070c1a;
+  --fg:#eaf0ff;
+  --gold:#e6c777;
+  --muted:#a8b7e8;
+  --panel:#0f1630;
+  --line:#1b2652;
+  --max:1180px;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:#070c1a;
+  color:var(--fg);
+  font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
+  overscroll-behavior-y:none;
+  overflow-x:hidden;
+}
+
+/* 언어 표시 기본 */
+.en,.ko{
+  display:inherit;
+}
+
+/* 모드별 언어 제어 */
+body.korean .en{
+  display:none;
+}
+body.english .ko{
+  display:none;
+}
+body.hybrid .ko,
+body.hybrid .en{
+  display:inherit;
+}
+
+/* Bio 언어 전환 버튼 */
+.bio-head .lang {
+  border:1px solid var(--gold);
+  padding:6px 12px;
+  border-radius:12px;
+  margin-left:8px;
+  background:#0f1630;
+  color:var(--gold);
+  transition:0.2s;
+}
+.bio-head .lang.active{
+  background:var(--gold);
+  color:#0a0f1c;
+  font-weight:600;
+  box-shadow:0 0 12px rgba(230,199,119,0.6);
+}
+
+/* 모달 패널 */
+.bio-card{
+  background:rgba(15,22,48,0.9);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:22px;
+  padding:24px;
+}
+</style>
 
 /* canvases */
 #waves,#trail{position:fixed;inset:0;pointer-events:none}
@@ -132,7 +215,10 @@ details{border:1px solid rgba(255,215,120,.16);border-radius:12px;padding:.6rem 
 details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
 .expo-kicker{display:block;width:100%;text-align:left;margin:.25rem 0 1rem;border:1px dashed rgba(255,215,120,.28);border-radius:10px;background:transparent;color:#f9e6b7;padding:.6rem .75rem;cursor:pointer}
 .slide-wrap{overflow:hidden;transition:max-height .45s ease;max-height:0}
-.slide-wrap[data-open="true"]{max-height:4000px}
+
+.slide-wrap[data-open="true"]{
+  max-height:9999px;
+}
 @media(max-width:480px){.bio-card{width:94vw;max-height:86vh}}
 </style>
 </head> <body class="korean">
@@ -310,9 +396,17 @@ details>summary{cursor:pointer;color:#ffe6ad;font-weight:600}
         <p>2022 Two-person Exhibition (Kim Young-woo & Dungzak), Artem Gallery, Seoul, Republic of Korea</p>
         <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
         <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
-        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
-        <br><p><strong>Collections</strong></p>
-        <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department;
+        <p>2000 Two-person Exhibition (José Delgado & Dungzak), Seomyeon Metro Art Museum, Busan, Republic of Korea</p> <br>
+
+<p><strong>Collections</strong></p>
+<p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris;
+National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department;
+Van Gogh Museum (Portfolio), Amsterdam; MoMA, New York (Portfolio);
+Meritz Securities Co., Ltd., Republic of Korea; numerous private collections.</p>
+
+<p><strong>Publications</strong></p>
+<p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
+<p><em>Art, the Endless Love</em> (2024)</p>
 
     <!-- Bio main text (KR/EN 각각 독립 .bio-body로) -->
 <div class="bio-body ko">

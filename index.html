@@ -4,287 +4,207 @@
   <!-- ① HEAD / STYLE -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="color-scheme" content="dark light" />
-  <meta name="theme-color" content="#070c1a" />
-  <meta name="google" content="notranslate" />
-  <meta http-equiv="Content-Language" content="ko" />
-  <meta name="description" content="빛 · 기억 · 존재 — 등작 燈酌 DUNGZAK CESTLAVIE · Works · Reports (DCAR) · Artist Bio" />
   <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.8.7</title>
-  <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'">
-
+  <meta name="description" content="빛 · 기억 · 존재 — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
+  <!-- 강력 번역 차단 -->
+  <meta name="google" content="notranslate" /><meta name="googlebot" content="notranslate" />
+  <meta class="notranslate" /><meta name="theme-color" content="#0b1020" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
   <style>
-  :root{
-    --bg:#070c1a; --fg:#eaf2ff; --gold:#e6c777; --muted:#b6c4ee;
-    --panel:#0e152f; --line:#1c2955; --max:1180px;
-    --navbg:linear-gradient(180deg,rgba(9,14,30,.92),rgba(9,14,30,.72));
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  html,body{height:100%}
-  body{
-    background:var(--bg); color:var(--fg);
-    font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-    overscroll-behavior-y:none; overflow-x:hidden;
-  }
-  /* 강제 번역 UI 차단 */
-  [class*="VIpgJd"], .goog-te-banner-frame, #goog-gt-tt { display:none !important; visibility:hidden !important; height:0 !important; }
-  body{ top:0 !important; }
-
-  /* 언어 가시성(흐름 유지, 깜빡임 방지) */
-  .ko,.en{display:block}
-  body.lang-ko .en{visibility:hidden;position:absolute;height:0;overflow:hidden}
-  body.lang-en .ko{visibility:hidden;position:absolute;height:0;overflow:hidden}
-  body.lang-hy .ko, body.lang-hy .en{visibility:visible;position:static;height:auto;overflow:visible}
-
-  /* 배경 캔버스 */
-  #waves,#trail{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
-  #waves{opacity:.48} #trail{opacity:.70;mix-blend-mode:screen}
-
-  /* 헤더 */
-  header{
-    position:sticky; top:0; z-index:5; padding:10px 12px;
-    background:var(--navbg); border-bottom:1px solid rgba(255,255,255,.08); backdrop-filter:blur(12px)
-  }
-  .brand{font-weight:900;color:var(--gold);text-align:center;font-size:clamp(18px,5vw,24px)}
-
-  /* 메인 탭: 시 / 작품 / 보고서 / 아티스트 바이오 */
-  nav.primary{display:flex;gap:16px;justify-content:center;margin-top:10px;flex-wrap:wrap}
-  .ptab{all:unset;cursor:pointer;color:var(--fg);font-weight:800;padding:8px 14px;border-radius:12px;position:relative}
-  .ptab:hover{color:#fff}
-  .ptab[aria-selected="true"]{
-    color:#0a1230;
-  }
-  .ptab[aria-selected="true"]::before{
-    content:"";position:absolute;inset:0;border-radius:12px;
-    background:linear-gradient(180deg,#f7e4a5,#e6c777);box-shadow:0 10px 18px rgba(230,199,119,.22);z-index:-1
-  }
-
-  /* 언어 3분할 탭(버튼 삭제, 탭 자체가 빛남) */
-  .langseg{--h:42px;display:flex;justify-content:center;margin:12px auto 0;width:min(360px,92vw);position:relative}
-  .langseg .rail{
-    height:var(--h); width:100%; background:linear-gradient(180deg,#0f1838,#0b1432);
-    border:1px solid #2a3765; border-radius:999px; display:flex; position:relative; overflow:hidden
-  }
-  .langseg [role="tab"]{
-    all:unset; cursor:pointer; flex:1; display:grid; place-items:center; color:#cfe1ff;
-    font-weight:900; letter-spacing:.2px;
-  }
-  .langseg [aria-selected="true"]{ color:#0a1230; text-shadow:0 0 12px rgba(245,214,140,.8) }
-  .langseg .thumb{
-    position:absolute; top:2px; bottom:2px; width:33.33%; left:2px; border-radius:999px;
-    background:linear-gradient(180deg,#f7e4a5,#e6c777);
-    box-shadow:0 0 0 1px rgba(230,199,119,.45),0 8px 18px rgba(230,199,119,.24);
-    transition:left .18s ease
-  }
-  .langseg[data-active="ko"] .thumb{left:2px}
-  .langseg[data-active="en"] .thumb{left:calc(33.33% + 2px)}
-  .langseg[data-active="hy"] .thumb{left:calc(66.66% + 2px)}
-  .langseg [role="tab"]:focus-visible{outline:2px solid #f0da9a;outline-offset:2px;border-radius:12px}
-
-  /* 레이아웃 */
-  main{position:relative;z-index:2}
-  section{max-width:var(--max);margin:auto;padding:72px 16px}
-  h1,h2{color:var(--gold)} h2{margin-bottom:12px}
-  .hero{text-align:center;min-height:68vh}
-  .hero h1{font-size:clamp(34px,6vw,64px);margin-bottom:8px}
-
-  /* Poem */
-  .poemwrap{
-    max-width:860px;margin:18px auto 0;text-align:left;
-    background:linear-gradient(180deg,rgba(16,22,48,.42),rgba(10,16,36,.36));
-    backdrop-filter:blur(5px);border:1px solid #223a66;border-radius:14px;padding:26px
-  }
-  .poem p{margin:14px 0;line-height:1.78}
-
-  /* Works */
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
-  .tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0f1838;color:#bbcaf8;cursor:pointer;font-size:.92rem;white-space:nowrap}
-  .tab.active{background:linear-gradient(180deg,var(--gold),#f0df9e);color:#0a1230;border-color:#d9c16a}
-  .tabpanel{display:none;animation:fade .20s ease}
-  .tabpanel.active{display:block}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
-  .grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
-  @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr)}}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s,box-shadow .6s}
-  .card.visible{opacity:1;transform:translateY(0)}
-  .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-
-  /* Reports: 한 줄 → 펼침 */
-  .reports{max-width:var(--max);margin:auto}
-  .reports .r-head{display:flex;justify-content:space-between;align-items:center;border:1px solid #243169;border-radius:12px;background:linear-gradient(180deg,#0d1534,#0b1128);padding:10px 12px}
-  .reports .r-title{font-weight:900;color:#f6e7b0}
-  .reports .toggle{all:unset;cursor:pointer;font-weight:800;border:1px solid #2a366b;border-radius:10px;background:#0e1840;color:#dfe7ff;padding:8px 12px}
-  .reports .toggle:hover{background:#15265a}
-  .r-grid{display:none;margin-top:12px}
-  .r-grid.on{display:grid;gap:12px}
-  @media(min-width:680px){.r-grid.on{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:1024px){.r-grid.on{grid-template-columns:repeat(3,1fr)}}
-  .r-card{border:1px solid #243169;background:linear-gradient(180deg,#0d1534,#0b1128);border-radius:14px;overflow:hidden}
-  .r-in{padding:14px}
-  .r-badge{font-size:11px;border:1px solid #345;padding:2px 7px;border-radius:999px;background:#0c183b;color:#cfe0ff;margin-right:6px}
-  .r-badge.pdf{border-color:#7b6322;background:#1c1830;color:#f2db9a}
-  .r-name{font-weight:900;margin:6px 0 8px;color:#eaf0ff}
-  .r-path{font-size:12px;color:#9db0e8}
-  .r-body{font-size:14px;color:#d6e1ff;opacity:.95}
-
-  /* Lightbox */
-  #lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);opacity:0;pointer-events:none;transition:opacity .25s}
-  #lightbox.on{opacity:1;pointer-events:auto}
-  .lb-stage{position:relative;max-width:96vw;max-height:90vh;overflow:hidden;border:2px solid var(--gold);border-radius:12px;background:#000}
-  #lbImg{display:block;max-width:100%;max-height:90vh;cursor:zoom-in;transform:translate(0,0) scale(1);transition:transform .2s ease;touch-action:none}
-  .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
-  .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
-  .lb-arrow:hover{background:linear-gradient(180deg,#f7e4a5,#e6c777);color:#0a1230}
-  .lb-prev{left:-60px}.lb-next{right:-60px}
-  @media(max-width:520px){.lb-prev{left:8px}.lb-next{right:8px}}
-  .lb-close{position:absolute;top:-56px;right:0;width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.55);color:#fff;cursor:pointer}
-  .lb-meta{position:absolute;top:-56px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
-
-  /* 링크 아이콘(금빛) */
-  .links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:24px 0 8px}
-  .linkbtn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid #2a366b;background:#0e1840;text-decoration:none;color:#dfe7ff}
-  .linkbtn:hover{background:#142458}
-  .icon{width:18px;height:18px;display:inline-block}
-  .icon svg{width:100%;height:100%;fill:url(#g);filter:drop-shadow(0 0 6px rgba(230,199,119,.35))}
-  footer{border-top:1px solid rgba(255,255,255,.08);background:#0a1024;text-align:center;padding:36px 12px calc(36px + env(safe-area-inset-bottom))}
-  small{display:block;margin-top:6px;color:#9fb0d8}
-
-  /* 포커스 & 접근성 */
-  :focus-visible{outline:2px solid #f0da9a;outline-offset:2px;border-radius:12px}
-
-  /* 모션 최소화 */
-  @media (prefers-reduced-motion: reduce){#waves,#trail{display:none !important} html{scroll-behavior:auto} *{transition:none !important}}
+    :root{--bg:#0b1020;--panel:#0f1733;--ink:#d9e2ff;--muted:#93a1c5;--gold:#e6c777;--gold2:#f1d98c;--line:#1a274d;--accent:#7aa7ff;--shadow:0 10px 30px rgba(0,0,0,.35);--radius:16px;--max:1080px}
+    html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Apple SD Gothic Neo,Roboto,Helvetica,Arial,"Noto Sans KR",sans-serif}
+    [translate="no"],.notranslate{unicode-bidi:plaintext}
+    .goog-te-banner-frame,.goog-tooltip,.goog-te-balloon-frame,#goog-gt-tt{display:none!important} body{top:0!important}
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px 14px 90px}
+    .brand{font-weight:800;letter-spacing:.2px;color:var(--gold2)} .title{font-size:28px;color:var(--gold);margin:6px 0 18px}
+    .tabs{display:flex;gap:22px;margin:12px 0 16px;flex-wrap:wrap}
+    .tab{position:relative;font-weight:800;padding:10px 16px;border-radius:14px;background:linear-gradient(180deg,#121b3a,#0b1229);box-shadow:var(--shadow);cursor:pointer;user-select:none}
+    .tab.active{outline:2px solid rgba(230,199,119,.22);box-shadow:0 0 0 4px rgba(230,199,119,.12), inset 0 0 22px rgba(230,199,119,.22)}
+    .langbar{display:flex;gap:10px;background:#0a1330;border-radius:999px;padding:8px 10px;align-items:center;justify-content:center;border:1px solid #1c2a54}
+    .lang{padding:10px 16px;border-radius:999px;cursor:pointer;user-select:none;opacity:.9;font-weight:900;letter-spacing:.2px}
+    .lang.active{opacity:1;box-shadow:0 0 0 3px rgba(230,199,119,.25), inset 0 0 22px rgba(230,199,119,.3)}
+    .h1{font-size:40px;font-weight:800;color:var(--gold);margin:6px 6px 16px}
+    .card{background:linear-gradient(180deg,#0e1735,#0b1126);border:1px solid #1b274e;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:16px 0}
+    .kr .enonly{display:none} .en .kronly{display:none} .both .kronly,.both .enonly{display:block}
+    .muted{color:var(--muted)} .sep{border:0;border-top:1px dashed #2a3b73;margin:12px 0}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px} @media(min-width:860px){.grid{grid-template-columns:repeat(4,1fr)}}
+    .ph{background:#0a1330;border:1px dashed #2a3b73;border-radius:12px;height:120px;display:flex;align-items:center;justify-content:center;color:#668;cursor:pointer}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:24px;z-index:40}
+    .lightbox.open{display:flex} .lightbox img{max-width:92vw;max-height:82vh;border-radius:14px;box-shadow:0 14px 50px rgba(0,0,0,.6)}
+    .lb-ui{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;border:1px solid #2a3b73;background:#0d183c;color:#e9f0ff;font-weight:800}
+    .caption{max-width:min(92vw,900px);text-align:center;color:#dfe7ff}
+    .links{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}
+    @media(min-width:680px){.links{grid-template-columns:repeat(5,1fr)}}
+    .linkbtn{display:flex;gap:10px;align-items:center;justify-content:center;padding:14px;border-radius:14px;background:#0e1734;border:1px solid #223368;text-decoration:none;color:var(--ink);font-weight:800}
+    .linkbtn:hover{box-shadow:0 0 0 3px rgba(230,199,119,.2), inset 0 0 28px rgba(230,199,119,.12)}
+    .ico{width:22px;height:22px;fill:url(#goldgrad)}
+    footer{margin:28px 0 0;color:#a9b6dc;text-align:center} .copyright{margin-top:10px}
+    .bio-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
+    .expo-kicker{display:inline-flex;gap:8px;align-items:center;color:#0b1020;background:linear-gradient(180deg,#f7e7aa,#d9b860);font-weight:900;border-radius:999px;padding:10px 14px;border:none;cursor:pointer}
+    .bio-body p{line-height:1.72;margin:10px 0}
+    .slide-wrap{max-height:0;overflow:hidden;transition:max-height .4s ease} .slide-wrap[aria-hidden="false"]{max-height:4000px}
+    .report-teaser{cursor:pointer}
+    .audio-bar{display:flex;align-items:center;gap:10px;margin:12px 0 0}
+    .btn{cursor:pointer;border:1px solid #2b3c74;background:#0e1734;padding:8px 12px;border-radius:10px}
   </style>
+  <!-- gold gradient for icons -->
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <linearGradient id="goldgrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f7e7aa"/><stop offset="100%" stop-color="#e6c777"/>
+    </linearGradient>
+  </defs></svg>
 </head>
-
-<body class="lang-ko">
+<body translate="no" class="kr" id="root">
   <!-- ② BODY / HTML -->
-  <canvas id="waves" aria-hidden="true"></canvas>
-  <canvas id="trail" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ·</div>
+    <div class="title">Lightflow Ω.8.7</div>
 
-  <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.8.7</div>
-
-    <nav class="primary" role="tablist" aria-label="주요 섹션">
-      <button class="ptab" role="tab" aria-selected="true"  data-target="poem">시</button>
-      <button class="ptab" role="tab" aria-selected="false" data-target="works">작품</button>
-      <button class="ptab" role="tab" aria-selected="false" data-target="reports">보고서</button>
-      <button class="ptab" role="tab" aria-selected="false" id="tab-bio">아티스트 바이오</button>
+    <nav class="tabs" aria-label="메인 섹션">
+      <div class="tab active" data-goto="#poem">시</div>
+      <div class="tab" data-goto="#works">작품</div>
+      <div class="tab" data-goto="#reports">보고서</div>
+      <div class="tab" data-goto="#bio">작가 소개</div>
     </nav>
 
-    <!-- 언어 3분할 -->
-    <div class="langseg" id="langseg" role="tablist" aria-label="Site language" data-active="ko">
-      <div class="rail">
-        <button id="koTab" role="tab" aria-selected="true"  data-lang="ko"><span>KR</span></button>
-        <button id="enTab" role="tab" aria-selected="false" data-lang="en"><span>EN</span></button>
-        <button id="hyTab" role="tab" aria-selected="false" data-lang="hy"><span>KR+EN</span></button>
-        <div class="thumb" aria-hidden="true"></div>
-      </div>
+    <!-- 언어 3분할: 탭을 ‘터치하면 빛나듯’ 전환 -->
+    <div class="langbar" role="tablist" aria-label="언어">
+      <div class="lang active" role="tab" aria-selected="true" data-lang="kr">KR</div>
+      <div class="lang" role="tab" aria-selected="false" data-lang="en">EN</div>
+      <div class="lang" role="tab" aria-selected="false" data-lang="both">KR+EN</div>
     </div>
-  </header>
 
-  <main>
     <!-- POEM -->
-    <section id="poem" class="hero">
-      <h1 class="ko">빛 · 기억 · 존재</h1>
-      <h1 class="en">Light · Memory · Being</h1>
-      <div class="poemwrap">
-        <p class="ko" style="font-weight:700">〈파리의 센느강〉</p>
-        <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
-        <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
-        <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
-        <div class="poem">
-          <p class="ko">센 강 다리 아래에서 노트르담의 촛불이 빛나기 시작하면서—</p>
-          <p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
-          <p class="ko">겸손한 꿈을 품고 사는 사람들이 모여 춤을 춘다.</p>
-          <p class="en">People who live with humble dreams gather to dance.</p>
-          <p class="ko">그들의 원을 그리며 걷는 발걸음은 그들의 발걸음의 리듬에 맞춰 조화를 이룬다.</p>
-          <p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
-          <p class="ko">바이올린이 푸른빛과 황금빛을 흩뿌리며 환하게 웃는다.</p>
-          <p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
-          <p class="ko">흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어, 멈춤 속에 영원을 새긴다.</p>
-          <p class="en">Within the flowing overlap of time, they become taxidermies of the soul, inscribing eternity into stillness.</p>
-        </div>
+    <section id="poem" class="card">
+      <div class="h1">빛 · 기억 · 존재</div>
+      <div class="poem">
+        <p class="kronly"><strong>〈파리의 센느강〉</strong></p>
+        <p class="enonly"><strong>〈The Seine of Paris〉</strong></p>
+
+        <p class="kronly">등작 燈酌 DUNGZAK CESTLAVIE</p>
+        <p class="enonly">DUNGZAK CESTLAVIE</p>
+
+        <p class="kronly">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
+        <p class="enonly">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
+
+        <p class="kronly">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
+        <p class="enonly">People who live with humble dreams gather to dance.</p>
+
+        <p class="kronly">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
+        <p class="enonly">Their circling steps form harmonies upon the rhythm of their feet,</p>
+
+        <p class="kronly">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
+        <p class="enonly">As violins scatter blue and golden light, laughing in brilliance.</p>
+
+        <p class="kronly">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
+        <p class="enonly">Dreaming women and dreaming men clasp hands,</p>
+
+        <p class="kronly">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
+        <p class="enonly">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
+
+        <p class="kronly">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
+        <p class="enonly">A tree where Adam and Eve’s star-traces drip like tears,</p>
+
+        <p class="kronly">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
+        <p class="enonly">In that scene, the crescent moon releases a tender white smile.</p>
+
+        <p class="kronly">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
+        <p class="enonly">Sharak, sharak— as the rhythm of dance expands,</p>
+
+        <p class="kronly">구경하던 이들마저 어깨와 허리를 들썩이며,</p>
+        <p class="enonly">Even the onlookers begin to sway their shoulders and waists,</p>
+
+        <p class="kronly">사랑의 입맞춤을 의식한다.</p>
+        <p class="enonly">Becoming aware of love’s gentle kiss.</p>
+
+        <p class="kronly">흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어, 멈춤 속에 영원을 새긴다.</p>
+        <p class="enonly">Within the flowing overlap of time, they become taxidermies of the soul, inscribing eternity into stillness.</p>
+      </div>
+
+      <!-- Ambient Sound -->
+      <div class="audio-bar">
+        <button class="btn" id="audioToggle" aria-pressed="false">Ambient: Cosmic Resonance ▷</button>
+        <span class="muted">소리 켜기/끄기</span>
+        <audio id="ambience" loop preload="auto">
+          <source src="/media/ambient.mp3" type="audio/mpeg">
+        </audio>
       </div>
     </section>
 
     <!-- WORKS -->
-    <section id="works" hidden>
-      <h2 class="ko">작품 아카이브</h2><h2 class="en">Artworks</h2>
-      <div class="tabs" role="tablist" aria-label="작품 섹션">
-        <button class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-        <button class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-        <button class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
-        <button class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
-        <button class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
-      </div>
-      <div id="panel-pray" class="tabpanel active"></div>
-      <div id="panel-human" class="tabpanel"></div>
-      <div id="panel-rebirth" class="tabpanel"></div>
-      <div id="panel-exist" class="tabpanel"></div>
-      <div id="panel-cosmos" class="tabpanel"></div>
-    </section>
-
-    <!-- REPORTS (한 줄 → 펼침) -->
-    <section id="reports" hidden>
-      <div class="reports">
-        <div class="r-head">
-          <div class="r-title">
-            <span class="ko">미학 보고서 (DCAR Series)</span>
-            <span class="en">Aesthetic Reports (DCAR Series)</span>
-          </div>
-          <button class="toggle" id="openReports" aria-expanded="false">Open</button>
-        </div>
-        <div class="r-grid" id="rGrid"></div>
+    <section id="works" class="card">
+      <div class="h1">작품</div>
+      <div class="grid" id="workGrid">
+        <!-- data-title-kr/en으로 캡션 제공 -->
+        <div class="ph" data-src="/works/w01.jpg" data-kr="빛의 기도 1 · 2025" data-en="Prayer of Light 1 · 2025">work 01</div>
+        <div class="ph" data-src="/works/w02.jpg" data-kr="빛의 기도 2 · 2025" data-en="Prayer of Light 2 · 2025">work 02</div>
+        <div class="ph" data-src="/works/w03.jpg" data-kr="빛의 기도 3 · 2025" data-en="Prayer of Light 3 · 2025">work 03</div>
+        <div class="ph" data-src="/works/w04.jpg" data-kr="빛의 기도 4 · 2025" data-en="Prayer of Light 4 · 2025">work 04</div>
       </div>
     </section>
-  </main>
 
-  <!-- ARTIST BIO MODAL -->
-  <div id="bio-modal" hidden>
-    <div class="bio-backdrop" style="position:fixed;inset:0;background:rgba(6,10,24,.62);backdrop-filter:blur(6px)"></div>
-    <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title" style="position:relative;margin:4vh auto;width:min(960px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0a1022,#0b132a);color:#eaeef7;border:1px solid rgba(255,215,120,.28);border-radius:20px;padding:14px 16px 20px;box-shadow:0 14px 48px rgba(0,0,0,.55)">
-      <div class="bio-head" style="display:flex;align-items:center;gap:10px;position:sticky;top:0;padding:8px 2px 10px;background:linear-gradient(180deg,rgba(10,16,34,.98),rgba(10,16,34,.92));border-bottom:1px solid rgba(255,255,255,.04)">
-        <h2 id="bio-title" class="ko" style="margin:0">작가 소개</h2>
-        <h2 class="en" style="margin:0">Artist Bio</h2>
-        <!-- 미니 언어 세그먼트 -->
-        <div class="langseg" id="bioLang" data-active="kr" role="tablist" aria-label="Bio Language" style="width:210px;--h:36px;margin-left:auto">
-          <div class="rail">
-            <button class="lang" role="tab" aria-selected="true"  data-lang="kr"><span>KR</span></button>
-            <button class="lang" role="tab" aria-selected="false" data-lang="en"><span>EN</span></button>
-            <button class="lang" role="tab" aria-selected="false" data-lang="hy"><span>KR+EN</span></button>
-            <div class="thumb" aria-hidden="true" style="width:33.33%"></div>
+    <!-- REPORTS -->
+    <section id="reports" class="card">
+      <div class="h1">보고서 (DCAR Series)</div>
+
+      <div class="report card" style="margin:8px 0 0">
+        <div class="report-head" style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span class="chip">DCAR-01-2025</span>
+            <strong class="kronly">(KR) 제목 예시</strong>
+            <strong class="enonly"> · (EN) Title Example</strong>
           </div>
+          <div class="report-teaser" data-target="#r1">자세히 ▾</div>
         </div>
-        <button class="bio-close" aria-label="Close" style="border:0;background:transparent;color:#fff;font-size:1.1rem;padding:6px 8px;cursor:pointer">✕</button>
+        <div id="r1" class="slide-wrap" aria-hidden="true">
+          <p class="kronly">/reports/DCAR01.md</p>
+          <p class="kronly">(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.</p>
+          <p class="enonly">Preview / Print · PDF</p>
+          <p><a href="/reports/DCAR01.pdf" class="chip" target="_blank" rel="noopener">PDF</a></p>
+        </div>
       </div>
 
-      <!-- A. 한줄요약(클릭 유도) -->
-      <button id="expoKicker" class="expo-kicker" aria-expanded="false" style="display:block;width:100%;text-align:left;margin:.5rem 0 1rem;border:1px dashed rgba(255,215,120,.28);border-radius:10px;background:transparent;color:#f9e6b7;padding:.6rem .75rem;cursor:pointer">
-        <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 28회 ▾</span>
-        <span class="en">DUNGZAK CESTLAVIE · 28 solo exhibitions worldwide ▾</span>
+      <!-- 필요 수 만큼 같은 패턴으로 추가 -->
+    </section>
+
+    <!-- ARTIST BIO -->
+    <section id="bio" class="card">
+      <div class="h1">작가 소개</div>
+
+      <!-- 한줄 요약 → 클릭 시 전시/소장/저서 슬라이드 -->
+      <button id="expoKicker" class="expo-kicker" aria-expanded="false">
+        <span class="kronly">국내외 개인전 28회 ▾</span>
+        <span class="enonly">28 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- B. 소개(항상 보임) -->
-      <div class="bio-body" id="bioAbout" style="line-height:1.78">
-        <div class="ko">
-          <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong>는 빛·기억·존재의 근원을 탐구하는 한국 현대 예술가다. 회화·텍스트·사운드·아카이브를 결합해 감정의 흔적과 빛의 기원을 연구한다. 서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바에서 작업하며 “빛의 윤리”와 “기억의 존엄”을 사유한다.</p>
+      <!-- 소개 본문(항상 보임) -->
+      <div class="bio-body" id="bioAbout">
+        <div class="kronly">
+          <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong>는 빛, 기억, 존재의 기원을 탐구하는 한국 현대예술가다. 그의 작업은 인간이 지나가는 동안 남기는 감정의 흔적, 상처를 통과하며 드러나는 빛의 근원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 기록하는 데 중심을 둔다.</p>
+          <p>회화, 텍스트, 사운드, 아카이브를 결합한 다매체 예술 세계를 구축하며, 서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등 다양한 도시에서 프로젝트를 전개해 왔다. 등작의 회화는 기도문이자 기록이며, 존재의 여백에 새겨지는 감정의 근원을 되살리는 빛의 언어이다. 그는 예술을 통해 “빛의 윤리”와 “기억의 존엄”을 사유하며, 상처 이후에도 남아 있는 따스함, 사라지지 않는 기억의 힘, 인간 존엄의 조용한 선언을 작품 속에 담는다.</p>
+          <p>국내외 개인전은 현재까지 총 28회이며, 주요 전시는 2025·2023·2024 구구갤러리(서울 목동), 2019·2022 해양 에너지 정원(한남동), 2016 Berlin Mitte Live Concert Bar(베를린), 2015 NC갤러리(부산), 2013 Promise Land(부산), 2006 Linka Gallery(암스테르담), 2005 Montparnasse Lune Café(파리), 2005 루브르 외벽 전시(파리) 등이 있다. 작품은 Berlin City Hall, Humboldt Hospital Berlin, Notre-Dame Cathedral Archive를 비롯해 미국·유럽·한국의 여러 개인 소장가들에게 소장되어 있다.</p>
+          <p>저서로는 《눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망》(2022), 《예술, 그 끝없는 사랑》(2024)이 있다. 그의 모든 작업은 빛과 감정, 기억과 존재의 깊은 호흡을 통해 새로운 윤리적 감수성을 탐구하는 여정이다.</p>
         </div>
-        <div class="en">
-          <p><strong>DUNGZAK CESTLAVIE</strong> is a Korean contemporary artist exploring the origins of light, memory, and being. Working across painting, text, sound, and archival structures, he examines emotional traces and the genesis of light. Based in Seoul, he has developed projects in Berlin, Paris, Amsterdam, Warsaw, and Moscow, engaging an “ethics of light” and the “dignity of memory.”</p>
+        <div class="enonly">
+          <p><strong>DUNGZAK CESTLAVIE</strong> is a Korean contemporary artist whose work explores the origins of light, memory, and being. His practice centers on documenting the traces of human emotion, the luminous core that emerges through wounds, and the cyclical rhythm of disappearance and renewal within existence.</p>
+          <p>Building a multi-media artistic world that integrates painting, text, sound, and archival research, he works primarily from Seoul while expanding his projects across Berlin, Paris, Amsterdam, Warsaw, and Moscow. His paintings function as both prayer and record, articulating a language of light that resurrects the emotional roots embedded in the quiet spaces of existence. Through his art, he reflects on the “ethics of light” and the “dignity of memory,” expressing the warmth that remains after pain, the persistence of remembrance, and a quiet affirmation of human dignity.</p>
+          <p>He has held 28 solo exhibitions worldwide. Major exhibitions include GUGU Gallery (Seoul Mokdong, 2025/2023/2024), Ocean Energy Garden (Hannam-dong, 2019/2022), Berlin Mitte Live Concert Bar (2016), NC Gallery (Busan, 2015), Promise Land (Busan, 2013), Linka Gallery (Amsterdam, 2006), Montparnasse Lune Café (Paris, 2005), and the Louvre Exterior Installation (Paris, 2005). His works are held in Berlin City Hall, Humboldt Hospital Berlin, the Notre-Dame Cathedral Archive, and numerous private collections across Korea, Europe, and the United States.</p>
+          <p>His books include <em>Tears Never Cease — The Artist’s Duty and Human Desire</em> (2022) and <em>Art, That Endless Love</em> (2024). Across all his creations, he seeks a new ethical sensitivity through the deep breath of light, emotion, memory, and existence.</p>
         </div>
       </div>
 
-      <!-- C. 전시/소장/저서(기본 접힘, 한줄요약 클릭 시 전체 펼침) -->
-      <div id="expoSlide" class="slide-wrap" data-open="false" aria-hidden="true" style="overflow:hidden;transition:max-height .35s ease;max-height:0">
-        <div class="bio-body ko" style="margin-top:.6rem;line-height:1.78">
+      <!-- 전시/소장/저서 — 펼침 -->
+      <div id="expoSlide" class="slide-wrap" aria-hidden="true">
+        <!-- Korean list -->
+        <div class="bio-body kronly">
           <p><strong>국내 주요전시</strong></p>
           <p>2025 구구갤러리 목동, 서울</p>
           <p>2023, 2024 구구갤러리 목동, 서울</p>
+          <p>2023 아트플러스 갤러리 인사동, 서울</p>
           <p>2019, 2022 해양 에너지 정원, 한남동, 서울</p>
           <p>2015 NC 갤러리, 부산</p>
-          <p>2014 갤러리 골목, 이태원, 서울</p>
+          <p>2014 갤러리 골목, 이태원</p>
           <p>2013 프라미스 랜드, 부산</p>
           <p>2009 아트 갤러리 유, 부산</p>
           <p>2005 횡성 문화관</p>
@@ -294,368 +214,178 @@
           <p>2000 세원백화점, 부산</p>
           <br><p><strong>국외 주요전시</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, 베를린</p>
-          <p>2015 모스크바 국제공항 『삶과 예술의 간격』</p>
+          <p>2015 모스크바 국제공항 「삶과 예술의 간격」</p>
           <p>2014 호찌민 중앙 경찰서 즉흥 퍼포먼스</p>
           <p>2011 Open Art in Amsterdam, 네덜란드</p>
           <p>2006 Linka Gallery, 암스테르담</p>
-          <p>2005 Lune Cafe, 몽파르나스, 파리</p>
+          <p>2005 Lune Café, 몽파르나스, 파리</p>
           <p>2005 루브르 박물관 외벽 전시, 파리</p>
+          <br><p><strong>그 외 전시</strong></p>
+          <p>2025 그림따라 걷는 도시, 익산</p>
+          <p>2025 갤러리5 전국 초대전, 인천</p>
+          <p>2024, 2025 구구갤러리 송년 선물전, 서울</p>
+          <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울</p>
+          <p>2004 광주비엔날레 “The Stage”</p>
+          <p>2004 하대리 숲속 미술제 “예술의 휴가”</p>
+          <p>2000 José Delgado·등작 2인전, 부산</p>
           <br><p><strong>소장</strong></p>
           <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민 중앙 경찰서 / 반 고흐 미술관(Portfolio) / MoMA(Portfolio) / 메리츠 증권 / 개인 소장 다수</p>
           <br><p><strong>저서</strong></p>
-          <p>《눈물은 절대 멈추지 않는다》(2022)</p>
+          <p>《눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망》(2022)</p>
           <p>《예술, 그 끝없는 사랑》(2024)</p>
         </div>
 
-        <div class="bio-body en" style="margin-top:.6rem;line-height:1.78">
-          <p><strong>Major Exhibitions in Korea</strong></p>
-          <p>2025 Gugu Gallery, Mokdong, Seoul, Republic of Korea</p>
-          <p>2023, 2024 Gugu Gallery, Mokdong, Seoul, Republic of Korea</p>
-          <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Republic of Korea</p>
-          <p>2015 NC Gallery, Busan, Republic of Korea</p>
-          <p>2014 Gallery Golmok, Itaewon, Seoul, Republic of Korea</p>
-          <p>2013 Promise Land, Busan, Republic of Korea</p>
-          <p>2009 Art Gallery You, Busan, Republic of Korea</p>
-          <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
-          <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
-          <p>2000 Gallery Soho, Busan, Republic of Korea</p>
-          <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
-          <br><p><strong>Major International Exhibitions</strong></p>
-          <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
-          <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
+        <!-- English list -->
+        <div class="bio-body enonly">
+          <p><strong>Major exhibitions in Korea</strong></p>
+          <p>2025 GUGU Gallery, Mokdong, Seoul</p>
+          <p>2023, 2024 GUGU Gallery, Mokdong, Seoul</p>
+          <p>2023 Art Plus Gallery, Insadong, Seoul</p>
+          <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul</p>
+          <p>2015 NC Gallery, Busan</p>
+          <p>2014 Gallery Golmok, Itaewon</p>
+          <p>2013 Promise Land, Busan</p>
+          <p>2009 Art Gallery You, Busan</p>
+          <p>2005 Hoengseong Cultural Center</p>
+          <p>2003 Space Kitchen, Seoul</p>
+          <p>2003 Hongdae Playground Four-Seasons Outdoor Exhibition, Seoul</p>
+          <p>2000 Gallery Soho, Busan</p>
+          <p>2000 Sewon Department Store, Busan</p>
+          <br><p><strong>Major international exhibitions</strong></p>
+          <p>2016 Berlin Mitte Live Concert Bar, Berlin</p>
+          <p>2015 Moscow International Airport, “The Distance Between Life and Art”</p>
+          <p>2014 Improvised performance, Ho Chi Minh City Central Police Building</p>
           <p>2011 Open Art in Amsterdam, Netherlands</p>
-          <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
-          <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
-          <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
+          <p>2006 Linka Gallery, Amsterdam</p>
+          <p>2005 Lune Café, Montparnasse, Paris</p>
+          <p>2005 Louvre Museum Exterior Installation, Paris</p>
+          <br><p><strong>Other exhibitions</strong></p>
+          <p>2025 Walking with Art in Iksan</p>
+          <p>2025 Gallery 5 National Invitational Exhibition, Incheon</p>
+          <p>2024, 2025 GUGU Gallery Year-End Gift Show, Seoul</p>
+          <p>2022 Two-person Exhibition (Kim Young-woo & DUNGZAK), Artem Gallery, Seoul</p>
+          <p>2004 Gwangju Biennale “The Stage”</p>
+          <p>2004 Forest Art Festival “Art Vacation,” Hadaeri</p>
+          <p>2000 Two-person Exhibition (José Delgado & Dungzak), Busan</p>
           <br><p><strong>Collections</strong></p>
-          <p>Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh City Central Police Department; Van Gogh Museum (Portfolio); MoMA, New York (Portfolio); Meritz Securities; numerous private collections.</p>
+          <p>Berlin City Hall; Humboldt Hospital Berlin; Notre-Dame Cathedral; Sciences Po, Paris; National Medical Institute, Warsaw; Church in Tokyo; Ho Chi Minh Central Police Department; Van Gogh Museum (Portfolio), Amsterdam; MoMA (Portfolio), New York; Meritz Securities; numerous private collections.</p>
           <br><p><strong>Publications</strong></p>
-          <p><em>Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
-          <p><em>Art, the Endless Love</em> (2024)</p>
+          <p><em>Tears Never Cease — The Artist’s Duty and Human Desire</em> (2022)</p>
+          <p><em>Art, That Endless Love</em> (2024)</p>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Lightbox & Sound controls -->
-  <div id="lightbox" aria-hidden="true">
-    <div class="lb-stage">
-      <img id="lbImg" alt="Artwork view">
-      <div class="lb-caption" id="lbCap"></div>
-      <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous">◀</button>
-      <button class="lb-arrow lb-next" id="lbNext" aria-label="Next">▶</button>
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+      <div class="caption" id="lbCap"></div>
+      <img alt="work preview" src="">
+      <div class="lb-ui">
+        <span class="chip" id="lbClose">Close ✕</span>
+      </div>
     </div>
-    <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
-    <div class="lb-meta" id="lbMeta"></div>
-  </div>
-  <div id="fftBar" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(102px + env(safe-area-inset-bottom));width:180px;height:6px;border-radius:6px;background:linear-gradient(90deg,#9fc6ff22,#f3c96955);overflow:hidden;z-index:6"><span style="display:block;height:100%;width:0;background:linear-gradient(90deg,#b7d4ff,#f6d98c);opacity:.9"></span></div>
-  <div id="ctrl" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(60px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:6">
-    <button class="ctrlbtn" id="soundBtn" aria-label="Play ambient" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer">✨</button>
-    <button class="ctrlbtn" id="soundStopBtn" aria-label="Stop ambient" disabled style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(230,199,119,.35);background:rgba(12,19,48,.45);color:#fff;cursor:pointer">🔇</button>
-  </div>
 
-  <footer>
-    <svg width="0" height="0" aria-hidden="true">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#f7e4a5"/><stop offset="1" stop-color="#e6c777"/>
-        </linearGradient>
-      </defs>
-    </svg>
+    <!-- Footer links -->
     <div class="links">
       <a class="linkbtn" href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">
-        <span class="icon"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="5"/></svg></span> Flickr
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="18" cy="12" r="5"/></svg> Flickr
       </a>
       <a class="linkbtn" href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">
-        <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.3"/></svg></span> Instagram
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.3"/></svg> Instagram
       </a>
       <a class="linkbtn" href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M22 12c0-3-0-5-1-6s-3-1-9-1-8 0-9 1-1 3-1 6 0 5 1 6 3 1 9 1 8 0 9-1 1-3 1-6Z"/><path d="M10 15V9l6 3-6 3Z" fill="#070c1a"/></svg></span> YouTube
+        <svg class="ico" viewBox="0 0 24 24"><path d="M22 12s0-4-1-5-5-1-9-1-8 0-9 1-1 5-1 5 0 4 1 5 5 1 9 1 8 0 9-1 1-5 1-5Z"/><path d="M10 8l6 4-6 4V8z" fill="#0b1020"/></svg> YouTube
       </a>
-      <a class="linkbtn" href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 4h4l6 8V4h4v16h-4l-6-8v8H5V4Z"/></svg></span> Naver Info
+      <a class="linkbtn" href="https://people.search.naver.com/search.naver?query=%EB%93%B1%EC%9E%91" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 4h5l5 7V4h6v16h-5l-5-7v7H4z"/></svg> Naver Info
       </a>
       <a class="linkbtn" href="mailto:dungzakcestlavie@gmail.com">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 6l9 7 9-7" fill="#070c1a"/></svg></span> Email
+        <svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 7l9 7 9-7" fill="#0b1020"/></svg> Email
       </a>
     </div>
-    <small>© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
-  </footer>
+
+    <footer><div class="copyright">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</div></footer>
+  </div>
 
   <!-- ③ SCRIPTS -->
   <script>
-/* tiny helpers */
-const $$=(q,sc)=>Array.from((sc||document).querySelectorAll(q));
-const $=(q,sc)=>(sc||document).querySelector(q);
+    // 강 번역 차단
+    document.documentElement.setAttribute('translate','no');
+    Array.from(document.querySelectorAll('body,section,nav,div,p,span,button')).forEach(n=>n.setAttribute('translate','no'));
 
-/* Early language boot (FOUC 방지) */
-(function(){
-  try{
-    const q=new URLSearchParams(location.search).get('lang');
-    const saved=localStorage.getItem('dz_site_lang');
-    const lang=(q==='ko'||q==='en'||q==='hy')?q:(saved||(/^ko/i.test(navigator.language||'')?'ko':'en'));
-    applyLang(lang,false,false);
-  }catch(e){}
-})();
-function applyLang(code,persist=true,updateURL=true){
-  document.body.classList.remove('lang-ko','lang-en','lang-hy');
-  document.body.classList.add(code==='en'?'lang-en':code==='hy'?'lang-hy':'lang-ko');
-  document.documentElement.setAttribute('lang', code==='en'?'en':'ko');
-  const seg=$('#langseg'); if(seg) seg.setAttribute('data-active', code==='en'?'en':code==='hy'?'hy':'ko');
-  $$('#langseg [role="tab"]').forEach(b=>b.setAttribute('aria-selected','false'));
-  const active=$$(`#langseg [role="tab"]`).find(b=>b.dataset.lang===code); active&&active.setAttribute('aria-selected','true');
-  persist && localStorage.setItem('dz_site_lang', code);
-  if(updateURL){ const u=new URL(location.href); u.searchParams.set('lang',code); history.replaceState(null,'',u.toString()); }
-  document.dispatchEvent(new CustomEvent('dz-lang-change',{detail:code}));
-}
+    const root=document.getElementById('root');
 
-/* Lang tabs interactions (탭 자체가 빛나며 전환) */
-(function(){
-  $$('#langseg [role="tab"]').forEach(tab=>{
-    tab.addEventListener('click',()=>applyLang(tab.dataset.lang,true,true));
-    tab.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();applyLang(tab.dataset.lang,true,true)}
-      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
-        e.preventDefault();
-        const tabs=$$('#langseg [role="tab"]');
-        const i=tabs.indexOf(tab); const next=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length]; next.focus();
-      }
-    });
-  });
-  window.addEventListener('storage',e=>{ if(e.key==='dz_site_lang' && e.newValue){ applyLang(e.newValue,false,true) } });
-})();
-
-/* Top nav: show section */
-(function(){
-  const ids=['poem','works','reports'];
-  function show(id){
-    ids.forEach(s=>{ const el=$('#'+s); if(el) el.hidden=(s!==id); });
-    $$('.ptab').forEach(b=>b.setAttribute('aria-selected', b.dataset.target===id ? 'true' : 'false'));
-    const target=$('#'+id); if(target) window.scrollTo({top:target.offsetTop-70,behavior:'smooth'});
-  }
-  $$('.ptab[data-target]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
-  show('poem');
-  $('#tab-bio')?.addEventListener('click',()=>window.DZ_BIO.open());
-})();
-
-/* Background waves & trail */
-(function(){
-  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  try{
-    const wcv=$('#waves'), tcv=$('#trail'); const w=wcv.getContext('2d',{alpha:true}), t=tcv.getContext('2d',{alpha:true});
-    let DPR=1,px=innerWidth/2,py=innerHeight/2,tx=px,ty=py,visible=true;
-    const ease=x=>x*x*(3-2*x);
-    function resize(){DPR=Math.max(1,Math.min(2,devicePixelRatio||1)); [w,t].forEach(c=>{c.canvas.width=Math.floor(innerWidth*DPR); c.canvas.height=Math.floor(innerHeight*DPR); c.setTransform(1,0,0,1,0,0); c.scale(1/DPR,1/DPR);});}
-    function fY(x,k,tm){const f1=0.003+k*0.0007,f2=0.006+k*0.0006,a1=26+k*12,a2=14+k*8,dr=tm*(0.75+k*0.15),base=innerHeight*0.30+k*108+Math.sin(tm*0.5+k)*12,curve=0.9+ease(x/innerWidth)*0.2;return base+Math.sin(x*f1+dr*1.1+Math.sin(dr*0.7+k)*.25)*a1*curve+Math.sin(x*f2+dr*.85)*a2}
-    function frame(now){
-      if(!visible){requestAnimationFrame(frame);return}
-      const T=(now/1000)%30,hue=(T<15)?200+(260-200)*(T/15):(T<22.5)?260+(45-260)*((T-15)/7.5):45+(200-45)*((T-22.5)/7.5);
-      w.clearRect(0,0,innerWidth,innerHeight);
-      for(let k=0;k<4;k++){
-        w.beginPath();
-        for(let x=0;x<=innerWidth;x+=6){const y=fY(x,k,now*0.001);x?w.lineTo(x,y):w.moveTo(x,y)}
-        const y0=fY(0,k,now*0.001),g=w.createLinearGradient(0,y0-140,0,y0+140);
-        g.addColorStop(0,`hsla(${(hue+k*12)%360},60%,70%,.10)`); g.addColorStop(.5,`hsla(45,70%,68%,.30)`); g.addColorStop(1,`hsla(${(hue+60+k*12)%360},60%,60%,.10)`);
-        w.strokeStyle=g; w.lineWidth=1.1+k*0.45; w.globalAlpha=0.9-k*0.12; w.shadowBlur=16; w.shadowColor='rgba(160,200,255,.18)'; w.stroke();
-      }
-      w.globalAlpha=1; w.shadowBlur=0;
-      px+=(tx-px)*0.16; py+=(ty-py)*0.16; const speed=Math.hypot(tx-px,ty-py),r=96+Math.min(speed*160,240);
-      t.fillStyle='rgba(0,0,0,.12)'; t.fillRect(0,0,innerWidth,innerHeight);
-      const grad=t.createRadialGradient(px,py,0,px,py,r); grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`); grad.addColorStop(.55,'rgba(140,185,255,.14)'); grad.addColorStop(1,'rgba(140,185,255,0)');
-      t.fillStyle=grad; t.beginPath(); t.arc(px,py,r,0,Math.PI*2); t.fill();
-      requestAnimationFrame(frame);
+    // 언어 전환 (KR / EN / KR+EN) — 탭을 터치하면 바로 빛나는 전환
+    function setLang(mode){
+      root.classList.remove('kr','en','both');
+      if(mode==='kr') root.classList.add('kr'); else if(mode==='en') root.classList.add('en'); else root.classList.add('both');
+      document.querySelectorAll('.lang').forEach(el=>el.classList.remove('active'));
+      document.querySelector(`.lang[data-lang="${mode}"]`)?.classList.add('active');
+      localStorage.setItem('dz_lang',mode);
     }
-    resize(); addEventListener('resize',resize,{passive:true});
-    document.addEventListener('visibilitychange',()=>visible=!document.hidden);
-    addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-    addEventListener('touchmove',e=>{const p=e.touches[0];tx=p.clientX;ty=p.clientY},{passive:true});
-    requestAnimationFrame(frame);
-  }catch(e){console.warn('canvas init error',e)}
-})();
+    document.querySelectorAll('.lang').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+    setLang(localStorage.getItem('dz_lang')||'kr');
 
-/* Artist Bio 모달 */
-window.DZ_BIO=(function(){
-  const modal=$('#bio-modal'), closeBtn=$('.bio-close',modal), expoKicker=$('#expoKicker'), slide=$('#expoSlide'), headKo=$('.bio-head .ko',modal), headEn=$('.bio-head .en',modal);
-  const seg=$('#bioLang'), btns=$$('.lang',seg);
-  let locked=false, topY=0;
-  function lock(){ if(locked)return; locked=true; topY=scrollY; document.body.style.position='fixed'; document.body.style.top=`-${topY}px`; document.body.style.left='0'; document.body.style.right='0'; document.body.style.width='100%'; }
-  function unlock(){ if(!locked)return; locked=false; document.body.style.position=''; document.body.style.top=''; document.body.style.left=''; document.body.style.right=''; document.body.style.width=''; scrollTo(0,topY||0); }
-  function setThumb(c){ seg.setAttribute('data-active', c==='en'?'en':c==='hy'?'hy':'kr'); btns.forEach(b=>b.setAttribute('aria-selected','false')); (btns.find(b=>b.dataset.lang===c)||btns[0]).setAttribute('aria-selected','true'); }
-  function showKR(){ headKo.style.display='block'; headEn.style.display='none'; $$('.bio-body.ko',modal).forEach(n=>n.style.display='block'); $$('.bio-body.en',modal).forEach(n=>n.style.display='none'); }
-  function showEN(){ headKo.style.display='none'; headEn.style.display='block'; $$('.bio-body.ko',modal).forEach(n=>n.style.display='none'); $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
-  function showHY(){ headKo.style.display='block'; headEn.style.display='block'; $$('.bio-body.ko',modal).forEach(n=>n.style.display='block'); $$('.bio-body.en',modal).forEach(n=>n.style.display='block'); }
-  function setLang(c){ setThumb(c); if(c==='en') showEN(); else if(c==='hy') showHY(); else showKR(); localStorage.setItem('dz_bio_lang',c); }
-  btns.forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
-
-  function setOpen(open){ slide.setAttribute('data-open', open?'true':'false'); slide.style.maxHeight=open?'4000px':'0'; slide.setAttribute('aria-hidden', open?'false':'true'); expoKicker.setAttribute('aria-expanded', open?'true':'false'); }
-  expoKicker.addEventListener('click',()=>setOpen(expoKicker.getAttribute('aria-expanded')!=='true'));
-
-  function open(){
-    modal.hidden=false; lock();
-    const site = document.body.classList.contains('lang-en')?'en':document.body.classList.contains('lang-hy')?'hy':'kr';
-    setLang(localStorage.getItem('dz_bio_lang')||site);
-    setOpen(false);
-    setTimeout(()=>{$('#bioAbout').scrollIntoView({block:'start'});},0);
-  }
-  function close(){ modal.hidden=true; unlock(); }
-
-  closeBtn.addEventListener('click',close);
-  $('.bio-backdrop',modal).addEventListener('click',close);
-
-  document.addEventListener('dz-lang-change',ev=>{ if(!localStorage.getItem('dz_bio_lang')) setLang(ev.detail==='en'?'en':ev.detail==='hy'?'hy':'kr'); });
-
-  return {open,close};
-})();
-
-/* Works 로더 (데모 + 지연로딩 + Lightbox hook) */
-(async function(){
-  const MAP={pray:"Light & Memory",human:"Human Prayer",rebirth:"Rebirth",exist:"Existence",cosmos:"Cosmos"};
-  const panels={pray:$('#panel-pray'),human:$('#panel-human'),rebirth:$('#panel-rebirth'),exist:$('#panel-exist'),cosmos:$('#panel-cosmos')};
-
-  const DEMO={
-    [MAP.pray]:Array.from({length:8},(_,i)=>({title_kr:`기도 ${i+1}`,title_en:`Pray ${i+1}`,year:2025,image:`demo${i+1}.jpg`})),
-    [MAP.human]:[],[MAP.rebirth]:[],[MAP.exist]:[],[MAP.cosmos]:[]
-  };
-
-  async function getCB(){try{const r=await fetch('/data/cachebust.json',{cache:'no-store'});const j=await r.json();return j.v||j.ts||Date.now()}catch{return Date.now()}}
-  const CB=await getCB();
-
-  async function loadJSON(url){const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw 0; return r.json()}
-  async function loadWorks(){ try{ return await loadJSON('/data/works.json?cb='+CB) } catch(_){ try{ return await loadJSON('/artworks.json?cb='+CB) } catch(__){ return DEMO } } }
-  const WORKS=await loadWorks();
-  const isKR=()=>document.body.classList.contains('lang-en')?false:true;
-
-  function cardHTML(w){
-    const title=isKR()?(w.title_kr||w.title_en||''):(w.title_en||w.title_kr||'');
-    const meta=isKR()?(w.material_kr||''):(w.material_en||''); const size=isKR()?(w.size_kr||''):(w.size_en||'');
-    const year=w.year||''; const file=encodeURIComponent((w.image||'').trim()); const hasImg=!!w.image;
-    const ssrc=hasImg?(`/images/standard/${file}?cb=${CB}`):'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22></svg>';
-    const zsrc=hasImg?(`/images/zoom/${file}?cb=${CB}`):''; const alt=[title,meta,size,year].filter(Boolean).join(' · ');
-    return `<article class="card" ${zsrc?`data-zoom="${zsrc}"`:''}><img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}"></article>`;
-  }
-
-  async function renderPanel(host,key){
-    if(!host) return;
-    const list=Array.isArray(WORKS[key])?WORKS[key].slice(0,20):[];
-    if(!list.length){host.innerHTML=\`<div class="grid"><article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">\${isKR()?'작품이 없습니다. JSON과 이미지를 업로드하세요.':'No works yet. Upload works JSON and images.'}</article></div>\`;return}
-    host.innerHTML=\`<div class="grid">\${list.map(cardHTML).join('')}</div>\`;
-    try{
-      const io=new IntersectionObserver(es=>{
-        es.forEach(e=>{
-          if(e.isIntersecting){ const img=e.target; if(img.dataset.src){img.src=img.dataset.src;img.removeAttribute('data-src')} img.closest('.card')?.classList.add('visible'); io.unobserve(img); }
-        })
-      },{rootMargin:'200px'});
-      $$(`#\${host.id} img[loading][data-src]`).forEach(i=>io.observe(i));
-    }catch{}
-  }
-  async function renderAll(){ await Promise.all([renderPanel(panels.pray,MAP.pray),renderPanel(panels.human,MAP.human),renderPanel(panels.rebirth,MAP.rebirth),renderPanel(panels.exist,MAP.exist),renderPanel(panels.cosmos,MAP.cosmos)]); }
-  await renderAll();
-  document.addEventListener('dz-lang-change',renderAll);
-
-  $$('.tabs .tab').forEach(b=>{
-    b.addEventListener('click',()=>{
-      $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active'); $$('.tabpanel').forEach(p=>p.classList.remove('active')); $('#panel-'+b.dataset.panel)?.classList.add('active');
+    // 상단 네비
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.addEventListener('click',()=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        const to=document.querySelector(t.dataset.goto);
+        if(to) to.scrollIntoView({behavior:'smooth',block:'start'});
+      });
     });
-  });
 
-  /* Lightbox hook */
-  (function(){
-    const lb=$('#lightbox'),img=$('#lbImg'),cap=$('#lbCap'),meta=$('#lbMeta'),prev=$('#lbPrev'),next=$('#lbNext'),close=$('#lbClose');
-    let list=[],idx=0,zoom=1,ox=0,oy=0,drag=false,sx=0,sy=0;
-    function collect(){ const panel=document.querySelector('.tabpanel.active')||$('#panel-pray'); list=Array.from(panel.querySelectorAll('.card')).map(c=>({z:c.getAttribute('data-zoom'),alt:c.querySelector('img')?.alt||''})).filter(x=>x.z); }
-    function openAt(i){ if(!list.length) return; idx=(i+list.length)%list.length; img.src=list[idx].z; cap.textContent=list[idx].alt; meta.textContent=\`\${idx+1} / \${list.length}\`; zoom=1;ox=oy=0;apply(); lb.classList.add('on'); lb.setAttribute('aria-hidden','false'); }
-    function clamp(){ const r=img.getBoundingClientRect(); const cw=r.width,ch=r.height; const vw=Math.min(innerWidth*0.96,cw*zoom), vh=Math.min(innerHeight*0.90,ch*zoom); const mx=Math.max(0,(cw*zoom - vw)/2), my=Math.max(0,(ch*zoom - vh)/2); ox=Math.max(-mx,Math.min(mx,ox)); oy=Math.max(-my,Math.min(my,oy)); }
-    function apply(){clamp(); img.style.transform=\`translate(\${ox}px,\${oy}px) scale(\${zoom})\`; img.style.cursor=zoom>1?'grab':'zoom-in'}
-    function hide(){lb.classList.remove('on'); lb.setAttribute('aria-hidden','true')}
-    document.addEventListener('click',e=>{ const card=e.target.closest('.card'); if(!card) return; const panel=document.querySelector('.tabpanel.active')||$('#panel-pray'); const cards=Array.from(panel.querySelectorAll('.card')); collect(); openAt(Math.max(0,cards.indexOf(card))); });
-    prev?.addEventListener('click',()=>openAt(idx-1)); next?.addEventListener('click',()=>openAt(idx+1)); close?.addEventListener('click',hide); $('#lightbox')?.addEventListener('click',e=>{if(e.target===lb) hide()});
-    lb.addEventListener('wheel',e=>{ if(!lb.classList.contains('on')) return; e.preventDefault(); const d=e.deltaY>0?0.9:1.1, pz=zoom; zoom=Math.min(5,Math.max(1,zoom*d)); if(zoom===1){ox=oy=0}else{ const r=img.getBoundingClientRect(); const cx=e.clientX-r.left-r.width/2-ox; const cy=e.clientY-r.top-r.height/2-oy; ox-=cx*(zoom/pz-1); oy-=cy*(zoom/pz-1);} apply(); },{passive:false});
-    img.addEventListener('mousedown',e=>{if(zoom===1)return; drag=true; sx=e.clientX-ox; sy=e.clientY-oy; img.style.cursor='grabbing'});
-    addEventListener('mousemove',e=>{if(!drag)return; ox=e.clientX-sx; oy=e.clientY-sy; apply()});
-    addEventListener('mouseup',()=>{drag=false; if(zoom>1) img.style.cursor='grab'});
-    img.addEventListener('touchstart',e=>{if(zoom===1)return; const t=e.touches[0]; drag=true; sx=t.clientX-ox; sy=t.clientY-oy},{passive:true});
-    img.addEventListener('touchmove',e=>{if(!drag)return; const t=e.touches[0]; ox=t.clientX-sx; oy=t.clientY-sy; apply()},{passive:true});
-    img.addEventListener('touchend',()=>{drag=false});
-    addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return; if(e.key==='Escape')hide(); else if(e.key==='ArrowLeft')openAt(idx-1); else if(e.key==='ArrowRight')openAt(idx+1); else if(e.key==='+'){zoom=Math.min(zoom*1.25,5);apply()} else if(e.key==='-'){zoom=Math.max(zoom/1.25,1); if(zoom===1){ox=oy=0} apply()}});
-    addEventListener('resize',()=>{ if(lb.classList.contains('on')) apply() }, {passive:true});
-  })();
-})();
+    // 보고서 접기/펼치기
+    document.querySelectorAll('.report-teaser').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const tgt=document.querySelector(btn.dataset.target);
+        const open=tgt.getAttribute('aria-hidden')==='false';
+        tgt.setAttribute('aria-hidden',open?'true':'false');
+      });
+    });
 
-/* Reports: 한 줄 → 펼침 + 데모 데이터 */
-(function(){
-  const grid=$('#rGrid'), toggle=$('#openReports');
-  const items=Array.from({length:9},(_,i)=>({
-    id:`DCAR${String(i+1).padStart(2,'0')}`,
-    n:i+1,
-    title_kr:`DCAR-${String(i+1).padStart(2,'0')} — (KR) 제목 예시`,
-    title_en:`DCAR-${String(i+1).padStart(2,'0')} — (EN) Sample Title`,
-    snippet_kr:`(KR) 보고서 개요 텍스트가 여기에 들어갑니다. 철학적 단상, 작업 노트, 전시 메모 등.`,
-    snippet_en:`(EN) Report abstract here: philosophical notes, studio log, exhibition memoranda, etc.`
-  }));
-  function render(){
-    grid.innerHTML=items.map(r=>`
-      <article class="r-card"><div class="r-in">
-        <div><span class="r-badge">DCAR-${String(r.n).padStart(2,'0')}-2025</span><span class="r-badge pdf">PDF</span></div>
-        <div class="r-name">${r.title_kr} · ${r.title_en}</div>
-        <div class="r-path">/reports/${r.id}.md</div>
-        <div class="r-body">
-          <div class="ko">${r.snippet_kr}</div>
-          <hr style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-          <div class="en">${r.snippet_en}</div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <a class="toggle" href="/reports/print-preview.html?file=${r.id}.md" target="_blank" rel="noopener">미리보기·인쇄 / Print</a>
-          <a class="toggle" href="/reports/${r.id}.pdf" target="_blank" rel="noopener">PDF</a>
-        </div>
-      </div></article>
-    `).join('');
-  }
-  render();
-  function setOpen(open){ grid.classList.toggle('on',open); toggle.textContent=open?'Close':'Open'; toggle.setAttribute('aria-expanded',open?'true':'false'); }
-  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
-})();
+    // Artist Bio: 한줄요약 → 전시/소장/저서 펼침
+    const kicker=document.getElementById('expoKicker');
+    const slide=document.getElementById('expoSlide');
+    kicker.addEventListener('click',()=>{
+      const open=slide.getAttribute('aria-hidden')==='false';
+      slide.setAttribute('aria-hidden',open?'true':'false');
+      kicker.setAttribute('aria-expanded',(!open).toString());
+    });
 
-/* Ambient sound (iOS unlock 포함) */
-(function(){
-  const btn=$('#soundBtn'), stopBtn=$('#soundStopBtn'), bar=$('#fftBar span');
-  if(!btn||!stopBtn||!bar) return;
-  let ac=null,nodes=null,on=false,analyser=null,rafId=null;
-  async function ensureAC(){if(!ac){const C=window.AudioContext||window.webkitAudioContext;ac=new C({latencyHint:'interactive'})} if(ac.state==='suspended') await ac.resume(); return ac}
-  function G(v){const g=ac.createGain();g.gain.value=v;return g}
-  function O(t,f){const o=ac.createOscillator();o.type=t;o.frequency.value=f;return o}
-  function ir(len=1.6,decay=2.6){const sr=ac.sampleRate,n=Math.floor(sr*len),buf=ac.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}return buf}
-  function draw(){if(!analyser){rafId=requestAnimationFrame(draw);return}const arr=new Uint8Array(analyser.frequencyBinCount);analyser.getByteTimeDomainData(arr);let avg=0;for(let i=0;i<arr.length;i++)avg+=Math.abs(arr[i]-128);avg/=arr.length;bar.style.width=Math.min(180,Math.max(10,avg*2.2))+'px';rafId=requestAnimationFrame(draw)}
-  async function start(){
-    if(on) return; await ensureAC();
-    const base=G(0.12),sub=G(0.05),mid=G(0.06),shim=G(0.012),pan=ac.createStereoPanner();
-    const low=O('sine',62),low2=O('sine',124),floor=O('sine',31),ch1=O('sine',432),ch2=O('sine',528);
-    const lfo1=O('sine',7.7),lfo2=O('sine',5.2),lpg=G(0.08),lpg2=G(0.06); lfo1.connect(lpg).connect(base.gain); lfo2.connect(lpg2).connect(base.gain);
-    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=880; lp.Q.value=0.8;
-    const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=120; bp.Q.value=0.7;
-    const conv=ac.createConvolver(); conv.buffer=ir(); const wet=G(0.25),dry=G(0.85);
-    low.connect(base).connect(bp).connect(lp); low2.connect(mid).connect(bp); floor.connect(sub).connect(bp); ch1.connect(shim).connect(lp); ch2.connect(shim).connect(lp);
-    lp.connect(dry).connect(pan).connect(ac.destination); lp.connect(wet).connect(conv).connect(pan).connect(ac.destination); bp.connect(dry).connect(pan); bp.connect(wet).connect(conv);
-    analyser=ac.createAnalyser(); analyser.fftSize=512; pan.connect(analyser);
-    [low,low2,floor,ch1,ch2].forEach(o=>o.start());
-    [base.gain,sub.gain,mid,shim.gain].forEach(g=>{const t=g.value; try{g.setValueAtTime(Math.max(0.0001,t*0.001),ac.currentTime); g.exponentialRampToValueAtTime(t,ac.currentTime+1.2)}catch{}});
-    (function panLoop(){if(!ac||!pan)return; try{pan.pan.value=Math.sin(performance.now()*0.000012)*0.35}catch{} if(on) requestAnimationFrame(panLoop)})();
-    (function breath(){if(!ac)return; try{lp.frequency.setTargetAtTime(720+Math.sin(ac.currentTime*0.33)*240,ac.currentTime,0.28)}catch{} if(on) setTimeout(breath,160)})();
-    nodes={low,low2,floor,ch1,ch2,base,sub,mid,shim,lp,bp,conv,wet,dry,pan}; on=true; btn.disabled=true; stopBtn.disabled=false; draw();
-  }
-  function stop(){
-    if(!on||!nodes||!ac) return;
-    const {low,low2,floor,ch1,ch2,base,sub,mid,shim}=nodes, t=ac.currentTime;
-    [base.gain,sub.gain,mid,shim.gain].forEach(g=>{try{g.cancelScheduledValues(0);g.exponentialRampToValueAtTime(0.0001,t+1.6)}catch{}});
-    setTimeout(()=>{[low,low2,floor,ch1,ch2].forEach(o=>{try{o.stop()}catch{}})},1700);
-    on=false; btn.disabled=false; stopBtn.disabled=true; cancelAnimationFrame(rafId); bar.style.width='0px';
-  }
-  const unlock=async()=>{try{await ensureAC()}catch{} window.removeEventListener('touchend',unlock); window.removeEventListener('click',unlock)}
-  window.addEventListener('touchend',unlock,{once:true}); window.addEventListener('click',unlock,{once:true});
-  btn.addEventListener('click',start); stopBtn.addEventListener('click',stop);
-})();
+    // Lightbox + 사운드(열기/닫기 찰나음) + 캡션 한/영/동시
+    const lb=document.getElementById('lightbox'), lbImg=lb.querySelector('img'), lbCap=document.getElementById('lbCap'), lbClose=document.getElementById('lbClose');
+    let ac,osc;
+    function blip(type='open'){
+      try{
+        const C=window.AudioContext||window.webkitAudioContext; ac=ac||new C();
+        const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.value=(type==='open')?660:440; g.gain.value=0.0001;
+        o.connect(g).connect(ac.destination); const t=ac.currentTime; g.gain.exponentialRampToValueAtTime(0.05,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.12); o.start(); o.stop(t+0.14);
+      }catch{}
+    }
+    function currentMode(){ return root.classList.contains('both')?'both':root.classList.contains('en')?'en':'kr' }
+    document.querySelectorAll('.ph').forEach(ph=>{
+      ph.addEventListener('click',()=>{
+        lbImg.src=ph.dataset.src||'';
+        const kr=ph.dataset.kr||'', en=ph.dataset.en||'';
+        const mode=currentMode();
+        lbCap.innerHTML = (mode==='both') ? `<div>${kr}</div><div class="muted" style="margin-top:4px">${en}</div>` : (mode==='en'? en : kr);
+        lb.classList.add('open'); blip('open');
+      });
+    });
+    function closeLB(){ lb.classList.remove('open'); blip('close') }
+    lb.addEventListener('click',e=>{ if(e.target===lb) closeLB() }); lbClose.addEventListener('click',closeLB);
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape' && lb.classList.contains('open')) closeLB() });
+
+    // Ambient audio 토글
+    const audio=document.getElementById('ambience'), toggle=document.getElementById('audioToggle');
+    toggle.addEventListener('click',async()=>{
+      try{ if(audio.paused){ await audio.play(); toggle.textContent='Ambient: Cosmic Resonance ⏸'; } else { audio.pause(); toggle.textContent='Ambient: Cosmic Resonance ▷'; } }catch{}
+    });
+
+    // iOS Safari 자동 음소거 회피: 최초 탭에 AudioContext 준비
+    window.addEventListener('touchend',()=>{try{const C=window.AudioContext||window.webkitAudioContext; ac=ac||new C();}catch{}},{once:true});
   </script>
 </body>
 </html>

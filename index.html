@@ -200,7 +200,49 @@ body.hybrid .en{
   border:1px solid rgba(255,255,255,0.06);
   border-radius:22px;
   padding:24px;
+} /* ===== DZ BIO FIX OVERRIDES — paste just above </style> ===== */
+
+/* Bio 본문 간격/줄바꿈 안정화 */
+.bio-body{font-size:15px;line-height:1.65}
+.bio-body p{margin:0.55rem 0}
+
+/* 섹션 제목(Collections / Publications 등) */
+.bio-body strong{
+  display:block;
+  color:var(--gold);
+  font-weight:700;
+  margin:20px 0 8px;
 }
+
+/* 모달 카드 시각 안정화 */
+.bio-card{
+  background:rgba(15,22,48,0.90);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:22px;
+  padding:24px;
+}
+
+/* 모달 헤드 타이틀 */
+.bio-card h2{color:var(--gold);font-weight:700;margin:0 0 12px}
+
+/* 언어 토글 버튼 */
+.bio-head .lang button{
+  all:unset;cursor:pointer;color:var(--fg);
+  border:1px solid #3a447a;border-radius:10px;padding:6px 12px
+}
+.bio-head .lang button.active,
+.bio-head .lang button:hover{background:#1a2144;color:var(--gold)}
+
+/* 닫기 버튼 위치 */
+.bio-close{
+  all:unset;cursor:pointer;position:absolute;top:16px;right:20px;
+  font-size:22px;color:var(--fg)
+}
+
+/* 모달 배경 */
+.bio-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+/* ===== end DZ BIO FIX ===== */
 </style>
 
 /* canvases */

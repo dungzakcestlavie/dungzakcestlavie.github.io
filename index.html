@@ -11,51 +11,92 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>'>
 
   <style>
-    :root{--bg:#070c1a;--fg:#eaf0ff;--gold:#e6c777;--muted:#a8b7e8;--panel:#0f1630;--line:#1b2652;--max:1180px;--shadow:0 12px 28px rgba(0,0,0,.35)}
+    :root{
+      --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
+      --panel:#0f1630; --line:#1b2652; --max:1180px; --shadow:0 12px 28px rgba(0,0,0,.35);
+    }
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Noto Sans KR",sans-serif;overflow-x:hidden}
-    .ko,.en{display:block} body.korean .en{display:none} body.english .ko{display:none} body.hybrid .ko,body.hybrid .en{display:block}
-    section{display:none} main > section.active{display:block}
+
+    /* 언어 가시성 */
+    .ko,.en{display:block}
+    body.korean .en{display:none}
+    body.english .ko{display:none}
+    body.hybrid .ko, body.hybrid .en{display:block}
+
+    /* 섹션 표시 */
+    main > section{display:none}
+    main > section.active{display:block}
 
     /* 배경 캔버스 */
     #waves,#trail{position:fixed;inset:0;pointer-events:none}
-    #waves{z-index:0;opacity:.52} #trail{z-index:1;opacity:.82;mix-blend-mode:screen}
+    #waves{z-index:0;opacity:.52}
+    #trail{z-index:1;opacity:.82;mix-blend-mode:screen}
 
     /* 헤더 */
-    header{position:sticky;top:0;z-index:10;padding:12px 14px;background:linear-gradient(180deg,rgba(10,14,30,.9),rgba(10,14,30,.7));backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)}
+    header{
+      position:sticky;top:0;z-index:10;padding:12px 14px;
+      background:linear-gradient(180deg,rgba(10,14,30,.9),rgba(10,14,30,.7));
+      backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)
+    }
     .brand{color:var(--gold);font-weight:900;text-align:center;font-size:clamp(18px,4.6vw,24px)}
     nav.primary{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
-    nav.primary button{all:unset;cursor:pointer;padding:7px 14px;border-radius:12px;font-weight:800;color:var(--fg);border:1px solid transparent}
-    nav.primary button.active,nav.primary button:hover{background:linear-gradient(180deg,#fae9b8,#e6c777);color:#0a1230;border-color:#d9c16a;box-shadow:0 0 14px rgba(230,199,119,.3)}
+    nav.primary button{
+      all:unset;cursor:pointer;padding:7px 14px;border-radius:12px;
+      font-weight:800;color:var(--fg);border:1px solid transparent
+    }
+    nav.primary button.active, nav.primary button:hover{
+      background:linear-gradient(180deg,#fae9b8,#e6c777);color:#0a1230;border-color:#d9c16a;
+      box-shadow:0 0 14px rgba(230,199,119,.3)
+    }
     .lang{display:flex;gap:8px;justify-content:center;margin-top:8px}
-    .lang button{all:unset;cursor:pointer;padding:6px 12px;border-radius:12px;border:1px solid #35406b;color:#dfe8ff}
-    .lang button.active,.lang button:hover{background:#151d3a;color:var(--gold);border-color:#4a5585;box-shadow:0 0 10px rgba(230,199,119,.25)}
+    .lang button{
+      all:unset;cursor:pointer;padding:6px 12px;border-radius:12px;border:1px solid #35406b;color:#dfe8ff
+    }
+    .lang button.active,.lang button:hover{
+      background:#151d3a;color:var(--gold);border-color:#4a5585;box-shadow:0 0 10px rgba(230,199,119,.25)
+    }
 
     main{position:relative;z-index:2}
     section{max-width:var(--max);margin:auto;padding:56px 16px}
     h1,h2{color:var(--gold)}
 
     /* Poem */
-    .poemwrap{background:rgba(16,22,48,.3);border:1px solid #1f2640;border-radius:14px;padding:18px;box-shadow:var(--shadow);max-width:860px;margin:12px auto 0}
+    .poemwrap{
+      background:rgba(16,22,48,.3);border:1px solid #1f2640;border-radius:14px;
+      padding:18px;box-shadow:var(--shadow);max-width:860px;margin:12px auto 0
+    }
     .poem p{margin:8px 0}
 
-    /* Sound */
+    /* 사운드 */
     .audio-bar{display:flex;gap:10px;margin-top:12px;align-items:center}
-    .ctrlbtn{width:42px;height:42px;cursor:pointer;border-radius:50%;border:1px solid rgba(230,199,119,.45);background:radial-gradient(circle at 30% 30%,rgba(255,240,180,.45),rgba(12,19,48,.7));box-shadow:0 0 12px rgba(230,199,119,.25)}
+    .ctrlbtn{
+      width:42px;height:42px;cursor:pointer;border-radius:50%;
+      border:1px solid rgba(230,199,119,.45);
+      background:radial-gradient(circle at 30% 30%,rgba(255,240,180,.45),rgba(12,19,48,.7));
+      box-shadow:0 0 12px rgba(230,199,119,.25)
+    }
     .ctrlbtn[disabled]{opacity:.5;cursor:not-allowed}
     #fftBar{height:6px;background:#233;border-radius:8px;margin-top:8px;overflow:hidden;width:180px}
     #fftBar span{display:block;height:100%;background:linear-gradient(90deg,#b7d4ff,#f7da91);width:0}
 
     /* Works */
     .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px;justify-content:center}
-    .tab{cursor:pointer;background:#10183a;border-radius:999px;padding:8px 14px;border:1px solid var(--line);color:#cbd9ff;font-size:.95rem;white-space:nowrap}
+    .tab{
+      cursor:pointer;background:#10183a;border-radius:999px;padding:8px 14px;border:1px solid var(--line);color:#cbd9ff;font-size:.95rem;white-space:nowrap
+    }
     .tab.active{background:linear-gradient(180deg,#f9e8aa,#e6c777);color:#0a1230;border-color:#d9c16a}
-    .tabpanel{display:none}.tabpanel.active{display:block}
+    .tabpanel{display:none}
+    .tabpanel.active{display:block}
     .grid{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
     @media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s}
-    .card.visible{opacity:1;transform:translateY(0)} .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+    .card{
+      background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+      opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s
+    }
+    .card.visible{opacity:1;transform:translateY(0)}
+    .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 
     /* Lightbox */
     #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
@@ -63,7 +104,7 @@
     .lb-stage{position:relative;max-width:95vw;max-height:90vh;border:2px solid var(--gold);border-radius:12px;overflow:hidden;background:#000}
     #lbImg{max-width:100%;max-height:90vh;cursor:zoom-in;transform:translate(0,0) scale(1);transition:transform .2s}
     .lb-caption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,#000b);color:#cfe0ff;padding:8px 12px;font-size:.9rem}
-    .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(18,24,48,.6);border:1px solid rgba(230,199,119,.4);color:#fff;display:grid;place-items:center;cursor:pointer}
+    .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(18,24,48,.6);border:1px solid rgba(230,199,119,.4);color:white;display:grid;place-items:center;cursor:pointer}
     .lb-prev{left:8px}.lb-next{right:8px}
     .lb-close{position:absolute;top:-50px;right:0;width:40px;height:40px;border-radius:50%;background:rgba(18,24,48,.6);border:1px solid rgba(230,199,119,.4);color:#fff;cursor:pointer}
     .lb-meta{position:absolute;top:-50px;left:0;color:#cfe0ff;font-size:.85rem;opacity:.85}
@@ -103,14 +144,17 @@
     .linkbtn:hover{border-color:rgba(230,199,119,.5);color:#fff;box-shadow:0 0 10px rgba(230,199,119,.25)}
 
     /* 구글 번역 막기 */
-    .goog-te-banner-frame,.goog-te-balloon-frame,#goog-gt-tt{display:none!important} body{top:0!important}
+    .goog-te-banner-frame,.goog-te-balloon-frame,#goog-gt-tt{display:none!important}
+    body{top:0!important}
   </style>
-</head> <body class="korean">
-  <!-- 배경 캔버스 -->
+</head>
+
+<body class="korean">
+  <!-- 배경 -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
 
-  <!-- 헤더: 국제 표준 네비(EN) -->
+  <!-- 헤더: 국제 표준 네비(EN 레이블) -->
   <header>
     <div class="brand">DUNGZAK CESTLAVIE · Lightflow Ω.9</div>
     <nav class="primary" aria-label="Primary">
@@ -127,7 +171,7 @@
   </header>
 
   <main>
-    <!-- Poem -->
+    <!-- 1) Poem -->
     <section id="poem" class="active">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
@@ -136,29 +180,41 @@
         <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
         <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
         <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
+
         <div class="poem">
           <p class="ko">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
           <p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
+
           <p class="ko">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
           <p class="en">People who live with humble dreams gather to dance.</p>
+
           <p class="ko">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
           <p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
+
           <p class="ko">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
           <p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
+
           <p class="ko">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
           <p class="en">Dreaming women and dreaming men clasp hands,</p>
+
           <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
           <p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
+
           <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
           <p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
+
           <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
           <p class="en">In that scene, the crescent moon releases a tender white smile.</p>
+
           <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
           <p class="en">Sharak, sharak— as the rhythm of dance expands,</p>
+
           <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p>
           <p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
+
           <p class="ko">사랑의 입맞춤을 의식한다.</p>
           <p class="en">Becoming aware of love’s gentle kiss.</p>
+
           <p class="ko">흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어, 멈춤 속에 영원을 새긴다.</p>
           <p class="en">Within the flowing overlap of time, they become taxidermies of the soul, inscribing eternity into stillness.</p>
         </div>
@@ -172,9 +228,11 @@
       </div>
     </section>
 
-    <!-- Works -->
+    <!-- 2) Works -->
     <section id="works">
-      <h2 class="ko">작품 아카이브</h2><h2 class="en">Artworks</h2>
+      <h2 class="ko">작품 아카이브</h2>
+      <h2 class="en">Artworks</h2>
+
       <div class="tabs" role="tablist" aria-label="Art Sections">
         <button class="tab active" data-panel="pray">Ⅰ 빛과 기억 · Light & Memory</button>
         <button class="tab" data-panel="human">Ⅱ 인간 기도 · Human Prayer</button>
@@ -182,6 +240,8 @@
         <button class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
         <button class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
+
+      <!-- 5×20 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -201,9 +261,11 @@
       <div class="lb-meta" id="lbMeta"></div>
     </div>
 
-    <!-- Reports -->
+    <!-- 3) Reports -->
     <section id="reports">
-      <h2 class="ko">미학 보고서 (DCAR Series)</h2><h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+      <h2 class="ko">미학 보고서 (DCAR Series)</h2>
+      <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+
       <div class="r-head">
         <div class="r-tabs">
           <button class="r-tab is-active" data-r="all">All</button>
@@ -216,20 +278,23 @@
       <div class="r-grid" id="reportGrid"></div>
     </section>
 
-    <!-- Artist Bio -->
+    <!-- 4) Artist Bio -->
     <section id="bio">
-      <h2 class="ko">작가 소개</h2><h2 class="en">Artist Bio</h2>
+      <h2 class="ko">작가 소개</h2>
+      <h2 class="en">Artist Bio</h2>
 
+      <!-- 요약 1줄 -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">국내외 개인전 28회 ▾</span>
         <span class="en">28 solo exhibitions worldwide ▾</span>
       </button>
 
+      <!-- 소개 본문 -->
       <div class="bio-block" id="bioAbout">
         <div class="bio-body ko">
           <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong>는 빛, 기억, 존재의 기원을 탐구하는 한국 현대예술가다. 그의 작업은 인간이 지나가는 동안 남기는 감정의 흔적, 상처를 통과하며 드러나는 빛의 근원, 그리고 소멸과 탄생이 반복되는 존재의 순환을 기록한다.</p>
           <p>회화·텍스트·사운드·아카이브를 결합한 세계를 구축하며 서울을 기반으로 베를린·파리·암스테르담·바르샤바·모스크바에서 프로젝트를 전개한다. 그의 회화는 기도문이자 기록, 존재의 여백에 새겨지는 빛의 언어이다.</p>
-          <p>저서: <strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong>(2022), <strong>예술, 그 끝없는 사랑</strong>(2024).</p>
+          <p>저서: <strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong> (2022), <strong>예술, 그 끝없는 사랑</strong> (2024).</p>
         </div>
         <div class="bio-body en">
           <p><strong>DUNGZAK CESTLAVIE</strong> is a Korean contemporary artist exploring the origins of light, memory, and being. His practice traces human affect, the luminous core revealed through wounds, and the cyclical rhythm of disappearance and renewal.</p>
@@ -238,11 +303,13 @@
         </div>
       </div>
 
+      <!-- 전시/소장/저서 (슬라이드) -->
       <div class="slide-wrap" id="expoSlide" data-open="false" aria-hidden="true">
-        <!-- KR 상세 -->
+        <!-- KR -->
         <div class="bio-body ko">
           <p><strong>등작 燈酌 DUNGZAK CESTLAVIE</strong></p>
           <p><strong>국내외 개인 전시 28회</strong></p>
+
           <p><strong>국내 주요전시</strong></p>
           <p>2025 구구갤러리 목동, 서울, 대한민국</p>
           <p>2023, 2024 구구갤러리 목동, 서울, 대한민국</p>
@@ -254,36 +321,41 @@
           <p>2009 아트 갤러리 유 부산, 대한민국</p>
           <p>2005 횡성 문화관 강원도, 대한민국</p>
           <p>2003 스페이스 키친 서울, 대한민국</p>
-          <p>2003 홍대 놀이터에서 사계 야외 작업·전시 서울, 대한민국</p>
+          <p>2003 홍대 놀이터에서 봄여름 가을 겨울 사계 야외 작업과 야외 전시 서울, 대한민국</p>
           <p>2000 갤러리 소호 부산, 대한민국</p>
           <p>2000 세원백화점 부산, 대한민국</p>
+
           <br><p><strong>국외 주요전시</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar 베를린, 독일</p>
-          <p>2015 러시아 모스크바 국제공항 &lt;삶과 예술의 간격&gt;</p>
-          <p>2014 호찌민시 중앙 경찰서 즉흥 퍼포먼스 및 전시, 베트남</p>
-          <p>2011 Open Art in Amsterdam, Netherlands</p>
-          <p>2006 Linka 갤러리, 암스테르담, 네덜란드</p>
-          <p>2005 Lune Cafe, 몽파르나스, 파리, 프랑스</p>
-          <p>2005 루브르 박물관 외벽 전시, 파리, 프랑스</p>
+          <p>2015 러시아 모스크바 국제공항 삶과 예술의 간격</p>
+          <p>2014 베트남에서 자유롭게 예술과 발언에 의한 즉흥적인 퍼포먼스와 작품 전시를 호찌민시 중앙 경찰서에서 열었음</p>
+          <p>2011 Open Art in Amsterdam Netherlands</p>
+          <p>2006 네덜란드 암스테르담 Linka 갤러리</p>
+          <p>2005 프랑스 파리 몽파르나스 Lune Cafe</p>
+          <p>2005 프랑스 파리 루브르 박물관 외벽 전시</p>
+
           <br><p><strong>그 외 전시</strong></p>
-          <p>2025 그림따라 걷는 도시 익산, 대한민국</p>
-          <p>2025 갤러리5 전국 주요 작가 초대전, 인천, 대한민국</p>
-          <p>2024, 2025 구구갤러리 송년 선물전, 서울, 대한민국</p>
-          <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울, 대한민국</p>
-          <p>2004 광주비엔날레 &lt;The Stage&gt;, 광주, 대한민국</p>
-          <p>2004 하대리 여름 숲속 미술제 ‘예술의 휴가’, 횡성군, 대한민국</p>
-          <p>2000 호세 델가도·등작 2인전, 서면 메트로 미술관, 부산, 대한민국</p>
+          <p>2025 그림따라 걷는 도시 익산 익산, 대한민국</p>
+          <p>2025 갤러리5 전국 주요 작가 초대전 인천, 대한민국</p>
+          <p>2024, 2025 구구갤러리 송년 선물전 서울, 대한민국</p>
+          <p>2022 김영우, 등작 2인전 아르템 갤러리 충무로, 서울, 대한민국</p>
+          <p>2004 광주비엔날레 The stage 광주, 대한민국</p>
+          <p>2004 하대리 여름 숲속 미술제_‘예술의 휴가’ 횡성군, 대한민국</p>
+          <p>2000 호세 델가도, 등작 2인전 서면 메트로 미술관 부산, 대한민국</p>
+
           <br><p><strong>소장</strong></p>
-          <p>베를린 시청 / 훔볼트 병원 / 노트르담 대성당 / 파리 정치대학 / 바르샤바 국립 의료원 / 도쿄 교회 / 호찌민시 중앙 경찰서 / 반 고흐 미술관(포트폴리오) / MoMA 뉴욕(포트폴리오) / 메리츠증권 / 국내외 개인 소장 다수</p>
+          <p>독일 베를린 시청 / 독일 훔볼트 병원 / 프랑스 파리 노트르담 대성당 / 프랑스 파리 정치대학 / 폴란드 바르샤바 국립 의료원 / 일본 도쿄 교회 / 베트남 호찌민시 중앙 경찰서 / 네덜란드 암스테르담 반 고흐 미술관 (포트폴리오 소장) / 미국 뉴욕 현대 미술관 (포트폴리오 소장) / 메리츠 증권 / 국내외 개인 소장자 다수</p>
+
           <br><p><strong>저서</strong></p>
-          <p><strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong> (2022)</p>
-          <p><strong>예술, 그 끝없는 사랑</strong> (2024)</p>
+          <p><strong>1 눈물은 절대 멈추지 않는다_예술가의 책무와 인간 욕망</strong> (2022년 발간)</p>
+          <p><strong>예술, 그 끝없는 사랑</strong> (2024년 발간)</p>
         </div>
 
-        <!-- EN 상세 -->
+        <!-- EN -->
         <div class="bio-body en">
           <p><strong>DUNGZAK 燈酌 DUNGZAK CESTLAVIE</strong></p>
           <p><strong>Solo Exhibitions: 28 exhibitions worldwide</strong></p>
+
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
           <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
@@ -298,6 +370,7 @@
           <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
           <p>2000 Gallery Soho, Busan, Republic of Korea</p>
           <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
+
           <br><p><strong>Major International Exhibitions</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
           <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
@@ -306,6 +379,7 @@
           <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
           <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
           <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
+
           <br><p><strong>Selected Other Exhibitions</strong></p>
           <p>2025 Walking with Art in Iksan, Republic of Korea</p>
           <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
@@ -314,8 +388,10 @@
           <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
           <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
           <p>2000 José Delgado & Dungzak Two-Person Exhibition, Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
+
           <br><p><strong>Collections</strong></p>
-          <p>Berlin City Hall • Humboldt Hospital • Notre-Dame Cathedral (Paris) • Sciences Po (Paris) • National Medical Institute (Warsaw) • Church in Tokyo • Ho Chi Minh City Central Police Department • Van Gogh Museum (Amsterdam, portfolio) • MoMA (New York, portfolio) • Meritz Securities • Numerous private collections worldwide</p>
+          <p>Berlin City Hall, Germany · Humboldt Hospital, Germany · Notre-Dame Cathedral, Paris, France · Sciences Po, Paris, France · National Medical Institute, Warsaw, Poland · Church in Tokyo, Japan · Ho Chi Minh City Central Police Department, Vietnam · Van Gogh Museum, Amsterdam, Netherlands (Portfolio Collection) · Museum of Modern Art, New York, USA (Portfolio Collection) · Meritz Securities Co., Ltd., Republic of Korea · Numerous private collections worldwide</p>
+
           <br><p><strong>Publications</strong></p>
           <p><strong>1 Tears Never Cease — The Artist’s Duty and Human Desire</strong> (2022)</p>
           <p><strong>Art, the Endless Love</strong> (2024)</p>
@@ -348,11 +424,19 @@
 
     <!-- 사용자 제스처로만 재생됨 -->
     <audio id="ambientSrc" src="/media/ambient.mp3" preload="auto" crossorigin="anonymous"></audio>
-  </footer> <script>
-const root=document.body;
-const sections={poem:document.getElementById("poem"),works:document.getElementById("works"),reports:document.getElementById("reports"),bio:document.getElementById("bio")};
+  </footer>
 
-/* Nav */
+<script>
+/* ===== 공통 참조 ===== */
+const root=document.body;
+const sections={
+  poem:document.getElementById("poem"),
+  works:document.getElementById("works"),
+  reports:document.getElementById("reports"),
+  bio:document.getElementById("bio")
+};
+
+/* ===== 네비게이션 (Poem/Works/Reports/Artist Bio) ===== */
 document.querySelectorAll("header nav.primary button").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll("header nav.primary button").forEach(b=>b.classList.remove("active"));
@@ -363,58 +447,240 @@ document.querySelectorAll("header nav.primary button").forEach(btn=>{
     sections[target].scrollIntoView({behavior:"smooth",block:"start"});
   });
 });
+sections.poem.classList.add("active"); // 초기 표시
 
-/* Language */
-const koBtn=document.getElementById("koBtn"), enBtn=document.getElementById("enBtn"), hyBtn=document.getElementById("hyBtn");
-function setLang(m){root.classList.remove("korean","english","hybrid");root.classList.add(m==="ko"?"korean":m==="en"?"english":"hybrid");koBtn.classList.toggle("active",m==="ko");enBtn.classList.toggle("active",m==="en");hyBtn.classList.toggle("active",m==="hy")}
-koBtn.onclick=()=>setLang("ko"); enBtn.onclick=()=>setLang("en"); hyBtn.onclick=()=>setLang("hy"); setLang("ko");
+/* ===== 언어 전환 (KR / EN / KR+EN) ===== */
+const koBtn=document.getElementById("koBtn");
+const enBtn=document.getElementById("enBtn");
+const hyBtn=document.getElementById("hyBtn");
+function setLang(mode){
+  root.classList.remove("korean","english","hybrid");
+  if(mode==="ko") root.classList.add("korean");
+  if(mode==="en") root.classList.add("english");
+  if(mode==="hy") root.classList.add("hybrid");
+  koBtn.classList.toggle("active",mode==="ko");
+  enBtn.classList.toggle("active",mode==="en");
+  hyBtn.classList.toggle("active",mode==="hy");
+}
+koBtn.onclick=()=>setLang("ko");
+enBtn.onclick=()=>setLang("en");
+hyBtn.onclick=()=>setLang("hy");
+setLang("ko"); // 기본값
 
-/* Background: waves */
-const waves=document.getElementById('waves'), wctx=waves.getContext('2d'); let wW=innerWidth,wH=innerHeight; 
-function resizeW(){wW=innerWidth;wH=innerHeight;waves.width=wW;waves.height=wH} addEventListener('resize',resizeW); resizeW();
-let t=0; (function drawW(){wctx.clearRect(0,0,wW,wH);for(let l=0;l<3;l++){const amp=12+l*9,y0=wH*0.35+l*40;wctx.beginPath();for(let x=0;x<wW;x++){const y=y0+Math.sin((x*0.008)+(t*0.015+l*0.6))*amp; x? wctx.lineTo(x,y):wctx.moveTo(x,y)}const g=wctx.createLinearGradient(0,0,0,wH);g.addColorStop(0,'rgba(120,160,255,0.08)');g.addColorStop(1,'rgba(230,199,119,0.12)');wctx.strokeStyle=g;wctx.lineWidth=1.6;wctx.stroke()}t+=1;requestAnimationFrame(drawW)})(); 
+/* ===== 배경: 파도 ===== */
+const waves=document.getElementById('waves');
+const wctx=waves.getContext('2d');
+let wW=innerWidth,wH=innerHeight;
+function resizeW(){wW=innerWidth;wH=innerHeight;waves.width=wW;waves.height=wH}
+addEventListener('resize',resizeW);resizeW();
+let t=0;
+(function drawW(){
+  wctx.clearRect(0,0,wW,wH);
+  for(let l=0;l<3;l++){
+    const amp=12+l*9, y0=wH*0.35+l*40;
+    wctx.beginPath();
+    for(let x=0;x<wW;x++){
+      const y=y0+Math.sin((x*0.008)+(t*0.015+l*0.6))*amp;
+      x? wctx.lineTo(x,y):wctx.moveTo(x,y);
+    }
+    const g=wctx.createLinearGradient(0,0,0,wH);
+    g.addColorStop(0,'rgba(120,160,255,0.08)');
+    g.addColorStop(1,'rgba(230,199,119,0.12)');
+    wctx.strokeStyle=g; wctx.lineWidth=1.6; wctx.stroke();
+  }
+  t+=1; requestAnimationFrame(drawW);
+})();
 
-/* Background: golden trail */
-const trail=document.getElementById('trail'), tctx=trail.getContext('2d'); function resizeT(){trail.width=innerWidth;trail.height=innerHeight} addEventListener('resize',resizeT); resizeT();
-const sparks=[]; addEventListener('pointermove',e=>{for(let i=0;i<6;i++){sparks.push({x:e.clientX,y:e.clientY,vx:(Math.random()-0.5)*1.6,vy:(Math.random()-0.5)*1.6,life:1,size:1.2+Math.random()*2})}});
-(function drawT(){tctx.fillStyle='rgba(0,0,0,0.08)';tctx.fillRect(0,0,trail.width,trail.height);for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.life-=0.02;if(s.life<=0){sparks.splice(i,1);continue}tctx.beginPath();tctx.arc(s.x,s.y,s.size,0,Math.PI*2);tctx.fillStyle=`rgba(250,220,150,${0.45*s.life})`;tctx.shadowColor='rgba(230,199,119,0.6)';tctx.shadowBlur=14;tctx.fill()}requestAnimationFrame(drawT)})();
+/* ===== 배경: 금빛 라이트 트레일 ===== */
+const trail=document.getElementById('trail');
+const tctx=trail.getContext('2d');
+function resizeT(){trail.width=innerWidth;trail.height=innerHeight}
+addEventListener('resize',resizeT);resizeT();
+const sparks=[];
+addEventListener('pointermove',e=>{
+  for(let i=0;i<6;i++){
+    sparks.push({x:e.clientX,y:e.clientY,vx:(Math.random()-0.5)*1.6,vy:(Math.random()-0.5)*1.6,life:1,size:1.2+Math.random()*2});
+  }
+});
+(function drawT(){
+  tctx.fillStyle='rgba(0,0,0,0.08)';
+  tctx.fillRect(0,0,trail.width,trail.height);
+  for(let i=sparks.length-1;i>=0;i--){
+    const s=sparks[i]; s.x+=s.vx; s.y+=s.vy; s.life-=0.02;
+    if(s.life<=0){sparks.splice(i,1);continue}
+    tctx.beginPath(); tctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+    tctx.fillStyle=`rgba(250,220,150,${0.45*s.life})`;
+    tctx.shadowColor='rgba(230,199,119,0.6)'; tctx.shadowBlur=14; tctx.fill();
+  }
+  requestAnimationFrame(drawT);
+})();
 
-/* Works 5×20 thumbnails (expects /works/{section}/01.jpg … 20.jpg) */
-const workPanels={pray:document.getElementById("panel-pray"),human:document.getElementById("panel-human"),rebirth:document.getElementById("panel-rebirth"),exist:document.getElementById("panel-exist"),cosmos:document.getElementById("panel-cosmos")};
-(function renderWorks(){Object.keys(workPanels).forEach(key=>{const panel=workPanels[key];let html=`<div class="grid">`;for(let i=1;i<=20;i++){const n=i<10?`0${i}`:i;const src=`/works/${key}/${n}.jpg`;html+=`<figure class="card witem" data-big="${src}" data-cap="${key} ${n}"><img src="${src}" alt="${key} ${n}"></figure>`}html+=`</div>`;panel.innerHTML=html})})();
-document.querySelectorAll(".tabs .tab").forEach(tab=>{tab.addEventListener("click",()=>{document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.remove("active"));tab.classList.add("active");document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));document.getElementById("panel-"+tab.dataset.panel).classList.add("active")})});
+/* ===== Works 5×20 썸네일 생성 (경로: /works/{section}/01.jpg … 20.jpg) ===== */
+const workPanels={
+  pray:document.getElementById("panel-pray"),
+  human:document.getElementById("panel-human"),
+  rebirth:document.getElementById("panel-rebirth"),
+  exist:document.getElementById("panel-exist"),
+  cosmos:document.getElementById("panel-cosmos")
+};
+(function renderWorks(){
+  Object.keys(workPanels).forEach(key=>{
+    const panel=workPanels[key];
+    let html=`<div class="grid">`;
+    for(let i=1;i<=20;i++){
+      const n=i<10?`0${i}`:i;
+      const src=`/works/${key}/${n}.jpg`;
+      html+=`<figure class="card witem" data-big="${src}" data-cap="${key} ${n}"><img src="${src}" alt="${key} ${n}"></figure>`;
+    }
+    html+=`</div>`;
+    panel.innerHTML=html;
+  });
+})();
+document.querySelectorAll(".tabs .tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tabs .tab").forEach(x=>x.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("panel-"+tab.dataset.panel).classList.add("active");
+  });
+});
 
-/* Lightbox */
-const lb=document.getElementById("lightbox"), lbImg=document.getElementById("lbImg"), lbCap=document.getElementById("lbCap"), lbClose=document.getElementById("lbClose"), lbPrev=document.getElementById("lbPrev"), lbNext=document.getElementById("lbNext"); 
-let lbItems=[], lbIndex=0; 
-(function bindLB(){lbItems=Array.from(document.querySelectorAll(".witem"));lbItems.forEach((it,idx)=>{it.addEventListener("click",()=>openLB(idx));const ob=new IntersectionObserver(([en])=>{if(en.isIntersecting){it.classList.add("visible");ob.disconnect()}},{threshold:.2});ob.observe(it)})})();
-function openLB(i){lbIndex=i;const it=lbItems[i];lbImg.src=it.dataset.big;lbCap.textContent=it.dataset.cap;lb.classList.add("on");lb.setAttribute("aria-hidden","false")}
+/* ===== Lightbox ===== */
+const lb=document.getElementById("lightbox");
+const lbImg=document.getElementById("lbImg");
+const lbCap=document.getElementById("lbCap");
+const lbClose=document.getElementById("lbClose");
+const lbPrev=document.getElementById("lbPrev");
+const lbNext=document.getElementById("lbNext");
+let lbItems=[], lbIndex=0;
+
+(function bindLB(){
+  lbItems=Array.from(document.querySelectorAll(".witem"));
+  lbItems.forEach((it,idx)=>{
+    it.addEventListener("click",()=>openLB(idx));
+    const ob=new IntersectionObserver(([en])=>{
+      if(en.isIntersecting){it.classList.add("visible");ob.disconnect()}
+    },{threshold:.2});
+    ob.observe(it);
+  });
+})();
+function openLB(i){
+  lbIndex=i;
+  const it=lbItems[i];
+  lbImg.src=it.dataset.big;
+  lbCap.textContent=it.dataset.cap;
+  lb.classList.add("on");
+  lb.setAttribute("aria-hidden","false");
+}
 function closeLB(){lb.classList.remove("on");lb.setAttribute("aria-hidden","true")}
 function nextLB(){lbIndex=(lbIndex+1)%lbItems.length;openLB(lbIndex)}
 function prevLB(){lbIndex=(lbIndex-1+lbItems.length)%lbItems.length;openLB(lbIndex)}
-lbClose.onclick=closeLB; lbNext.onclick=nextLB; lbPrev.onclick=prevLB; lb.addEventListener("click",e=>{if(e.target===lb) closeLB()})
-document.addEventListener("keydown",e=>{if(lb.classList.contains("on")){if(e.key==="Escape") closeLB(); if(e.key==="ArrowRight") nextLB(); if(e.key==="ArrowLeft") prevLB()}});
+lbClose.onclick=closeLB; lbNext.onclick=nextLB; lbPrev.onclick=prevLB;
+lb.addEventListener("click",(e)=>{if(e.target===lb) closeLB()});
+document.addEventListener("keydown",e=>{
+  if(lb.classList.contains("on")){
+    if(e.key==="Escape") closeLB();
+    if(e.key==="ArrowRight") nextLB();
+    if(e.key==="ArrowLeft") prevLB();
+  }
+});
 
-/* Reports */
+/* ===== Reports ===== */
 const reportGrid=document.getElementById("reportGrid");
-const reportsData=[{id:"DCAR-01-2025",cat:"theory",title_ko:"존재의 회복(초판)",title_en:"The Restoration of Being (First Ed.)",file:"/reports/DCAR01.pdf",summary:"존재·기억·빛의 재배열"},{id:"DCAR-02-2025",cat:"theory",title_ko:"빛의 기억학",title_en:"Mnemonics of Light",file:"/reports/DCAR02.pdf",summary:"기억과 빛의 상관성"},{id:"DCAR-03-2025",cat:"practice",title_ko:"정신의 재탄생",title_en:"The Rebirth of Mind",file:"/reports/DCAR03.pdf",summary:"작업 노트와 사례"},{id:"DCAR-04-2025",cat:"archive",title_ko:"Lightflow 기록",title_en:"Lightflow Archive",file:"/reports/DCAR04.pdf",summary:"제작 아카이브"},{id:"DCAR-05-2025",cat:"theory",title_ko:"신경-정서 진동",title_en:"Neuro-Affective Tremor",file:"/reports/DCAR05.pdf",summary:"뇌·정서·빛"},{id:"DCAR-06-2025",cat:"practice",title_ko:"작업 방법론",title_en:"Methods of Making",file:"/reports/DCAR06.pdf",summary:"재료·형식"},{id:"DCAR-07-2025",cat:"archive",title_ko:"전시 자료집",title_en:"Exhibition Dossier",file:"/reports/DCAR07.pdf",summary:"사진·텍스트"},{id:"DCAR-08-2025",cat:"theory",title_ko:"기억의 존엄",title_en:"Dignity of Memory",file:"/reports/DCAR08.pdf",summary:"윤리·미학"},{id:"DCAR-09-2025",cat:"theory",title_ko:"해체 이후의 회화 — 존재 감응의 귀환",title_en:"After Deconstruction — Return of Affective Being",file:"/reports/DCAR09.pdf",summary:"계보: Kandinsky·Picasso·Rothko·Richter"}];
-function renderReports(f="all"){const list=reportsData.filter(r=>f==="all"||r.cat===f);reportGrid.innerHTML=list.map(r=>`<article class="r-card"><div class="r-in"><div class="r-title"><span class="ko">${r.title_ko}</span><span class="en">${r.title_en}</span></div><div class="r-sub">${r.id}</div><div class="r-meta"><span class="r-badge">${r.cat}</span><span class="r-badge pdf">PDF</span></div><div class="r-body">${r.summary}</div><div class="r-actions"><a href="${r.file}" target="_blank" rel="noopener">Open PDF</a></div></div></article>`).join("")}
+const reportsData=[
+  { id:"DCAR-01-2025", cat:"theory",   title_ko:"존재의 회복(초판)", title_en:"The Restoration of Being (First Ed.)", file:"/reports/DCAR01.pdf", summary:"존재·기억·빛의 재배열" },
+  { id:"DCAR-02-2025", cat:"theory",   title_ko:"빛의 기억학",       title_en:"Mnemonics of Light",              file:"/reports/DCAR02.pdf", summary:"기억과 빛의 상관성" },
+  { id:"DCAR-03-2025", cat:"practice", title_ko:"정신의 재탄생",     title_en:"The Rebirth of Mind",            file:"/reports/DCAR03.pdf", summary:"작업 노트와 사례" },
+  { id:"DCAR-04-2025", cat:"archive",  title_ko:"Lightflow 기록",    title_en:"Lightflow Archive",              file:"/reports/DCAR04.pdf", summary:"제작 아카이브" },
+  { id:"DCAR-05-2025", cat:"theory",   title_ko:"신경-정서 진동",     title_en:"Neuro-Affective Tremor",         file:"/reports/DCAR05.pdf", summary:"뇌·정서·빛" },
+  { id:"DCAR-06-2025", cat:"practice", title_ko:"작업 방법론",       title_en:"Methods of Making",              file:"/reports/DCAR06.pdf", summary:"재료·형식" },
+  { id:"DCAR-07-2025", cat:"archive",  title_ko:"전시 자료집",       title_en:"Exhibition Dossier",             file:"/reports/DCAR07.pdf", summary:"사진·텍스트" },
+  { id:"DCAR-08-2025", cat:"theory",   title_ko:"기억의 존엄",       title_en:"Dignity of Memory",              file:"/reports/DCAR08.pdf", summary:"윤리·미학" },
+  { id:"DCAR-09-2025", cat:"theory",   title_ko:"해체 이후의 회화 — 존재 감응의 귀환", title_en:"After Deconstruction — Return of Affective Being", file:"/reports/DCAR09.pdf", summary:"계보: Kandinsky·Picasso·Rothko·Richter" }
+];
+function renderReports(filter="all"){
+  const list=reportsData.filter(r=>filter==="all" ? true : r.cat===filter);
+  reportGrid.innerHTML=list.map(r=>`
+    <article class="r-card">
+      <div class="r-in">
+        <div class="r-title">
+          <span class="ko">${r.title_ko}</span>
+          <span class="en">${r.title_en}</span>
+        </div>
+        <div class="r-sub">${r.id}</div>
+        <div class="r-meta">
+          <span class="r-badge">${r.cat}</span>
+          <span class="r-badge pdf">PDF</span>
+        </div>
+        <div class="r-body">${r.summary}</div>
+        <div class="r-actions">
+          <a href="${r.file}" target="_blank" rel="noopener">Open PDF</a>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
 renderReports();
-document.querySelectorAll(".r-tab").forEach(tab=>{tab.addEventListener("click",()=>{const f=tab.dataset.r;if(f==="toggle"){const r=document.getElementById("reports");r.classList.toggle("active");return}document.querySelectorAll(".r-tab").forEach(x=>x.classList.remove("is-active"));tab.classList.add("is-active");renderReports(f)})});
+document.querySelectorAll(".r-tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    const f=tab.dataset.r;
+    if(f==="toggle"){
+      const R=sections.reports;
+      R.classList.toggle("active");
+      if(!R.classList.contains("active")) R.style.display="none"; else R.style.display="";
+      return;
+    }
+    document.querySelectorAll(".r-tab").forEach(x=>x.classList.remove("is-active"));
+    tab.classList.add("is-active");
+    renderReports(f);
+  });
+});
 
-/* Bio slide */
-const expoToggle=document.getElementById("expoToggle"), expoSlide=document.getElementById("expoSlide");
-expoToggle.addEventListener("click",()=>{const open=expoSlide.getAttribute("data-open")==="true";expoSlide.setAttribute("data-open",String(!open));expoSlide.setAttribute("aria-hidden",open?"true":"false")});
+/* ===== Bio: 전시 요약 토글 ===== */
+const expoToggle=document.getElementById("expoToggle");
+const expoSlide =document.getElementById("expoSlide");
+expoToggle.addEventListener("click",()=>{
+  const open=expoSlide.getAttribute("data-open")==="true";
+  expoSlide.setAttribute("data-open", String(!open));
+  expoSlide.setAttribute("aria-hidden", open ? "true" : "false");
+});
 
-/* Ambient sound (user gesture only) */
-const ambienceEl=document.getElementById("ambientSrc"), btnPlay=document.getElementById("soundBtn"), btnStop=document.getElementById("soundStopBtn"), fftSpan=document.querySelector("#fftBar span"); 
-let audioCtx,sourceNode,analyser;
-btnPlay.addEventListener("click",async()=>{if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();sourceNode=audioCtx.createMediaElementSource(ambienceEl);analyser=audioCtx.createAnalyser();analyser.fftSize=64;sourceNode.connect(analyser);analyser.connect(audioCtx.destination)}await audioCtx.resume();ambienceEl.play();btnPlay.disabled=true;btnStop.disabled=false;animateFFT()});
-btnStop.addEventListener("click",()=>{ambienceEl.pause();btnPlay.disabled=false;btnStop.disabled=true});
-function animateFFT(){if(ambienceEl.paused)return;const data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data);const avg=data.reduce((a,b)=>a+b,0)/data.length;fftSpan.style.width=Math.min(100,avg*1.6)+"%";requestAnimationFrame(animateFFT)}
+/* ===== Ambient Sound + FFT (사용자 제스처 필요) ===== */
+const ambienceEl=document.getElementById("ambientSrc");
+const btnPlay=document.getElementById("soundBtn");
+const btnStop=document.getElementById("soundStopBtn");
+const fftSpan=document.querySelector("#fftBar span");
+let audioCtx, sourceNode, analyser;
 
-/* block auto translate */
+btnPlay.addEventListener("click", async ()=>{
+  try{
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      sourceNode=audioCtx.createMediaElementSource(ambienceEl);
+      analyser=audioCtx.createAnalyser(); analyser.fftSize=64;
+      sourceNode.connect(analyser); analyser.connect(audioCtx.destination);
+    }
+    await audioCtx.resume(); await ambienceEl.play();
+    btnPlay.disabled=true; btnStop.disabled=false;
+    animateFFT();
+  }catch(e){ console.error(e); }
+});
+btnStop.addEventListener("click", ()=>{
+  ambienceEl.pause(); btnPlay.disabled=false; btnStop.disabled=true;
+});
+function animateFFT(){
+  if(ambienceEl.paused) return;
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const avg=data.reduce((a,b)=>a+b,0)/data.length;
+  fftSpan.style.width=Math.min(100, avg*1.6) + "%";
+  requestAnimationFrame(animateFFT);
+}
+
+/* ===== 자동번역 차단 ===== */
 document.documentElement.setAttribute("translate","no");
+Array.from(document.querySelectorAll("body,section,nav,div,p,span,button,h1,h2,small"))
+  .forEach(el=>el.setAttribute("translate","no"));
 </script>
 </body>
 </html>

@@ -13,8 +13,106 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 
 <style>
-/* Bio 본문 안정화 */
-.bio-body p {
+/* Bio 본문 줄 안정화 */
+.bio-body p { margin: 0.55rem 0; }
+
+/* 기본 변수 */
+:root{
+  --bg:#070c1a;
+  --fg:#eaf0ff;
+  --gold:#e6c777;
+  --muted:#a8b7e8;
+  --panel:#0f1630;
+  --line:#1b2652;
+  --max:1180px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#070c1a;
+  color:var(--fg);
+  font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
+  overscroll-behavior-y:none;
+  overflow-x:hidden;
+}
+
+/* 언어 토글 */
+.en,.ko{display:inherit}
+body.korean .en{display:none}
+body.english .ko{display:none}
+body.hybrid .ko, body.hybrid .en{display:inherit}
+
+/* 모달 패널 */
+.bio-card{
+  background:rgba(15,22,48,0.9);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:22px;
+  padding:24px;
+}
+
+/* 모달 내용 줄 간격 */
+.bio-body{
+  font-size:15px;
+  line-height:1.65;
+}
+
+/* Bio 제목 */
+.bio-card h2{
+  font-weight:700;
+  color:var(--gold);
+  margin-bottom:12px;
+}
+
+/* 목록 제목 */
+.bio-card strong{
+  color:var(--gold);
+  font-weight:700;
+  display:block;
+  margin:20px 0 8px;
+}
+
+/* 리스트 간격 */
+.bio-card p{
+  margin-bottom:8px;
+}
+
+/* 언어 버튼 */
+.bio-head .lang button{
+  all:unset;
+  cursor:pointer;
+  color:var(--fg);
+  border:1px solid #3a447a;
+  border-radius:10px;
+  padding:6px 12px;
+}
+.bio-head .lang button.active,
+.bio-head .lang button:hover{
+  background:#1a2144;
+  color:var(--gold);
+}
+
+/* 닫기 버튼 */
+.bio-close{
+  all:unset;
+  cursor:pointer;
+  position:absolute;
+  top:16px;
+  right:20px;
+  font-size:22px;
+  color:var(--fg);
+}
+
+/* 모달 배경 */
+.bio-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(4px);
+}
+</style>
+
   margin: 0.55rem 0;
   line-height: 1.62;
   word-break: keep-all;

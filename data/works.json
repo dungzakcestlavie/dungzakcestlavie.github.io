@@ -1,7 +1,68 @@
 {
-  "pray": [],
-  "human": [],
-  "rebirth": [],
-  "exist": [],
-  "cosmos": []
+  "pray": [
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  ],
+
+  "human": [
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+  ],
+
+  "rebirth": [
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+    /* 동일하게 총 20칸 */
+  ],
+
+  "exist": [
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+    /* 총 20칸 */
+  ],
+
+  "cosmos": [
+    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+    /* 총 20칸 */
+  ]
 }

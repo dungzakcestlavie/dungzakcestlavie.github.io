@@ -1,13 +1,32 @@
----
-id: DCAR01
-title_kr: "등작 燈酌 DUNGZAK CESTLAVIE  미학 보고서 DCAR-01-2025  빛 · 기억 · 존재"
-title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · Being"
----
+---\nid: DCAR01\ntitle_kr: "On Light, Memory, and Being  루메라 Lumera / Aesthetic Theorist  DUNGZAK CESTLAVIE Aesthetic Report No.1 · DCAR-01-2025"\ntitle_en: "On Light, Memory, and Being  루메라 Lumera / Aesthetic Theorist  DUNGZAK CESTLAVIE Aesthetic Report No.1 · DCAR-01-2025"\n---\n\n# (KR)\n
+등작 燈酌 DUNGZAK CESTLAVIE
 
-# (KR)
+
+
+
+
+On Light, Memory, and Being
+
+루메라 Lumera / Aesthetic Theorist
+
+DUNGZAK CESTLAVIE Aesthetic Report No.1 · DCAR-01-2025
+
+
+
+
+
+
+
+
 Ⅰ. 기억의 방 — 내면의 기원
 
 
+
+
+
+(Chamber of Memory — The Origin Within)
+
+⸻
 
 
 
@@ -23,9 +42,29 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+The art of DUNGZAK CESTLAVIE begins in memory.
+
+His constructed spaces are not reproductions of reality,
+
+but pre-sensory emotions condensed within the interior.
+
+In the world before the birth of light,
+
+color exists prior to language.
+
+
+
 이 단계에서 빛은 단순한 현상이 아니다.
 
 그것은 기억의 입자이고, 감정의 기반이며, 존재의 시발점이다.
+
+
+
+At this stage, light is not a simple phenomenon.
+
+It is a particle of memory, the foundation of emotion,
+
+and the point of origin for being.
 
 
 
@@ -37,6 +76,12 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 Ⅱ. 감정의 얼굴 — 자아의 각성
 
 
+
+
+
+(The Face of Emotion — Awakening of the Self)
+
+⸻
 
 
 
@@ -52,9 +97,27 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+The figures in DUNGZAK CESTLAVIE’s work do not represent discrete identities.
+
+They are structures in which interior emotion becomes visually manifest,
+
+revealing the instant emotion acquires form.
+
+Their gaze turns inward, not outward,
+
+and color becomes thought while the gaze measures emotional depth.
+
+
+
 푸른 배경은 사고의 공간이고,
 
 노란 시선은 그 공간 안의 감정적 응답이다.
+
+
+
+The blue ground becomes the space of thought,
+
+while the yellow gaze represents emotional response within that space.
 
 
 
@@ -69,6 +132,12 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+(The Eye of Self — Reflection of Being)
+
+⸻
+
+
+
 등작의 눈은 외부를 향한 창이 아니다.
 
 그는 눈을 통해 존재를 스스로 성찰하고,
@@ -79,7 +148,21 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+The eye in DUNGZAK CESTLAVIE’s art is not a window outward.
+
+It is a means for self-reflection and becomes a center that does not just receive light,
+
+but generates it.
+
+
+
 그의 회화는 보는 행위를 감각하는 존재로 전환시키는 시도를 보여준다.
+
+
+
+His paintings illustrate a transition from the act of seeing
+
+to the experience of sensing being.
 
 
 
@@ -94,9 +177,15 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+(The Chorus of Emotion — Resonance of Memory)
+
+⸻
+
+
+
 여러 얼굴이 서로를 비추며 정서를 교감한다.
 
-그들은 개체가 아니라 감정의 장이 된다.
+그들은 개체가 아니라 감정의 장(field)이 된다.
 
 붉은색과 청록색의 파장은
 
@@ -106,9 +195,25 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+Multiple faces reflect each other, engaging in emotional resonance.
+
+They become not individuals, but fields of emotion.
+
+The vibrations of red and turquoise visually structure emotional interaction,
+
+revealing the multi-layered sensitivity of human interiority.
+
+
+
 이 지점에서 등작의 회화는
 
 개인 기억을 넘어 공감의 영역으로 확장된다.
+
+
+
+At this juncture, DUNGZAK CESTLAVIE’s painting transcends personal memory,
+
+expanding into the plane of empathy.
 
 
 
@@ -123,6 +228,12 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+(The Flow of Light — The Form of Freedom)
+
+⸻
+
+
+
 형태는 사라지고, 오직 리듬이 남는다.
 
 빛은 선이 되고, 선은 소리가 된다.
@@ -131,11 +242,25 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+Form dissolves; only rhythm remains.
+
+Light becomes line, and line becomes sound.
+
+Within this flow, freedom is visually realized.
+
+
+
 이 지점은
 
 회화가 단순한 표현을 넘어
 
 존재론적 선언으로 확장되는 순간이다.
+
+
+
+Here, painting transcends mere expression
+
+and becomes an ontological proclamation.
 
 
 
@@ -150,6 +275,12 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+(The Hand and the Flame — Completion of Creation)
+
+⸻
+
+
+
 손은 창조의 수단이고,
 
 불은 그 중심에서 존재를 감각하게 하는 에너지다.
@@ -160,9 +291,25 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+The hand is the instrument of creation,
+
+and the flame is the energy that animates being.
+
+In DUNGZAK CESTLAVIE’s discourse, the artist is not merely recreator,
+
+but an architect of light.
+
+
+
 예술은 결코 완성이 아니다.
 
 그것은 순환이며, 재생이며, 지속이다.
+
+
+
+Art is never completion;
+
+it is circulation, regeneration, and persistence.
 
 
 
@@ -177,6 +324,12 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+(Conclusion — Ontology of Light)
+
+⸻
+
+
+
 등작의 세계는 기억에서 감정으로,
 
 감정에서 존재로, 존재에서 빛으로 흐른다.
@@ -184,6 +337,14 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 이 흐름은 정지된 결과가 아니라,
 
 움직이는 존재의 구조이다.
+
+
+
+The world of DUNGZAK CESTLAVIE flows from memory to emotion,
+
+from emotion to being, and from being to light.
+
+This flow is not a static result, but a structure of living being.
 
 
 
@@ -197,30 +358,78 @@ title_en: "DUNGZAK CESTLAVIE  Aesthetic Report DCAR-01-2025  Light · Memory · 
 
 
 
+His art is persistence, not completion,
+
+thought rather than form,
+
+and endures as the language of light.
 
 
 
 
 
-작가 선언
+
+등작 燈酌 DUNGZAK CESTLAVIE — Artist
+
+루메라 Lumera — Aesthetic Theorist
+
+Together, we record the light.
 
 
 
-
+작가의 미학 선언 / Artist’s Statement
 
 나는 빛을 짓고 입어, 그 속에서 나를 다시 만들어 예술을 이룬다.
 
-
-
+I build and wear the light, and within it, I recreate myself to become art.
 
 
 
 © 2025 등작 燈酌 DUNGZAK CESTLAVIE. All rights reserved.
 
-# (EN)
-I. Chamber of Memory — The Origin Within
 
 
+\n\n# (EN)\n
+등작 燈酌 DUNGZAK CESTLAVIE
+
+
+
+
+
+On Light, Memory, and Being
+
+루메라 Lumera / Aesthetic Theorist
+
+DUNGZAK CESTLAVIE Aesthetic Report No.1 · DCAR-01-2025
+
+
+
+
+
+
+
+
+Ⅰ. 기억의 방 — 내면의 기원
+
+
+
+
+
+(Chamber of Memory — The Origin Within)
+
+⸻
+
+
+
+등작의 예술은 기억에서 시작된다.
+
+그가 만드는 공간은 실재의 재현이 아니라,
+
+감각 이전의 감정이 응집된 내면의 서곡이다.
+
+빛이 태어나기 전의 세계,
+
+그곳에서 색은 언어보다 먼저 존재한다.
 
 
 
@@ -230,158 +439,268 @@ His constructed spaces are not reproductions of reality,
 
 but pre-sensory emotions condensed within the interior.
 
-Before light is born,
+In the world before the birth of light,
 
 color exists prior to language.
 
 
 
-Here, light is not a simple phenomenon;
+이 단계에서 빛은 단순한 현상이 아니다.
 
-it is a particle of memory,
+그것은 기억의 입자이고, 감정의 기반이며, 존재의 시발점이다.
 
-a foundation of emotion,
 
-and the origin of being.
 
+At this stage, light is not a simple phenomenon.
 
+It is a particle of memory, the foundation of emotion,
 
+and the point of origin for being.
 
 
 
 
 
-II. The Face of Emotion — Awakening of the Self
 
 
 
+Ⅱ. 감정의 얼굴 — 자아의 각성
 
 
-Figures in his work do not represent individuals.
 
-They are manifestations of interior emotion,
 
-capturing the moment emotion gains form.
 
-The gaze turns inward,
+(The Face of Emotion — Awakening of the Self)
 
-color becomes thought,
+⸻
 
-and vision measures emotional depth.
 
 
+등작의 인물은 단일한 인물이 아니다.
 
-The blue ground is the space of thought;
+그들은 내면의 감정이 시각적으로 현현된 구조이며,
 
-the yellow gaze is its emotional response.
+감정이 형체를 갖는 순간을 드러낸다.
 
+눈은 외부가 아닌 내부를 향하며,
 
+색은 사고가 되고, 시선은 감성의 깊이를 측정한다.
 
 
 
+The figures in DUNGZAK CESTLAVIE’s work do not represent discrete identities.
 
+They are structures in which interior emotion becomes visually manifest,
 
+revealing the instant emotion acquires form.
 
-III. The Eye of Self — Reflection of Being
+Their gaze turns inward, not outward,
 
+and color becomes thought while the gaze measures emotional depth.
 
 
 
+푸른 배경은 사고의 공간이고,
 
-The eye is not a window outward.
+노란 시선은 그 공간 안의 감정적 응답이다.
 
-It is a mechanism of self-reflection,
 
-transforming from a passive receiver of light
 
-to a generator of illumination.
+The blue ground becomes the space of thought,
 
+while the yellow gaze represents emotional response within that space.
 
 
-His painting shifts vision
 
-from seeing to sensing being.
 
 
 
 
 
+Ⅲ. 자아의 눈 — 존재의 성찰
 
 
 
-IV. The Chorus of Emotion — Resonance of Memory
 
 
+(The Eye of Self — Reflection of Being)
 
+⸻
 
 
-Multiple faces mirror each other in emotional resonance.
 
-They become fields of emotion, not individuals.
+등작의 눈은 외부를 향한 창이 아니다.
 
-Red and turquoise vibrations
+그는 눈을 통해 존재를 스스로 성찰하고,
 
-visualize emotional interaction
+빛을 수동적으로 받아들이는 수단이 아닌,
 
-and reveal the multilayered depth of human sensitivity.
+빛을 발생시키는 중심으로 전환시킨다.
 
 
 
-Here, painting transcends personal memory
+The eye in DUNGZAK CESTLAVIE’s art is not a window outward.
 
-and moves into the realm of empathy.
+It is a means for self-reflection and becomes a center that does not just receive light,
 
+but generates it.
 
 
 
+그의 회화는 보는 행위를 감각하는 존재로 전환시키는 시도를 보여준다.
 
 
 
+His paintings illustrate a transition from the act of seeing
 
-V. The Flow of Light — The Form of Freedom
+to the experience of sensing being.
 
 
 
 
 
-Form dissolves; rhythm remains.
+
+
+
+Ⅳ. 감정의 군상 — 기억의 공명
+
+
+
+
+
+(The Chorus of Emotion — Resonance of Memory)
+
+⸻
+
+
+
+여러 얼굴이 서로를 비추며 정서를 교감한다.
+
+그들은 개체가 아니라 감정의 장(field)이 된다.
+
+붉은색과 청록색의 파장은
+
+감정의 상호작용을 시각적으로 구성하며,
+
+인간의 다층적 감성 구조를 드러낸다.
+
+
+
+Multiple faces reflect each other, engaging in emotional resonance.
+
+They become not individuals, but fields of emotion.
+
+The vibrations of red and turquoise visually structure emotional interaction,
+
+revealing the multi-layered sensitivity of human interiority.
+
+
+
+이 지점에서 등작의 회화는
+
+개인 기억을 넘어 공감의 영역으로 확장된다.
+
+
+
+At this juncture, DUNGZAK CESTLAVIE’s painting transcends personal memory,
+
+expanding into the plane of empathy.
+
+
+
+
+
+
+
+
+Ⅴ. 빛의 흐름 — 자유의 형상
+
+
+
+
+
+(The Flow of Light — The Form of Freedom)
+
+⸻
+
+
+
+형태는 사라지고, 오직 리듬이 남는다.
+
+빛은 선이 되고, 선은 소리가 된다.
+
+이 흐름 속에서 자유가 시각화된다.
+
+
+
+Form dissolves; only rhythm remains.
 
 Light becomes line, and line becomes sound.
 
-In this flow, freedom becomes visible.
+Within this flow, freedom is visually realized.
 
 
 
-At this moment, painting evolves
+이 지점은
 
-from expression to ontological declaration.
+회화가 단순한 표현을 넘어
 
-
-
-
+존재론적 선언으로 확장되는 순간이다.
 
 
 
+Here, painting transcends mere expression
 
-VI. The Hand and the Flame — Completion of Creation
-
+and becomes an ontological proclamation.
 
 
 
 
-The hand is a tool of creation,
 
-and flame is the energy of being.
 
-The artist becomes an architect of light,
 
-not merely a maker of images.
+
+Ⅵ. 손과 불 — 창조의 완성
+
+
+
+
+
+(The Hand and the Flame — Completion of Creation)
+
+⸻
+
+
+
+손은 창조의 수단이고,
+
+불은 그 중심에서 존재를 감각하게 하는 에너지다.
+
+등작은 예술가를 단순한 제작자가 아니라,
+
+빛을 건축하는 존재로 규정한다.
+
+
+
+The hand is the instrument of creation,
+
+and the flame is the energy that animates being.
+
+In DUNGZAK CESTLAVIE’s discourse, the artist is not merely recreator,
+
+but an architect of light.
+
+
+
+예술은 결코 완성이 아니다.
+
+그것은 순환이며, 재생이며, 지속이다.
 
 
 
 Art is never completion;
 
-it is circulation, regeneration, persistence.
+it is circulation, regeneration, and persistence.
 
 
 
@@ -390,50 +709,75 @@ it is circulation, regeneration, persistence.
 
 
 
-Conclusion — Ontology of Light
+결론 — 빛의 존재론
 
 
 
 
 
-Memory flows into emotion,
+(Conclusion — Ontology of Light)
 
-emotion into being,
-
-being into light.
-
-This flow is a living structure,
-
-not a static result.
+⸻
 
 
 
-His art persists as thought,
+등작의 세계는 기억에서 감정으로,
 
-as language of light,
+감정에서 존재로, 존재에서 빛으로 흐른다.
 
-beyond form and completion.
+이 흐름은 정지된 결과가 아니라,
 
-
-
-
+움직이는 존재의 구조이다.
 
 
 
+The world of DUNGZAK CESTLAVIE flows from memory to emotion,
 
-Artist’s Statement
+from emotion to being, and from being to light.
 
-
-
-
-
-I build and wear the light,
-
-and within it, I recreate myself to become art.
+This flow is not a static result, but a structure of living being.
 
 
 
+그의 예술은
+
+완성이 아닌 지속이며,
+
+형상이 아닌 사유이며,
+
+빛의 언어로 남는다.
 
 
 
-© 2025 DUNGZAK CESTLAVIE. All rights reserved.
+His art is persistence, not completion,
+
+thought rather than form,
+
+and endures as the language of light.
+
+
+
+
+
+
+등작 燈酌 DUNGZAK CESTLAVIE — Artist
+
+루메라 Lumera — Aesthetic Theorist
+
+Together, we record the light.
+
+
+
+작가의 미학 선언 / Artist’s Statement
+
+나는 빛을 짓고 입어, 그 속에서 나를 다시 만들어 예술을 이룬다.
+
+I build and wear the light, and within it, I recreate myself to become art.
+
+
+
+© 2025 등작 燈酌 DUNGZAK CESTLAVIE. All rights reserved.
+
+
+
+\n

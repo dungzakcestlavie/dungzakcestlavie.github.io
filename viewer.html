@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>DCAR Viewer — 등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.9</title>
+
+  <!-- 기본 메타 -->
+  <meta name="description" content="빛 · 기억 · 존재 — DCAR Aesthetic Reports Viewer" />
+  <link rel="canonical" href="https://dungzak.art" />
+  <meta name="theme-color" content="#070c1a" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="DCAR Viewer — DUNGZAK CESTLAVIE" />
+  <meta property="og:description" content="빛 · 기억 · 존재 — DCAR Aesthetic Reports Viewer" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://dungzak.art/viewer.html" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.9" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DCAR Viewer — DUNGZAK CESTLAVIE" />
+  <meta name="twitter:description" content="Light · Memory · Being — DCAR Reports" />
+
+  <!-- Favicon (임시 이모지) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>">
+
+  <style>
+  :root{
+    --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
+    --panel:#0f1630; --line:#1b2652; --max:980px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    min-height:100vh;
+    background:radial-gradient(circle at top,rgba(40,60,120,.6),transparent 60%),
+               radial-gradient(circle at bottom,rgba(200,160,80,.2),transparent 55%),
+               #070c1a;
+    color:var(--fg);
+    font:15px/1.7 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+  }
+
+  header{
+    position:sticky;top:0;z-index:10;
+    padding:10px 14px;
+    background:linear-gradient(180deg,rgba(7,12,26,.96),rgba(7,12,26,.88));
+    border-bottom:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(14px);
+  }
+  .h-inner{
+    max-width:var(--max);
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .brand{
+    font-weight:900;
+    font-size:clamp(15px,2.8vw,18px);
+    color:var(--gold);
+    letter-spacing:.02em;
+  }
+  .tagline{
+    font-size:11px;
+    color:var(--muted);
+  }
+  .grow{flex:1}
+  .h-actions{
+    display:flex;gap:8px;align-items:center;
+  }
+  .btn{
+    border-radius:999px;
+    border:1px solid rgba(230,199,119,.6);
+    background:radial-gradient(circle at top,#f7e4a5,#e6c777);
+    color:#080e22;
+    padding:6px 11px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .btn.secondary{
+    background:#0f1630;
+    color:#dfe4ff;
+    border-color:#2e3a6b;
+  }
+  .btn:disabled{
+    opacity:.55;
+    cursor:default;
+  }
+
+  main{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:18px 14px 40px;
+  }
+
+  .file-meta{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .file-pill{
+    padding:2px 8px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.15);
+    background:rgba(10,16,40,.75);
+  }
+  .file-name{
+    font-weight:600;
+    color:#f1e9c9;
+  }
+
+  .title-block{
+    margin-bottom:16px;
+  }
+  .title-block h1{
+    font-size:clamp(18px,3vw,22px);
+    color:var(--gold);
+    margin-bottom:4px;
+  }
+  .title-block p{
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .viewer-shell{
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(180deg,rgba(9,14,36,.96),rgba(5,8,18,.98));
+    box-shadow:0 20px 60px rgba(0,0,0,.7);
+    overflow:hidden;
+  }
+  .viewer-body{
+    max-height:calc(100vh - 170px);
+    overflow:auto;
+    padding:18px 16px 20px;
+  }
+
+  pre#reportContent{
+    margin:0;
+    font-family:ui-monospace,Menlo,Consolas,"SF Mono","Roboto Mono","Noto Sans Mono",monospace;
+    font-size:13px;
+    line-height:1.8;
+    white-space:pre-wrap;
+    word-break:break-word;
+    color:#f5f6ff;
+  }
+
+  .status{
+    padding:20px 16px 18px;
+    font-size:14px;
+    color:#dfe4ff;
+  }
+  .status strong{color:var(--gold)}
+
+  @media(max-width:480px){
+    header{padding:9px 10px}
+    main{padding-inline:10px}
+    .h-inner{flex-wrap:wrap}
+    .brand{flex:1}
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="h-inner">
+      <div>
+        <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.9</div>
+        <div class="tagline">DCAR Aesthetic Reports Viewer · 빛 · 기억 · 존재</div>
+      </div>
+      <div class="grow"></div>
+      <div class="h-actions">
+        <a class="btn secondary" href="/" id="backLink">← Back</a>
+        <button class="btn secondary" id="printBtn" type="button">Print</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="file-meta">
+      <span class="file-pill">DCAR Report</span>
+      <span class="file-name" id="fileLabel"></span>
+    </div>
+
+    <div class="title-block">
+      <h1 id="titleLine">DCAR Report</h1>
+      <p>이 뷰어는 <strong>원문 .md 파일을 한 글자도 수정하지 않고</strong> 그대로 표시합니다.</p>
+    </div>
+
+    <section class="viewer-shell" aria-live="polite">
+      <div id="status" class="status">
+        <strong>Loading…</strong> 보고서를 불러오는 중입니다.
+      </div>
+      <div class="viewer-body" style="display:none">
+        <pre id="reportContent"></pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    const qs   = new URLSearchParams(location.search);
+    const file = qs.get('file') || '';
+
+    const statusEl   = document.getElementById('status');
+    const viewerBody = document.querySelector('.viewer-body');
+    const pre        = document.getElementById('reportContent');
+    const label      = document.getElementById('fileLabel');
+    const titleLine  = document.getElementById('titleLine');
+    const printBtn   = document.getElementById('printBtn');
+
+    function escapeHtml(str){
+      return String(str || '').replace(/[&<>"']/g, ch => (
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[ch] || ch
+      ));
+    }
+
+    function normalisePath(raw){
+      if(!raw) return '';
+      let p = raw.trim();
+
+      // 절대경로 형식이 아니면 /reports/ 밑으로 보냄
+      if(!p.startsWith('/')) p = '/'+p;
+      if(!p.startsWith('/reports/')) p = '/reports'+p;
+
+      // 확장자 없으면 .md 추가
+      if(!/\.(md|MD)$/.test(p)) p += '.md';
+      return p;
+    }
+
+    function deriveId(p){
+      if(!p) return '';
+      const parts = p.split('/');
+      const last  = parts[parts.length - 1] || '';
+      return last.replace(/\.md$/i,'');
+    }
+
+    function deriveNiceTitle(text, fallback){
+      const lines = String(text || '').split(/\r?\n/);
+      for(let line of lines){
+        const trimmed = line.trim();
+        if(!trimmed) continue;
+        if(trimmed.startsWith('#')){
+          // 마크다운 제목에서 #만 제거하고 원문 그대로 사용
+          return trimmed.replace(/^#+\s*/,'') || fallback;
+        }
+        return trimmed;
+      }
+      return fallback;
+    }
+
+    const path = normalisePath(file);
+    if(!path){
+      statusEl.innerHTML = '<strong>파일 정보 없음</strong> · URL에 <code>?file=reports/DCAR-01-2025.md</code> 형식으로 접근해 주세요.';
+      return;
+    }
+
+    const id = deriveId(path);
+    label.textContent = path + ' (' + id + ')';
+
+    fetch(path, { cache: 'no-store' })
+      .then(res => {
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        return res.text();
+      })
+      .then(text => {
+        // 제목 추출 (원문 수정 없이 표시용)
+        const niceTitle = deriveNiceTitle(text, id || 'DCAR Report');
+        titleLine.textContent = niceTitle;
+
+        pre.innerHTML = escapeHtml(text); // 원문 그대로
+        statusEl.style.display = 'none';
+        viewerBody.style.display = 'block';
+      })
+      .catch(err => {
+        console.error(err);
+        statusEl.innerHTML =
+          '<strong>로드 오류</strong> · 보고서를 불러올 수 없습니다.<br>' +
+          '· 경로: <code>' + escapeHtml(path) + '</code><br>' +
+          '· GitHub에 해당 .md 파일이 업로드되어 있는지 확인해 주세요.';
+      });
+
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+  })();
+  </script>
+</body>
+</html>

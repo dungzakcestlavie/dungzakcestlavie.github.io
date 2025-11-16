@@ -238,6 +238,27 @@
     background:#15265a;
   }
 
+  /* report full-viewer (새로 추가, 텍스트는 없음) */
+  .r-viewer{
+    margin-top:18px;
+    border-radius:14px;
+    border:1px solid #243169;
+    background:linear-gradient(180deg,#0b122c,#050814);
+    padding:16px 14px 18px;
+    max-height:70vh;
+    overflow:auto;
+    font-size:14px;
+    line-height:1.7;
+    color:#e7ecff;
+    white-space:pre-wrap;
+  }
+  .r-viewer-header{
+    margin-bottom:12px;
+  }
+  .r-viewer-header .r-title{
+    white-space:normal;
+  }
+
   /* BIO MODAL */
   #bio-modal[hidden]{display:none}
   #bio-modal{position:fixed;inset:0;z-index:9999}
@@ -419,7 +440,8 @@
     opacity:.9;
   }
   </style>
-</head> <body class="korean">
+</head>
+<body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
@@ -541,6 +563,8 @@
         </div>
 
         <div id="reportGrid" class="r-grid"></div>
+        <!-- 전체 미학 보고서 텍스트를 여기에 표시 -->
+        <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
       </div>
     </section>
 
@@ -708,7 +732,7 @@ Numerous private collections worldwide.</p>
     <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
   </footer>
-</body> <script>
+<script>
 // =========================
 // Helpers
 // =========================
@@ -1316,13 +1340,14 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — List & Filter
+// Reports (DCAR) — List & Filter + Full Text Viewer
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
   const grid   = $('#reportGrid');
   const toggle = $('#reportsToggle');
-  if(!wrap || !grid || !toggle) return;
+  const viewer = $('#reportViewer');
+  if(!wrap || !grid || !toggle || !viewer) return;
 
   wrap.classList.add('is-collapsed');
 
@@ -1344,6 +1369,9 @@ window.DZ_BIO = (function(){
       ? items
       : items.filter(x => x.cat === cat);
 
+    // 필터 바뀔 때마다 뷰어는 비워 둠
+    viewer.innerHTML = '';
+
     if(!list.length){
       grid.innerHTML = `
         <article class="r-card">
@@ -1361,7 +1389,7 @@ window.DZ_BIO = (function(){
       return;
     }
 
-    grid.innerHTML = list.map((r, index) => `
+    grid.innerHTML = list.map((r) => `
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
@@ -1400,14 +1428,44 @@ window.DZ_BIO = (function(){
     });
   });
 
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, ch => (
+      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
+    ));
+  }
+
+  async function loadReport(id){
+    viewer.innerHTML = '';
+    const meta = items.find(x => x.id === id) || null;
+
+    try{
+      const res = await fetch(`/reports/${id}.md`, { cache:'no-store' });
+      if(!res.ok) throw new Error('fetch failed');
+      const text = await res.text();
+
+      const header = meta ? `
+        <div class="r-viewer-header">
+          <div class="r-meta">
+            <span class="r-badge">${meta.id}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">${meta.title_kr} · ${meta.title_en}</h3>
+          <p class="r-sub">/reports/${meta.id}.md</p>
+        </div>
+      ` : '';
+
+      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+    }catch(_){
+      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
+    }
+  }
+
   grid.addEventListener('click', e => {
     const btn = e.target.closest('button[data-open]');
     if(!btn) return;
     const id  = btn.getAttribute('data-open');
     if(!id) return;
-    const url = `/reports/print-preview.html?file=${encodeURIComponent(id + '.md')}`;
-    const w   = window.open(url, '_blank');
-    if(w) w.focus();
+    loadReport(id);
   });
 
   function setOpen(open){
@@ -1633,3 +1691,5 @@ window.DZ_BIO = (function(){
   });
 })();
 </script>
+</body>
+</html>

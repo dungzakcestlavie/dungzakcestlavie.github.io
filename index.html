@@ -42,25 +42,22 @@
     overflow-x:hidden;
   }
 
-  /* 언어 토글: 텍스트는 .ko / .en 클래스로만 제어 (내용 변경 없음) */
+  /* 언어 토글 */
   .ko,.en{display:inherit}
   body.korean .en{display:none}
   body.english .ko{display:none}
   body.hybrid .ko,
   body.hybrid .en{display:inherit}
 
-  /* motion 줄이기 옵션 */
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
     #waves,#trail{display:none !important}
   }
 
-  /* canvases */
   #waves,#trail{position:fixed;inset:0;pointer-events:none}
   #waves{z-index:0;opacity:.48}
   #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
 
-  /* header */
   header{
     position:sticky;top:0;z-index:5;
     padding:10px 12px;
@@ -104,7 +101,6 @@
     border-color:#3a447a;
   }
 
-  /* layout */
   main{position:relative;z-index:2}
   section{max-width:var(--max);margin:auto;padding:72px 16px}
   h1,h2{color:var(--gold)}
@@ -120,7 +116,6 @@
   }
   .poem p{margin:8px 0}
 
-  /* works */
   .tabs{
     display:flex;gap:8px;flex-wrap:wrap;
     justify-content:center;
@@ -165,7 +160,7 @@
     object-fit:cover;display:block;
   }
 
-  /* reports */
+  /* Reports */
   .reports-omega{padding:24px 0}
   .reports-omega .r-head{
     display:flex;gap:12px;align-items:center;
@@ -182,6 +177,13 @@
   .r-tab.is-active{
     outline:2px solid #6aa3ff;
     background:#132252;
+  }
+  .r-toggle{
+    cursor:pointer;
+    border:1px solid #2a366b;
+    background:#151e42;color:#f2e5b0;
+    padding:8px 14px;border-radius:999px;
+    font-weight:700;
   }
   .r-grid{display:grid;gap:12px}
   @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
@@ -257,13 +259,13 @@
   .r-viewer-header{margin-bottom:12px;}
   .r-viewer-header .r-title{white-space:normal;}
 
-  /* Reports 열림/닫힘 상태 */
+  /* Reports 열림/닫힘 */
   .reports-omega.is-collapsed #reportGrid,
   .reports-omega.is-collapsed #reportViewer{
     display:none;
   }
 
-  /* BIO MODAL */
+  /* BIO MODAL (텍스트 그대로 사용) */
   #bio-modal[hidden]{display:none}
   #bio-modal{position:fixed;inset:0;z-index:9999}
   .bio-backdrop{
@@ -308,9 +310,7 @@
     color:#fff;font-size:1.1rem;
     padding:6px 8px;cursor:pointer;
   }
-  .bio-body{
-    font-size:15px;line-height:1.65;
-  }
+  .bio-body{font-size:15px;line-height:1.65;}
   .bio-body p{margin:.55rem 0;word-break:keep-all}
   .bio-body strong{
     display:block;color:var(--gold);
@@ -335,7 +335,7 @@
     .bio-card{width:94vw;max-height:86vh}
   }
 
-  /* lightbox & footer & audio */
+  /* Lightbox & footer & audio는 기존 그대로 */
   #lightbox{
     position:fixed;inset:0;z-index:30;
     display:flex;align-items:center;justify-content:center;
@@ -444,8 +444,7 @@
     opacity:.9;
   }
   </style>
-</head>
-<body class="korean">
+</head> <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
@@ -718,8 +717,7 @@ Numerous private collections worldwide.</p>
     <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
   </footer>
-
-  <script>
+</body> <script>
 // =========================
 // Shorthands
 // =========================
@@ -1676,6 +1674,4 @@ window.DZ_BIO = (function(){
     }
   });
 })();
-  </script>
-</body>
-</html>
+</script>

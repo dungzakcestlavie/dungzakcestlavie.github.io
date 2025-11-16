@@ -11,12 +11,14 @@
     },
     {
       "id": "DCAR-02-2025",
-      "title_en": "Pray for Us",
-      "title_ko": "우리를 위해 기도해 주세요",
+      "slug": "DCAR-02-2025",
       "year": "2025",
       "category": "Theory",
+      "title_en": "Pray for Us",
+      "title_ko": "우리를 위해 기도해 주세요",
+      "summary_kr": "빛은 존재가 자신을 자각하는 최초의 호흡이며, 이 보고서는 빛·감정·응시·존재의 윤리를 탐구한다.",
       "summary_en": "Light is the first breath through which being becomes aware of itself. This report explores the ethics of light, emotion, the gaze, and the ontology of existence.",
-      "summary_ko": "빛은 존재가 자신을 자각하는 최초의 호흡이며, 이 보고서는 빛·감정·응시·존재의 윤리를 탐구한다."
+      "md_path": "reports/DCAR-02-2025.md"
     }
   ]
 }

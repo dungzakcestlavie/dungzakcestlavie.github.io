@@ -1,1101 +1,875 @@
-<!doctype html>
-<html lang="ko" translate="no">
+<!-- ① HEAD / STYLE — DUNGZAK Admin Ω.20 -->
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20 — Works & DCAR</title>
 
   <!-- 기본 설명 -->
-  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — 작품(Works) · 미학 보고서(DCAR) 관리 도구" />
+  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω — 작품(Works) & 미학 보고서(DCAR) 로컬 편집·JSON/MD 빌더 Admin." />
+  <link rel="canonical" href="https://dungzak.art/" />
 
-  <!-- 검색·공유용 -->
-  <link rel="canonical" href="https://dungzak.art/admin.html" />
+  <!-- 검색 / 다크모드 힌트 -->
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070c1a" />
 
-  <!-- Search / OpenGraph -->
+  <!-- OG / 공유 메타 -->
+  <meta property="og:title" content="DUNGZAK CESTLAVIE · Admin Ω.20 — Works & DCAR" />
+  <meta property="og:description" content="등작의 작품 아카이브와 DCAR 미학 보고서를 로컬에서 관리하는 Admin 페이지." />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR" />
-  <meta property="og:description" content="Light · Memory · Being — 작품 아카이브와 DCAR 미학 보고서를 정리·내보내기 위한 전용 Admin." />
   <meta property="og:url" content="https://dungzak.art/admin.html" />
-  <!-- 필요하면 나중에 실제 썸네일 이미지 경로로 교체 -->
-  <meta property="og:image" content="https://dungzak.art/assets/og-lightflow.png" />
 
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR" />
-  <meta name="twitter:description" content="등작의 작품과 DCAR 미학 보고서를 한 화면에서 관리하는 Admin." />
-  <meta name="twitter:image" content="https://dungzak.art/assets/og-lightflow.png" />
+  <!-- Twitter 카드 -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="DUNGZAK CESTLAVIE · Admin Ω.20" />
+  <meta name="twitter:description" content="Lightflow Ω — Works & DCAR Local JSON / MD Builder." />
 
-  <!-- 구글 번역 막기 (index와 동일) -->
-  <meta name="google" content="notranslate" />
-  <meta name="googlebot" content="notranslate" />
-
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
+  <!-- 파비콘 (Index와 동일 스타일) -->
+  <link
+    rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>"
+  />
 
   <style>
-    :root{
-      --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
-      --panel:#0f1630; --line:#1b2652; --accent:#6aa3ff;
-      --danger:#ff5c7a; --ok:#5ed19b;
-      --max:1180px;
+    :root {
+      --bg: #070c1a;
+      --panel: #0e152c;
+      --panel-soft: #101833;
+      --fg: #eaf0ff;
+      --muted: #a8b7e8;
+      --gold: #e6c777;
+      --accent: #7aa5ff;
+      --line: #222b55;
+      --danger: #ff6b81;
+      --max: 1160px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background: radial-gradient(circle at top left, #111a3a 0, #070c1a 42%, #040613 100%);
+      color: var(--fg);
+      font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR",
+        sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    button {
+      font: inherit;
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{
-      background:radial-gradient(circle at 15% 0%,#1f315c 0,#070c1a 52%,#040712 100%);
-      color:var(--fg);
-      font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
-      min-height:100vh;
-      overflow-x:hidden;
+    /* 헤더 */
+    header.admin {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      padding: 10px 14px 12px;
+      background: linear-gradient(180deg, rgba(6, 10, 26, 0.96), rgba(6, 10, 26, 0.86));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+    }
+    .admin-bar {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+    }
+    .admin-brand-main {
+      font-weight: 900;
+      color: var(--gold);
+      font-size: clamp(17px, 4vw, 21px);
+    }
+    .admin-brand-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .admin-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .pill {
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(9, 15, 40, 0.95);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill.gold {
+      background: linear-gradient(180deg, #fde7a9, #e6c777);
+      color: #141322;
+      border-color: #d7b866;
+    }
+    .pill.state-ok {
+      border-color: #3a7e4e;
+      color: #c9f2d3;
+      background: rgba(9, 40, 24, 0.9);
+    }
+    .pill.state-warn {
+      border-color: #ff9f43;
+      color: #ffe1b8;
+      background: rgba(60, 34, 5, 0.9);
     }
 
-    /* 모션 줄이기 사용자 존중 */
-    @media (prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
+    /* 메인 컨테이너 */
+    main.admin-main {
+      max-width: var(--max);
+      margin: 22px auto 48px;
+      padding: 0 14px 40px;
     }
 
-    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:70px 16px 90px;}
-
-    /* HEADER */
-    header.admin-head{
-      position:sticky;top:0;z-index:10;
-      background:linear-gradient(180deg,rgba(7,10,24,.98),rgba(7,10,24,.90));
-      border-bottom:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(14px);
-      padding:10px 14px;
+    /* 탭 내비 */
+    .admin-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
     }
-    .admin-head-inner{
-      max-width:var(--max);
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
+    .admin-tab-btn {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 9px 16px;
+      background: #0b1126;
+      color: #cad5ff;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
     }
-    .admin-brand{
-      font-weight:900;
-      color:var(--gold);
-      font-size:clamp(16px,4vw,20px);
-    }
-    .admin-badge{
-      font-size:11px;
-      padding:2px 7px;
-      border-radius:999px;
-      border:1px solid rgba(255,215,130,.6);
-      color:#ffe8a8;
-      background:rgba(12,18,40,.9);
-    }
-    .admin-head-right{
-      margin-left:auto;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .pill{
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:11px;
-      border:1px solid #2e3a6f;
-      color:#cfd9ff;
-      background:#101736;
+    .admin-tab-btn.active {
+      background: linear-gradient(180deg, #f8e3a6, #e6c777);
+      color: #151324;
+      border-color: #d7c36b;
     }
 
-    /* TOP NAV */
-    nav.admin-nav{
-      max-width:var(--max);
-      margin:10px auto 0;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    /* 패널 공통 */
+    .panel {
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, #182144, #0a1023 52%, #050815 100%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+      padding: 18px 18px 20px;
+      margin-bottom: 22px;
     }
-    nav.admin-nav button{
-      all:unset;
-      cursor:pointer;
-      padding:7px 13px;
-      border-radius:999px;
-      border:1px solid #242f5d;
-      font-weight:600;
-      font-size:14px;
-      color:#cfd6ff;
-      background:#0b122b;
+    .panel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
     }
-    nav.admin-nav button.active,
-    nav.admin-nav button[aria-current="page"]{
-      background:linear-gradient(180deg,#f7e4a5,#e6c777);
-      border-color:#e6c777;
-      color:#070c1a;
-      box-shadow:0 0 16px rgba(230,199,119,.35);
+    .panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gold);
     }
-    nav.admin-nav button:focus-visible{
-      outline:2px solid var(--accent);
-      outline-offset:2px;
+    .panel-sub {
+      font-size: 13px;
+      color: var(--muted);
     }
-
-    /* LAYOUT */
-    .section{
-      margin-top:28px;
-      display:none;
-    }
-    .section.active{display:block;}
-
-    .section-header{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-end;
-      margin-bottom:14px;
-    }
-    .section-title{
-      font-size:18px;
-      font-weight:800;
-      color:var(--gold);
-    }
-    .section-sub{
-      font-size:12px;
-      color:var(--muted);
-      max-width:420px;
+    .panel-note {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    /* PANELS */
-    .panel-grid{
-      display:grid;
-      grid-template-columns:1.2fr 1fr;
-      gap:16px;
+    /* 폼 레이아웃 */
+    .grid-2 {
+      display: grid;
+      gap: 14px 16px;
     }
-    @media (max-width:880px){
-      .panel-grid{grid-template-columns:1fr;}
-    }
-
-    .panel{
-      background:radial-gradient(circle at 0 0,rgba(120,160,255,.12) 0,rgba(3,5,12,.9) 60%);
-      border-radius:16px;
-      border:1px solid rgba(50,70,130,.9);
-      box-shadow:0 16px 40px rgba(0,0,0,.55);
-      padding:14px 14px 16px;
-    }
-    .panel h3{
-      font-size:15px;
-      font-weight:700;
-      margin-bottom:6px;
-      color:#f4edff;
-    }
-    .panel small{
-      display:block;
-      font-size:11px;
-      color:#98a6dc;
-      margin-bottom:10px;
+    @media (min-width: 880px) {
+      .grid-2 {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      }
     }
 
-    /* FORM ELEMENTS */
-    .field-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .field-group {
+      margin-bottom: 10px;
     }
-    .field{
-      flex:1 1 140px;
-      display:flex;
-      flex-direction:column;
-      margin-bottom:9px;
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--muted);
     }
-    .field label{
-      font-size:12px;
-      color:#cfd6ff;
-      margin-bottom:4px;
+    .inline-label-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 4px;
     }
-    .field input,
-    .field select,
-    .field textarea{
-      border-radius:10px;
-      border:1px solid #2b3563;
-      background:#050918;
-      color:var(--fg);
-      padding:7px 9px;
-      font-size:13px;
-      font-family:inherit;
+    .inline-label-row label {
+      margin-bottom: 0;
     }
-    .field textarea{min-height:72px;resize:vertical;}
-    .field input:focus-visible,
-    .field select:focus-visible,
-    .field textarea:focus-visible{
-      outline:2px solid var(--accent);
-      outline-offset:0;
-      border-color:var(--accent);
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #252f5b;
+      background: #050a1b;
+      color: var(--fg);
+      padding: 8px 10px;
+      font: inherit;
+      resize: vertical;
+      min-height: 0;
     }
-
-    .btn-row{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:6px;
+    textarea {
+      min-height: 220px;
+      line-height: 1.5;
+      white-space: pre-wrap;
     }
-    button.btn{
-      border-radius:999px;
-      border:1px solid #31407a;
-      padding:7px 14px;
-      font-size:13px;
-      font-weight:600;
-      cursor:pointer;
-      background:#0d1634;
-      color:#eaf0ff;
-    }
-    button.btn-primary{
-      background:linear-gradient(180deg,#f7e4a5,#e6c777);
-      border-color:#e6c777;
-      color:#070c1a;
-    }
-    button.btn-danger{
-      border-color:var(--danger);
-      color:#ffe5ef;
-      background:#3a1022;
-    }
-    button.btn[disabled]{
-      opacity:.55;
-      cursor:not-allowed;
-    }
-    button.btn:focus-visible{
-      outline:2px solid var(--accent);
-      outline-offset:2px;
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid rgba(122, 165, 255, 0.9);
+      outline-offset: 1px;
+      border-color: #7aa5ff;
     }
 
-    /* TABLE / LIST */
-    .table-wrap{
-      margin-top:10px;
-      max-height:380px;
-      overflow:auto;
-      border-radius:10px;
-      border:1px solid #202c58;
-      background:#050918;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(16, 26, 60, 0.9);
+      border: 1px solid rgba(122, 165, 255, 0.55);
+      color: #d4e1ff;
+      gap: 4px;
     }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-    }
-    thead{
-      position:sticky;
-      top:0;
-      background:#0a1024;
-      z-index:1;
-    }
-    th,td{
-      padding:6px 8px;
-      border-bottom:1px solid #141b39;
-      text-align:left;
-      white-space:nowrap;
-    }
-    th{
-      font-weight:600;
-      color:#cfd9ff;
-    }
-    td{
-      color:#b8c4ff;
-    }
-    td span.tag{
-      border-radius:999px;
-      padding:2px 7px;
-      border:1px solid #334176;
-      font-size:11px;
-      color:#dfe6ff;
-      background:#0d1534;
-    }
-    td .row-actions{
-      display:flex;
-      gap:6px;
+    .badge.gold {
+      background: rgba(60, 42, 10, 0.9);
+      border-color: rgba(230, 199, 119, 0.8);
+      color: #f7e7b8;
     }
 
-    /* STATUS BAR */
-    .status-bar{
-      margin-top:12px;
-      font-size:12px;
-      color:#a4b2e4;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
+    /* 버튼 */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
     }
-    .status-dot{
-      width:8px;height:8px;border-radius:50%;
-      background:var(--ok);
-      box-shadow:0 0 10px rgba(94,209,155,.7);
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 7px 13px;
+      background: #0b1328;
+      color: #e3e7ff;
+      cursor: pointer;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
-    .status-bar .danger{
-      color:#ffb1c4;
+    .btn.primary {
+      background: linear-gradient(180deg, #f8e3a6, #e6c777);
+      color: #151324;
+      border-color: #d6c16b;
+      font-weight: 700;
+    }
+    .btn.subtle {
+      background: #050815;
+      color: var(--muted);
+    }
+    .btn.danger {
+      background: rgba(74, 17, 26, 0.96);
+      color: #ffd4e0;
+      border-color: rgba(255, 69, 104, 0.7);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    /* FOOTER */
-    footer.admin-foot{
-      border-top:1px solid rgba(255,255,255,.08);
-      background:#050918;
-      padding:14px 16px 22px;
-      text-align:center;
-      color:#9eacd6;
-      font-size:11px;
+    /* 리스트 */
+    .report-list {
+      margin-top: 8px;
+      border-radius: var(--radius-md);
+      background: var(--panel-soft);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 10px 6px;
+      max-height: 420px;
+      overflow: auto;
     }
-    footer.admin-foot small{display:block;}
+    .report-item {
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .report-item + .report-item {
+      margin-top: 4px;
+    }
+    .report-item span.id {
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 64px;
+    }
+    .report-item span.title {
+      flex: 1;
+      color: #e6ecff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .report-item span.cat {
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(122, 165, 255, 0.6);
+      color: #d3e2ff;
+    }
+    .report-item.active {
+      border-color: rgba(230, 199, 119, 0.85);
+      background: radial-gradient(circle at left, rgba(255, 230, 160, 0.12), transparent 60%);
+    }
+    .report-empty {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .status-line strong {
+      color: #f7e3a3;
+    }
+
+    /* 숨김 패널 */
+    .panel[hidden] {
+      display: none;
+    }
   </style>
-</head> <body>
-<header class="admin-head">
-  <div class="admin-head-inner">
-    <div>
-      <div class="admin-brand">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19</div>
-      <span class="admin-badge">Works &amp; DCAR · Local JSON Builder</span>
-    </div>
-    <div class="admin-head-right">
-      <span class="pill" id="adminLangLabel">KR 인터페이스</span>
-      <span class="pill" id="adminStorageState">Local Storage: idle</span>
-    </div>
-  </div>
-  <nav class="admin-nav" aria-label="Admin navigation">
-    <button type="button" class="nav-btn active" data-target="section-dashboard" aria-current="page">Dashboard</button>
-    <button type="button" class="nav-btn" data-target="section-works">Works JSON</button>
-    <button type="button" class="nav-btn" data-target="section-reports">DCAR Reports</button>
-    <button type="button" class="nav-btn" data-target="section-settings">Settings / Notes</button>
-  </nav>
-</header>
-
-<main>
-  <!-- DASHBOARD -->
-  <section class="section active" id="section-dashboard">
-    <div class="section-header">
+</head> <!-- ② BODY / HTML — DUNGZAK Admin Ω.20 -->
+<body>
+  <header class="admin">
+    <div class="admin-bar">
       <div>
-        <div class="section-title">Dashboard</div>
-        <p class="section-sub">
-          인덱스( Lightflow Ω.9 )와 연결되는 Admin입니다.  
-          아래에서 현재 세션의 Works / DCAR 항목 수와 JSON 내보내기 상태를 한눈에 확인할 수 있습니다.
-        </p>
+        <div class="admin-brand-main">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20</div>
+        <div class="admin-brand-sub">Works & DCAR · Local JSON / MD Builder</div>
+      </div>
+      <div class="admin-pill-row">
+        <div class="pill">KR 인터페이스</div>
+        <div class="pill state-ok" id="lsState">Local Storage: checking…</div>
       </div>
     </div>
+  </header>
 
-    <div class="panel-grid">
-      <section class="panel" aria-label="Works summary">
-        <h3>Works 상태</h3>
-        <small>섹션별 작품 개수와 마지막 수정 시간을 요약합니다.</small>
-        <div class="status-bar">
-          <span class="status-dot" id="worksStatusDot"></span>
-          <span id="worksStatusText">Works 데이터가 아직 없습니다.</span>
-        </div>
-        <div class="table-wrap" style="margin-top:12px;">
-          <table aria-label="Works summary table">
-            <thead>
-              <tr>
-                <th>섹션</th>
-                <th>개수</th>
-              </tr>
-            </thead>
-            <tbody id="worksSummaryBody">
-              <!-- JS에서 채움 -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+  <main class="admin-main">
+    <!-- 상단 탭 -->
+    <nav class="admin-tabs" aria-label="Admin sections">
+      <button type="button" class="admin-tab-btn active" data-admin-panel="dashboard">
+        Dashboard
+      </button>
+      <button type="button" class="admin-tab-btn" data-admin-panel="works">Works JSON</button>
+      <button type="button" class="admin-tab-btn" data-admin-panel="dcar">DCAR Reports</button>
+      <button type="button" class="admin-tab-btn" data-admin-panel="settings">Settings / Notes</button>
+    </nav>
 
-      <section class="panel" aria-label="Reports summary">
-        <h3>DCAR Reports 상태</h3>
-        <small>분류(Theory / Archive / Practice)별 보고서 개수와 내보내기 상태.</small>
-        <div class="status-bar">
-          <span class="status-dot" id="reportsStatusDot"></span>
-          <span id="reportsStatusText">DCAR 데이터가 아직 없습니다.</span>
+    <!-- DASHBOARD -->
+    <section id="panel-dashboard" class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Dashboard</div>
+          <div class="panel-sub">
+            인덱스(사용자-facing)와 동일한 색감·리듬으로 맞춘 Admin Ω.20입니다.
+          </div>
         </div>
-        <div class="table-wrap" style="margin-top:12px;">
-          <table aria-label="DCAR summary table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody id="reportsSummaryBody">
-              <!-- JS에서 채움 -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  </section>
-
-  <!-- WORKS -->
-  <section class="section" id="section-works">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Works JSON · 작품 아카이브</div>
-        <p class="section-sub">
-          Lightflow 인덱스의 5개 섹션(<strong>Pray / Human / Rebirth / Restoration / Metaconsciousness</strong>) 구조에 맞춰
-          작품 정보를 입력하고, <code>artworks.json</code> 또는 <code>works.json</code>으로 내보낼 수 있습니다.
-        </p>
       </div>
-    </div>
+      <p class="panel-note">
+        • Works JSON: Lightflow 5개 섹션용 <code>artworks.json / works.json</code>을 구성합니다.<br />
+        • DCAR Reports: 미학 보고서 원문(KR+EN)을 한 번에 붙여넣고, 로컬에 저장 + MD/JSON으로
+        내보낼 수 있습니다.
+      </p>
+      <p class="panel-note">
+        모든 데이터는 먼저 브라우저의 <strong>LocalStorage</strong>에 저장되고, 등작이 원할 때
+        <strong>JSON / MD 파일로 다운로드</strong>한 뒤 GitHub에 업로드하는 구조입니다.
+      </p>
+    </section>
 
-    <div class="panel-grid">
-      <!-- 입력 폼 -->
-      <section class="panel" aria-label="Works input panel">
-        <h3>새 작품 입력 / 수정</h3>
-        <small>필수: 섹션, 연도, 제목(한/영 중 하나). — 이미지는 파일명만 기록하고 실제 업로드는 GitHub에서.</small>
-
-        <form id="workForm">
-          <div class="field-row">
-            <div class="field">
-              <label for="workSection">섹션 / Section</label>
-              <select id="workSection" required>
-                <option value="Light & Memory">Ⅰ Light &amp; Memory</option>
-                <option value="Human Prayer">Ⅱ Human Prayer</option>
-                <option value="Rebirth">Ⅲ Rebirth of Mind</option>
-                <option value="Existence">Ⅳ Restoration of Being</option>
-                <option value="Cosmos">Ⅴ Metaconsciousness of Light</option>
-              </select>
-            </div>
-            <div class="field" style="max-width:120px;">
-              <label for="workYear">연도 / Year</label>
-              <input id="workYear" type="number" inputmode="numeric" min="1990" max="2100" placeholder="2025" />
-            </div>
-            <div class="field">
-              <label for="workImage">이미지 파일명 (예: painting01.jpg)</label>
-              <input id="workImage" type="text" placeholder="파일명만 입력" />
-            </div>
+    <!-- WORKS JSON (간단 버전 / 기존 구조 참고용) -->
+    <section id="panel-works" class="panel" hidden>
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Works JSON · 작품 아카이브</div>
+          <div class="panel-sub">
+            Lightflow 인덱스의 5개 섹션(Pray / Human / Rebirth / Restoration / Metaconsciousness)에
+            맞춰 작품 정보를 정리합니다.
           </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="workTitleKr">제목 (KR)</label>
-              <input id="workTitleKr" type="text" placeholder="국문 제목" />
-            </div>
-            <div class="field">
-              <label for="workTitleEn">Title (EN)</label>
-              <input id="workTitleEn" type="text" placeholder="English title" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="workMaterialKr">재료 / 화면 정보 (KR)</label>
-              <input id="workMaterialKr" type="text" placeholder="예: 캔버스에 아크릴" />
-            </div>
-            <div class="field">
-              <label for="workMaterialEn">Material (EN)</label>
-              <input id="workMaterialEn" type="text" placeholder="ex: Acrylic on canvas" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="workSizeKr">사이즈 (KR)</label>
-              <input id="workSizeKr" type="text" placeholder="예: 53.0 × 45.5 cm" />
-            </div>
-            <div class="field">
-              <label for="workSizeEn">Size (EN)</label>
-              <input id="workSizeEn" type="text" placeholder="ex: 53.0 × 45.5 cm" />
-            </div>
-          </div>
-
-          <div class="btn-row">
-            <button type="submit" class="btn btn-primary">리스트에 추가 / Update</button>
-            <button type="button" class="btn" id="workFormReset">입력 초기화</button>
-          </div>
-        </form>
-
-        <div class="status-bar">
-          <span class="status-dot" id="worksFormDot"></span>
-          <span id="worksFormStatus">입력 대기 중…</span>
         </div>
-      </section>
-
-      <!-- 목록 / 내보내기 -->
-      <section class="panel" aria-label="Works list panel">
-        <h3>Works 리스트</h3>
-        <small>같은 섹션·연도 순으로 정렬됩니다. 클릭해서 수정 / 삭제 가능합니다.</small>
-
-        <div class="table-wrap">
-          <table aria-label="Works list table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>섹션</th>
-                <th>연도</th>
-                <th>제목 KR / EN</th>
-                <th>이미지</th>
-                <th>편집</th>
-              </tr>
-            </thead>
-            <tbody id="worksTableBody">
-              <!-- JS에서 채움 -->
-            </tbody>
-          </table>
-        </div>
-
-        <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-primary" id="btnExportWorks">artworks.json 다운로드</button>
-          <button type="button" class="btn" id="btnExportWorksAlt">works.json 다운로드</button>
-          <button type="button" class="btn btn-danger" id="btnClearWorks">전체 삭제 (로컬)</button>
-        </div>
-      </section>
-    </div>
-  </section>
-
-  <!-- REPORTS -->
-  <section class="section" id="section-reports">
-    <div class="section-header">
-      <div>
-        <div class="section-title">DCAR Reports · 미학 보고서 메타데이터</div>
-        <p class="section-sub">
-          인덱스의 Reports 그리드에 연결될 DCAR 메타 정보입니다.
-          각 보고서의 ID, 제목(한/영), 카테고리, 한 줄 요약을 입력하고 JSON으로 내보낼 수 있습니다.
-        </p>
       </div>
-    </div>
-
-    <div class="panel-grid">
-      <!-- 입력 -->
-      <section class="panel" aria-label="Reports input panel">
-        <h3>새 보고서 입력 / 수정</h3>
-        <small>예: ID = <code>DCAR01</code>, 연도 = 2025, 카테고리 = Theory / Archive / Practice.</small>
-
-        <form id="reportForm">
-          <div class="field-row">
-            <div class="field" style="max-width:120px;">
-              <label for="repId">ID</label>
-              <input id="repId" type="text" placeholder="DCAR01" required />
-            </div>
-            <div class="field" style="max-width:120px;">
-              <label for="repYear">연도 / Year</label>
-              <input id="repYear" type="number" inputmode="numeric" min="2000" max="2100" placeholder="2025" />
-            </div>
-            <div class="field">
-              <label for="repCategory">Category</label>
-              <select id="repCategory">
-                <option value="theory">Theory</option>
-                <option value="archive">Archive</option>
-                <option value="practice">Practice</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="repTitleKr">제목 (KR)</label>
-              <input id="repTitleKr" type="text" placeholder="국문 제목" />
-            </div>
-            <div class="field">
-              <label for="repTitleEn">Title (EN)</label>
-              <input id="repTitleEn" type="text" placeholder="English title" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="repSlug">파일 경로 / 슬러그</label>
-              <input id="repSlug" type="text" placeholder="예: DCAR-01-2025" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="repSummaryKr">요약 (KR)</label>
-              <textarea id="repSummaryKr" placeholder="보고서 개요 (한국어)"></textarea>
-            </div>
-            <div class="field">
-              <label for="repSummaryEn">Summary (EN)</label>
-              <textarea id="repSummaryEn" placeholder="Report abstract (EN)"></textarea>
-            </div>
-          </div>
-
-          <div class="btn-row">
-            <button type="submit" class="btn btn-primary">리스트에 추가 / Update</button>
-            <button type="button" class="btn" id="repFormReset">입력 초기화</button>
-          </div>
-        </form>
-
-        <div class="status-bar">
-          <span class="status-dot" id="reportsFormDot"></span>
-          <span id="reportsFormStatus">입력 대기 중…</span>
-        </div>
-      </section>
-
-      <!-- 리스트 / 내보내기 -->
-      <section class="panel" aria-label="Reports list panel">
-        <h3>DCAR 리스트</h3>
-        <small>클릭해 수정 / 삭제. 인덱스 Reports 영역과 동일한 카테고리 태그를 사용합니다.</small>
-
-        <div class="table-wrap">
-          <table aria-label="Reports list table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>ID</th>
-                <th>연도</th>
-                <th>제목 KR / EN</th>
-                <th>Category</th>
-                <th>편집</th>
-              </tr>
-            </thead>
-            <tbody id="reportsTableBody">
-              <!-- JS에서 채움 -->
-            </tbody>
-          </table>
-        </div>
-
-        <div class="btn-row" style="margin-top:10px;">
-          <button type="button" class="btn btn-primary" id="btnExportReports">reports.json 다운로드</button>
-          <button type="button" class="btn btn-danger" id="btnClearReports">전체 삭제 (로컬)</button>
-        </div>
-      </section>
-    </div>
-  </section>
-
-  <!-- SETTINGS / NOTES -->
-  <section class="section" id="section-settings">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Settings &amp; Notes</div>
-        <p class="section-sub">
-          Admin Ω.19에 대한 간단한 메모와, 로컬 저장소(브라우저 LocalStorage) 초기화 도구입니다.
-          JSON은 항상 “브라우저에서 다운로드 → GitHub에 직접 업로드” 방식으로 사용하는 것을 기본으로 합니다.
-        </p>
+      <div class="panel-note">
+        아래 폼은 최소 골격만 포함한 버전입니다. 지금까지 쓰던 Admin Ω.19의 Works 로직을 유지하고
+        싶으면, 이 영역만 기존 스크립트와 합쳐 써도 됩니다.
       </div>
-    </div>
-
-    <section class="panel" aria-label="Settings panel">
-      <h3>로컬 데이터 &amp; 메모</h3>
-      <small>아래 메모는 브라우저 LocalStorage에만 저장됩니다. 다른 기기에서는 보이지 않습니다.</small>
-
-      <div class="field">
-        <label for="adminNote">개인 메모 (이 기기 전용)</label>
-        <textarea id="adminNote" placeholder="예: 오늘 artworks.json 업데이트, 갤러리 송부 완료 등"></textarea>
-      </div>
-
-      <div class="btn-row">
-        <button type="button" class="btn btn-primary" id="btnSaveNote">메모 저장</button>
-        <button type="button" class="btn btn-danger" id="btnClearAllLocal">모든 로컬 데이터 삭제</button>
-      </div>
-
-      <div class="status-bar">
-        <span class="status-dot" id="settingsDot"></span>
-        <span id="settingsStatus">LocalStorage 상태: 정상</span>
+      <div class="panel-note">
+        등작이 요청하면, 나중에 Works 쪽도 지금 Index 구조(<code>Light & Memory</code> 등)와 완전히
+        맞춰 다시 설계해 줄게요.
       </div>
     </section>
-  </section>
-</main>
 
-<footer class="admin-foot">
-  <small>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — Light · Memory · Being.</small>
-  <small>모든 데이터는 <strong>브라우저 로컬</strong>에서만 처리되며, JSON 파일로 다운로드 후 GitHub에 업로드해야 합니다.</small>
-</footer> <script>
-/* ===== 공통 헬퍼 ===== */
-const $  = (q, sc=document)=>sc.querySelector(q);
-const $$ = (q, sc=document)=>Array.from(sc.querySelectorAll(q));
+    <!-- DCAR REPORTS -->
+    <section id="panel-dcar" class="panel" hidden>
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">DCAR Reports · 미학 보고서</div>
+          <div class="panel-sub">
+            A안 — <strong>KR+EN 원문 전체를 한 번에</strong> 붙여넣고, 로컬 저장 + MD/JSON 내보내기.
+          </div>
+        </div>
+        <span class="badge gold">DCAR · Local MD Builder</span>
+      </div>
 
-function downloadJSON(filename, data) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+      <div class="grid-2">
+        <!-- 왼쪽: 입력 -->
+        <div>
+          <div class="field-group">
+            <div class="inline-label-row">
+              <label for="dcarId">ID</label>
+              <span class="hint">예: <code>DCAR01</code>, <code>DCAR09</code></span>
+            </div>
+            <input id="dcarId" type="text" placeholder="DCAR01" autocomplete="off" />
+          </div>
 
-function setStatus(elTextId, elDotId, text, ok=true){
-  const t = $( '#' + elTextId );
-  const d = $( '#' + elDotId );
-  if(t) t.textContent = text;
-  if(d){
-    d.style.background = ok ? 'var(--ok)' : 'var(--danger)';
-    d.style.boxShadow  = ok ? '0 0 10px rgba(94,209,155,.7)' : '0 0 10px rgba(255,92,122,.8)';
-  }
-}
+          <div class="field-group">
+            <div class="inline-label-row">
+              <label for="dcarYear">연도 / Year</label>
+              <span class="hint">예: <code>2025</code></span>
+            </div>
+            <input id="dcarYear" type="number" min="1990" max="2100" placeholder="2025" />
+          </div>
 
-/* ===== 내비게이션 ===== */
-(function initNav(){
-  const buttons = $$('.admin-nav .nav-btn');
-  const sections = $$('.section');
+          <div class="field-group">
+            <label for="dcarCategory">Category</label>
+            <select id="dcarCategory">
+              <option value="Theory">Theory</option>
+              <option value="Archive">Archive</option>
+              <option value="Practice">Practice</option>
+            </select>
+          </div>
 
-  function show(id){
-    sections.forEach(sec=>{
-      sec.classList.toggle('active', sec.id === id);
-    });
-    buttons.forEach(btn=>{
-      const on = btn.dataset.target === id;
-      btn.classList.toggle('active', on);
-      if(on){
-        btn.setAttribute('aria-current','page');
-      }else{
-        btn.removeAttribute('aria-current');
+          <div class="field-group">
+            <label for="dcarTitleKr">제목 (KR)</label>
+            <input
+              id="dcarTitleKr"
+              type="text"
+              placeholder="빛 · 기억 · 존재에 대한 미학 보고서"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="dcarTitleEn">Title (EN)</label>
+            <input
+              id="dcarTitleEn"
+              type="text"
+              placeholder="On Light, Memory, and Being"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="field-group">
+            <div class="inline-label-row">
+              <label for="dcarSlug">파일 슬러그 / File slug</label>
+              <span class="hint">Index에서 불러올 md 파일명. 예: <code>DCAR-01-2025</code></span>
+            </div>
+            <input
+              id="dcarSlug"
+              type="text"
+              placeholder="DCAR-01-2025"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="dcarSummaryKr">요약 (KR)</label>
+            <textarea
+              id="dcarSummaryKr"
+              placeholder="보고서의 핵심 개요를 한국어로 간단히 적습니다."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="dcarSummaryEn">Summary (EN)</label>
+            <textarea
+              id="dcarSummaryEn"
+              placeholder="Brief abstract of the report in English."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn primary" id="btnSaveReport">현재 보고서 저장 / Update</button>
+            <button type="button" class="btn subtle" id="btnNewReport">새 보고서 / New</button>
+            <button type="button" class="btn danger" id="btnDeleteReport">삭제 / Delete</button>
+          </div>
+
+          <div class="status-line" id="dcarStatus">상태: 아직 저장되지 않음.</div>
+        </div>
+
+        <!-- 오른쪽: 원문 & 리스트 -->
+        <div>
+          <div class="field-group">
+            <div class="inline-label-row">
+              <label for="dcarFullText">Full Text · KR+EN 원문 전체</label>
+              <span class="badge">
+                ⓘ 원문 그대로 붙여넣기
+              </span>
+            </div>
+            <textarea
+              id="dcarFullText"
+              placeholder="등작 燈酌 DUNGZAK CESTLAVIE&#10;&#10;On Light, Memory, and Being&#10;루메라 Lumera / Aesthetic Theorist&#10;..."
+            ></textarea>
+            <div class="hint">
+              • 시 / 문단 / 구분선(⸻) / 공백을 모두 유지합니다. <br />
+              • Admin은 이 내용을 그대로
+              <code>slug.md</code> (예: <code>DCAR-01-2025.md</code>) 로 저장할 수 있게 도와줍니다.
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn" id="btnExportJson">모든 보고서 JSON 다운로드</button>
+            <button type="button" class="btn" id="btnExportMd">현재 보고서 MD 다운로드</button>
+          </div>
+
+          <div class="field-group" style="margin-top: 14px;">
+            <label>저장된 DCAR 목록</label>
+            <div class="report-list" id="reportList">
+              <div class="report-empty">아직 저장된 보고서가 없습니다.</div>
+            </div>
+            <div class="hint">
+              목록에서 항목을 탭하면 해당 보고서가 왼쪽 폼에 로드됩니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="panel-settings" class="panel" hidden>
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Settings / Notes</div>
+          <div class="panel-sub">간단한 메모 및 Admin 사용 안내.</div>
+        </div>
+      </div>
+      <p class="panel-note">
+        • 이 Admin은 어디까지나 <strong>로컬 편집기</strong>이므로, 실제 웹에 반영하려면<br />
+        1) <code>artworks.json</code>, 2) <code>reports.json</code>, 3) 각 <code>*.md</code> 파일을 GitHub
+        저장소에 업로드해야 합니다.<br /><br />
+        • DCAR A안: 등작이 정리한
+        <strong>한·영 혼용 원문 전체</strong>를 Admin에서 한 번만 관리하고, MD 파일을 내려받아
+        사용합니다.
+      </p>
+    </section>
+  </main>
+</body> <!-- ③ SCRIPT — DUNGZAK Admin Ω.20 (DCAR A안) -->
+<script>
+  /* ===== 작은 도우미 ===== */
+  const $ = (q, sc) => (sc || document).querySelector(q);
+  const $$ = (q, sc) => Array.from((sc || document).querySelectorAll(q));
+
+  /* ===== 상단 탭 전환 ===== */
+  (function () {
+    const buttons = $$('.admin-tab-btn');
+    const panels = {
+      dashboard: $('#panel-dashboard'),
+      works: $('#panel-works'),
+      dcar: $('#panel-dcar'),
+      settings: $('#panel-settings')
+    };
+    function show(id) {
+      buttons.forEach((b) => b.classList.toggle('active', b.dataset.adminPanel === id));
+      Object.entries(panels).forEach(([key, el]) => {
+        if (!el) return;
+        el.hidden = key !== id;
+      });
+    }
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        show(b.dataset.adminPanel || 'dashboard');
+      })
+    );
+    show('dashboard');
+  })();
+
+  /* ===== LocalStorage 상태 체크 ===== */
+  (function () {
+    const el = $('#lsState');
+    try {
+      const testKey = '__dz_admin_test__';
+      localStorage.setItem(testKey, 'ok');
+      localStorage.removeItem(testKey);
+      el.textContent = 'Local Storage: active';
+      el.classList.remove('state-warn');
+      el.classList.add('state-ok');
+    } catch (e) {
+      el.textContent = 'Local Storage: unavailable';
+      el.classList.remove('state-ok');
+      el.classList.add('state-warn');
+    }
+  })();
+
+  /* ===== DCAR REPORTS (A안: Full Text 1개 필드) ===== */
+  (function () {
+    const LS_KEY = 'dz_admin_dcar_reports_v20';
+
+    const idEl = $('#dcarId');
+    const yearEl = $('#dcarYear');
+    const catEl = $('#dcarCategory');
+    const titleKrEl = $('#dcarTitleKr');
+    const titleEnEl = $('#dcarTitleEn');
+    const slugEl = $('#dcarSlug');
+    const sumKrEl = $('#dcarSummaryKr');
+    const sumEnEl = $('#dcarSummaryEn');
+    const fullEl = $('#dcarFullText');
+    const statusEl = $('#dcarStatus');
+    const listEl = $('#reportList');
+
+    const btnSave = $('#btnSaveReport');
+    const btnNew = $('#btnNewReport');
+    const btnDel = $('#btnDeleteReport');
+    const btnJson = $('#btnExportJson');
+    const btnMd = $('#btnExportMd');
+
+    /** @type {{id:string,year:number,category:string,titleKr:string,titleEn:string,slug:string,summaryKr:string,summaryEn:string,fullText:string}[]} */
+    let reports = [];
+    let currentId = null;
+
+    function loadFromLS() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) reports = parsed;
+      } catch (e) {
+        console.warn('Failed to parse DCAR LS', e);
       }
+    }
+
+    function saveToLS() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(reports));
+      } catch (e) {
+        console.warn('Failed to save DCAR LS', e);
+      }
+    }
+
+    function clearForm() {
+      idEl.value = '';
+      yearEl.value = '';
+      catEl.value = 'Theory';
+      titleKrEl.value = '';
+      titleEnEl.value = '';
+      slugEl.value = '';
+      sumKrEl.value = '';
+      sumEnEl.value = '';
+      fullEl.value = '';
+      currentId = null;
+      statusEl.textContent = '상태: 아직 저장되지 않음.';
+      $$('.report-item', listEl).forEach((li) => li.classList.remove('active'));
+    }
+
+    function fillForm(r) {
+      if (!r) return;
+      idEl.value = r.id || '';
+      yearEl.value = r.year || '';
+      catEl.value = r.category || 'Theory';
+      titleKrEl.value = r.titleKr || '';
+      titleEnEl.value = r.titleEn || '';
+      slugEl.value = r.slug || '';
+      sumKrEl.value = r.summaryKr || '';
+      sumEnEl.value = r.summaryEn || '';
+      fullEl.value = r.fullText || '';
+      currentId = r.id || null;
+      statusEl.textContent = `상태: ${r.id} 로드됨.`;
+    }
+
+    function renderList() {
+      listEl.innerHTML = '';
+      if (!reports.length) {
+        const div = document.createElement('div');
+        div.className = 'report-empty';
+        div.textContent = '아직 저장된 보고서가 없습니다.';
+        listEl.appendChild(div);
+        return;
+      }
+      reports
+        .slice()
+        .sort((a, b) => (a.id > b.id ? 1 : -1))
+        .forEach((r) => {
+          const item = document.createElement('div');
+          item.className = 'report-item';
+          if (r.id === currentId) item.classList.add('active');
+
+          const idSpan = document.createElement('span');
+          idSpan.className = 'id';
+          idSpan.textContent = r.id || '(ID?)';
+
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'title';
+          titleSpan.textContent =
+            r.titleKr || r.titleEn || (r.slug ? r.slug : '(제목 없음 / Untitled)');
+
+          const catSpan = document.createElement('span');
+          catSpan.className = 'cat';
+          catSpan.textContent = r.category || 'Theory';
+
+          item.appendChild(idSpan);
+          item.appendChild(titleSpan);
+          item.appendChild(catSpan);
+
+          item.addEventListener('click', () => {
+            currentId = r.id;
+            fillForm(r);
+            $$('.report-item', listEl).forEach((li) => li.classList.remove('active'));
+            item.classList.add('active');
+          });
+
+          listEl.appendChild(item);
+        });
+    }
+
+    function buildFromForm() {
+      const id = idEl.value.trim();
+      if (!id) {
+        alert('ID(예: DCAR01)를 입력해 주세요.');
+        idEl.focus();
+        return null;
+      }
+      const year = parseInt(yearEl.value, 10) || new Date().getFullYear();
+      const category = catEl.value || 'Theory';
+      const titleKr = titleKrEl.value.trim();
+      const titleEn = titleEnEl.value.trim();
+      const slug = (slugEl.value || id).trim() || id;
+      const summaryKr = sumKrEl.value;
+      const summaryEn = sumEnEl.value;
+      const fullText = fullEl.value;
+
+      if (!fullText.trim()) {
+        if (!confirm('Full Text가 비어 있습니다. 그래도 저장할까요?')) {
+          return null;
+        }
+      }
+
+      return {
+        id,
+        year,
+        category,
+        titleKr,
+        titleEn,
+        slug,
+        summaryKr,
+        summaryEn,
+        fullText
+      };
+    }
+
+    function upsertReport() {
+      const data = buildFromForm();
+      if (!data) return;
+      const idx = reports.findIndex((r) => r.id === data.id);
+      if (idx >= 0) reports[idx] = data;
+      else reports.push(data);
+      currentId = data.id;
+      saveToLS();
+      renderList();
+      statusEl.textContent = `상태: ${data.id} 저장 완료 (LocalStorage).`;
+    }
+
+    function deleteReport() {
+      const id = idEl.value.trim();
+      if (!id) {
+        alert('삭제할 보고서 ID가 없습니다.');
+        return;
+      }
+      if (!confirm(`${id} 보고서를 정말 삭제할까요? (LocalStorage에서 제거)`)) return;
+      reports = reports.filter((r) => r.id !== id);
+      saveToLS();
+      clearForm();
+      renderList();
+      statusEl.textContent = `상태: ${id} 삭제됨.`;
+    }
+
+    function downloadFile(filename, content) {
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportJson() {
+      if (!reports.length) {
+        alert('내보낼 보고서가 없습니다.');
+        return;
+      }
+      const payload = {
+        generated_at: new Date().toISOString(),
+        items: reports
+      };
+      downloadFile('reports.json', JSON.stringify(payload, null, 2));
+    }
+
+    function exportCurrentMd() {
+      const data = buildFromForm();
+      if (!data) return;
+      const fileName = `${data.slug || data.id}.md`;
+      const text = data.fullText || '';
+      downloadFile(fileName, text);
+      statusEl.textContent = `상태: ${fileName} MD 파일 다운로드 완료.`;
+    }
+
+    // 이벤트 연결
+    btnSave?.addEventListener('click', upsertReport);
+    btnNew?.addEventListener('click', () => {
+      if (fullEl.value.trim() || idEl.value.trim()) {
+        if (!confirm('입력 중인 내용을 지우고 새 보고서를 시작할까요?')) return;
+      }
+      clearForm();
     });
-  }
+    btnDel?.addEventListener('click', deleteReport);
+    btnJson?.addEventListener('click', exportJson);
+    btnMd?.addEventListener('click', exportCurrentMd);
 
-  buttons.forEach(btn=>{
-    btn.addEventListener('click', ()=>show(btn.dataset.target));
-  });
-})();
-
-/* ===== 데이터 모델 (메모리 + LocalStorage) ===== */
-const STORAGE_KEYS = {
-  works   : 'dz_admin_works_v1',
-  reports : 'dz_admin_reports_v1',
-  note    : 'dz_admin_note_v1'
-};
-
-let works   = [];
-let reports = [];
-
-function loadLocalData(){
-  try{
-    const w = localStorage.getItem(STORAGE_KEYS.works);
-    const r = localStorage.getItem(STORAGE_KEYS.reports);
-    const n = localStorage.getItem(STORAGE_KEYS.note);
-    if(w) works   = JSON.parse(w);
-    if(r) reports = JSON.parse(r);
-    if(n && $('#adminNote')) $('#adminNote').value = n;
-    $('#adminStorageState').textContent = 'Local Storage: active';
-    setStatus('settingsStatus','settingsDot','LocalStorage 상태: 정상',true);
-  }catch(e){
-    console.error(e);
-    $('#adminStorageState').textContent = 'Local Storage: error';
-    setStatus('settingsStatus','settingsDot','LocalStorage 접근 오류',false);
-  }
-}
-function saveLocalData(){
-  try{
-    localStorage.setItem(STORAGE_KEYS.works,   JSON.stringify(works));
-    localStorage.setItem(STORAGE_KEYS.reports, JSON.stringify(reports));
-    setStatus('settingsStatus','settingsDot','자동 저장 완료',true);
-  }catch(e){
-    console.error(e);
-    setStatus('settingsStatus','settingsDot','저장 오류: 용량 또는 브라우저 제한',false);
-  }
-}
-
-/* ===== Works 렌더링 ===== */
-function renderWorksTable(){
-  const body = $('#worksTableBody');
-  if(!body) return;
-  body.innerHTML = '';
-  const sorted = [...works].sort((a,b)=>{
-    if(a.section === b.section){
-      return (b.year||0) - (a.year||0);
-    }
-    return a.section.localeCompare(b.section);
-  });
-  sorted.forEach((w, idx)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${idx+1}</td>
-      <td>${w.section || ''}</td>
-      <td>${w.year || ''}</td>
-      <td>${(w.title_kr || '')}<br><span style="opacity:.75">${w.title_en || ''}</span></td>
-      <td>${w.image || ''}</td>
-      <td>
-        <div class="row-actions">
-          <button type="button" class="btn btn-xs btn-edit" data-id="${w._id}">수정</button>
-          <button type="button" class="btn btn-xs btn-danger btn-del" data-id="${w._id}">삭제</button>
-        </div>
-      </td>
-    `;
-    body.appendChild(tr);
-  });
-  renderWorksSummary();
-}
-function renderWorksSummary(){
-  const body = $('#worksSummaryBody');
-  if(!body) return;
-  const map = new Map();
-  works.forEach(w=>{
-    const key = w.section || 'Unknown';
-    map.set(key, (map.get(key)||0)+1);
-  });
-  body.innerHTML = '';
-  for(const [section,count] of map.entries()){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${section}</td><td>${count}</td>`;
-    body.appendChild(tr);
-  }
-  if(works.length){
-    setStatus('worksStatusText','worksStatusDot',`총 ${works.length}점 등록됨`,true);
-  }else{
-    setStatus('worksStatusText','worksStatusDot','Works 데이터가 아직 없습니다.',false);
-  }
-}
-
-/* ===== Reports 렌더링 ===== */
-function renderReportsTable(){
-  const body = $('#reportsTableBody');
-  if(!body) return;
-  body.innerHTML = '';
-  const sorted = [...reports].sort((a,b)=>{
-    return (a.id||'').localeCompare(b.id||'');
-  });
-  sorted.forEach((r, idx)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${idx+1}</td>
-      <td>${r.id || ''}</td>
-      <td>${r.year || ''}</td>
-      <td>${r.title_kr || ''}<br><span style="opacity:.75">${r.title_en || ''}</span></td>
-      <td><span class="tag">${r.category || ''}</span></td>
-      <td>
-        <div class="row-actions">
-          <button type="button" class="btn btn-xs btn-edit-report" data-id="${r._id}">수정</button>
-          <button type="button" class="btn btn-xs btn-danger btn-del-report" data-id="${r._id}">삭제</button>
-        </div>
-      </td>
-    `;
-    body.appendChild(tr);
-  });
-  renderReportsSummary();
-}
-function renderReportsSummary(){
-  const body = $('#reportsSummaryBody');
-  if(!body) return;
-  const map = new Map();
-  reports.forEach(r=>{
-    const key = r.category || 'uncategorized';
-    map.set(key,(map.get(key)||0)+1);
-  });
-  body.innerHTML = '';
-  for(const [cat,count] of map.entries()){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${cat}</td><td>${count}</td>`;
-    body.appendChild(tr);
-  }
-  if(reports.length){
-    setStatus('reportsStatusText','reportsStatusDot',`총 ${reports.length}개 보고서 등록됨`,true);
-  }else{
-    setStatus('reportsStatusText','reportsStatusDot','DCAR 데이터가 아직 없습니다.',false);
-  }
-}
-
-/* ===== Works Form 로직 ===== */
-(function initWorksForm(){
-  const form = $('#workForm');
-  if(!form) return;
-  const resetBtn  = $('#workFormReset');
-  const tableBody = $('#worksTableBody');
-
-  let editingId = null;
-
-  form.addEventListener('submit', e=>{
-    e.preventDefault();
-    const entry = {
-      _id        : editingId || `w_${Date.now()}_${Math.random().toString(16).slice(2)}`,
-      section    : $('#workSection').value.trim(),
-      year       : parseInt($('#workYear').value,10) || '',
-      image      : $('#workImage').value.trim(),
-      title_kr   : $('#workTitleKr').value.trim(),
-      title_en   : $('#workTitleEn').value.trim(),
-      material_kr: $('#workMaterialKr').value.trim(),
-      material_en: $('#workMaterialEn').value.trim(),
-      size_kr    : $('#workSizeKr').value.trim(),
-      size_en    : $('#workSizeEn').value.trim()
-    };
-    if(!entry.section){
-      setStatus('worksFormStatus','worksFormDot','섹션은 필수입니다.',false);
-      return;
-    }
-    if(!entry.title_kr && !entry.title_en){
-      setStatus('worksFormStatus','worksFormDot','제목(KR/EN 중 하나)은 필수입니다.',false);
-      return;
-    }
-    const idx = works.findIndex(w=>w._id===entry._id);
-    if(idx >= 0){
-      works[idx] = entry;
-      setStatus('worksFormStatus','worksFormDot','작품 정보가 수정되었습니다.',true);
-    }else{
-      works.push(entry);
-      setStatus('worksFormStatus','worksFormDot','새 작품이 추가되었습니다.',true);
-    }
-    editingId = null;
-    form.reset();
-    renderWorksTable();
-    saveLocalData();
-  });
-
-  resetBtn?.addEventListener('click', ()=>{
-    editingId = null;
-    form.reset();
-    setStatus('worksFormStatus','worksFormDot','입력이 초기화되었습니다.',true);
-  });
-
-  tableBody?.addEventListener('click', e=>{
-    const editBtn = e.target.closest('.btn-edit');
-    const delBtn  = e.target.closest('.btn-del');
-    if(editBtn){
-      const id = editBtn.dataset.id;
-      const w  = works.find(x=>x._id===id);
-      if(!w) return;
-      editingId = w._id;
-      $('#workSection').value     = w.section || 'Light & Memory';
-      $('#workYear').value        = w.year || '';
-      $('#workImage').value       = w.image || '';
-      $('#workTitleKr').value     = w.title_kr || '';
-      $('#workTitleEn').value     = w.title_en || '';
-      $('#workMaterialKr').value  = w.material_kr || '';
-      $('#workMaterialEn').value  = w.material_en || '';
-      $('#workSizeKr').value      = w.size_kr || '';
-      $('#workSizeEn').value      = w.size_en || '';
-      setStatus('worksFormStatus','worksFormDot','선택한 작품을 편집 중입니다.',true);
-    }
-    if(delBtn){
-      const id = delBtn.dataset.id;
-      works = works.filter(x=>x._id!==id);
-      renderWorksTable();
-      saveLocalData();
-      setStatus('worksFormStatus','worksFormDot','작품이 삭제되었습니다.',true);
-    }
-  });
-
-  $('#btnExportWorks')?.addEventListener('click', ()=>{
-    const obj = {
-      "Light & Memory"          : works.filter(w=>w.section==="Light & Memory"),
-      "Human Prayer"            : works.filter(w=>w.section==="Human Prayer"),
-      "Rebirth"                 : works.filter(w=>w.section==="Rebirth"),
-      "Restoration of Being"    : works.filter(w=>w.section==="Restoration of Being"),
-      "Metaconsciousness of Light": works.filter(w=>w.section==="Metaconsciousness of Light")
-    };
-    downloadJSON('artworks.json', obj);
-  });
-  $('#btnExportWorksAlt')?.addEventListener('click', ()=>{
-    downloadJSON('works.json', works);
-  });
-  $('#btnClearWorks')?.addEventListener('click', ()=>{
-    if(!confirm('정말로 모든 Works 데이터를 삭제할까요? (이 브라우저에서만 삭제됩니다)')) return;
-    works = [];
-    renderWorksTable();
-    saveLocalData();
-    setStatus('worksFormStatus','worksFormDot','모든 Works 데이터가 삭제되었습니다.',true);
-  });
-})();
-
-/* ===== Reports Form 로직 ===== */
-(function initReportsForm(){
-  const form = $('#reportForm');
-  if(!form) return;
-  const resetBtn  = $('#repFormReset');
-  const tableBody = $('#reportsTableBody');
-  let editingId   = null;
-
-  form.addEventListener('submit', e=>{
-    e.preventDefault();
-    const entry = {
-      _id        : editingId || `r_${Date.now()}_${Math.random().toString(16).slice(2)}`,
-      id         : $('#repId').value.trim(),
-      year       : parseInt($('#repYear').value,10) || '',
-      category   : $('#repCategory').value.trim(),
-      title_kr   : $('#repTitleKr').value.trim(),
-      title_en   : $('#repTitleEn').value.trim(),
-      slug       : $('#repSlug').value.trim(),
-      summary_kr : $('#repSummaryKr').value.trim(),
-      summary_en : $('#repSummaryEn').value.trim()
-    };
-    if(!entry.id){
-      setStatus('reportsFormStatus','reportsFormDot','ID는 필수입니다. (예: DCAR01)',false);
-      return;
-    }
-    const idx = reports.findIndex(r=>r._id===entry._id);
-    if(idx >= 0){
-      reports[idx] = entry;
-      setStatus('reportsFormStatus','reportsFormDot','보고서 정보가 수정되었습니다.',true);
-    }else{
-      reports.push(entry);
-      setStatus('reportsFormStatus','reportsFormDot','새 보고서가 추가되었습니다.',true);
-    }
-    editingId = null;
-    form.reset();
-    renderReportsTable();
-    saveLocalData();
-  });
-
-  resetBtn?.addEventListener('click', ()=>{
-    editingId = null;
-    form.reset();
-    setStatus('reportsFormStatus','reportsFormDot','입력이 초기화되었습니다.',true);
-  });
-
-  tableBody?.addEventListener('click', e=>{
-    const editBtn = e.target.closest('.btn-edit-report');
-    const delBtn  = e.target.closest('.btn-del-report');
-    if(editBtn){
-      const id = editBtn.dataset.id;
-      const r  = reports.find(x=>x._id===id);
-      if(!r) return;
-      editingId = r._id;
-      $('#repId').value        = r.id || '';
-      $('#repYear').value      = r.year || '';
-      $('#repCategory').value  = r.category || 'theory';
-      $('#repTitleKr').value   = r.title_kr || '';
-      $('#repTitleEn').value   = r.title_en || '';
-      $('#repSlug').value      = r.slug || '';
-      $('#repSummaryKr').value = r.summary_kr || '';
-      $('#repSummaryEn').value = r.summary_en || '';
-      setStatus('reportsFormStatus','reportsFormDot','선택한 보고서를 편집 중입니다.',true);
-    }
-    if(delBtn){
-      const id = delBtn.dataset.id;
-      reports = reports.filter(x=>x._id!==id);
-      renderReportsTable();
-      saveLocalData();
-      setStatus('reportsFormStatus','reportsFormDot','보고서가 삭제되었습니다.',true);
-    }
-  });
-
-  $('#btnExportReports')?.addEventListener('click', ()=>{
-    downloadJSON('reports.json', reports);
-  });
-  $('#btnClearReports')?.addEventListener('click', ()=>{
-    if(!confirm('정말로 모든 DCAR 데이터를 삭제할까요? (이 브라우저에서만 삭제)')) return;
-    reports = [];
-    renderReportsTable();
-    saveLocalData();
-    setStatus('reportsFormStatus','reportsFormDot','모든 DCAR 데이터가 삭제되었습니다.',true);
-  });
-})();
-
-/* ===== Settings / Note ===== */
-(function initSettings(){
-  const noteArea = $('#adminNote');
-  const saveBtn  = $('#btnSaveNote');
-  const clearBtn = $('#btnClearAllLocal');
-
-  saveBtn?.addEventListener('click', ()=>{
-    if(!noteArea) return;
-    try{
-      localStorage.setItem(STORAGE_KEYS.note, noteArea.value || '');
-      setStatus('settingsStatus','settingsDot','메모가 저장되었습니다.',true);
-    }catch(e){
-      console.error(e);
-      setStatus('settingsStatus','settingsDot','메모 저장 오류',false);
-    }
-  });
-
-  clearBtn?.addEventListener('click', ()=>{
-    if(!confirm('정말로 Admin Ω.19의 모든 로컬 데이터를 삭제할까요? (이 브라우저에서만 삭제됩니다)')) return;
-    try{
-      Object.values(STORAGE_KEYS).forEach(k=>localStorage.removeItem(k));
-    }catch(e){
-      console.error(e);
-    }
-    works   = [];
-    reports = [];
-    if(noteArea) noteArea.value = '';
-    renderWorksTable();
-    renderReportsTable();
-    setStatus('settingsStatus','settingsDot','로컬 데이터가 모두 삭제되었습니다.',true);
-  });
-})();
-
-/* ===== 초기화 ===== */
-loadLocalData();
-renderWorksTable();
-renderReportsTable();
-
-/* 간단한 언어 라벨 — 현재는 KR 고정 UI */
-$('#adminLangLabel').textContent = 'KR 인터페이스';
+    // 초기 로드
+    loadFromLS();
+    renderList();
+  })();
 </script>
-</body>
-</html>

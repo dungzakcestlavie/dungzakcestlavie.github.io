@@ -1,13 +1,103 @@
 {
   "reports": [
-    "DCAR-01-2025",
-    "DCAR-02-2025",
-    "DCAR-03-2025",
-    "DCAR-04-2025",
-    "DCAR-05-2025",
-    "DCAR-06-2025",
-    "DCAR-07-2025",
-    "DCAR-08-2025",
-    "DCAR-09-2025"
+    {
+      "id": "DCAR-01-2025",
+      "slug": "DCAR-01-2025",
+      "year": "2025",
+      "category": "Theory",
+      "title_en": "On Light, Memory, and Being",
+      "title_ko": "빛·감정·응시·존재에 관하여",
+      "summary_en": "The paintings of DUNGZAK CESTLAVIE explore the origins of memory, emotion, and light.",
+      "summary_ko": "등작의 회화는 기억과 감정, 존재의 기원을 탐구한다.",
+      "md_path": "reports/DCAR-01-2025.md"
+    },
+    {
+      "id": "DCAR-02-2025",
+      "slug": "DCAR-02-2025",
+      "year": "2025",
+      "category": "Theory",
+      "title_en": "Pray for Us",
+      "title_ko": "우리를 위해 기도해 주세요",
+      "summary_en": "A meditation on light, emotion, gaze, and the return to being.",
+      "summary_ko": "빛·감정·응시·존재의 귀환에 대한 미학적 고찰.",
+      "md_path": "reports/DCAR-02-2025.md"
+    },
+    {
+      "id": "DCAR-03-2025",
+      "slug": "DCAR-03-2025",
+      "year": "2025",
+      "category": "Theory",
+      "title_en": "DCAR 03",
+      "title_ko": "DCAR 03",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-03-2025.md"
+    },
+    {
+      "id": "DCAR-04-2025",
+      "slug": "DCAR-04-2025",
+      "year": "2025",
+      "category": "Theory",
+      "title_en": "DCAR 04",
+      "title_ko": "DCAR 04",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-04-2025.md"
+    },
+    {
+      "id": "DCAR-05-2025",
+      "slug": "DCAR-05-2025",
+      "year": "2025",
+      "category": "Archive",
+      "title_en": "DCAR 05",
+      "title_ko": "DCAR 05",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-05-2025.md"
+    },
+    {
+      "id": "DCAR-06-2025",
+      "slug": "DCAR-06-2025",
+      "year": "2025",
+      "category": "Archive",
+      "title_en": "DCAR 06",
+      "title_ko": "DCAR 06",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-06-2025.md"
+    },
+    {
+      "id": "DCAR-07-2025",
+      "slug": "DCAR-07-2025",
+      "year": "2025",
+      "category": "Practice",
+      "title_en": "DCAR 07",
+      "title_ko": "DCAR 07",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-07-2025.md"
+    },
+    {
+      "id": "DCAR-08-2025",
+      "slug": "DCAR-08-2025",
+      "year": "2025",
+      "category": "Practice",
+      "title_en": "DCAR 08",
+      "title_ko": "DCAR 08",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-08-2025.md"
+    },
+    {
+      "id": "DCAR-09-2025",
+      "slug": "DCAR-09-2025",
+      "year": "2025",
+      "category": "Theory",
+      "title_en": "DCAR 09",
+      "title_ko": "DCAR 09",
+      "summary_en": "",
+      "summary_ko": "",
+      "md_path": "reports/DCAR-09-2025.md"
+    }
   ]
 }

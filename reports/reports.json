@@ -7,8 +7,8 @@
       "category": "Theory",
       "title_en": "On Light, Memory, and Being",
       "title_ko": "빛·감정·응시·존재에 관하여",
-      "summary_en": "The paintings of DUNGZAK CESTLAVIE explore the origins of memory, emotion, and the return of being.",
-      "summary_ko": "등작의 회화는 기억과 감정, 존재의 기원을 탐구한다.",
+      "summary_en": "The paintings of DUNGZAK CESTLAVIE explore the origins of memory, emotion, gaze, and being, forming the foundation of the artist’s first aesthetic report.",
+      "summary_ko": "등작의 회화는 기억과 감정, 응시와 존재의 기원을 탐구하며, 첫 번째 미학 보고서의 근간을 이룬다.",
       "md_path": "reports/DCAR-01-2025.md"
     },
     {
@@ -29,8 +29,8 @@
       "category": "Theory",
       "title_en": "DCAR 03",
       "title_ko": "DCAR 03",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The third aesthetic investigation of DUNGZAK CESTLAVIE.",
+      "summary_ko": "등작의 세 번째 미학적 탐구.",
       "md_path": "reports/DCAR-03-2025.md"
     },
     {
@@ -40,19 +40,19 @@
       "category": "Theory",
       "title_en": "DCAR 04",
       "title_ko": "DCAR 04",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The fourth aesthetic investigation.",
+      "summary_ko": "네 번째 미학적 탐구.",
       "md_path": "reports/DCAR-04-2025.md"
     },
     {
       "id": "DCAR-05-2025",
       "slug": "DCAR-05-2025",
       "year": "2025",
-      "category": "Theory",
+      "category": "Archive",
       "title_en": "DCAR 05",
       "title_ko": "DCAR 05",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The fifth aesthetic archive.",
+      "summary_ko": "다섯 번째 미학 아카이브.",
       "md_path": "reports/DCAR-05-2025.md"
     },
     {
@@ -62,8 +62,8 @@
       "category": "Theory",
       "title_en": "DCAR 06",
       "title_ko": "DCAR 06",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The sixth aesthetic report.",
+      "summary_ko": "여섯 번째 미학 보고서.",
       "md_path": "reports/DCAR-06-2025.md"
     },
     {
@@ -73,8 +73,8 @@
       "category": "Theory",
       "title_en": "DCAR 07",
       "title_ko": "DCAR 07",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The seventh aesthetic report.",
+      "summary_ko": "일곱 번째 미학 보고서.",
       "md_path": "reports/DCAR-07-2025.md"
     },
     {
@@ -84,8 +84,8 @@
       "category": "Theory",
       "title_en": "DCAR 08",
       "title_ko": "DCAR 08",
-      "summary_en": "",
-      "summary_ko": "",
+      "summary_en": "The eighth aesthetic report.",
+      "summary_ko": "여덟 번째 미학 보고서.",
       "md_path": "reports/DCAR-08-2025.md"
     },
     {
@@ -93,10 +93,10 @@
       "slug": "DCAR-09-2025",
       "year": "2025",
       "category": "Theory",
-      "title_en": "DCAR 09",
-      "title_ko": "DCAR 09",
-      "summary_en": "",
-      "summary_ko": "",
+      "title_en": "Painting After Dissolution — The Return of Resonant Being",
+      "title_ko": "해체 이후의 회화 — 존재 감응의 귀환",
+      "summary_en": "The ninth aesthetic report of DUNGZAK CESTLAVIE, including the full lineage of Kandinsky, Picasso, Rothko, and Richter.",
+      "summary_ko": "등작의 아홉 번째 미학 보고서로, 칸딘스키·피카소·로스코·리히터의 계보를 통합한다.",
       "md_path": "reports/DCAR-09-2025.md"
     }
   ]

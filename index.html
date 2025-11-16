@@ -444,7 +444,8 @@
     opacity:.9;
   }
   </style>
-</head> <body class="korean">
+</head>
+<body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
@@ -716,7 +717,9 @@ Numerous private collections worldwide.</p>
 
     <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
-  </footer>  <script>
+  </footer>
+
+  <script>
 // =========================
 // Shorthands
 // =========================
@@ -1296,7 +1299,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — List & Filter + Full Text Viewer
+// Reports (DCAR) — JSON 기반 리스트 & 뷰어
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
@@ -1307,21 +1310,48 @@ window.DZ_BIO = (function(){
 
   wrap.classList.add('is-collapsed');
 
-  const items = [
-    {
-      id: 'DCAR-01-2025',
-      title_kr: '등작 燈酌 DUNGZAK CESTLAVIE — On Light, Memory, and Being',
-      title_en: 'On Light, Memory, and Being',
-      snippet_kr: '기억에서 시작해 감정과 존재, 그리고 빛의 언어로 이어지는 등작의 첫 번째 미학 보고서.',
-      snippet_en: 'The first aesthetic report tracing the flow from memory through emotion and being, into the language of light.',
-      cat: 'theory'
+  let items = [];
+  let currentCat = 'all';
+
+  function escapeHtml(str){
+    return String(str || '').replace(/[&<>"']/g, ch => (
+      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
+    ));
+  }
+
+  function normaliseItem(r){
+    const cat = (r.category || 'Theory').toLowerCase(); // theory/archive/practice...
+    return {
+      id: r.id,
+      title_ko: r.title_ko || r.title_en || '',
+      title_en: r.title_en || r.title_ko || '',
+      snippet_ko: r.summary_ko || '',
+      snippet_en: r.summary_en || '',
+      cat,
+      md_path: r.md_path || ''
+    };
+  }
+
+  async function loadData(){
+    try{
+      const res = await fetch('/reports/reports.json', { cache:'no-store' });
+      if(!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      const arr = Array.isArray(data.reports) ? data.reports : [];
+      items = arr.map(normaliseItem);
+    }catch(_){
+      items = [];
     }
-  ];
+    render(currentCat);
+  }
 
   function render(cat){
-    const list = (cat === 'all') ? items : items.filter(x => x.cat === cat);
-
+    currentCat = cat;
     viewer.innerHTML = '';
+
+    const list = (cat === 'all')
+      ? items
+      : items.filter(x => x.cat === cat);
 
     if(!list.length){
       grid.innerHTML = `
@@ -1344,25 +1374,25 @@ window.DZ_BIO = (function(){
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
-            <span class="r-badge">${r.id}</span>
+            <span class="r-badge">${escapeHtml(r.id)}</span>
             <span class="r-badge pdf">PDF</span>
           </div>
           <h3 class="r-title">
-            <span class="ko">${r.title_kr}</span>
-            <span class="en">${r.title_en}</span>
+            <span class="ko">${escapeHtml(r.title_ko)}</span>
+            <span class="en">${escapeHtml(r.title_en)}</span>
           </h3>
-          <p class="r-sub">/reports/${r.id}.md</p>
+          <p class="r-sub">/${escapeHtml(r.md_path || ('reports/' + r.id + '.md'))}</p>
           <div class="r-body">
-            <div class="ko">${r.snippet_kr}</div>
+            <div class="ko">${escapeHtml(r.snippet_ko)}</div>
             <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-            <div class="en">${r.snippet_en}</div>
+            <div class="en">${escapeHtml(r.snippet_en)}</div>
           </div>
           <div class="r-actions">
             <a href="/reports/print-preview.html?file=${encodeURIComponent(r.id + '.md')}"
                target="_blank" rel="noopener">
               미리보기 / Print
             </a>
-            <button type="button" data-open="${r.id}">
+            <button type="button" data-open="${escapeHtml(r.id)}">
               전체 보기 / Open
             </button>
           </div>
@@ -1371,7 +1401,38 @@ window.DZ_BIO = (function(){
     `).join('');
   }
 
-  render('all');
+  async function loadReport(id){
+    viewer.innerHTML = '';
+    const meta = items.find(x => x.id === id) || null;
+
+    const path = meta && meta.md_path
+      ? (meta.md_path.startsWith('/') ? meta.md_path : '/' + meta.md_path)
+      : ('/reports/' + id + '.md');
+
+    try{
+      const res = await fetch(path, { cache:'no-store' });
+      if(!res.ok) throw new Error('fetch failed');
+      const text = await res.text();
+
+      const header = meta ? `
+        <div class="r-viewer-header">
+          <div class="r-meta">
+            <span class="r-badge">${escapeHtml(meta.id)}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">
+            <span class="ko">${escapeHtml(meta.title_ko)}</span>
+            <span class="en">${escapeHtml(meta.title_en)}</span>
+          </h3>
+          <p class="r-sub">${escapeHtml(path)}</p>
+        </div>
+      ` : '';
+
+      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+    }catch(_){
+      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
+    }
+  }
 
   $$('.r-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1381,41 +1442,6 @@ window.DZ_BIO = (function(){
       render(cat);
     });
   });
-
-  function escapeHtml(str){
-    return str.replace(/[&<>"']/g, ch => (
-      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
-    ));
-  }
-
-  async function loadReport(id){
-    viewer.innerHTML = '';
-    const meta = items.find(x => x.id === id) || null;
-
-    try{
-      const res = await fetch(`/reports/${id}.md`, { cache:'no-store' });
-      if(!res.ok) throw new Error('fetch failed');
-      const text = await res.text();
-
-      const header = meta ? `
-        <div class="r-viewer-header">
-          <div class="r-meta">
-            <span class="r-badge">${meta.id}</span>
-            <span class="r-badge pdf">PDF</span>
-          </div>
-          <h3 class="r-title">
-            <span class="ko">${meta.title_kr}</span>
-            <span class="en">${meta.title_en}</span>
-          </h3>
-          <p class="r-sub">/reports/${meta.id}.md</p>
-        </div>
-      ` : '';
-
-      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
-    }catch(_){
-      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
-    }
-  }
 
   grid.addEventListener('click', e => {
     const btn = e.target.closest('button[data-open]');
@@ -1435,6 +1461,9 @@ window.DZ_BIO = (function(){
     const isOpen = toggle.getAttribute('aria-expanded') === 'true';
     setOpen(!isOpen);
   });
+
+  // 초기 데이터 로드
+  loadData();
 })();
 
 // =========================

@@ -1,945 +1,1101 @@
 <!doctype html>
 <html lang="ko" translate="no">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>등작 · Admin Ω.19 — Works & DCAR</title>
-<meta name="description" content="DUNGZAK CESTLAVIE Admin · Works JSON & DCAR 관리" />
-<meta name="color-scheme" content="dark light" />
-<style>
-:root{
-  --bg:#050716;
-  --panel:#0c1124;
-  --panel-soft:#0f1732;
-  --line:#1c2646;
-  --accent:#f0cf7e;
-  --accent-soft:#f6e6b0;
-  --fg:#e9f0ff;
-  --muted:#9cabd8;
-  --danger:#f36c8a;
-  --ok:#5bd2a1;
-  --max:1280px;
-  --radius:12px;
-  --radius-sm:9px;
-  --shadow:0 14px 40px rgba(0,0,0,.55);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  background:radial-gradient(circle at top,#172549 0,#050716 48%,#02030b 100%);
-  color:var(--fg);
-  font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
-  min-height:100vh;
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
-/* top bar */
-.app-shell{
-  max-width:var(--max);
-  margin:0 auto;
-  padding:14px 12px 80px;
-}
-.app-header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
-}
-.app-title{
-  font-weight:800;
-  letter-spacing:.03em;
-  font-size:15px;
-}
-.app-title span{
-  color:var(--accent);
-}
-.badge{
-  padding:3px 9px;
-  border-radius:999px;
-  border:1px solid rgba(240,207,126,.6);
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.chip{
-  padding:3px 8px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  font-size:11px;
-  color:var(--muted);
-}
-.app-spacer{flex:1}
-.app-mini{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:4px;
-  font-size:11px;
-  color:var(--muted);
-}
-.app-mini span strong{color:var(--accent-soft);}
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR</title>
 
-/* layout */
-.app-main{
-  display:grid;
-  grid-template-columns: minmax(0,1.4fr) minmax(0,1fr);
-  gap:14px;
-}
-@media(max-width:960px){
-  .app-main{grid-template-columns:1fr}
-}
+  <!-- 기본 설명 -->
+  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — 작품(Works) · 미학 보고서(DCAR) 관리 도구" />
 
-/* panels */
-.panel{
-  background:linear-gradient(180deg,#0b1023,#050716);
-  border-radius:var(--radius);
-  border:1px solid rgba(255,255,255,.04);
-  box-shadow:var(--shadow);
-  padding:12px 12px 14px;
-}
-.panel-header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-}
-.panel-title{
-  font-size:13px;
-  font-weight:700;
-}
-.panel-header small{
-  font-size:11px;
-  color:var(--muted);
-}
-.tag{
-  font-size:10px;
-  border-radius:999px;
-  padding:3px 7px;
-  border:1px solid var(--line);
-  color:var(--muted);
-}
+  <!-- 검색·공유용 -->
+  <link rel="canonical" href="https://dungzak.art/admin.html" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#070c1a" />
 
-/* nav tabs inside left panel */
-.subtabs{
-  margin:4px 0 10px;
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.subtabs button{
-  all:unset;
-  cursor:pointer;
-  font-size:11px;
-  padding:5px 10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--muted);
-}
-.subtabs button.active{
-  background:linear-gradient(180deg,var(--accent-soft),var(--accent));
-  color:#050716;
-  border-color:var(--accent);
-}
+  <!-- Search / OpenGraph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR" />
+  <meta property="og:description" content="Light · Memory · Being — 작품 아카이브와 DCAR 미학 보고서를 정리·내보내기 위한 전용 Admin." />
+  <meta property="og:url" content="https://dungzak.art/admin.html" />
+  <!-- 필요하면 나중에 실제 썸네일 이미지 경로로 교체 -->
+  <meta property="og:image" content="https://dungzak.art/assets/og-lightflow.png" />
 
-/* tool strip */
-.toolbar{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-bottom:8px;
-}
-.btn{
-  all:unset;
-  cursor:pointer;
-  font-size:11px;
-  padding:6px 11px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--fg);
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-}
-.btn span.icon{
-  font-size:12px;
-}
-.btn.primary{
-  border-color:var(--accent);
-  background:radial-gradient(circle at top,var(--accent-soft),var(--accent));
-  color:#070a18;
-}
-.btn.danger{
-  border-color:rgba(243,108,138,.78);
-  color:var(--danger);
-}
-.btn[disabled]{
-  opacity:.45;
-  cursor:not-allowed;
-}
-input[type="file"]{
-  display:none;
-}
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DUNGZAK CESTLAVIE · Admin Ω.19 — Works & DCAR" />
+  <meta name="twitter:description" content="등작의 작품과 DCAR 미학 보고서를 한 화면에서 관리하는 Admin." />
+  <meta name="twitter:image" content="https://dungzak.art/assets/og-lightflow.png" />
 
-/* works table */
-.table-wrap{
-  border-radius:var(--radius-sm);
-  border:1px solid var(--line);
-  background:radial-gradient(circle at top left,#182445,#050716);
-  overflow:auto;
-  max-height:54vh;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:11px;
-}
-thead{
-  position:sticky;
-  top:0;
-  background:linear-gradient(180deg,#111731,#050716);
-  z-index:1;
-}
-th,td{
-  padding:5px 6px;
-  border-bottom:1px solid #111527;
-  text-align:left;
-  white-space:nowrap;
-}
-th{
-  font-weight:600;
-  color:var(--muted);
-}
-tbody tr{
-  cursor:pointer;
-}
-tbody tr:nth-child(even){
-  background:rgba(8,12,30,.55);
-}
-tbody tr:hover{
-  background:rgba(18,24,52,.85);
-}
-tbody tr.selected{
-  outline:1px solid var(--accent);
-}
+  <!-- 구글 번역 막기 (index와 동일) -->
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
 
-/* small status bar */
-.statusbar{
-  margin-top:6px;
-  font-size:11px;
-  color:var(--muted);
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-}
-.statusbar span strong{color:var(--accent-soft);}
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='86'>✨</text></svg>">
 
-/* forms */
-.form{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px 10px;
-  margin-top:4px;
-}
-.form label{
-  font-size:11px;
-  color:var(--muted);
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-.form input,.form select,.form textarea{
-  border-radius:8px;
-  border:1px solid #1d2646;
-  background:#050818;
-  color:var(--fg);
-  font-size:12px;
-  padding:6px 8px;
-}
-.form textarea{
-  resize:vertical;
-  min-height:46px;
-}
-.form .full{
-  grid-column:1 / -1;
-}
-.form-row{
-  display:flex;
-  gap:6px;
-  margin-top:8px;
-}
-.form-row .btn{
-  flex:1;
-  justify-content:center;
-}
+  <style>
+    :root{
+      --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
+      --panel:#0f1630; --line:#1b2652; --accent:#6aa3ff;
+      --danger:#ff5c7a; --ok:#5ed19b;
+      --max:1180px;
+    }
 
-/* right panel DCAR */
-.dcar-list{
-  border-radius:var(--radius-sm);
-  border:1px solid var(--line);
-  background:radial-gradient(circle at top,#1a2346,#050716);
-  max-height:28vh;
-  overflow:auto;
-  margin-bottom:8px;
-}
-.dcar-item{
-  padding:6px 8px;
-  border-bottom:1px solid #141a2e;
-  cursor:pointer;
-}
-.dcar-item:hover{
-  background:rgba(21,30,68,.9);
-}
-.dcar-item.active{
-  outline:1px solid var(--accent);
-}
-.dcar-item small{
-  font-size:10px;
-  color:var(--muted);
-}
-.dcar-item strong{
-  font-size:11px;
-}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      background:radial-gradient(circle at 15% 0%,#1f315c 0,#070c1a 52%,#040712 100%);
+      color:var(--fg);
+      font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
 
-/* toast */
-#toast{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:calc(14px + env(safe-area-inset-bottom));
-  background:rgba(5,10,28,.96);
-  color:var(--fg);
-  padding:8px 12px;
-  border-radius:999px;
-  border:1px solid rgba(240,207,126,.7);
-  font-size:11px;
-  display:none;
-  z-index:50;
-}
+    /* 모션 줄이기 사용자 존중 */
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+    }
 
-/* small */
-.note{
-  font-size:11px;
-  color:var(--muted);
-  margin-top:4px;
-}
-.code{
-  font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  font-size:11px;
-  padding:1px 4px;
-  border-radius:4px;
-  background:#02040c;
-  border:1px solid #171c30;
-}
-</style>
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:70px 16px 90px;}
+
+    /* HEADER */
+    header.admin-head{
+      position:sticky;top:0;z-index:10;
+      background:linear-gradient(180deg,rgba(7,10,24,.98),rgba(7,10,24,.90));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(14px);
+      padding:10px 14px;
+    }
+    .admin-head-inner{
+      max-width:var(--max);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .admin-brand{
+      font-weight:900;
+      color:var(--gold);
+      font-size:clamp(16px,4vw,20px);
+    }
+    .admin-badge{
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid rgba(255,215,130,.6);
+      color:#ffe8a8;
+      background:rgba(12,18,40,.9);
+    }
+    .admin-head-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:11px;
+      border:1px solid #2e3a6f;
+      color:#cfd9ff;
+      background:#101736;
+    }
+
+    /* TOP NAV */
+    nav.admin-nav{
+      max-width:var(--max);
+      margin:10px auto 0;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    nav.admin-nav button{
+      all:unset;
+      cursor:pointer;
+      padding:7px 13px;
+      border-radius:999px;
+      border:1px solid #242f5d;
+      font-weight:600;
+      font-size:14px;
+      color:#cfd6ff;
+      background:#0b122b;
+    }
+    nav.admin-nav button.active,
+    nav.admin-nav button[aria-current="page"]{
+      background:linear-gradient(180deg,#f7e4a5,#e6c777);
+      border-color:#e6c777;
+      color:#070c1a;
+      box-shadow:0 0 16px rgba(230,199,119,.35);
+    }
+    nav.admin-nav button:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:2px;
+    }
+
+    /* LAYOUT */
+    .section{
+      margin-top:28px;
+      display:none;
+    }
+    .section.active{display:block;}
+
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-end;
+      margin-bottom:14px;
+    }
+    .section-title{
+      font-size:18px;
+      font-weight:800;
+      color:var(--gold);
+    }
+    .section-sub{
+      font-size:12px;
+      color:var(--muted);
+      max-width:420px;
+    }
+
+    /* PANELS */
+    .panel-grid{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+    }
+    @media (max-width:880px){
+      .panel-grid{grid-template-columns:1fr;}
+    }
+
+    .panel{
+      background:radial-gradient(circle at 0 0,rgba(120,160,255,.12) 0,rgba(3,5,12,.9) 60%);
+      border-radius:16px;
+      border:1px solid rgba(50,70,130,.9);
+      box-shadow:0 16px 40px rgba(0,0,0,.55);
+      padding:14px 14px 16px;
+    }
+    .panel h3{
+      font-size:15px;
+      font-weight:700;
+      margin-bottom:6px;
+      color:#f4edff;
+    }
+    .panel small{
+      display:block;
+      font-size:11px;
+      color:#98a6dc;
+      margin-bottom:10px;
+    }
+
+    /* FORM ELEMENTS */
+    .field-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .field{
+      flex:1 1 140px;
+      display:flex;
+      flex-direction:column;
+      margin-bottom:9px;
+    }
+    .field label{
+      font-size:12px;
+      color:#cfd6ff;
+      margin-bottom:4px;
+    }
+    .field input,
+    .field select,
+    .field textarea{
+      border-radius:10px;
+      border:1px solid #2b3563;
+      background:#050918;
+      color:var(--fg);
+      padding:7px 9px;
+      font-size:13px;
+      font-family:inherit;
+    }
+    .field textarea{min-height:72px;resize:vertical;}
+    .field input:focus-visible,
+    .field select:focus-visible,
+    .field textarea:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:0;
+      border-color:var(--accent);
+    }
+
+    .btn-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    button.btn{
+      border-radius:999px;
+      border:1px solid #31407a;
+      padding:7px 14px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      background:#0d1634;
+      color:#eaf0ff;
+    }
+    button.btn-primary{
+      background:linear-gradient(180deg,#f7e4a5,#e6c777);
+      border-color:#e6c777;
+      color:#070c1a;
+    }
+    button.btn-danger{
+      border-color:var(--danger);
+      color:#ffe5ef;
+      background:#3a1022;
+    }
+    button.btn[disabled]{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+    button.btn:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:2px;
+    }
+
+    /* TABLE / LIST */
+    .table-wrap{
+      margin-top:10px;
+      max-height:380px;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid #202c58;
+      background:#050918;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+    thead{
+      position:sticky;
+      top:0;
+      background:#0a1024;
+      z-index:1;
+    }
+    th,td{
+      padding:6px 8px;
+      border-bottom:1px solid #141b39;
+      text-align:left;
+      white-space:nowrap;
+    }
+    th{
+      font-weight:600;
+      color:#cfd9ff;
+    }
+    td{
+      color:#b8c4ff;
+    }
+    td span.tag{
+      border-radius:999px;
+      padding:2px 7px;
+      border:1px solid #334176;
+      font-size:11px;
+      color:#dfe6ff;
+      background:#0d1534;
+    }
+    td .row-actions{
+      display:flex;
+      gap:6px;
+    }
+
+    /* STATUS BAR */
+    .status-bar{
+      margin-top:12px;
+      font-size:12px;
+      color:#a4b2e4;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .status-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--ok);
+      box-shadow:0 0 10px rgba(94,209,155,.7);
+    }
+    .status-bar .danger{
+      color:#ffb1c4;
+    }
+
+    /* FOOTER */
+    footer.admin-foot{
+      border-top:1px solid rgba(255,255,255,.08);
+      background:#050918;
+      padding:14px 16px 22px;
+      text-align:center;
+      color:#9eacd6;
+      font-size:11px;
+    }
+    footer.admin-foot small{display:block;}
+  </style>
 </head> <body>
-<div class="app-shell">
-  <header class="app-header">
-    <div class="app-title">
-      등작 燈酌 DUNGZAK CESTLAVIE · <span>Admin Ω.19</span>
+<header class="admin-head">
+  <div class="admin-head-inner">
+    <div>
+      <div class="admin-brand">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19</div>
+      <span class="admin-badge">Works &amp; DCAR · Local JSON Builder</span>
     </div>
-    <div class="badge">Works & DCAR</div>
-    <div class="chip">JSON · Local editing · Download</div>
-    <div class="app-spacer"></div>
-    <div class="app-mini">
-      <span>JSON path: <span class="code">/data/works.json</span></span>
-      <span>Images: <strong>/images/standard · /images/zoom</strong></span>
+    <div class="admin-head-right">
+      <span class="pill" id="adminLangLabel">KR 인터페이스</span>
+      <span class="pill" id="adminStorageState">Local Storage: idle</span>
     </div>
-  </header>
+  </div>
+  <nav class="admin-nav" aria-label="Admin navigation">
+    <button type="button" class="nav-btn active" data-target="section-dashboard" aria-current="page">Dashboard</button>
+    <button type="button" class="nav-btn" data-target="section-works">Works JSON</button>
+    <button type="button" class="nav-btn" data-target="section-reports">DCAR Reports</button>
+    <button type="button" class="nav-btn" data-target="section-settings">Settings / Notes</button>
+  </nav>
+</header>
 
-  <main class="app-main">
-    <!-- LEFT: WORKS -->
-    <section class="panel" aria-label="Works manager">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Works · 작품 관리</div>
-          <small>섹션별로 작품을 편집하고, 수정된 JSON을 다운로드합니다.</small>
-        </div>
-      </div>
-
-      <!-- subtabs -->
-      <div class="subtabs" id="sectionTabs">
-        <button data-key="Light & Memory" class="active">Ⅰ Light & Memory</button>
-        <button data-key="Human Prayer">Ⅱ Human Prayer</button>
-        <button data-key="Rebirth">Ⅲ Rebirth</button>
-        <button data-key="Existence">Ⅳ Existence</button>
-        <button data-key="Cosmos">Ⅴ Cosmos</button>
-      </div>
-
-      <!-- toolbar -->
-      <div class="toolbar">
-        <label class="btn">
-          <span class="icon">📂</span>
-          JSON 불러오기 (local)
-          <input type="file" id="fileInput" accept="application/json">
-        </label>
-        <button class="btn" id="btnFetch">
-          <span class="icon">☁️</span> /data/works.json 읽기
-        </button>
-        <button class="btn primary" id="btnDownload">
-          <span class="icon">💾</span> works.json 다운로드
-        </button>
-        <button class="btn" id="btnCopy">
-          <span class="icon">📋</span> JSON 복사
-        </button>
-        <button class="btn danger" id="btnReset">
-          <span class="icon">↺</span> 현재 섹션 초기화
-        </button>
-      </div>
-
-      <!-- table -->
-      <div class="table-wrap" aria-label="Works list">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:70px">ID</th>
-              <th style="width:90px">연도</th>
-              <th>제목(KR)</th>
-              <th>제목(EN)</th>
-              <th style="width:120px">Size</th>
-              <th style="width:120px">Image</th>
-            </tr>
-          </thead>
-          <tbody id="worksTbody">
-            <!-- rows injected -->
-          </tbody>
-        </table>
-      </div>
-
-      <div class="statusbar">
-        <span id="statusCount">현재 섹션 작품: 0</span>
-        <span id="statusHint">행을 클릭하면 아래 폼에서 수정할 수 있습니다.</span>
-      </div>
-
-      <!-- form -->
-      <form class="form" id="worksForm" autocomplete="off">
-        <label>
-          Section
-          <select id="f_section">
-            <option value="Light & Memory">Ⅰ Light & Memory</option>
-            <option value="Human Prayer">Ⅱ Human Prayer</option>
-            <option value="Rebirth">Ⅲ Rebirth</option>
-            <option value="Existence">Ⅳ Existence</option>
-            <option value="Cosmos">Ⅴ Cosmos</option>
-          </select>
-        </label>
-        <label>
-          ID
-          <input id="f_id" placeholder="예: DZ-003">
-        </label>
-        <label>
-          연도(Year)
-          <input id="f_year" placeholder="2025">
-        </label>
-        <label>
-          파일명(Image)
-          <input id="f_image" placeholder="예: DZ-003.jpg">
-        </label>
-        <label class="full">
-          제목(KR)
-          <input id="f_title_kr" placeholder="작품 제목 (한국어)">
-        </label>
-        <label class="full">
-          Title (EN)
-          <input id="f_title_en" placeholder="Title in English">
-        </label>
-        <label>
-          재료(KR)
-          <input id="f_mat_kr" placeholder="예: Acrylic on Canvas">
-        </label>
-        <label>
-          Material (EN)
-          <input id="f_mat_en" placeholder="Acrylic on Canvas">
-        </label>
-        <label>
-          크기(KR)
-          <input id="f_size_kr" placeholder="예: 162.2×130.3cm">
-        </label>
-        <label>
-          Size (EN)
-          <input id="f_size_en" placeholder="162.2×130.3cm">
-        </label>
-        <div class="form-row full">
-          <button type="button" class="btn primary" id="btnSaveRow">
-            <span class="icon">✅</span> 선택 행 저장 / 추가
-          </button>
-          <button type="button" class="btn danger" id="btnDeleteRow">
-            <span class="icon">🗑</span> 선택 행 삭제
-          </button>
-        </div>
-        <p class="note full">
-          • 이미지 경로는 자동으로
-          <span class="code>/images/standard/파일명</span>,
-          <span class="code>/images/zoom/파일명</span> 으로 사용됩니다.
-          <br>• ID와 연도를 비워두면 자동 번호가 부여됩니다.
+<main>
+  <!-- DASHBOARD -->
+  <section class="section active" id="section-dashboard">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Dashboard</div>
+        <p class="section-sub">
+          인덱스( Lightflow Ω.9 )와 연결되는 Admin입니다.  
+          아래에서 현재 세션의 Works / DCAR 항목 수와 JSON 내보내기 상태를 한눈에 확인할 수 있습니다.
         </p>
-      </form>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <section class="panel" aria-label="Works summary">
+        <h3>Works 상태</h3>
+        <small>섹션별 작품 개수와 마지막 수정 시간을 요약합니다.</small>
+        <div class="status-bar">
+          <span class="status-dot" id="worksStatusDot"></span>
+          <span id="worksStatusText">Works 데이터가 아직 없습니다.</span>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table aria-label="Works summary table">
+            <thead>
+              <tr>
+                <th>섹션</th>
+                <th>개수</th>
+              </tr>
+            </thead>
+            <tbody id="worksSummaryBody">
+              <!-- JS에서 채움 -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Reports summary">
+        <h3>DCAR Reports 상태</h3>
+        <small>분류(Theory / Archive / Practice)별 보고서 개수와 내보내기 상태.</small>
+        <div class="status-bar">
+          <span class="status-dot" id="reportsStatusDot"></span>
+          <span id="reportsStatusText">DCAR 데이터가 아직 없습니다.</span>
+        </div>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table aria-label="DCAR summary table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody id="reportsSummaryBody">
+              <!-- JS에서 채움 -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- WORKS -->
+  <section class="section" id="section-works">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Works JSON · 작품 아카이브</div>
+        <p class="section-sub">
+          Lightflow 인덱스의 5개 섹션(<strong>Pray / Human / Rebirth / Restoration / Metaconsciousness</strong>) 구조에 맞춰
+          작품 정보를 입력하고, <code>artworks.json</code> 또는 <code>works.json</code>으로 내보낼 수 있습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <!-- 입력 폼 -->
+      <section class="panel" aria-label="Works input panel">
+        <h3>새 작품 입력 / 수정</h3>
+        <small>필수: 섹션, 연도, 제목(한/영 중 하나). — 이미지는 파일명만 기록하고 실제 업로드는 GitHub에서.</small>
+
+        <form id="workForm">
+          <div class="field-row">
+            <div class="field">
+              <label for="workSection">섹션 / Section</label>
+              <select id="workSection" required>
+                <option value="Light & Memory">Ⅰ Light &amp; Memory</option>
+                <option value="Human Prayer">Ⅱ Human Prayer</option>
+                <option value="Rebirth">Ⅲ Rebirth of Mind</option>
+                <option value="Existence">Ⅳ Restoration of Being</option>
+                <option value="Cosmos">Ⅴ Metaconsciousness of Light</option>
+              </select>
+            </div>
+            <div class="field" style="max-width:120px;">
+              <label for="workYear">연도 / Year</label>
+              <input id="workYear" type="number" inputmode="numeric" min="1990" max="2100" placeholder="2025" />
+            </div>
+            <div class="field">
+              <label for="workImage">이미지 파일명 (예: painting01.jpg)</label>
+              <input id="workImage" type="text" placeholder="파일명만 입력" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="workTitleKr">제목 (KR)</label>
+              <input id="workTitleKr" type="text" placeholder="국문 제목" />
+            </div>
+            <div class="field">
+              <label for="workTitleEn">Title (EN)</label>
+              <input id="workTitleEn" type="text" placeholder="English title" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="workMaterialKr">재료 / 화면 정보 (KR)</label>
+              <input id="workMaterialKr" type="text" placeholder="예: 캔버스에 아크릴" />
+            </div>
+            <div class="field">
+              <label for="workMaterialEn">Material (EN)</label>
+              <input id="workMaterialEn" type="text" placeholder="ex: Acrylic on canvas" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="workSizeKr">사이즈 (KR)</label>
+              <input id="workSizeKr" type="text" placeholder="예: 53.0 × 45.5 cm" />
+            </div>
+            <div class="field">
+              <label for="workSizeEn">Size (EN)</label>
+              <input id="workSizeEn" type="text" placeholder="ex: 53.0 × 45.5 cm" />
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">리스트에 추가 / Update</button>
+            <button type="button" class="btn" id="workFormReset">입력 초기화</button>
+          </div>
+        </form>
+
+        <div class="status-bar">
+          <span class="status-dot" id="worksFormDot"></span>
+          <span id="worksFormStatus">입력 대기 중…</span>
+        </div>
+      </section>
+
+      <!-- 목록 / 내보내기 -->
+      <section class="panel" aria-label="Works list panel">
+        <h3>Works 리스트</h3>
+        <small>같은 섹션·연도 순으로 정렬됩니다. 클릭해서 수정 / 삭제 가능합니다.</small>
+
+        <div class="table-wrap">
+          <table aria-label="Works list table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>섹션</th>
+                <th>연도</th>
+                <th>제목 KR / EN</th>
+                <th>이미지</th>
+                <th>편집</th>
+              </tr>
+            </thead>
+            <tbody id="worksTableBody">
+              <!-- JS에서 채움 -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="btn-row" style="margin-top:10px;">
+          <button type="button" class="btn btn-primary" id="btnExportWorks">artworks.json 다운로드</button>
+          <button type="button" class="btn" id="btnExportWorksAlt">works.json 다운로드</button>
+          <button type="button" class="btn btn-danger" id="btnClearWorks">전체 삭제 (로컬)</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="section" id="section-reports">
+    <div class="section-header">
+      <div>
+        <div class="section-title">DCAR Reports · 미학 보고서 메타데이터</div>
+        <p class="section-sub">
+          인덱스의 Reports 그리드에 연결될 DCAR 메타 정보입니다.
+          각 보고서의 ID, 제목(한/영), 카테고리, 한 줄 요약을 입력하고 JSON으로 내보낼 수 있습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <!-- 입력 -->
+      <section class="panel" aria-label="Reports input panel">
+        <h3>새 보고서 입력 / 수정</h3>
+        <small>예: ID = <code>DCAR01</code>, 연도 = 2025, 카테고리 = Theory / Archive / Practice.</small>
+
+        <form id="reportForm">
+          <div class="field-row">
+            <div class="field" style="max-width:120px;">
+              <label for="repId">ID</label>
+              <input id="repId" type="text" placeholder="DCAR01" required />
+            </div>
+            <div class="field" style="max-width:120px;">
+              <label for="repYear">연도 / Year</label>
+              <input id="repYear" type="number" inputmode="numeric" min="2000" max="2100" placeholder="2025" />
+            </div>
+            <div class="field">
+              <label for="repCategory">Category</label>
+              <select id="repCategory">
+                <option value="theory">Theory</option>
+                <option value="archive">Archive</option>
+                <option value="practice">Practice</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="repTitleKr">제목 (KR)</label>
+              <input id="repTitleKr" type="text" placeholder="국문 제목" />
+            </div>
+            <div class="field">
+              <label for="repTitleEn">Title (EN)</label>
+              <input id="repTitleEn" type="text" placeholder="English title" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="repSlug">파일 경로 / 슬러그</label>
+              <input id="repSlug" type="text" placeholder="예: DCAR-01-2025" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="repSummaryKr">요약 (KR)</label>
+              <textarea id="repSummaryKr" placeholder="보고서 개요 (한국어)"></textarea>
+            </div>
+            <div class="field">
+              <label for="repSummaryEn">Summary (EN)</label>
+              <textarea id="repSummaryEn" placeholder="Report abstract (EN)"></textarea>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary">리스트에 추가 / Update</button>
+            <button type="button" class="btn" id="repFormReset">입력 초기화</button>
+          </div>
+        </form>
+
+        <div class="status-bar">
+          <span class="status-dot" id="reportsFormDot"></span>
+          <span id="reportsFormStatus">입력 대기 중…</span>
+        </div>
+      </section>
+
+      <!-- 리스트 / 내보내기 -->
+      <section class="panel" aria-label="Reports list panel">
+        <h3>DCAR 리스트</h3>
+        <small>클릭해 수정 / 삭제. 인덱스 Reports 영역과 동일한 카테고리 태그를 사용합니다.</small>
+
+        <div class="table-wrap">
+          <table aria-label="Reports list table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ID</th>
+                <th>연도</th>
+                <th>제목 KR / EN</th>
+                <th>Category</th>
+                <th>편집</th>
+              </tr>
+            </thead>
+            <tbody id="reportsTableBody">
+              <!-- JS에서 채움 -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="btn-row" style="margin-top:10px;">
+          <button type="button" class="btn btn-primary" id="btnExportReports">reports.json 다운로드</button>
+          <button type="button" class="btn btn-danger" id="btnClearReports">전체 삭제 (로컬)</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- SETTINGS / NOTES -->
+  <section class="section" id="section-settings">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Settings &amp; Notes</div>
+        <p class="section-sub">
+          Admin Ω.19에 대한 간단한 메모와, 로컬 저장소(브라우저 LocalStorage) 초기화 도구입니다.
+          JSON은 항상 “브라우저에서 다운로드 → GitHub에 직접 업로드” 방식으로 사용하는 것을 기본으로 합니다.
+        </p>
+      </div>
+    </div>
+
+    <section class="panel" aria-label="Settings panel">
+      <h3>로컬 데이터 &amp; 메모</h3>
+      <small>아래 메모는 브라우저 LocalStorage에만 저장됩니다. 다른 기기에서는 보이지 않습니다.</small>
+
+      <div class="field">
+        <label for="adminNote">개인 메모 (이 기기 전용)</label>
+        <textarea id="adminNote" placeholder="예: 오늘 artworks.json 업데이트, 갤러리 송부 완료 등"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="btnSaveNote">메모 저장</button>
+        <button type="button" class="btn btn-danger" id="btnClearAllLocal">모든 로컬 데이터 삭제</button>
+      </div>
+
+      <div class="status-bar">
+        <span class="status-dot" id="settingsDot"></span>
+        <span id="settingsStatus">LocalStorage 상태: 정상</span>
+      </div>
     </section>
+  </section>
+</main>
 
-    <!-- RIGHT: DCAR & NOTES -->
-    <aside class="panel" aria-label="DCAR manager">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">DCAR · 미학 보고서 메모</div>
-          <small>간단 버전: 제목 목록 관리와 노트, JSON 다운로드.</small>
-        </div>
-      </div>
+<footer class="admin-foot">
+  <small>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.19 — Light · Memory · Being.</small>
+  <small>모든 데이터는 <strong>브라우저 로컬</strong>에서만 처리되며, JSON 파일로 다운로드 후 GitHub에 업로드해야 합니다.</small>
+</footer> <script>
+/* ===== 공통 헬퍼 ===== */
+const $  = (q, sc=document)=>sc.querySelector(q);
+const $$ = (q, sc=document)=>Array.from(sc.querySelectorAll(q));
 
-      <div class="toolbar">
-        <button class="btn" id="btnLoadDcar">
-          <span class="icon">☁️</span> /data/dcar.json 읽기 (선택)
-        </button>
-        <button class="btn primary" id="btnDownloadDcar">
-          <span class="icon">💾</span> dcar.json 다운로드
-        </button>
-      </div>
-
-      <div class="dcar-list" id="dcarList">
-        <!-- items -->
-      </div>
-
-      <form class="form" id="dcarForm">
-        <label>
-          ID
-          <input id="d_id" placeholder="예: DCAR-01-2025">
-        </label>
-        <label>
-          Category
-          <select id="d_cat">
-            <option value="theory">Theory</option>
-            <option value="archive">Archive</option>
-            <option value="practice">Practice</option>
-          </select>
-        </label>
-        <label class="full">
-          제목(KR)
-          <input id="d_title_kr" placeholder="보고서 제목 (한국어)">
-        </label>
-        <label class="full">
-          Title (EN)
-          <input id="d_title_en" placeholder="Title in English">
-        </label>
-        <label class="full">
-          메모 / Notes
-          <textarea id="d_note" placeholder="간단 개요, 진행상황 메모"></textarea>
-        </label>
-        <div class="form-row full">
-          <button type="button" class="btn primary" id="btnSaveDcar">
-            <span class="icon">✅</span> 항목 저장 / 추가
-          </button>
-          <button type="button" class="btn danger" id="btnDeleteDcar">
-            <span class="icon">🗑</span> 항목 삭제
-          </button>
-        </div>
-        <p class="note full">
-          • dcar.json은 Admin 전용 메모 파일로 사용해도 되고,<br>
-          &nbsp;&nbsp;필요하면 Index Reports 데이터와 연결할 때 참고용으로 쓸 수 있습니다.
-        </p>
-      </form>
-    </aside>
-  </main>
-</div>
-
-<div id="toast" role="status" aria-live="polite"></div> <script>
-const $ = (q, sc=document) => sc.querySelector(q);
-const $$ = (q, sc=document) => Array.from(sc.querySelectorAll(q));
-
-/* ---------- Toast ---------- */
-function showToast(msg, ms=2200){
-  const t = $('#toast');
-  if(!t) return;
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(()=>{ t.style.display = 'none'; }, ms);
+function downloadJSON(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
-/* ---------- Works state ---------- */
-const SECTION_KEYS = [
-  "Light & Memory",
-  "Human Prayer",
-  "Rebirth",
-  "Existence",
-  "Cosmos"
-];
-
-let worksData = {
-  "Light & Memory": [],
-  "Human Prayer": [],
-  "Rebirth": [],
-  "Existence": [],
-  "Cosmos": []
-};
-let currentSection = "Light & Memory";
-let selectedIndex = -1;
-
-function renderWorksTable(){
-  const tbody = $('#worksTbody');
-  if(!tbody) return;
-  const list = worksData[currentSection] || [];
-  tbody.innerHTML = '';
-  list.forEach((w, idx)=>{
-    const tr = document.createElement('tr');
-    tr.dataset.index = idx;
-    if(idx === selectedIndex) tr.classList.add('selected');
-    const shortId = w.id || '';
-    const year = w.year || '';
-    const tkr = w.title_kr || '';
-    const ten = w.title_en || '';
-    const size = w.size_kr || w.size_en || '';
-    const img = w.image || '';
-    tr.innerHTML = `
-      <td>${shortId}</td>
-      <td>${year}</td>
-      <td>${tkr}</td>
-      <td>${ten}</td>
-      <td>${size}</td>
-      <td>${img}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-  $('#statusCount').innerHTML = `현재 섹션 작품: <strong>${list.length}</strong>`;
-  if(list.length === 0){
-    $('#statusHint').textContent = '아직 작품이 없습니다. 아래 폼에 입력 후 "저장 / 추가"를 눌러 첫 행을 만드세요.';
-  }else{
-    $('#statusHint').textContent = '행을 클릭하면 폼에 불러와 수정할 수 있습니다.';
+function setStatus(elTextId, elDotId, text, ok=true){
+  const t = $( '#' + elTextId );
+  const d = $( '#' + elDotId );
+  if(t) t.textContent = text;
+  if(d){
+    d.style.background = ok ? 'var(--ok)' : 'var(--danger)';
+    d.style.boxShadow  = ok ? '0 0 10px rgba(94,209,155,.7)' : '0 0 10px rgba(255,92,122,.8)';
   }
 }
 
-function fillWorksForm(item){
-  $('#f_section').value   = currentSection;
-  $('#f_id').value        = item?.id || '';
-  $('#f_year').value      = item?.year || '';
-  $('#f_image').value     = item?.image || '';
-  $('#f_title_kr').value  = item?.title_kr || '';
-  $('#f_title_en').value  = item?.title_en || '';
-  $('#f_mat_kr').value    = item?.material_kr || '';
-  $('#f_mat_en').value    = item?.material_en || '';
-  $('#f_size_kr').value   = item?.size_kr || '';
-  $('#f_size_en').value   = item?.size_en || '';
-}
+/* ===== 내비게이션 ===== */
+(function initNav(){
+  const buttons = $$('.admin-nav .nav-btn');
+  const sections = $$('.section');
 
-function collectWorksForm(){
-  const section   = $('#f_section').value || currentSection;
-  const id        = $('#f_id').value.trim();
-  const year      = $('#f_year').value.trim();
-  const imageName = $('#f_image').value.trim();
-  const obj = {
-    id : id || undefined,
-    title_kr : $('#f_title_kr').value.trim() || undefined,
-    title_en : $('#f_title_en').value.trim() || undefined,
-    material_kr : $('#f_mat_kr').value.trim() || undefined,
-    material_en : $('#f_mat_en').value.trim() || undefined,
-    size_kr : $('#f_size_kr').value.trim() || undefined,
-    size_en : $('#f_size_en').value.trim() || undefined,
-    year : year || undefined,
-    image : imageName || undefined,
-    zoom  : imageName ? `/images/zoom/${imageName}` : undefined
-  };
-  // cleanup undefined keys
-  Object.keys(obj).forEach(k => obj[k] === undefined && delete obj[k]);
-  return {section, data:obj};
-}
-
-/* ---------- Works handlers ---------- */
-function bindWorks(){
-  // section tabs
-  $$('#sectionTabs button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      $$('#sectionTabs button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      currentSection = btn.dataset.key;
-      selectedIndex = -1;
-      fillWorksForm({});
-      $('#f_section').value = currentSection;
-      renderWorksTable();
+  function show(id){
+    sections.forEach(sec=>{
+      sec.classList.toggle('active', sec.id === id);
     });
-  });
-
-  // table click
-  $('#worksTbody').addEventListener('click',e=>{
-    const tr = e.target.closest('tr');
-    if(!tr) return;
-    selectedIndex = Number(tr.dataset.index);
-    const list = worksData[currentSection] || [];
-    fillWorksForm(list[selectedIndex] || {});
-    renderWorksTable();
-  });
-
-  // save / add
-  $('#btnSaveRow').addEventListener('click',()=>{
-    const res = collectWorksForm();
-    const sec = res.section;
-    const list = worksData[sec] || (worksData[sec]=[]);
-    // auto id if missing
-    if(!res.data.id){
-      const base = "DZ-";
-      const nums = list
-        .map(x=>String(x.id||'').replace(/^[^\d]*/,''))
-        .map(n=>parseInt(n,10))
-        .filter(n=>!isNaN(n));
-      const next = (nums.length?Math.max(...nums):0)+1;
-      const padded = String(next).padStart(3,'0');
-      res.data.id = base + padded;
-    }
-    // update or push
-    if(selectedIndex >= 0 && selectedIndex < list.length){
-      list[selectedIndex] = res.data;
-    }else{
-      list.push(res.data);
-      selectedIndex = list.length-1;
-    }
-    currentSection = sec;
-    $('#f_section').value = sec;
-    showToast('작품 정보가 저장되었습니다.');
-    renderWorksTable();
-  });
-
-  // delete
-  $('#btnDeleteRow').addEventListener('click',()=>{
-    const list = worksData[currentSection] || [];
-    if(selectedIndex < 0 || selectedIndex >= list.length){
-      showToast('삭제할 행을 먼저 선택하세요.');
-      return;
-    }
-    if(!confirm('선택한 작품을 삭제할까요?')) return;
-    list.splice(selectedIndex,1);
-    selectedIndex = -1;
-    fillWorksForm({});
-    renderWorksTable();
-    showToast('행이 삭제되었습니다.');
-  });
-
-  // reset current section
-  $('#btnReset').addEventListener('click',()=>{
-    if(!confirm(`현재 섹션 "${currentSection}"의 목록을 모두 비울까요?`)) return;
-    worksData[currentSection] = [];
-    selectedIndex = -1;
-    fillWorksForm({});
-    renderWorksTable();
-    showToast('섹션이 초기화되었습니다.');
-  });
-
-  // fetch from server
-  $('#btnFetch').addEventListener('click',async()=>{
-    try{
-      const res = await fetch('/data/works.json',{cache:'no-store'});
-      if(!res.ok) throw new Error(res.statusText);
-      const json = await res.json();
-      normalizeWorks(json);
-      showToast('/data/works.json 을 불러왔습니다.');
-    }catch(err){
-      console.error(err);
-      showToast('서버에서 works.json을 불러오지 못했습니다.');
-    }
-    renderWorksTable();
-  });
-
-  // load from local file
-  $('#fileInput').addEventListener('change',e=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev=>{
-      try{
-        const json = JSON.parse(ev.target.result);
-        normalizeWorks(json);
-        renderWorksTable();
-        showToast('로컬 JSON이 로드되었습니다.');
-      }catch(err){
-        console.error(err);
-        showToast('JSON 파싱 중 오류가 발생했습니다.');
+    buttons.forEach(btn=>{
+      const on = btn.dataset.target === id;
+      btn.classList.toggle('active', on);
+      if(on){
+        btn.setAttribute('aria-current','page');
+      }else{
+        btn.removeAttribute('aria-current');
       }
-    };
-    reader.readAsText(file,'utf-8');
-    // reset so same 파일 다시 선택 가능
-    e.target.value = '';
-  });
-
-  // download JSON
-  $('#btnDownload').addEventListener('click',()=>{
-    const blob = new Blob([JSON.stringify(worksData,null,2)],{type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'works.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast('works.json 파일을 다운로드했습니다.');
-  });
-
-  // copy JSON
-  $('#btnCopy').addEventListener('click',async()=>{
-    const text = JSON.stringify(worksData,null,2);
-    try{
-      await navigator.clipboard.writeText(text);
-      showToast('JSON이 클립보드에 복사되었습니다.');
-    }catch(err){
-      console.error(err);
-      showToast('복사 권한이 없거나 실패했습니다.');
-    }
-  });
-
-  // section select inside form 바꾸면 섹션도 함께 이동
-  $('#f_section').addEventListener('change',e=>{
-    currentSection = e.target.value;
-    $$('#sectionTabs button').forEach(b=>{
-      b.classList.toggle('active',b.dataset.key === currentSection);
     });
-    selectedIndex = -1;
-    renderWorksTable();
-  });
+  }
 
-  // 초기 렌더
-  renderWorksTable();
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>show(btn.dataset.target));
+  });
+})();
+
+/* ===== 데이터 모델 (메모리 + LocalStorage) ===== */
+const STORAGE_KEYS = {
+  works   : 'dz_admin_works_v1',
+  reports : 'dz_admin_reports_v1',
+  note    : 'dz_admin_note_v1'
+};
+
+let works   = [];
+let reports = [];
+
+function loadLocalData(){
+  try{
+    const w = localStorage.getItem(STORAGE_KEYS.works);
+    const r = localStorage.getItem(STORAGE_KEYS.reports);
+    const n = localStorage.getItem(STORAGE_KEYS.note);
+    if(w) works   = JSON.parse(w);
+    if(r) reports = JSON.parse(r);
+    if(n && $('#adminNote')) $('#adminNote').value = n;
+    $('#adminStorageState').textContent = 'Local Storage: active';
+    setStatus('settingsStatus','settingsDot','LocalStorage 상태: 정상',true);
+  }catch(e){
+    console.error(e);
+    $('#adminStorageState').textContent = 'Local Storage: error';
+    setStatus('settingsStatus','settingsDot','LocalStorage 접근 오류',false);
+  }
+}
+function saveLocalData(){
+  try{
+    localStorage.setItem(STORAGE_KEYS.works,   JSON.stringify(works));
+    localStorage.setItem(STORAGE_KEYS.reports, JSON.stringify(reports));
+    setStatus('settingsStatus','settingsDot','자동 저장 완료',true);
+  }catch(e){
+    console.error(e);
+    setStatus('settingsStatus','settingsDot','저장 오류: 용량 또는 브라우저 제한',false);
+  }
 }
 
-/* normalize incoming works.json 구조 */
-function normalizeWorks(json){
-  const base = {
-    "Light & Memory": [],
-    "Human Prayer": [],
-    "Rebirth": [],
-    "Existence": [],
-    "Cosmos": []
-  };
-  SECTION_KEYS.forEach(k=>{
-    if(Array.isArray(json[k])){
-      base[k] = json[k].map(x=>({
-        id:x.id || x.ID || '',
-        title_kr:x.title_kr || x.titleKR || '',
-        title_en:x.title_en || x.titleEN || '',
-        material_kr:x.material_kr || x.materialKR || x.material || '',
-        material_en:x.material_en || x.materialEN || x.material || '',
-        size_kr:x.size_kr || x.sizeKR || x.size || '',
-        size_en:x.size_en || x.sizeEN || x.size || '',
-        year:x.year || '',
-        image:(x.image || '').replace(/^.*\//,''),
-        zoom:x.zoom || undefined
-      }));
+/* ===== Works 렌더링 ===== */
+function renderWorksTable(){
+  const body = $('#worksTableBody');
+  if(!body) return;
+  body.innerHTML = '';
+  const sorted = [...works].sort((a,b)=>{
+    if(a.section === b.section){
+      return (b.year||0) - (a.year||0);
     }
+    return a.section.localeCompare(b.section);
   });
-  worksData = base;
-  selectedIndex = -1;
-  fillWorksForm({});
-}
-
-/* ---------- DCAR state ---------- */
-let dcarData = [];
-let dcarIndex = -1;
-
-function renderDcar(){
-  const listEl = $('#dcarList');
-  if(!listEl) return;
-  listEl.innerHTML = '';
-  dcarData.forEach((r,idx)=>{
-    const div = document.createElement('div');
-    div.className = 'dcar-item' + (idx===dcarIndex?' active':'');
-    div.dataset.index = idx;
-    div.innerHTML = `
-      <strong>${r.id || '(no id)'}</strong><br>
-      <small>${r.title_kr || ''}</small><br>
-      <small>${r.title_en || ''}</small>
+  sorted.forEach((w, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${w.section || ''}</td>
+      <td>${w.year || ''}</td>
+      <td>${(w.title_kr || '')}<br><span style="opacity:.75">${w.title_en || ''}</span></td>
+      <td>${w.image || ''}</td>
+      <td>
+        <div class="row-actions">
+          <button type="button" class="btn btn-xs btn-edit" data-id="${w._id}">수정</button>
+          <button type="button" class="btn btn-xs btn-danger btn-del" data-id="${w._id}">삭제</button>
+        </div>
+      </td>
     `;
-    listEl.appendChild(div);
+    body.appendChild(tr);
   });
+  renderWorksSummary();
+}
+function renderWorksSummary(){
+  const body = $('#worksSummaryBody');
+  if(!body) return;
+  const map = new Map();
+  works.forEach(w=>{
+    const key = w.section || 'Unknown';
+    map.set(key, (map.get(key)||0)+1);
+  });
+  body.innerHTML = '';
+  for(const [section,count] of map.entries()){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${section}</td><td>${count}</td>`;
+    body.appendChild(tr);
+  }
+  if(works.length){
+    setStatus('worksStatusText','worksStatusDot',`총 ${works.length}점 등록됨`,true);
+  }else{
+    setStatus('worksStatusText','worksStatusDot','Works 데이터가 아직 없습니다.',false);
+  }
 }
 
-function fillDcarForm(item){
-  $('#d_id').value       = item?.id || '';
-  $('#d_cat').value      = item?.cat || 'theory';
-  $('#d_title_kr').value = item?.title_kr || '';
-  $('#d_title_en').value = item?.title_en || '';
-  $('#d_note').value     = item?.note || '';
+/* ===== Reports 렌더링 ===== */
+function renderReportsTable(){
+  const body = $('#reportsTableBody');
+  if(!body) return;
+  body.innerHTML = '';
+  const sorted = [...reports].sort((a,b)=>{
+    return (a.id||'').localeCompare(b.id||'');
+  });
+  sorted.forEach((r, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${r.id || ''}</td>
+      <td>${r.year || ''}</td>
+      <td>${r.title_kr || ''}<br><span style="opacity:.75">${r.title_en || ''}</span></td>
+      <td><span class="tag">${r.category || ''}</span></td>
+      <td>
+        <div class="row-actions">
+          <button type="button" class="btn btn-xs btn-edit-report" data-id="${r._id}">수정</button>
+          <button type="button" class="btn btn-xs btn-danger btn-del-report" data-id="${r._id}">삭제</button>
+        </div>
+      </td>
+    `;
+    body.appendChild(tr);
+  });
+  renderReportsSummary();
+}
+function renderReportsSummary(){
+  const body = $('#reportsSummaryBody');
+  if(!body) return;
+  const map = new Map();
+  reports.forEach(r=>{
+    const key = r.category || 'uncategorized';
+    map.set(key,(map.get(key)||0)+1);
+  });
+  body.innerHTML = '';
+  for(const [cat,count] of map.entries()){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${cat}</td><td>${count}</td>`;
+    body.appendChild(tr);
+  }
+  if(reports.length){
+    setStatus('reportsStatusText','reportsStatusDot',`총 ${reports.length}개 보고서 등록됨`,true);
+  }else{
+    setStatus('reportsStatusText','reportsStatusDot','DCAR 데이터가 아직 없습니다.',false);
+  }
 }
 
-function collectDcarForm(){
-  return {
-    id: $('#d_id').value.trim() || undefined,
-    cat: $('#d_cat').value || 'theory',
-    title_kr: $('#d_title_kr').value.trim() || undefined,
-    title_en: $('#d_title_en').value.trim() || undefined,
-    note: $('#d_note').value.trim() || undefined
-  };
-}
+/* ===== Works Form 로직 ===== */
+(function initWorksForm(){
+  const form = $('#workForm');
+  if(!form) return;
+  const resetBtn  = $('#workFormReset');
+  const tableBody = $('#worksTableBody');
 
-/* ---------- DCAR handlers ---------- */
-function bindDcar(){
-  $('#dcarList').addEventListener('click',e=>{
-    const item = e.target.closest('.dcar-item');
-    if(!item) return;
-    dcarIndex = Number(item.dataset.index);
-    fillDcarForm(dcarData[dcarIndex] || {});
-    renderDcar();
-  });
+  let editingId = null;
 
-  $('#btnSaveDcar').addEventListener('click',()=>{
-    const obj = collectDcarForm();
-    if(!obj.id){
-      obj.id = `DCAR-${String(dcarData.length+1).padStart(2,'0')}-2025`;
-    }
-    if(dcarIndex >=0 && dcarIndex < dcarData.length){
-      dcarData[dcarIndex] = obj;
-    }else{
-      dcarData.push(obj);
-      dcarIndex = dcarData.length-1;
-    }
-    renderDcar();
-    showToast('DCAR 항목이 저장되었습니다.');
-  });
-
-  $('#btnDeleteDcar').addEventListener('click',()=>{
-    if(dcarIndex<0 || dcarIndex>=dcarData.length){
-      showToast('삭제할 보고서를 먼저 선택하세요.');
+  form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const entry = {
+      _id        : editingId || `w_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      section    : $('#workSection').value.trim(),
+      year       : parseInt($('#workYear').value,10) || '',
+      image      : $('#workImage').value.trim(),
+      title_kr   : $('#workTitleKr').value.trim(),
+      title_en   : $('#workTitleEn').value.trim(),
+      material_kr: $('#workMaterialKr').value.trim(),
+      material_en: $('#workMaterialEn').value.trim(),
+      size_kr    : $('#workSizeKr').value.trim(),
+      size_en    : $('#workSizeEn').value.trim()
+    };
+    if(!entry.section){
+      setStatus('worksFormStatus','worksFormDot','섹션은 필수입니다.',false);
       return;
     }
-    if(!confirm('선택한 DCAR 항목을 삭제할까요?')) return;
-    dcarData.splice(dcarIndex,1);
-    dcarIndex = -1;
-    fillDcarForm({});
-    renderDcar();
-    showToast('DCAR 항목이 삭제되었습니다.');
+    if(!entry.title_kr && !entry.title_en){
+      setStatus('worksFormStatus','worksFormDot','제목(KR/EN 중 하나)은 필수입니다.',false);
+      return;
+    }
+    const idx = works.findIndex(w=>w._id===entry._id);
+    if(idx >= 0){
+      works[idx] = entry;
+      setStatus('worksFormStatus','worksFormDot','작품 정보가 수정되었습니다.',true);
+    }else{
+      works.push(entry);
+      setStatus('worksFormStatus','worksFormDot','새 작품이 추가되었습니다.',true);
+    }
+    editingId = null;
+    form.reset();
+    renderWorksTable();
+    saveLocalData();
   });
 
-  $('#btnDownloadDcar').addEventListener('click',()=>{
-    const blob = new Blob([JSON.stringify(dcarData,null,2)],{type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dcar.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast('dcar.json 파일을 다운로드했습니다.');
+  resetBtn?.addEventListener('click', ()=>{
+    editingId = null;
+    form.reset();
+    setStatus('worksFormStatus','worksFormDot','입력이 초기화되었습니다.',true);
   });
 
-  $('#btnLoadDcar').addEventListener('click',async()=>{
-    try{
-      const res = await fetch('/data/dcar.json',{cache:'no-store'});
-      if(!res.ok) throw new Error(res.statusText);
-      const json = await res.json();
-      if(Array.isArray(json)) dcarData = json;
-      else if(Array.isArray(json.items)) dcarData = json.items;
-      else dcarData = [];
-      dcarIndex = -1;
-      fillDcarForm({});
-      renderDcar();
-      showToast('/data/dcar.json 을 불러왔습니다.');
-    }catch(err){
-      console.error(err);
-      showToast('dcar.json 불러오기 실패 (파일이 없어도 괜찮습니다).');
+  tableBody?.addEventListener('click', e=>{
+    const editBtn = e.target.closest('.btn-edit');
+    const delBtn  = e.target.closest('.btn-del');
+    if(editBtn){
+      const id = editBtn.dataset.id;
+      const w  = works.find(x=>x._id===id);
+      if(!w) return;
+      editingId = w._id;
+      $('#workSection').value     = w.section || 'Light & Memory';
+      $('#workYear').value        = w.year || '';
+      $('#workImage').value       = w.image || '';
+      $('#workTitleKr').value     = w.title_kr || '';
+      $('#workTitleEn').value     = w.title_en || '';
+      $('#workMaterialKr').value  = w.material_kr || '';
+      $('#workMaterialEn').value  = w.material_en || '';
+      $('#workSizeKr').value      = w.size_kr || '';
+      $('#workSizeEn').value      = w.size_en || '';
+      setStatus('worksFormStatus','worksFormDot','선택한 작품을 편집 중입니다.',true);
+    }
+    if(delBtn){
+      const id = delBtn.dataset.id;
+      works = works.filter(x=>x._id!==id);
+      renderWorksTable();
+      saveLocalData();
+      setStatus('worksFormStatus','worksFormDot','작품이 삭제되었습니다.',true);
     }
   });
 
-  renderDcar();
-}
+  $('#btnExportWorks')?.addEventListener('click', ()=>{
+    const obj = {
+      "Light & Memory"          : works.filter(w=>w.section==="Light & Memory"),
+      "Human Prayer"            : works.filter(w=>w.section==="Human Prayer"),
+      "Rebirth"                 : works.filter(w=>w.section==="Rebirth"),
+      "Restoration of Being"    : works.filter(w=>w.section==="Restoration of Being"),
+      "Metaconsciousness of Light": works.filter(w=>w.section==="Metaconsciousness of Light")
+    };
+    downloadJSON('artworks.json', obj);
+  });
+  $('#btnExportWorksAlt')?.addEventListener('click', ()=>{
+    downloadJSON('works.json', works);
+  });
+  $('#btnClearWorks')?.addEventListener('click', ()=>{
+    if(!confirm('정말로 모든 Works 데이터를 삭제할까요? (이 브라우저에서만 삭제됩니다)')) return;
+    works = [];
+    renderWorksTable();
+    saveLocalData();
+    setStatus('worksFormStatus','worksFormDot','모든 Works 데이터가 삭제되었습니다.',true);
+  });
+})();
 
-/* ---------- init ---------- */
-document.addEventListener('DOMContentLoaded',()=>{
-  bindWorks();
-  bindDcar();
-});
+/* ===== Reports Form 로직 ===== */
+(function initReportsForm(){
+  const form = $('#reportForm');
+  if(!form) return;
+  const resetBtn  = $('#repFormReset');
+  const tableBody = $('#reportsTableBody');
+  let editingId   = null;
+
+  form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const entry = {
+      _id        : editingId || `r_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      id         : $('#repId').value.trim(),
+      year       : parseInt($('#repYear').value,10) || '',
+      category   : $('#repCategory').value.trim(),
+      title_kr   : $('#repTitleKr').value.trim(),
+      title_en   : $('#repTitleEn').value.trim(),
+      slug       : $('#repSlug').value.trim(),
+      summary_kr : $('#repSummaryKr').value.trim(),
+      summary_en : $('#repSummaryEn').value.trim()
+    };
+    if(!entry.id){
+      setStatus('reportsFormStatus','reportsFormDot','ID는 필수입니다. (예: DCAR01)',false);
+      return;
+    }
+    const idx = reports.findIndex(r=>r._id===entry._id);
+    if(idx >= 0){
+      reports[idx] = entry;
+      setStatus('reportsFormStatus','reportsFormDot','보고서 정보가 수정되었습니다.',true);
+    }else{
+      reports.push(entry);
+      setStatus('reportsFormStatus','reportsFormDot','새 보고서가 추가되었습니다.',true);
+    }
+    editingId = null;
+    form.reset();
+    renderReportsTable();
+    saveLocalData();
+  });
+
+  resetBtn?.addEventListener('click', ()=>{
+    editingId = null;
+    form.reset();
+    setStatus('reportsFormStatus','reportsFormDot','입력이 초기화되었습니다.',true);
+  });
+
+  tableBody?.addEventListener('click', e=>{
+    const editBtn = e.target.closest('.btn-edit-report');
+    const delBtn  = e.target.closest('.btn-del-report');
+    if(editBtn){
+      const id = editBtn.dataset.id;
+      const r  = reports.find(x=>x._id===id);
+      if(!r) return;
+      editingId = r._id;
+      $('#repId').value        = r.id || '';
+      $('#repYear').value      = r.year || '';
+      $('#repCategory').value  = r.category || 'theory';
+      $('#repTitleKr').value   = r.title_kr || '';
+      $('#repTitleEn').value   = r.title_en || '';
+      $('#repSlug').value      = r.slug || '';
+      $('#repSummaryKr').value = r.summary_kr || '';
+      $('#repSummaryEn').value = r.summary_en || '';
+      setStatus('reportsFormStatus','reportsFormDot','선택한 보고서를 편집 중입니다.',true);
+    }
+    if(delBtn){
+      const id = delBtn.dataset.id;
+      reports = reports.filter(x=>x._id!==id);
+      renderReportsTable();
+      saveLocalData();
+      setStatus('reportsFormStatus','reportsFormDot','보고서가 삭제되었습니다.',true);
+    }
+  });
+
+  $('#btnExportReports')?.addEventListener('click', ()=>{
+    downloadJSON('reports.json', reports);
+  });
+  $('#btnClearReports')?.addEventListener('click', ()=>{
+    if(!confirm('정말로 모든 DCAR 데이터를 삭제할까요? (이 브라우저에서만 삭제)')) return;
+    reports = [];
+    renderReportsTable();
+    saveLocalData();
+    setStatus('reportsFormStatus','reportsFormDot','모든 DCAR 데이터가 삭제되었습니다.',true);
+  });
+})();
+
+/* ===== Settings / Note ===== */
+(function initSettings(){
+  const noteArea = $('#adminNote');
+  const saveBtn  = $('#btnSaveNote');
+  const clearBtn = $('#btnClearAllLocal');
+
+  saveBtn?.addEventListener('click', ()=>{
+    if(!noteArea) return;
+    try{
+      localStorage.setItem(STORAGE_KEYS.note, noteArea.value || '');
+      setStatus('settingsStatus','settingsDot','메모가 저장되었습니다.',true);
+    }catch(e){
+      console.error(e);
+      setStatus('settingsStatus','settingsDot','메모 저장 오류',false);
+    }
+  });
+
+  clearBtn?.addEventListener('click', ()=>{
+    if(!confirm('정말로 Admin Ω.19의 모든 로컬 데이터를 삭제할까요? (이 브라우저에서만 삭제됩니다)')) return;
+    try{
+      Object.values(STORAGE_KEYS).forEach(k=>localStorage.removeItem(k));
+    }catch(e){
+      console.error(e);
+    }
+    works   = [];
+    reports = [];
+    if(noteArea) noteArea.value = '';
+    renderWorksTable();
+    renderReportsTable();
+    setStatus('settingsStatus','settingsDot','로컬 데이터가 모두 삭제되었습니다.',true);
+  });
+})();
+
+/* ===== 초기화 ===== */
+loadLocalData();
+renderWorksTable();
+renderReportsTable();
+
+/* 간단한 언어 라벨 — 현재는 KR 고정 UI */
+$('#adminLangLabel').textContent = 'KR 인터페이스';
 </script>
 </body>
 </html>

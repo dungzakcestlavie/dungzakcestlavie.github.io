@@ -1,3 +1,13 @@
 {
-  "reports": []
+  "reports": [
+    {
+      "id": "DCAR-01-2025",
+      "title_en": "On Light, Memory, and Being",
+      "title_ko": "빛, 기억, 존재에 관하여",
+      "year": "2025",
+      "category": "Theory",
+      "summary_en": "The paintings of DUNGZAK CESTLAVIE investigate how pre-sensory emotion gains form through light. His colors, gazes, faces, and rhythms operate as structures of self-reflection and expansion, moving beyond the interior toward emotional resonance and an ontology of light.",
+      "summary_ko": "등작의 회화는 기억 이전의 감정이 빛을 통해 형체를 얻는 과정을 탐구한다. 그의 색, 시선, 얼굴, 흐름은 모두 존재가 스스로를 성찰하고 확장하는 장치로 작동하며, 개인의 내면을 넘어 감정의 공명과 빛의 존재론으로 나아간다."
+    }
+  ]
 }

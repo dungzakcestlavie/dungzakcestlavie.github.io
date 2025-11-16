@@ -1,24 +1,13 @@
 {
   "reports": [
-    {
-      "id": "DCAR-01-2025",
-      "title_en": "On Light, Memory, and Being",
-      "title_ko": "빛, 기억, 존재에 관하여",
-      "year": "2025",
-      "category": "Theory",
-      "summary_en": "The paintings of DUNGZAK CESTLAVIE explore the origins of memory, emotion, and being.",
-      "summary_ko": "등작의 회화는 기억과 감정, 존재의 기원을 탐구한다."
-    },
-    {
-      "id": "DCAR-02-2025",
-      "slug": "DCAR-02-2025",
-      "year": "2025",
-      "category": "Theory",
-      "title_en": "Pray for Us",
-      "title_ko": "우리를 위해 기도해 주세요",
-      "summary_kr": "빛·감정·응시·존재의 귀환에 대한 미학적 고찰.",
-      "summary_en": "A meditation on light, emotion, gaze, and the return to being.",
-      "md_path": "reports/DCAR-02-2025.md"
-    }
+    "DCAR-01-2025",
+    "DCAR-02-2025",
+    "DCAR-03-2025",
+    "DCAR-04-2025",
+    "DCAR-05-2025",
+    "DCAR-06-2025",
+    "DCAR-07-2025",
+    "DCAR-08-2025",
+    "DCAR-09-2025"
   ]
 }

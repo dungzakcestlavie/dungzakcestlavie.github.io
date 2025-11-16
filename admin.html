@@ -1,875 +1,1291 @@
-<!-- ① HEAD / STYLE — DUNGZAK Admin Ω.20 -->
+<!doctype html>
+<html lang="ko" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20 — Works & DCAR</title>
+  <title>DUNGZAK · Admin Ω.19 — Works & DCAR</title>
 
-  <!-- 기본 설명 -->
-  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω — 작품(Works) & 미학 보고서(DCAR) 로컬 편집·JSON/MD 빌더 Admin." />
-  <link rel="canonical" href="https://dungzak.art/" />
-
-  <!-- 검색 / 다크모드 힌트 -->
+  <!-- 기본 메타 -->
+  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE — Works & DCAR Admin · JSON Generator" />
+  <meta name="robots" content="noindex,nofollow" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070c1a" />
 
-  <!-- OG / 공유 메타 -->
-  <meta property="og:title" content="DUNGZAK CESTLAVIE · Admin Ω.20 — Works & DCAR" />
-  <meta property="og:description" content="등작의 작품 아카이브와 DCAR 미학 보고서를 로컬에서 관리하는 Admin 페이지." />
+  <!-- Open Graph / Twitter (공유 대비용, 혹시 URL 노출될 경우) -->
   <meta property="og:type" content="website" />
+  <meta property="og:title" content="DUNGZAK · Admin Ω.19 — Works & DCAR" />
+  <meta property="og:description" content="등작 작품 아카이브와 DCAR 미학 보고서를 위한 JSON Admin 툴." />
   <meta property="og:url" content="https://dungzak.art/admin.html" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE" />
 
-  <!-- Twitter 카드 -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="DUNGZAK CESTLAVIE · Admin Ω.20" />
-  <meta name="twitter:description" content="Lightflow Ω — Works & DCAR Local JSON / MD Builder." />
+  <meta name="twitter:title" content="DUNGZAK · Admin Ω.19 — Works & DCAR" />
+  <meta name="twitter:description" content="등작 작품/보고서 JSON 생성 Admin." />
 
-  <!-- 파비콘 (Index와 동일 스타일) -->
-  <link
-    rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>"
-  />
+  <!-- Canonical (공식 URL 신호) -->
+  <link rel="canonical" href="https://dungzak.art/admin.html" />
+
+  <!-- Favicon (Index와 통일) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>">
 
   <style>
-    :root {
-      --bg: #070c1a;
-      --panel: #0e152c;
-      --panel-soft: #101833;
-      --fg: #eaf0ff;
-      --muted: #a8b7e8;
-      --gold: #e6c777;
-      --accent: #7aa5ff;
-      --line: #222b55;
-      --danger: #ff6b81;
-      --max: 1160px;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    html {
-      scroll-behavior: smooth;
-    }
-    body {
-      background: radial-gradient(circle at top left, #111a3a 0, #070c1a 42%, #040613 100%);
-      color: var(--fg);
-      font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR",
-        sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-    button {
-      font: inherit;
-    }
+  :root{
+    --bg:#070c1a;
+    --panel:#0f1630;
+    --panel-soft:#121b3b;
+    --ink:#eaf0ff;
+    --sub:#a9b7e8;
+    --accent:#e6c777;
+    --accent-soft:#f0df9e;
+    --line:#1b2652;
+    --danger:#ff6b81;
+    --max:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(circle at top,#141c3c 0,#070c1a 55%,#040612 100%);
+    color:var(--ink);
+    font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  a{color:var(--accent-soft);text-decoration:none}
+  a:hover{text-decoration:underline}
 
-    /* 헤더 */
-    header.admin {
-      position: sticky;
-      top: 0;
-      z-index: 8;
-      padding: 10px 14px 12px;
-      background: linear-gradient(180deg, rgba(6, 10, 26, 0.96), rgba(6, 10, 26, 0.86));
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(12px);
-    }
-    .admin-bar {
-      max-width: var(--max);
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px 14px;
-    }
-    .admin-brand-main {
-      font-weight: 900;
-      color: var(--gold);
-      font-size: clamp(17px, 4vw, 21px);
-    }
-    .admin-brand-sub {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .admin-pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-left: auto;
-    }
-    .pill {
-      padding: 6px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(9, 15, 40, 0.95);
-      color: var(--muted);
-      white-space: nowrap;
-    }
-    .pill.gold {
-      background: linear-gradient(180deg, #fde7a9, #e6c777);
-      color: #141322;
-      border-color: #d7b866;
-    }
-    .pill.state-ok {
-      border-color: #3a7e4e;
-      color: #c9f2d3;
-      background: rgba(9, 40, 24, 0.9);
-    }
-    .pill.state-warn {
-      border-color: #ff9f43;
-      color: #ffe1b8;
-      background: rgba(60, 34, 5, 0.9);
-    }
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:18px 12px 32px;
+  }
 
-    /* 메인 컨테이너 */
-    main.admin-main {
-      max-width: var(--max);
-      margin: 22px auto 48px;
-      padding: 0 14px 40px;
-    }
+  header.admin-head{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:8px 16px;
+    margin-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding-bottom:10px;
+  }
+  .admin-title{
+    font-weight:900;
+    letter-spacing:.02em;
+    font-size:clamp(18px,4vw,22px);
+    color:var(--accent);
+  }
+  .admin-badge{
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid rgba(230,199,119,.55);
+    background:rgba(15,22,60,.9);
+    color:var(--accent-soft);
+  }
+  .admin-sub{
+    flex:1 1 100%;
+    font-size:12px;
+    color:var(--sub);
+    margin-top:4px;
+  }
 
-    /* 탭 내비 */
-    .admin-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    .admin-tab-btn {
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      padding: 9px 16px;
-      background: #0b1126;
-      color: #cad5ff;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .admin-tab-btn.active {
-      background: linear-gradient(180deg, #f8e3a6, #e6c777);
-      color: #151324;
-      border-color: #d7c36b;
-    }
+  /* 상단 탭 */
+  .admin-tabs{
+    display:flex;
+    gap:8px;
+    margin:14px 0 12px;
+    flex-wrap:wrap;
+  }
+  .admin-tabs button{
+    all:unset;
+    cursor:pointer;
+    border-radius:999px;
+    padding:7px 14px;
+    border:1px solid var(--line);
+    background:#0b1124;
+    color:var(--sub);
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .admin-tabs button span.dot{
+    width:7px;height:7px;border-radius:50%;background:rgba(230,199,119,.65);
+    box-shadow:0 0 8px rgba(230,199,119,.6);
+  }
+  .admin-tabs button[aria-selected="true"]{
+    background:linear-gradient(180deg,var(--accent-soft),var(--accent));
+    color:#050716;
+    border-color:var(--accent);
+    font-weight:700;
+  }
 
-    /* 패널 공통 */
-    .panel {
-      border-radius: var(--radius-lg);
-      background: radial-gradient(circle at top left, #182144, #0a1023 52%, #050815 100%);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
-      padding: 18px 18px 20px;
-      margin-bottom: 22px;
-    }
-    .panel-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .panel-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--gold);
-    }
-    .panel-sub {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .panel-note {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
+  /* 패널 공통 */
+  .panel{
+    display:none;
+    margin-top:4px;
+  }
+  .panel.active{
+    display:block;
+  }
 
-    /* 폼 레이아웃 */
-    .grid-2 {
-      display: grid;
-      gap: 14px 16px;
-    }
-    @media (min-width: 880px) {
-      .grid-2 {
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      }
-    }
+  /* 2열 그리드 */
+  .grid2{
+    display:grid;
+    grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr);
+    gap:14px;
+  }
+  @media(max-width:880px){
+    .grid2{grid-template-columns:1fr}
+  }
 
-    .field-group {
-      margin-bottom: 10px;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-      color: var(--muted);
-    }
-    .inline-label-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .inline-label-row label {
-      margin-bottom: 0;
-    }
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #252f5b;
-      background: #050a1b;
-      color: var(--fg);
-      padding: 8px 10px;
-      font: inherit;
-      resize: vertical;
-      min-height: 0;
-    }
-    textarea {
-      min-height: 220px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid rgba(122, 165, 255, 0.9);
-      outline-offset: 1px;
-      border-color: #7aa5ff;
-    }
+  .box{
+    background:radial-gradient(circle at top left,#1b2650 0, var(--panel) 35%, #070c1a 100%);
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.06);
+    padding:14px 14px 16px;
+    box-shadow:0 12px 32px rgba(0,0,0,.45);
+  }
+  .box h2{
+    font-size:15px;
+    margin-bottom:6px;
+    color:var(--accent-soft);
+  }
+  .box p.desc{
+    font-size:12px;
+    color:var(--sub);
+    margin-bottom:8px;
+  }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      font-size: 11px;
-      padding: 2px 8px;
-      background: rgba(16, 26, 60, 0.9);
-      border: 1px solid rgba(122, 165, 255, 0.55);
-      color: #d4e1ff;
-      gap: 4px;
-    }
-    .badge.gold {
-      background: rgba(60, 42, 10, 0.9);
-      border-color: rgba(230, 199, 119, 0.8);
-      color: #f7e7b8;
-    }
+  /* 폼요소 */
+  .field-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 12px;
+    margin-bottom:8px;
+  }
+  .field{
+    flex:1 1 140px;
+  }
+  .field label{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:3px;
+    color:#9da8d9;
+  }
+  .field small{
+    display:block;
+    font-size:10px;
+    color:#818dc0;
+    margin-top:1px;
+  }
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea{
+    width:100%;
+    border-radius:9px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#050816;
+    color:var(--ink);
+    padding:6px 8px;
+    font:inherit;
+  }
+  textarea{
+    min-height:70px;
+    resize:vertical;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus{
+    outline:2px solid rgba(120,170,255,.8);
+    border-color:rgba(120,170,255,.8);
+  }
 
-    /* 버튼 */
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .btn {
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      padding: 7px 13px;
-      background: #0b1328;
-      color: #e3e7ff;
-      cursor: pointer;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn.primary {
-      background: linear-gradient(180deg, #f8e3a6, #e6c777);
-      color: #151324;
-      border-color: #d6c16b;
-      font-weight: 700;
-    }
-    .btn.subtle {
-      background: #050815;
-      color: var(--muted);
-    }
-    .btn.danger {
-      background: rgba(74, 17, 26, 0.96);
-      color: #ffd4e0;
-      border-color: rgba(255, 69, 104, 0.7);
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+  /* 버튼 */
+  .btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+  }
+  .btn{
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#0d1630;
+    color:var(--ink);
+    padding:7px 13px;
+    font-size:13px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .btn.primary{
+    background:linear-gradient(180deg,var(--accent-soft),var(--accent));
+    color:#050816;
+    border-color:var(--accent);
+    font-weight:700;
+  }
+  .btn.subtle{
+    background:#050816;
+    color:var(--sub);
+  }
+  .btn.danger{
+    border-color:rgba(255,107,129,.7);
+    color:#ffd7dd;
+  }
+  .btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+  }
 
-    /* 리스트 */
-    .report-list {
-      margin-top: 8px;
-      border-radius: var(--radius-md);
-      background: var(--panel-soft);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 10px 10px 6px;
-      max-height: 420px;
-      overflow: auto;
-    }
-    .report-item {
-      padding: 7px 8px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-    .report-item + .report-item {
-      margin-top: 4px;
-    }
-    .report-item span.id {
-      font-weight: 700;
-      color: var(--accent);
-      min-width: 64px;
-    }
-    .report-item span.title {
-      flex: 1;
-      color: #e6ecff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .report-item span.cat {
-      font-size: 11px;
-      padding: 1px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(122, 165, 255, 0.6);
-      color: #d3e2ff;
-    }
-    .report-item.active {
-      border-color: rgba(230, 199, 119, 0.85);
-      background: radial-gradient(circle at left, rgba(255, 230, 160, 0.12), transparent 60%);
-    }
-    .report-empty {
-      font-size: 12px;
-      color: var(--muted);
-    }
+  /* 테이블 */
+  .table-wrap{
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.08);
+    overflow:auto;
+    background:radial-gradient(circle at top,var(--panel-soft),#050814 60%);
+    margin-top:4px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:620px;
+    font-size:12px;
+  }
+  thead{
+    background:rgba(7,12,30,.9);
+  }
+  th,td{
+    padding:7px 9px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    text-align:left;
+    vertical-align:top;
+  }
+  th{
+    font-size:11px;
+    color:#d7e0ff;
+    white-space:nowrap;
+  }
+  tbody tr:nth-child(odd){
+    background:rgba(10,16,36,.65);
+  }
+  tbody tr:nth-child(even){
+    background:rgba(5,10,24,.85);
+  }
+  td.section{
+    color:var(--accent-soft);
+    white-space:nowrap;
+  }
+  td.actions{
+    white-space:nowrap;
+  }
 
-    .hint {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
+  .export-wrap{
+    margin-top:10px;
+  }
+  .export-wrap label{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:11px;
+    color:#9da8d9;
+    margin-bottom:4px;
+  }
+  .export-wrap textarea{
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;
+    background:#050816;
+  }
 
-    .status-line {
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .status-line strong {
-      color: #f7e3a3;
-    }
+  /* Help 패널 */
+  .help-list{
+    list-style:none;
+    font-size:13px;
+    color:var(--sub);
+  }
+  .help-list li{
+    margin-bottom:6px;
+  }
+  .help-list code{
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;
+    background:rgba(0,0,0,.5);
+    padding:1px 4px;
+    border-radius:4px;
+    color:#f6e3a8;
+  }
 
-    /* 숨김 패널 */
-    .panel[hidden] {
-      display: none;
-    }
+  footer.admin-foot{
+    margin-top:18px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.08);
+    font-size:11px;
+    color:#7f8ab8;
+    text-align:right;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+  }
   </style>
-</head> <!-- ② BODY / HTML — DUNGZAK Admin Ω.20 -->
-<body>
-  <header class="admin">
-    <div class="admin-bar">
-      <div>
-        <div class="admin-brand-main">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20</div>
-        <div class="admin-brand-sub">Works & DCAR · Local JSON / MD Builder</div>
-      </div>
-      <div class="admin-pill-row">
-        <div class="pill">KR 인터페이스</div>
-        <div class="pill state-ok" id="lsState">Local Storage: checking…</div>
-      </div>
+</head> <body class="korean admin-body">
+  <!-- 배경 캔버스 (Index와 동일 구조) -->
+  <canvas id="waves" aria-hidden="true"></canvas>
+  <canvas id="trail" aria-hidden="true"></canvas>
+
+  <!-- 상단 헤더 / 내비게이션 -->
+  <header class="admin-header">
+    <div class="brand">
+      등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω — Works & DCAR
+    </div>
+
+    <nav class="primary" aria-label="Admin primary navigation">
+      <button type="button" class="nav-tab active" data-target="worksAdmin" aria-current="page">
+        Works
+      </button>
+      <button type="button" class="nav-tab" data-target="reportsAdmin">
+        Reports · DCAR
+      </button>
+      <button type="button" class="nav-tab" data-target="systemAdmin">
+        System / Git
+      </button>
+    </nav>
+
+    <!-- 언어 토글 (Index와 규칙 동일) -->
+    <div class="lang" aria-label="Language">
+      <button type="button" id="koBtn" class="active">KR</button>
+      <button type="button" id="enBtn">EN</button>
+      <button type="button" id="hyBtn">KR+EN</button>
     </div>
   </header>
 
   <main class="admin-main">
-    <!-- 상단 탭 -->
-    <nav class="admin-tabs" aria-label="Admin sections">
-      <button type="button" class="admin-tab-btn active" data-admin-panel="dashboard">
-        Dashboard
-      </button>
-      <button type="button" class="admin-tab-btn" data-admin-panel="works">Works JSON</button>
-      <button type="button" class="admin-tab-btn" data-admin-panel="dcar">DCAR Reports</button>
-      <button type="button" class="admin-tab-btn" data-admin-panel="settings">Settings / Notes</button>
-    </nav>
+    <!-- Works Admin 섹션 -->
+    <section id="worksAdmin" class="admin-section" aria-label="Artwork management">
+      <h1 class="ko">작품 관리 · Works JSON</h1>
+      <h1 class="en">Artwork Management · works.json</h1>
 
-    <!-- DASHBOARD -->
-    <section id="panel-dashboard" class="panel">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Dashboard</div>
-          <div class="panel-sub">
-            인덱스(사용자-facing)와 동일한 색감·리듬으로 맞춘 Admin Ω.20입니다.
-          </div>
-        </div>
-      </div>
-      <p class="panel-note">
-        • Works JSON: Lightflow 5개 섹션용 <code>artworks.json / works.json</code>을 구성합니다.<br />
-        • DCAR Reports: 미학 보고서 원문(KR+EN)을 한 번에 붙여넣고, 로컬에 저장 + MD/JSON으로
-        내보낼 수 있습니다.
-      </p>
-      <p class="panel-note">
-        모든 데이터는 먼저 브라우저의 <strong>LocalStorage</strong>에 저장되고, 등작이 원할 때
-        <strong>JSON / MD 파일로 다운로드</strong>한 뒤 GitHub에 업로드하는 구조입니다.
-      </p>
-    </section>
+      <!-- 섹션 선택 / ID 자동 규칙 안내 -->
+      <div class="admin-panel">
+        <h2 class="ko">Ⅰ. 작품 기본 정보 입력</h2>
+        <h2 class="en">Ⅰ. Basic Artwork Metadata</h2>
 
-    <!-- WORKS JSON (간단 버전 / 기존 구조 참고용) -->
-    <section id="panel-works" class="panel" hidden>
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Works JSON · 작품 아카이브</div>
-          <div class="panel-sub">
-            Lightflow 인덱스의 5개 섹션(Pray / Human / Rebirth / Restoration / Metaconsciousness)에
-            맞춰 작품 정보를 정리합니다.
-          </div>
-        </div>
-      </div>
-      <div class="panel-note">
-        아래 폼은 최소 골격만 포함한 버전입니다. 지금까지 쓰던 Admin Ω.19의 Works 로직을 유지하고
-        싶으면, 이 영역만 기존 스크립트와 합쳐 써도 됩니다.
-      </div>
-      <div class="panel-note">
-        등작이 요청하면, 나중에 Works 쪽도 지금 Index 구조(<code>Light & Memory</code> 등)와 완전히
-        맞춰 다시 설계해 줄게요.
-      </div>
-    </section>
-
-    <!-- DCAR REPORTS -->
-    <section id="panel-dcar" class="panel" hidden>
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">DCAR Reports · 미학 보고서</div>
-          <div class="panel-sub">
-            A안 — <strong>KR+EN 원문 전체를 한 번에</strong> 붙여넣고, 로컬 저장 + MD/JSON 내보내기.
-          </div>
-        </div>
-        <span class="badge gold">DCAR · Local MD Builder</span>
-      </div>
-
-      <div class="grid-2">
-        <!-- 왼쪽: 입력 -->
-        <div>
-          <div class="field-group">
-            <div class="inline-label-row">
-              <label for="dcarId">ID</label>
-              <span class="hint">예: <code>DCAR01</code>, <code>DCAR09</code></span>
-            </div>
-            <input id="dcarId" type="text" placeholder="DCAR01" autocomplete="off" />
-          </div>
-
-          <div class="field-group">
-            <div class="inline-label-row">
-              <label for="dcarYear">연도 / Year</label>
-              <span class="hint">예: <code>2025</code></span>
-            </div>
-            <input id="dcarYear" type="number" min="1990" max="2100" placeholder="2025" />
-          </div>
-
-          <div class="field-group">
-            <label for="dcarCategory">Category</label>
-            <select id="dcarCategory">
-              <option value="Theory">Theory</option>
-              <option value="Archive">Archive</option>
-              <option value="Practice">Practice</option>
+        <div class="field-row">
+          <div class="field">
+            <label for="workSection" class="ko">섹션 / Section</label>
+            <label for="workSection" class="en">Section</label>
+            <select id="workSection">
+              <option value="Light & Memory">Ⅰ Light & Memory</option>
+              <option value="Human Prayer">Ⅱ Human Prayer</option>
+              <option value="Rebirth">Ⅲ Rebirth of Mind</option>
+              <option value="Existence">Ⅳ Restoration of Being</option>
+              <option value="Cosmos">Ⅴ Metaconsciousness of Light</option>
             </select>
+            <p class="hint ko">Index의 5개 섹션과 정확히 동일하게 맞추어 저장합니다.</p>
+            <p class="hint en">Must match the 5 sections used in Index exactly.</p>
           </div>
 
-          <div class="field-group">
-            <label for="dcarTitleKr">제목 (KR)</label>
-            <input
-              id="dcarTitleKr"
-              type="text"
-              placeholder="빛 · 기억 · 존재에 대한 미학 보고서"
-              autocomplete="off"
-            />
+          <div class="field">
+            <label for="workId" class="ko">작품 ID (선택)</label>
+            <label for="workId" class="en">Artwork ID (optional)</label>
+            <input id="workId" type="text" placeholder="예: LM-01-2025 또는 자동 생성">
+            <p class="hint ko">비워두면 Admin에서 섹션+연도 기준으로 자동 ID를 제안합니다.</p>
+            <p class="hint en">Leave empty to let Admin suggest an ID based on section/year.</p>
           </div>
-
-          <div class="field-group">
-            <label for="dcarTitleEn">Title (EN)</label>
-            <input
-              id="dcarTitleEn"
-              type="text"
-              placeholder="On Light, Memory, and Being"
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="field-group">
-            <div class="inline-label-row">
-              <label for="dcarSlug">파일 슬러그 / File slug</label>
-              <span class="hint">Index에서 불러올 md 파일명. 예: <code>DCAR-01-2025</code></span>
-            </div>
-            <input
-              id="dcarSlug"
-              type="text"
-              placeholder="DCAR-01-2025"
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="field-group">
-            <label for="dcarSummaryKr">요약 (KR)</label>
-            <textarea
-              id="dcarSummaryKr"
-              placeholder="보고서의 핵심 개요를 한국어로 간단히 적습니다."
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="field-group">
-            <label for="dcarSummaryEn">Summary (EN)</label>
-            <textarea
-              id="dcarSummaryEn"
-              placeholder="Brief abstract of the report in English."
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="btn-row">
-            <button type="button" class="btn primary" id="btnSaveReport">현재 보고서 저장 / Update</button>
-            <button type="button" class="btn subtle" id="btnNewReport">새 보고서 / New</button>
-            <button type="button" class="btn danger" id="btnDeleteReport">삭제 / Delete</button>
-          </div>
-
-          <div class="status-line" id="dcarStatus">상태: 아직 저장되지 않음.</div>
         </div>
 
-        <!-- 오른쪽: 원문 & 리스트 -->
-        <div>
-          <div class="field-group">
-            <div class="inline-label-row">
-              <label for="dcarFullText">Full Text · KR+EN 원문 전체</label>
-              <span class="badge">
-                ⓘ 원문 그대로 붙여넣기
-              </span>
-            </div>
-            <textarea
-              id="dcarFullText"
-              placeholder="등작 燈酌 DUNGZAK CESTLAVIE&#10;&#10;On Light, Memory, and Being&#10;루메라 Lumera / Aesthetic Theorist&#10;..."
-            ></textarea>
-            <div class="hint">
-              • 시 / 문단 / 구분선(⸻) / 공백을 모두 유지합니다. <br />
-              • Admin은 이 내용을 그대로
-              <code>slug.md</code> (예: <code>DCAR-01-2025.md</code>) 로 저장할 수 있게 도와줍니다.
-            </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="workTitleKr" class="ko">제목 (KR)</label>
+            <label for="workTitleKr" class="en">Title (KR)</label>
+            <input id="workTitleKr" type="text" placeholder="예: 빛의 상흔 Ⅰ">
+          </div>
+          <div class="field">
+            <label for="workTitleEn" class="ko">제목 (EN)</label>
+            <label for="workTitleEn" class="en">Title (EN)</label>
+            <input id="workTitleEn" type="text" placeholder="e.g. The Scars of Light I">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="workYear" class="ko">연도 / Year</label>
+            <label for="workYear" class="en">Year</label>
+            <input id="workYear" type="text" placeholder="2025">
+          </div>
+          <div class="field">
+            <label for="workSizeKr" class="ko">사이즈 (KR)</label>
+            <label for="workSizeKr" class="en">Size (KR)</label>
+            <input id="workSizeKr" type="text" placeholder="예: 116.8×91.0cm, 캔버스에 아크릴">
+          </div>
+          <div class="field">
+            <label for="workSizeEn" class="ko">사이즈 (EN)</label>
+            <label for="workSizeEn" class="en">Size (EN)</label>
+            <input id="workSizeEn" type="text" placeholder="e.g. 116.8×91.0cm, acrylic on canvas">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="workMatKr" class="ko">재료 (KR)</label>
+            <label for="workMatKr" class="en">Material (KR)</label>
+            <input id="workMatKr" type="text" placeholder="예: 캔버스에 아크릴, 혼합재료">
+          </div>
+          <div class="field">
+            <label for="workMatEn" class="ko">Material (EN)</label>
+            <label for="workMatEn" class="en">Material (EN)</label>
+            <input id="workMatEn" type="text" placeholder="e.g. acrylic and mixed media on canvas">
+          </div>
+        </div>
+
+        <!-- 이미지 업로드 (standard / zoom) -->
+        <div class="field-row">
+          <div class="field">
+            <label class="ko">대표 이미지 (standard)</label>
+            <label class="en">Main Image (standard)</label>
+            <input id="workImgStd" type="file" accept="image/*">
+            <p class="hint ko">/images/standard/ 폴더에 저장될 파일. Index 썸네일에 사용.</p>
+            <p class="hint en">Will be saved in /images/standard/ for Index thumbnails.</p>
+          </div>
+          <div class="field">
+            <label class="ko">확대 이미지 (zoom)</label>
+            <label class="en">Zoom Image</label>
+            <input id="workImgZoom" type="file" accept="image/*">
+            <p class="hint ko">/images/zoom/ 폴더에 저장될 파일. Lightbox 확대 뷰용.</p>
+            <p class="hint en">Will be saved in /images/zoom/ for Lightbox zoom view.</p>
+          </div>
+        </div>
+
+        <!-- 행동 버튼 -->
+        <div class="actions-row">
+          <button type="button" id="btnWorkSuggestId" class="primary">
+            ID 자동 제안 / Suggest ID
+          </button>
+          <button type="button" id="btnWorkAppend" class="primary">
+            works.json에 추가 / Append to works.json
+          </button>
+          <button type="button" id="btnWorkReset" class="ghost">
+            입력 초기화 / Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- 현재 섹션별 작품 목록 미리보기 -->
+      <section class="admin-panel">
+        <h2 class="ko">Ⅱ. 현재 작품 목록 (읽기 전용 미리보기)</h2>
+        <h2 class="en">Ⅱ. Current Works (read-only preview)</h2>
+        <p class="hint ko">
+          GitHub의 <code>works.json</code>을 불러와 섹션별로 미리보기 합니다.
+        </p>
+        <p class="hint en">
+          Loads <code>works.json</code> from GitHub and shows a section-wise preview.
+        </p>
+
+        <div class="preview-tabs" role="tablist">
+          <button type="button" class="preview-tab active" data-section="Light & Memory">Light & Memory</button>
+          <button type="button" class="preview-tab" data-section="Human Prayer">Human Prayer</button>
+          <button type="button" class="preview-tab" data-section="Rebirth">Rebirth of Mind</button>
+          <button type="button" class="preview-tab" data-section="Existence">Restoration of Being</button>
+          <button type="button" class="preview-tab" data-section="Cosmos">Metaconsciousness of Light</button>
+        </div>
+
+        <div id="worksPreview" class="preview-table" aria-live="polite">
+          <!-- JS에서 테이블 렌더링 -->
+        </div>
+      </section>
+    </section>
+
+    <!-- Reports / DCAR Admin 섹션 -->
+    <section id="reportsAdmin" class="admin-section" aria-label="Aesthetic Reports management" hidden>
+      <h1 class="ko">미학 보고서 · DCAR 관리</h1>
+      <h1 class="en">Aesthetic Reports · DCAR Management</h1>
+
+      <!-- DCAR 메타 + ID 규칙 -->
+      <div class="admin-panel">
+        <h2 class="ko">Ⅰ. DCAR 메타데이터 및 ID</h2>
+        <h2 class="en">Ⅰ. DCAR Metadata & ID</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="dcarId" class="ko">보고서 ID</label>
+            <label for="dcarId" class="en">Report ID</label>
+            <input id="dcarId" type="text" placeholder="예: DCAR-01-2025" />
+            <p class="hint ko">
+              형식: <code>DCAR-XX-YYYY</code> · 예: <code>DCAR-01-2025</code><br>
+              보고서 파일명과 자동 연결됩니다: <code>reports/DCAR-01-2025.md</code>
+            </p>
+            <p class="hint en">
+              Format: <code>DCAR-XX-YYYY</code> · e.g., <code>DCAR-01-2025</code><br>
+              Will be used as the file name: <code>reports/DCAR-01-2025.md</code>
+            </p>
           </div>
 
-          <div class="btn-row">
-            <button type="button" class="btn" id="btnExportJson">모든 보고서 JSON 다운로드</button>
-            <button type="button" class="btn" id="btnExportMd">현재 보고서 MD 다운로드</button>
+          <div class="field">
+            <label for="dcarCat" class="ko">카테고리</label>
+            <label for="dcarCat" class="en">Category</label>
+            <select id="dcarCat">
+              <option value="theory">Theory</option>
+              <option value="archive">Archive</option>
+              <option value="practice">Practice</option>
+            </select>
+            <p class="hint ko">Index의 Reports 필터 탭(Theor/Archive/Practice)와 연동됩니다.</p>
+            <p class="hint en">Used by the filter tabs in Index Reports (Theory/Archive/Practice).</p>
           </div>
+        </div>
 
-          <div class="field-group" style="margin-top: 14px;">
-            <label>저장된 DCAR 목록</label>
-            <div class="report-list" id="reportList">
-              <div class="report-empty">아직 저장된 보고서가 없습니다.</div>
-            </div>
-            <div class="hint">
-              목록에서 항목을 탭하면 해당 보고서가 왼쪽 폼에 로드됩니다.
-            </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="dcarTitleKr" class="ko">제목 (KR)</label>
+            <label for="dcarTitleKr" class="en">Title (KR)</label>
+            <input id="dcarTitleKr" type="text" placeholder="예: 존재의 회복 — The Restoration of Being">
           </div>
+          <div class="field">
+            <label for="dcarTitleEn" class="ko">제목 (EN)</label>
+            <label for="dcarTitleEn" class="en">Title (EN)</label>
+            <input id="dcarTitleEn" type="text" placeholder="e.g. The Restoration of Being">
+          </div>
+        </div>
+
+        <!-- 짧은 요약 (Index 카드용) -->
+        <div class="field-row">
+          <div class="field">
+            <label for="dcarSnippetKr" class="ko">요약 (KR)</label>
+            <label for="dcarSnippetKr" class="en">Snippet (KR)</label>
+            <textarea id="dcarSnippetKr" rows="3" placeholder="Index Reports 카드에 들어갈 짧은 소개 (KR)"></textarea>
+          </div>
+          <div class="field">
+            <label for="dcarSnippetEn" class="ko">요약 (EN)</label>
+            <label for="dcarSnippetEn" class="en">Snippet (EN)</label>
+            <textarea id="dcarSnippetEn" rows="3" placeholder="Short abstract for Index Reports card (EN)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- DCAR 본문 · 한·영 혼용 붙여넣기 -->
+      <div class="admin-panel">
+        <h2 class="ko">Ⅱ. 미학 보고서 본문 (한·영 혼용 그대로)</h2>
+        <h2 class="en">Ⅱ. Full Aesthetic Report Body (KR/EN mixed, unchanged)</h2>
+
+        <p class="hint ko">
+          아래 박스에 DCAR 원문 전체를 <strong>그대로 복사/붙여넣기</strong> 하면 됩니다.<br>
+          Admin에서는 어떤 내용도 수정하지 않고, GitHub에 <code>.md</code> 파일로만 저장합니다.
+        </p>
+        <p class="hint en">
+          Paste the full DCAR original text (KR/EN mixed) into the box below.<br>
+          Admin will not modify text; it only saves it verbatim as a <code>.md</code> file to GitHub.
+        </p>
+
+        <textarea id="dcarBody" rows="24" class="mono-input"
+          placeholder="여기에 등작의 DCAR 원문 전체를 붙여넣으세요 / Paste full DCAR original text here"></textarea>
+
+        <div class="actions-row">
+          <button type="button" id="btnDcarSave" class="primary">
+            DCAR 파일 저장 / Save DCAR .md
+          </button>
+          <button type="button" id="btnDcarPreview" class="ghost">
+            미리보기 / Local Preview
+          </button>
+          <button type="button" id="btnDcarReset" class="ghost">
+            입력 초기화 / Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Reports 목록 · Index 동기화용 JSON -->
+      <div class="admin-panel">
+        <h2 class="ko">Ⅲ. DCAR 목록 JSON (Index Reports 카드 동기화)</h2>
+        <h2 class="en">Ⅲ. DCAR List JSON (Index Reports sync)</h2>
+
+        <p class="hint ko">
+          <code>reports/index.json</code> 파일을 자동으로 업데이트하여 Index의 Reports 카드에 반영합니다.
+        </p>
+        <p class="hint en">
+          Automatically updates <code>reports/index.json</code> so that Index Reports cards stay in sync.
+        </p>
+
+        <div class="actions-row">
+          <button type="button" id="btnDcarListRefresh" class="secondary">
+            GitHub에서 DCAR 목록 다시 불러오기 / Refresh DCAR List from GitHub
+          </button>
+          <button type="button" id="btnDcarListWrite" class="primary">
+            DCAR 목록 JSON 갱신 / Write DCAR index.json
+          </button>
+        </div>
+
+        <div id="dcarListPreview" class="preview-table" aria-live="polite">
+          <!-- JS에서 DCAR 목록 표 렌더링 -->
         </div>
       </div>
     </section>
 
-    <!-- SETTINGS -->
-    <section id="panel-settings" class="panel" hidden>
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Settings / Notes</div>
-          <div class="panel-sub">간단한 메모 및 Admin 사용 안내.</div>
+    <!-- System / Git / Token 설정 -->
+    <section id="systemAdmin" class="admin-section" aria-label="System settings and GitHub connection" hidden>
+      <h1 class="ko">시스템 · GitHub 연결</h1>
+      <h1 class="en">System · GitHub Connection</h1>
+
+      <div class="admin-panel">
+        <h2 class="ko">Ⅰ. GitHub 저장소 설정</h2>
+        <h2 class="en">Ⅰ. GitHub Repository Settings</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="repoOwner" class="ko">Owner / User</label>
+            <label for="repoOwner" class="en">Owner / User</label>
+            <input id="repoOwner" type="text" placeholder="예: dungzakcestlavie">
+          </div>
+          <div class="field">
+            <label for="repoName" class="ko">Repository 이름</label>
+            <label for="repoName" class="en">Repository Name</label>
+            <input id="repoName" type="text" placeholder="예: dungzakcestlavie.github.io">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="branchName" class="ko">브랜치</label>
+            <label for="branchName" class="en">Branch</label>
+            <input id="branchName" type="text" value="main">
+          </div>
+          <div class="field">
+            <label for="tokenInput" class="ko">GitHub Token (브라우저에만 저장)</label>
+            <label for="tokenInput" class="en">GitHub Token (stored only in browser)</label>
+            <input id="tokenInput" type="password" autocomplete="off" placeholder="ghp_...">
+            <p class="hint ko">
+              토큰은 로컬 브라우저의 <code>localStorage</code>에만 저장되며, 서버로 전송되지 않습니다.
+            </p>
+            <p class="hint en">
+              Token is stored only in this browser's <code>localStorage</code>, never sent to any server.
+            </p>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button type="button" id="btnSaveConfig" class="primary">
+            설정 저장 / Save Config
+          </button>
+          <button type="button" id="btnClearToken" class="ghost">
+            토큰 제거 / Clear Token
+          </button>
         </div>
       </div>
-      <p class="panel-note">
-        • 이 Admin은 어디까지나 <strong>로컬 편집기</strong>이므로, 실제 웹에 반영하려면<br />
-        1) <code>artworks.json</code>, 2) <code>reports.json</code>, 3) 각 <code>*.md</code> 파일을 GitHub
-        저장소에 업로드해야 합니다.<br /><br />
-        • DCAR A안: 등작이 정리한
-        <strong>한·영 혼용 원문 전체</strong>를 Admin에서 한 번만 관리하고, MD 파일을 내려받아
-        사용합니다.
-      </p>
+
+      <!-- 상태 / 로그 콘솔 -->
+      <div class="admin-panel">
+        <h2 class="ko">Ⅱ. 상태 / 로그</h2>
+        <h2 class="en">Ⅱ. Status / Log</h2>
+
+        <p class="hint ko">
+          Admin 작업(작품 추가, DCAR 저장, JSON 갱신 등)의 결과를 시간 순으로 기록합니다.
+        </p>
+        <p class="hint en">
+          Shows results of Admin actions (append work, save DCAR, write JSON, etc.) in order.
+        </p>
+
+        <pre id="adminLog" class="log-console" aria-live="polite">
+[Admin] Ready.
+        </pre>
+      </div>
     </section>
   </main>
-</body> <!-- ③ SCRIPT — DUNGZAK Admin Ω.20 (DCAR A안) -->
-<script>
-  /* ===== 작은 도우미 ===== */
-  const $ = (q, sc) => (sc || document).querySelector(q);
-  const $$ = (q, sc) => Array.from((sc || document).querySelectorAll(q));
 
-  /* ===== 상단 탭 전환 ===== */
-  (function () {
-    const buttons = $$('.admin-tab-btn');
-    const panels = {
-      dashboard: $('#panel-dashboard'),
-      works: $('#panel-works'),
-      dcar: $('#panel-dcar'),
-      settings: $('#panel-settings')
-    };
-    function show(id) {
-      buttons.forEach((b) => b.classList.toggle('active', b.dataset.adminPanel === id));
-      Object.entries(panels).forEach(([key, el]) => {
-        if (!el) return;
-        el.hidden = key !== id;
-      });
+  <noscript>
+    <div class="noscript-warning">
+      이 Admin 페이지는 JavaScript가 필요합니다. 브라우저 설정에서 JavaScript를 허용해 주세요.
+      This Admin console requires JavaScript. Please enable it in your browser.
+    </div>
+  </noscript>
+</body> <script>
+/* ============================================================
+   DUNGZAK · Admin Ω — Works & DCAR CMS Controller
+   ------------------------------------------------------------
+   ⚙ 필요한 HTML 요소 ID (Body에서 만들어야 하는 것)
+   ------------------------------------------------------------
+   [GitHub 설정]
+   - #ghOwner      (input text)
+   - #ghRepo       (input text)
+   - #ghBranch     (input text)
+   - #ghToken      (input password)
+   - #ghBasePath   (input text, 예: "" 또는 "/")
+
+   - #ghSaveBtn    (button)
+   - #statusArea   (div / pre 등, 상태 메시지 출력용)
+
+   [Works 관리]
+   - #worksLoadBtn       (button: works.json 불러오기)
+   - #worksSectionSelect (select: Light & Memory / Human Prayer / Rebirth / Existence / Cosmos)
+   - #worksList          (div/ul: 현재 섹션 작품 리스트 미리보기)
+
+   - #workId             (input text, 선택사항)
+   - #workTitleKr        (input text)
+   - #workTitleEn        (input text)
+   - #workYear           (input text)
+   - #workSizeKr         (input text)
+   - #workSizeEn         (input text)
+   - #workMaterialKr     (input text)
+   - #workMaterialEn     (input text)
+   - #workImageFileName  (input text; "파일명.jpg" 정도만)
+
+   - #workAddBtn         (button: 현재 섹션에 작품 추가/업데이트)
+   - #worksSaveJsonBtn   (button: works.json GitHub에 저장)
+
+   [Reports (DCAR) 메타 + 본문]
+   - #reportsLoadBtn     (button: reports/index.json 불러오기)
+   - #reportList         (div/ul: DCAR 카드/리스트 미리보기)
+
+   - #reportId           (input text, 예: "DCAR-01-2025")
+   - #reportTitleKr      (input text)
+   - #reportTitleEn      (input text)
+   - #reportSnippetKr    (textarea)
+   - #reportSnippetEn    (textarea)
+   - #reportCategory     (select: theory / archive / practice)
+
+   - #reportMetaSaveBtn  (button: index.json에 메타 저장/갱신)
+
+   - #reportBody         (textarea: DCAR 전체 원문 .md 그대로)
+   - #reportBodyLoadBtn  (button: 선택 ID의 본문 불러오기)
+   - #reportBodySaveBtn  (button: 선택 ID의 본문 .md 저장)
+   ============================================================ */
+
+/* -----------------------------
+   공용 상태 & 유틸
+------------------------------*/
+const AdminState = {
+  gh: {
+    owner: '',
+    repo: '',
+    branch: 'main',
+    token: '',
+    basePath: ''   // 예: "", "/site", 이런 식
+  },
+  works: null,        // { "Light & Memory": [ ... ], ... }
+  worksSha: null,     // GitHub SHA
+  reportsIndex: null, // [ {id, title_kr,...} ]
+  reportsSha: null    // GitHub SHA
+};
+
+function $(sel, sc){ return (sc||document).querySelector(sel); }
+function $$(sel, sc){ return Array.from((sc||document).querySelectorAll(sel)); }
+
+function logStatus(msg, isError=false){
+  const box = $('#statusArea');
+  if(!box) { console[isError?'error':'log'](msg); return; }
+  const time = new Date().toLocaleTimeString();
+  const line = `[${time}] ${msg}`;
+  if(box.tagName === 'TEXTAREA' || box.tagName === 'PRE'){
+    box.value = (box.value ? box.value + '\n' : '') + line;
+  } else {
+    const p = document.createElement('div');
+    p.textContent = line;
+    p.style.color = isError ? '#ffb3b3' : '#cfe0ff';
+    box.appendChild(p);
+    box.scrollTop = box.scrollHeight;
+  }
+}
+
+/* -----------------------------
+   GitHub 설정: 저장/불러오기
+------------------------------*/
+function loadGhConfig(){
+  AdminState.gh.owner  = localStorage.getItem('dz_admin_owner')  || '';
+  AdminState.gh.repo   = localStorage.getItem('dz_admin_repo')   || '';
+  AdminState.gh.branch = localStorage.getItem('dz_admin_branch') || 'main';
+  AdminState.gh.token  = localStorage.getItem('dz_admin_token')  || '';
+  AdminState.gh.basePath = localStorage.getItem('dz_admin_basePath') || '';
+
+  $('#ghOwner')  && ($('#ghOwner').value  = AdminState.gh.owner);
+  $('#ghRepo')   && ($('#ghRepo').value   = AdminState.gh.repo);
+  $('#ghBranch') && ($('#ghBranch').value = AdminState.gh.branch);
+  $('#ghToken')  && ($('#ghToken').value  = AdminState.gh.token);
+  $('#ghBasePath') && ($('#ghBasePath').value = AdminState.gh.basePath);
+}
+
+function saveGhConfig(){
+  const owner  = $('#ghOwner')?.value.trim()  || '';
+  const repo   = $('#ghRepo')?.value.trim()   || '';
+  const branch = $('#ghBranch')?.value.trim() || 'main';
+  const token  = $('#ghToken')?.value.trim()  || '';
+  const basePath = $('#ghBasePath')?.value.trim() || '';
+
+  AdminState.gh = { owner, repo, branch, token, basePath };
+
+  localStorage.setItem('dz_admin_owner', owner);
+  localStorage.setItem('dz_admin_repo', repo);
+  localStorage.setItem('dz_admin_branch', branch);
+  localStorage.setItem('dz_admin_token', token);
+  localStorage.setItem('dz_admin_basePath', basePath);
+
+  logStatus('GitHub 설정을 저장했습니다.');
+}
+
+/* -----------------------------
+   GitHub REST API 도우미
+------------------------------*/
+function ghHeaders(){
+  const h = { 'Accept': 'application/vnd.github+json' };
+  if(AdminState.gh.token){
+    h['Authorization'] = 'Bearer ' + AdminState.gh.token;
+  }
+  return h;
+}
+
+function ghApiUrl(path){
+  // path: "/data/works.json" 처럼 전달
+  const cleaned = path.startsWith('/') ? path.slice(1) : path;
+  return `https://api.github.com/repos/${AdminState.gh.owner}/${AdminState.gh.repo}/contents/${cleaned}`;
+}
+
+async function ghGetFile(path){
+  if(!AdminState.gh.owner || !AdminState.gh.repo){
+    throw new Error('GitHub 설정이 비어 있습니다.');
+  }
+  const url = ghApiUrl(path) + `?ref=${encodeURIComponent(AdminState.gh.branch)}`;
+  const res = await fetch(url, { headers: ghHeaders() });
+  if(res.status === 404){
+    return { exists:false, content:null, sha:null };
+  }
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(`GET 실패: ${res.status} ${txt}`);
+  }
+  const json = await res.json();
+  const decoded = atob(json.content.replace(/\n/g,''));
+  return { exists:true, content:decoded, sha:json.sha };
+}
+
+async function ghPutFile(path, content, message, sha){
+  if(!AdminState.gh.owner || !AdminState.gh.repo){
+    throw new Error('GitHub 설정이 비어 있습니다.');
+  }
+  const url = ghApiUrl(path);
+  const body = {
+    message: message || `Update ${path}`,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: AdminState.gh.branch
+  };
+  if(sha) body.sha = sha;
+
+  const res = await fetch(url, {
+    method:'PUT',
+    headers: {
+      ...ghHeaders(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(`PUT 실패: ${res.status} ${txt}`);
+  }
+  return res.json();
+}
+
+/* ============================================================
+   1. Works (작품) 관리 — /data/works.json
+   구조 예시:
+   {
+     "Light & Memory": [ { ... }, ... ],
+     "Human Prayer":   [ { ... }, ... ],
+     "Rebirth":        [ ... ],
+     "Existence":      [ ... ],
+     "Cosmos":         [ ... ]
+   }
+============================================================ */
+
+const WORK_SECTIONS = [
+  'Light & Memory',
+  'Human Prayer',
+  'Rebirth',
+  'Existence',
+  'Cosmos'
+];
+
+function getWorksPath(){
+  const base = AdminState.gh.basePath || '';
+  const prefix = base && !base.endsWith('/') ? base + '/' : base;
+  return prefix + 'data/works.json';
+}
+
+async function loadWorksJson(){
+  try{
+    const path = getWorksPath();
+    logStatus(`works.json 불러오는 중… (${path})`);
+    const { exists, content, sha } = await ghGetFile(path);
+    if(!exists){
+      // 새로 만드는 기본 구조
+      AdminState.works = {};
+      WORK_SECTIONS.forEach(k => { AdminState.works[k] = []; });
+      AdminState.worksSha = null;
+      logStatus('기존 works.json이 없어 기본 구조를 생성했습니다.');
+    } else {
+      const parsed = JSON.parse(content || '{}');
+      // 키 보정
+      const obj = {};
+      WORK_SECTIONS.forEach(k => { obj[k] = Array.isArray(parsed[k]) ? parsed[k] : []; });
+      AdminState.works = obj;
+      AdminState.worksSha = sha;
+      logStatus('works.json을 성공적으로 불러왔습니다.');
     }
-    buttons.forEach((b) =>
-      b.addEventListener('click', () => {
-        show(b.dataset.adminPanel || 'dashboard');
-      })
-    );
-    show('dashboard');
-  })();
+    renderWorksList();
+  } catch(err){
+    logStatus(`works.json 로딩 실패: ${err.message}`, true);
+  }
+}
 
-  /* ===== LocalStorage 상태 체크 ===== */
-  (function () {
-    const el = $('#lsState');
-    try {
-      const testKey = '__dz_admin_test__';
-      localStorage.setItem(testKey, 'ok');
-      localStorage.removeItem(testKey);
-      el.textContent = 'Local Storage: active';
-      el.classList.remove('state-warn');
-      el.classList.add('state-ok');
-    } catch (e) {
-      el.textContent = 'Local Storage: unavailable';
-      el.classList.remove('state-ok');
-      el.classList.add('state-warn');
-    }
-  })();
+function renderWorksList(){
+  const host = $('#worksList');
+  if(!host) return;
+  if(!AdminState.works){
+    host.innerHTML = '<p style="opacity:.7">works.json이 아직 로딩되지 않았습니다.</p>';
+    return;
+  }
+  const sectionSel = $('#worksSectionSelect');
+  const sec = sectionSel ? sectionSel.value : WORK_SECTIONS[0];
+  const list = AdminState.works[sec] || [];
+  if(!list.length){
+    host.innerHTML = `<p style="opacity:.7">${sec} 섹션에 등록된 작품이 없습니다.</p>`;
+    return;
+  }
+  const html = list.map((w, idx) => {
+    const tKr = w.title_kr || '';
+    const tEn = w.title_en || '';
+    const id  = w.id || `#${idx+1}`;
+    return `<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;cursor:pointer" data-idx="${idx}">
+      <strong>${id}</strong> · ${tKr} <span style="opacity:.6">/ ${tEn}</span>
+    </div>`;
+  }).join('');
+  host.innerHTML = html;
 
-  /* ===== DCAR REPORTS (A안: Full Text 1개 필드) ===== */
-  (function () {
-    const LS_KEY = 'dz_admin_dcar_reports_v20';
-
-    const idEl = $('#dcarId');
-    const yearEl = $('#dcarYear');
-    const catEl = $('#dcarCategory');
-    const titleKrEl = $('#dcarTitleKr');
-    const titleEnEl = $('#dcarTitleEn');
-    const slugEl = $('#dcarSlug');
-    const sumKrEl = $('#dcarSummaryKr');
-    const sumEnEl = $('#dcarSummaryEn');
-    const fullEl = $('#dcarFullText');
-    const statusEl = $('#dcarStatus');
-    const listEl = $('#reportList');
-
-    const btnSave = $('#btnSaveReport');
-    const btnNew = $('#btnNewReport');
-    const btnDel = $('#btnDeleteReport');
-    const btnJson = $('#btnExportJson');
-    const btnMd = $('#btnExportMd');
-
-    /** @type {{id:string,year:number,category:string,titleKr:string,titleEn:string,slug:string,summaryKr:string,summaryEn:string,fullText:string}[]} */
-    let reports = [];
-    let currentId = null;
-
-    function loadFromLS() {
-      try {
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) reports = parsed;
-      } catch (e) {
-        console.warn('Failed to parse DCAR LS', e);
-      }
-    }
-
-    function saveToLS() {
-      try {
-        localStorage.setItem(LS_KEY, JSON.stringify(reports));
-      } catch (e) {
-        console.warn('Failed to save DCAR LS', e);
-      }
-    }
-
-    function clearForm() {
-      idEl.value = '';
-      yearEl.value = '';
-      catEl.value = 'Theory';
-      titleKrEl.value = '';
-      titleEnEl.value = '';
-      slugEl.value = '';
-      sumKrEl.value = '';
-      sumEnEl.value = '';
-      fullEl.value = '';
-      currentId = null;
-      statusEl.textContent = '상태: 아직 저장되지 않음.';
-      $$('.report-item', listEl).forEach((li) => li.classList.remove('active'));
-    }
-
-    function fillForm(r) {
-      if (!r) return;
-      idEl.value = r.id || '';
-      yearEl.value = r.year || '';
-      catEl.value = r.category || 'Theory';
-      titleKrEl.value = r.titleKr || '';
-      titleEnEl.value = r.titleEn || '';
-      slugEl.value = r.slug || '';
-      sumKrEl.value = r.summaryKr || '';
-      sumEnEl.value = r.summaryEn || '';
-      fullEl.value = r.fullText || '';
-      currentId = r.id || null;
-      statusEl.textContent = `상태: ${r.id} 로드됨.`;
-    }
-
-    function renderList() {
-      listEl.innerHTML = '';
-      if (!reports.length) {
-        const div = document.createElement('div');
-        div.className = 'report-empty';
-        div.textContent = '아직 저장된 보고서가 없습니다.';
-        listEl.appendChild(div);
-        return;
-      }
-      reports
-        .slice()
-        .sort((a, b) => (a.id > b.id ? 1 : -1))
-        .forEach((r) => {
-          const item = document.createElement('div');
-          item.className = 'report-item';
-          if (r.id === currentId) item.classList.add('active');
-
-          const idSpan = document.createElement('span');
-          idSpan.className = 'id';
-          idSpan.textContent = r.id || '(ID?)';
-
-          const titleSpan = document.createElement('span');
-          titleSpan.className = 'title';
-          titleSpan.textContent =
-            r.titleKr || r.titleEn || (r.slug ? r.slug : '(제목 없음 / Untitled)');
-
-          const catSpan = document.createElement('span');
-          catSpan.className = 'cat';
-          catSpan.textContent = r.category || 'Theory';
-
-          item.appendChild(idSpan);
-          item.appendChild(titleSpan);
-          item.appendChild(catSpan);
-
-          item.addEventListener('click', () => {
-            currentId = r.id;
-            fillForm(r);
-            $$('.report-item', listEl).forEach((li) => li.classList.remove('active'));
-            item.classList.add('active');
-          });
-
-          listEl.appendChild(item);
-        });
-    }
-
-    function buildFromForm() {
-      const id = idEl.value.trim();
-      if (!id) {
-        alert('ID(예: DCAR01)를 입력해 주세요.');
-        idEl.focus();
-        return null;
-      }
-      const year = parseInt(yearEl.value, 10) || new Date().getFullYear();
-      const category = catEl.value || 'Theory';
-      const titleKr = titleKrEl.value.trim();
-      const titleEn = titleEnEl.value.trim();
-      const slug = (slugEl.value || id).trim() || id;
-      const summaryKr = sumKrEl.value;
-      const summaryEn = sumEnEl.value;
-      const fullText = fullEl.value;
-
-      if (!fullText.trim()) {
-        if (!confirm('Full Text가 비어 있습니다. 그래도 저장할까요?')) {
-          return null;
-        }
-      }
-
-      return {
-        id,
-        year,
-        category,
-        titleKr,
-        titleEn,
-        slug,
-        summaryKr,
-        summaryEn,
-        fullText
-      };
-    }
-
-    function upsertReport() {
-      const data = buildFromForm();
-      if (!data) return;
-      const idx = reports.findIndex((r) => r.id === data.id);
-      if (idx >= 0) reports[idx] = data;
-      else reports.push(data);
-      currentId = data.id;
-      saveToLS();
-      renderList();
-      statusEl.textContent = `상태: ${data.id} 저장 완료 (LocalStorage).`;
-    }
-
-    function deleteReport() {
-      const id = idEl.value.trim();
-      if (!id) {
-        alert('삭제할 보고서 ID가 없습니다.');
-        return;
-      }
-      if (!confirm(`${id} 보고서를 정말 삭제할까요? (LocalStorage에서 제거)`)) return;
-      reports = reports.filter((r) => r.id !== id);
-      saveToLS();
-      clearForm();
-      renderList();
-      statusEl.textContent = `상태: ${id} 삭제됨.`;
-    }
-
-    function downloadFile(filename, content) {
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function exportJson() {
-      if (!reports.length) {
-        alert('내보낼 보고서가 없습니다.');
-        return;
-      }
-      const payload = {
-        generated_at: new Date().toISOString(),
-        items: reports
-      };
-      downloadFile('reports.json', JSON.stringify(payload, null, 2));
-    }
-
-    function exportCurrentMd() {
-      const data = buildFromForm();
-      if (!data) return;
-      const fileName = `${data.slug || data.id}.md`;
-      const text = data.fullText || '';
-      downloadFile(fileName, text);
-      statusEl.textContent = `상태: ${fileName} MD 파일 다운로드 완료.`;
-    }
-
-    // 이벤트 연결
-    btnSave?.addEventListener('click', upsertReport);
-    btnNew?.addEventListener('click', () => {
-      if (fullEl.value.trim() || idEl.value.trim()) {
-        if (!confirm('입력 중인 내용을 지우고 새 보고서를 시작할까요?')) return;
-      }
-      clearForm();
+  // 클릭하면 폼에 채워넣기
+  $$('#worksList [data-idx]', host).forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = parseInt(el.dataset.idx,10);
+      const item = (AdminState.works[sec] || [])[idx];
+      if(!item) return;
+      $('#workId')            && ($('#workId').value            = item.id || '');
+      $('#workTitleKr')       && ($('#workTitleKr').value       = item.title_kr || '');
+      $('#workTitleEn')       && ($('#workTitleEn').value       = item.title_en || '');
+      $('#workYear')          && ($('#workYear').value          = item.year || '');
+      $('#workSizeKr')        && ($('#workSizeKr').value        = item.size_kr || '');
+      $('#workSizeEn')        && ($('#workSizeEn').value        = item.size_en || '');
+      $('#workMaterialKr')    && ($('#workMaterialKr').value    = item.material_kr || '');
+      $('#workMaterialEn')    && ($('#workMaterialEn').value    = item.material_en || '');
+      $('#workImageFileName') && ($('#workImageFileName').value = (item.image || ''));
+      logStatus(`선택한 작품을 폼에 불러왔습니다. (Index ${idx+1}, Section ${sec})`);
     });
-    btnDel?.addEventListener('click', deleteReport);
-    btnJson?.addEventListener('click', exportJson);
-    btnMd?.addEventListener('click', exportCurrentMd);
+  });
+}
 
-    // 초기 로드
-    loadFromLS();
-    renderList();
-  })();
+function addOrUpdateWork(){
+  if(!AdminState.works){
+    logStatus('먼저 works.json을 로딩해 주세요.', true);
+    return;
+  }
+  const secSel = $('#worksSectionSelect');
+  const sec = secSel ? secSel.value : WORK_SECTIONS[0];
+
+  const id       = $('#workId')?.value.trim()            || '';
+  const titleKr  = $('#workTitleKr')?.value.trim()       || '';
+  const titleEn  = $('#workTitleEn')?.value.trim()       || '';
+  const year     = $('#workYear')?.value.trim()          || '';
+  const sizeKr   = $('#workSizeKr')?.value.trim()        || '';
+  const sizeEn   = $('#workSizeEn')?.value.trim()        || '';
+  const matKr    = $('#workMaterialKr')?.value.trim()    || '';
+  const matEn    = $('#workMaterialEn')?.value.trim()    || '';
+  const imgFile  = $('#workImageFileName')?.value.trim() || '';
+
+  if(!titleKr && !titleEn){
+    logStatus('최소한 작품 제목(한글/영문 중 하나)은 입력해야 합니다.', true);
+    return;
+  }
+
+  const work = {
+    id: id || undefined,
+    title_kr: titleKr || undefined,
+    title_en: titleEn || undefined,
+    year: year || undefined,
+    size_kr: sizeKr || undefined,
+    size_en: sizeEn || undefined,
+    material_kr: matKr || undefined,
+    material_en: matEn || undefined,
+    image: imgFile || undefined
+  };
+
+  const arr = AdminState.works[sec] || [];
+  // ID가 있으면 같은 ID로 교체, 없으면 push
+  let replaced = false;
+  if(work.id){
+    const index = arr.findIndex(w => w.id === work.id);
+    if(index >= 0){
+      arr[index] = work;
+      replaced = true;
+    }
+  }
+  if(!replaced){
+    arr.push(work);
+  }
+  AdminState.works[sec] = arr;
+  logStatus(`작품을 ${sec} 섹션에 ${replaced?'업데이트':'추가'}했습니다.`);
+  renderWorksList();
+}
+
+async function saveWorksJson(){
+  if(!AdminState.works){
+    logStatus('works.json이 메모리에 없습니다. 먼저 불러오거나 기본 구조를 생성해야 합니다.', true);
+    return;
+  }
+  try{
+    const path = getWorksPath();
+    const jsonStr = JSON.stringify(AdminState.works, null, 2);
+    logStatus(`works.json 저장 중… (${path})`);
+    const res = await ghPutFile(path, jsonStr, 'Update data/works.json via Admin', AdminState.worksSha);
+    AdminState.worksSha = res.content?.sha || null;
+    logStatus('works.json을 GitHub에 성공적으로 저장했습니다.');
+  } catch(err){
+    logStatus(`works.json 저장 실패: ${err.message}`, true);
+  }
+}
+
+/* ============================================================
+   2. Reports (DCAR) 메타 & 본문
+   - /reports/index.json : [ {id, title_kr, title_en, snippet_kr, snippet_en, category}, ... ]
+   - /reports/DCAR-XX-2025.md : 본문(한영 혼용 원문 그대로)
+============================================================ */
+
+function getReportsIndexPath(){
+  const base = AdminState.gh.basePath || '';
+  const prefix = base && !base.endsWith('/') ? base + '/' : base;
+  return prefix + 'reports/index.json';
+}
+function getReportMdPath(id){
+  const base = AdminState.gh.basePath || '';
+  const prefix = base && !base.endsWith('/') ? base + '/' : base;
+  return prefix + `reports/${id}.md`;
+}
+
+async function loadReportsIndex(){
+  try{
+    const path = getReportsIndexPath();
+    logStatus(`reports/index.json 불러오는 중… (${path})`);
+    const { exists, content, sha } = await ghGetFile(path);
+    if(!exists){
+      AdminState.reportsIndex = [];
+      AdminState.reportsSha = null;
+      logStatus('기존 reports/index.json이 없어 빈 배열로 시작합니다.');
+    } else {
+      const parsed = JSON.parse(content || '[]');
+      AdminState.reportsIndex = Array.isArray(parsed) ? parsed : [];
+      AdminState.reportsSha = sha;
+      logStatus('reports/index.json을 성공적으로 불러왔습니다.');
+    }
+    renderReportsList();
+  } catch(err){
+    logStatus(`reports/index.json 로딩 실패: ${err.message}`, true);
+  }
+}
+
+function renderReportsList(){
+  const host = $('#reportList');
+  if(!host) return;
+  const list = AdminState.reportsIndex || [];
+  if(!list.length){
+    host.innerHTML = '<p style="opacity:.7">등록된 DCAR 항목이 없습니다.</p>';
+    return;
+  }
+  const html = list.map((r, idx)=>{
+    return `<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;cursor:pointer" data-id="${r.id}">
+      <strong>${r.id || ('#'+(idx+1))}</strong> · ${r.title_kr || ''} <span style="opacity:.6">/ ${r.title_en || ''}</span>
+      <span style="opacity:.5;margin-left:6px">[${r.category || '—'}]</span>
+    </div>`;
+  }).join('');
+  host.innerHTML = html;
+
+  // 클릭하면 메타 폼에 채우기
+  $$('#reportList [data-id]', host).forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.id;
+      const item = (AdminState.reportsIndex || []).find(x => x.id === id);
+      if(!item) return;
+      $('#reportId')        && ($('#reportId').value        = item.id || '');
+      $('#reportTitleKr')   && ($('#reportTitleKr').value   = item.title_kr || '');
+      $('#reportTitleEn')   && ($('#reportTitleEn').value   = item.title_en || '');
+      $('#reportSnippetKr') && ($('#reportSnippetKr').value = item.snippet_kr || '');
+      $('#reportSnippetEn') && ($('#reportSnippetEn').value = item.snippet_en || '');
+      $('#reportCategory')  && ($('#reportCategory').value  = item.category || 'theory');
+      logStatus(`선택한 DCAR 메타데이터를 폼에 불러왔습니다. (${id})`);
+    });
+  });
+}
+
+function saveReportMetaToMemory(){
+  const id   = $('#reportId')?.value.trim()        || '';
+  const tKr  = $('#reportTitleKr')?.value.trim()   || '';
+  const tEn  = $('#reportTitleEn')?.value.trim()   || '';
+  const sKr  = $('#reportSnippetKr')?.value.trim() || '';
+  const sEn  = $('#reportSnippetEn')?.value.trim() || '';
+  const cat  = $('#reportCategory')?.value.trim()  || 'theory';
+
+  if(!id){
+    logStatus('DCAR ID는 반드시 입력해야 합니다. (예: DCAR-01-2025)', true);
+    return;
+  }
+
+  if(!AdminState.reportsIndex){
+    AdminState.reportsIndex = [];
+  }
+
+  const entry = {
+    id,
+    title_kr: tKr || undefined,
+    title_en: tEn || undefined,
+    snippet_kr: sKr || undefined,
+    snippet_en: sEn || undefined,
+    category: cat || 'theory'
+  };
+
+  const list = AdminState.reportsIndex;
+  const idx = list.findIndex(x => x.id === id);
+  if(idx >= 0){
+    list[idx] = entry;
+    logStatus(`기존 DCAR 메타를 업데이트했습니다. (${id})`);
+  } else {
+    list.push(entry);
+    logStatus(`새 DCAR 메타를 추가했습니다. (${id})`);
+  }
+  AdminState.reportsIndex = list;
+  renderReportsList();
+}
+
+async function saveReportsIndexJson(){
+  if(!AdminState.reportsIndex){
+    AdminState.reportsIndex = [];
+  }
+  try{
+    const path = getReportsIndexPath();
+    const jsonStr = JSON.stringify(AdminState.reportsIndex, null, 2);
+    logStatus(`reports/index.json 저장 중… (${path})`);
+    const res = await ghPutFile(path, jsonStr, 'Update reports/index.json via Admin', AdminState.reportsSha);
+    AdminState.reportsSha = res.content?.sha || null;
+    logStatus('reports/index.json을 GitHub에 성공적으로 저장했습니다.');
+  } catch(err){
+    logStatus(`reports/index.json 저장 실패: ${err.message}`, true);
+  }
+}
+
+/* -----------------------------
+   DCAR 본문 (.md) 로딩/저장
+------------------------------*/
+
+async function loadReportBody(){
+  const id = $('#reportId')?.value.trim() || '';
+  if(!id){
+    logStatus('먼저 DCAR ID를 입력하세요. (예: DCAR-01-2025)', true);
+    return;
+  }
+  try{
+    const path = getReportMdPath(id);
+    logStatus(`보고서 본문 불러오는 중… (${path})`);
+    const { exists, content } = await ghGetFile(path);
+    if(!exists){
+      $('#reportBody') && ($('#reportBody').value = '');
+      logStatus('해당 ID의 .md 파일이 없습니다. 새로 작성할 수 있습니다.');
+    } else {
+      $('#reportBody') && ($('#reportBody').value = content);
+      logStatus('DCAR 본문을 성공적으로 불러왔습니다.');
+    }
+  } catch(err){
+    logStatus(`보고서 본문 로딩 실패: ${err.message}`, true);
+  }
+}
+
+async function saveReportBody(){
+  const id = $('#reportId')?.value.trim() || '';
+  const body = $('#reportBody')?.value || '';
+  if(!id){
+    logStatus('먼저 DCAR ID를 입력해야 합니다.', true);
+    return;
+  }
+  try{
+    const path = getReportMdPath(id);
+    logStatus(`보고서 본문 저장 중… (${path})`);
+    // SHA를 위해 먼저 한 번 GET (기존 있으면 sha 사용)
+    let sha = null;
+    try{
+      const prev = await ghGetFile(path);
+      if(prev.exists) sha = prev.sha;
+    }catch(e){/* 무시 */}
+
+    await ghPutFile(path, body, `Update reports/${id}.md via Admin`, sha);
+    logStatus('DCAR 본문(.md)을 GitHub에 성공적으로 저장했습니다.');
+  } catch(err){
+    logStatus(`보고서 본문 저장 실패: ${err.message}`, true);
+  }
+}
+
+/* ============================================================
+   이벤트 바인딩 & 초기화
+============================================================ */
+function bindAdminEvents(){
+  // GitHub 설정
+  $('#ghSaveBtn') && $('#ghSaveBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    saveGhConfig();
+  });
+
+  // Works
+  $('#worksLoadBtn') && $('#worksLoadBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    loadWorksJson();
+  });
+  $('#worksSectionSelect') && $('#worksSectionSelect').addEventListener('change', ()=>{
+    renderWorksList();
+  });
+  $('#workAddBtn') && $('#workAddBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    addOrUpdateWork();
+  });
+  $('#worksSaveJsonBtn') && $('#worksSaveJsonBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    saveWorksJson();
+  });
+
+  // Reports index
+  $('#reportsLoadBtn') && $('#reportsLoadBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    loadReportsIndex();
+  });
+  $('#reportMetaSaveBtn') && $('#reportMetaSaveBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    saveReportMetaToMemory();
+  });
+  // reports/index.json 저장 버튼을 따로 쓰고 싶다면:
+  // 버튼 ID를 #reportsIndexSaveBtn으로 만들고 아래 주석 해제
+  const idxSaveBtn = $('#reportsIndexSaveBtn');
+  if(idxSaveBtn){
+    idxSaveBtn.addEventListener('click', e=>{
+      e.preventDefault();
+      saveReportsIndexJson();
+    });
+  }
+
+  // Report body (.md)
+  $('#reportBodyLoadBtn') && $('#reportBodyLoadBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    loadReportBody();
+  });
+  $('#reportBodySaveBtn') && $('#reportBodySaveBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    saveReportBody();
+  });
+
+  logStatus('Admin Script 초기화 완료.');
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadGhConfig();
+  bindAdminEvents();
+});
 </script>

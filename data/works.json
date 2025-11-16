@@ -1,68 +1,20 @@
 {
   "pray": [
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" },
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
+    {
+      "id": "D-1",
+      "title_kr": "",
+      "title_en": "",
+      "material_kr": "",
+      "material_en": "",
+      "size_kr": "",
+      "size_en": "",
+      "year": "",
+      "image": "D-1.jpg",
+      "zoom": "D-1.jpg"
+    }
   ],
-
-  "human": [
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  , { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-  ],
-
-  "rebirth": [
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-    /* 동일하게 총 20칸 */
-  ],
-
-  "exist": [
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-    /* 총 20칸 */
-  ],
-
-  "cosmos": [
-    { "title_kr": "", "title_en": "", "material_kr": "", "material_en": "", "size_kr": "", "size_en": "", "year": "", "image": "" }
-    /* 총 20칸 */
-  ]
+  "human": [],
+  "rebirth": [],
+  "exist": [],
+  "cosmos": []
 }

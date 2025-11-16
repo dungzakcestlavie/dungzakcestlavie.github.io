@@ -11,12 +11,14 @@
     },
     {
       "id": "DCAR-02-2025",
-      "title_en": "Pray for Us",
-      "title_ko": "우리를 위해 기도해 주세요",
+      "slug": "DCAR-02-2025",
       "year": "2025",
       "category": "Theory",
+      "title_en": "Pray for Us",
+      "title_ko": "우리를 위해 기도해 주세요",
+      "summary_kr": "빛·감정·응시·존재의 귀환에 대한 미학적 고찰.",
       "summary_en": "A meditation on light, emotion, gaze, and the return to being.",
-      "summary_ko": "빛·감정·응시·존재의 귀환에 대한 미학적 고찰."
+      "md_path": "reports/DCAR-02-2025.md"
     }
   ]
 }

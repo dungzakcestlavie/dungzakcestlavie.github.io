@@ -41,10 +41,13 @@
     font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
     overflow-x:hidden;
   }
-  .en,.ko{display:inherit}
+
+  /* 언어 토글: 텍스트는 .ko / .en 클래스로만 제어 (내용 변경 없음) */
+  .ko,.en{display:inherit}
   body.korean .en{display:none}
   body.english .ko{display:none}
-  body.hybrid .ko, body.hybrid .en{display:inherit}
+  body.hybrid .ko,
+  body.hybrid .en{display:inherit}
 
   /* motion 줄이기 옵션 */
   @media (prefers-reduced-motion: reduce){
@@ -238,7 +241,6 @@
     background:#15265a;
   }
 
-  /* report full-viewer (새로 추가, 텍스트는 없음) */
   .r-viewer{
     margin-top:18px;
     border-radius:14px;
@@ -252,11 +254,13 @@
     color:#e7ecff;
     white-space:pre-wrap;
   }
-  .r-viewer-header{
-    margin-bottom:12px;
-  }
-  .r-viewer-header .r-title{
-    white-space:normal;
+  .r-viewer-header{margin-bottom:12px;}
+  .r-viewer-header .r-title{white-space:normal;}
+
+  /* Reports 열림/닫힘 상태 */
+  .reports-omega.is-collapsed #reportGrid,
+  .reports-omega.is-collapsed #reportViewer{
+    display:none;
   }
 
   /* BIO MODAL */
@@ -440,8 +444,7 @@
     opacity:.9;
   }
   </style>
-</head>
-<body class="korean">
+</head> <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
@@ -465,10 +468,7 @@
   </header>
 
   <main>
-
-    <!-- ========================================================= -->
-    <!-- 1) POEM SECTION -->
-    <!-- ========================================================= -->
+    <!-- 1) POEM -->
     <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
@@ -522,9 +522,7 @@
       </div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- 2) WORKS SECTION -->
-    <!-- ========================================================= -->
+    <!-- 2) WORKS -->
     <section id="works" style="display:none">
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
@@ -544,9 +542,7 @@
       <div id="panel-cosmos" class="tabpanel"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- 3) REPORTS SECTION -->
-    <!-- ========================================================= -->
+    <!-- 3) REPORTS -->
     <section id="reports" style="display:none">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -563,16 +559,12 @@
         </div>
 
         <div id="reportGrid" class="r-grid"></div>
-        <!-- 전체 미학 보고서 텍스트를 여기에 표시 -->
         <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
       </div>
     </section>
-
   </main>
 
-  <!-- ========================================================= -->
-  <!-- 4) ARTIST BIO MODAL (텍스트 전체 네 버전 그대로) -->
-  <!-- ========================================================= -->
+  <!-- ARTIST BIO MODAL (텍스트 그대로) -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -677,7 +669,7 @@ Numerous private collections worldwide.</p>
         </div>
       </div>
 
-      <!-- Bio main (UPDATED KOREAN TEXT) -->
+      <!-- Bio main -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -685,7 +677,6 @@ Numerous private collections worldwide.</p>
         <p>등작의 작품은 기도문이자 기록이며, 상처 이후에 남는 따뜻함과 지워지지 않는 기억의 지속, 그리고 인간 존엄에 대한 조용한 선언이다. 그의 예술 세계는 ‘고통 이후의 빛’, ‘기억이 스스로를 복원하는 순간’, ‘존재가 다시 깨어나는 호흡’을 중심으로 확장된다.</p>
       </div>
 
-      <!-- Bio main (EN keeps artist name as DUNGZAK CESTLAVIE) -->
       <div class="bio-body en">
         <p>DUNGZAK CESTLAVIE is a Korean contemporary artist whose practice centers on the triad “Light · Memory · Being.”</p>
         <p>His paintings trace emotional residues, the genesis of light passing through wounds, and cycles of disappearance and rebirth. Beyond image or color, his work expands into an ethics of light and the dignity of memory.</p>
@@ -695,9 +686,7 @@ Numerous private collections worldwide.</p>
     </div>
   </div>
 
-  <!-- ========================================================= -->
   <!-- LIGHTBOX -->
-  <!-- ========================================================= -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
@@ -708,18 +697,14 @@ Numerous private collections worldwide.</p>
     <button id="lbClose" class="lb-close">✕</button>
   </div>
 
-  <!-- ========================================================= -->
   <!-- SOUND PLAYER -->
-  <!-- ========================================================= -->
   <div id="fftBar"><span></span></div>
   <div id="ctrl">
     <button id="soundBtn" class="ctrlbtn">✨</button>
     <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
   </div>
 
-  <!-- ========================================================= -->
   <!-- FOOTER -->
-  <!-- ========================================================= -->
   <footer>
     <div class="links">
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
@@ -731,10 +716,9 @@ Numerous private collections worldwide.</p>
 
     <small class="ko">© 2025 등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">© 2025 DUNGZAK CESTLAVIE</small>
-  </footer>
-<script>
+  </footer>  <script>
 // =========================
-// Helpers
+// Shorthands
 // =========================
 const $$ = (q, root) => Array.from((root || document).querySelectorAll(q));
 const $  = (q, root) => (root || document).querySelector(q);
@@ -754,13 +738,9 @@ const $  = (q, root) => (root || document).querySelector(q);
     else if(lang === 'en') body.classList.add('english');
     else body.classList.add('hybrid');
 
-    if(koBtn) koBtn.classList.toggle('active', lang === 'ko');
-    if(enBtn) enBtn.classList.toggle('active', lang === 'en');
-    if(hyBtn) hyBtn.classList.toggle('active', lang === 'hy');
-
-    if(koBtn) koBtn.setAttribute('aria-pressed', lang === 'ko' ? 'true' : 'false');
-    if(enBtn) enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
-    if(hyBtn) hyBtn.setAttribute('aria-pressed', lang === 'hy' ? 'true' : 'false');
+    if(koBtn){ koBtn.classList.toggle('active', lang === 'ko'); koBtn.setAttribute('aria-pressed', lang === 'ko' ? 'true' : 'false'); }
+    if(enBtn){ enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
+    if(hyBtn){ hyBtn.classList.toggle('active', lang === 'hy'); hyBtn.setAttribute('aria-pressed', lang === 'hy' ? 'true' : 'false'); }
 
     localStorage.setItem('dz_site_lang', lang);
     document.dispatchEvent(new CustomEvent('dz-lang-change', { detail: lang }));
@@ -802,10 +782,8 @@ const $  = (q, root) => (root || document).querySelector(q);
     });
   });
 
-  // default: Poem
-  showSection('poem');
+  showSection('poem'); // default
 
-  // Artist Bio tab
   const bioTab = $('#tab-bio');
   if(bioTab){
     bioTab.addEventListener('click', () => {
@@ -817,8 +795,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-/* Background Waves & Cursor Trail
-   + prefers-reduced-motion 지원 */
+// Background Waves & Cursor Trail
 // =========================
 (function(){
   const prefersReduced =
@@ -829,7 +806,6 @@ const $  = (q, root) => (root || document).querySelector(q);
   const trailCanvas = $('#trail');
 
   if(prefersReduced){
-    // 민감 사용자: 배경 애니메이션 OFF
     if(wavesCanvas) wavesCanvas.style.display = 'none';
     if(trailCanvas) trailCanvas.style.display = 'none';
     document.documentElement.style.scrollBehavior = 'auto';
@@ -867,8 +843,7 @@ const $  = (q, root) => (root || document).querySelector(q);
     const dr = t * (0.75 + k*0.15);
     const base = window.innerHeight*0.30 + k*108 + Math.sin(t*0.5 + k)*12;
     const u = x / window.innerWidth;
-    const curve = 0.9 + (u*u*(3-2*u))*0.2; // ease-in-out
-
+    const curve = 0.9 + (u*u*(3-2*u))*0.2;
     return base
       + Math.sin(x*f1 + dr*1.1 + Math.sin(dr*0.7 + k)*0.25)*a1*curve
       + Math.sin(x*f2 + dr*0.85)*a2;
@@ -940,19 +915,12 @@ const $  = (q, root) => (root || document).querySelector(q);
 
   resize();
   window.addEventListener('resize', resize, { passive:true });
-  document.addEventListener('visibilitychange', () => {
-    visible = !document.hidden;
-  });
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  window.addEventListener('mousemove', e => {
-    tx = e.clientX;
-    ty = e.clientY;
-  }, { passive:true });
-
+  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive:true });
   window.addEventListener('touchmove', e => {
     const p = e.touches[0];
-    tx = p.clientX;
-    ty = p.clientY;
+    tx = p.clientX; ty = p.clientY;
   }, { passive:true });
 
   requestAnimationFrame(frame);
@@ -963,19 +931,20 @@ const $  = (q, root) => (root || document).querySelector(q);
 // =========================
 window.DZ_BIO = (function(){
   const modal      = $('#bio-modal');
-  const closeBtn   = modal ? $('.bio-close', modal) : null;
-  const backdrop   = modal ? $('.bio-backdrop', modal) : null;
-  const langBtns   = modal ? $$('.bio-lang .lang', modal) : [];
+  if(!modal) return { open(){}, close(){} };
+
+  const closeBtn   = $('.bio-close', modal);
+  const backdrop   = $('.bio-backdrop', modal);
+  const langBtns   = $$('.bio-lang .lang', modal);
   const expoToggle = $('#expoToggle');
   const expoSlide  = $('#expoSlide');
-  const headKo     = modal ? $('.bio-head .ko', modal) : null;
-  const headEn     = modal ? $('.bio-head .en', modal) : null;
+  const headKo     = $('.bio-head .ko', modal);
+  const headEn     = $('.bio-head .en', modal);
 
   const expoKoSpan = expoToggle ? $('.ko', expoToggle) : null;
   const expoEnSpan = expoToggle ? $('.en', expoToggle) : null;
 
   function setBioLang(code){ // 'kr' | 'en'
-    if(!modal) return;
     const isKR = (code === 'kr');
 
     if(headKo) headKo.style.display = isKR ? 'block' : 'none';
@@ -1003,14 +972,11 @@ window.DZ_BIO = (function(){
   }
 
   function open(){
-    if(!modal) return;
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
 
-    // 사이트 언어와 동기화 (기본값)
-    const body = document.body;
     let siteLang = 'kr';
-    if(body.classList.contains('english')) siteLang = 'en';
+    if(document.body.classList.contains('english')) siteLang = 'en';
 
     const saved = localStorage.getItem('dz_bio_lang') || (siteLang === 'en' ? 'en' : 'kr');
     setBioLang(saved);
@@ -1018,7 +984,6 @@ window.DZ_BIO = (function(){
   }
 
   function close(){
-    if(!modal) return;
     modal.hidden = true;
     document.body.style.overflow = '';
   }
@@ -1029,8 +994,7 @@ window.DZ_BIO = (function(){
   langBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const code = btn.getAttribute('data-bio-lang');
-      if(!code) return;
-      setBioLang(code);
+      if(code) setBioLang(code);
     });
   });
 
@@ -1042,12 +1006,9 @@ window.DZ_BIO = (function(){
   }
 
   window.addEventListener('keydown', e => {
-    if(e.key === 'Escape' && modal && !modal.hidden){
-      close();
-    }
+    if(e.key === 'Escape' && !modal.hidden) close();
   });
 
-  // 사이트 언어 변경 시, Bio 언어 preference 없으면 자동 동기화
   document.addEventListener('dz-lang-change', e => {
     const pref = localStorage.getItem('dz_bio_lang');
     if(!pref){
@@ -1094,7 +1055,6 @@ window.DZ_BIO = (function(){
       try {
         return await fetchJSON('/artworks.json');
       } catch(__){
-        // 빈 구조
         return {
           [MAP.pray]   : [],
           [MAP.human]  : [],
@@ -1186,10 +1146,8 @@ window.DZ_BIO = (function(){
 
     await renderAll();
 
-    // 언어 바뀌면 alt 텍스트 갱신 위해 재렌더
     document.addEventListener('dz-lang-change', renderAll);
 
-    // 탭 전환
     $$('.tabs .tab').forEach(tab => {
       tab.addEventListener('click', () => {
         $$('.tabs .tab').forEach(x => x.classList.remove('active'));
@@ -1276,9 +1234,7 @@ window.DZ_BIO = (function(){
   if(next) next.addEventListener('click', () => openAt(idx + 1));
   if(closeBtn) closeBtn.addEventListener('click', hide);
 
-  lb.addEventListener('click', e => {
-    if(e.target === lb) hide();
-  });
+  lb.addEventListener('click', e => { if(e.target === lb) hide(); });
 
   lb.addEventListener('wheel', e => {
     if(!lb.classList.contains('on')) return;
@@ -1351,7 +1307,6 @@ window.DZ_BIO = (function(){
 
   wrap.classList.add('is-collapsed');
 
-  // 필요하면 여기 items에 DCAR-02, 03… 계속 추가 가능 (텍스트 그대로 유지)
   const items = [
     {
       id: 'DCAR-01-2025',
@@ -1361,15 +1316,11 @@ window.DZ_BIO = (function(){
       snippet_en: 'The first aesthetic report tracing the flow from memory through emotion and being, into the language of light.',
       cat: 'theory'
     }
-    // 이후 보고서는 같은 형식으로 이 배열에 추가 가능
   ];
 
   function render(cat){
-    const list = (cat === 'all')
-      ? items
-      : items.filter(x => x.cat === cat);
+    const list = (cat === 'all') ? items : items.filter(x => x.cat === cat);
 
-    // 필터 바뀔 때마다 뷰어는 비워 둠
     viewer.innerHTML = '';
 
     if(!list.length){
@@ -1389,22 +1340,18 @@ window.DZ_BIO = (function(){
       return;
     }
 
-    grid.innerHTML = list.map((r) => `
+    grid.innerHTML = list.map(r => `
       <article class="r-card">
         <div class="r-in">
           <div class="r-meta">
             <span class="r-badge">${r.id}</span>
             <span class="r-badge pdf">PDF</span>
           </div>
-
-          <!-- 언어별 제목 분리: 텍스트 그대로, UI만 분리 -->
           <h3 class="r-title">
             <span class="ko">${r.title_kr}</span>
             <span class="en">${r.title_en}</span>
           </h3>
-
           <p class="r-sub">/reports/${r.id}.md</p>
-
           <div class="r-body">
             <div class="ko">${r.snippet_kr}</div>
             <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
@@ -1426,7 +1373,6 @@ window.DZ_BIO = (function(){
 
   render('all');
 
-  // 카테고리 탭
   $$('.r-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       $$('.r-tab').forEach(x => x.classList.remove('is-active'));
@@ -1457,148 +1403,10 @@ window.DZ_BIO = (function(){
             <span class="r-badge">${meta.id}</span>
             <span class="r-badge pdf">PDF</span>
           </div>
-          <!-- 여기서도 언어별 제목 분리 표시 (텍스트 변경 없음) -->
           <h3 class="r-title">
             <span class="ko">${meta.title_kr}</span>
             <span class="en">${meta.title_en}</span>
           </h3>
-          <p class="r-sub">/reports/${meta.id}.md</p>
-        </div>
-      ` : '';
-
-      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
-    }catch(_){
-      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
-    }
-  }
-
-  grid.addEventListener('click', e => {
-    const btn = e.target.closest('button[data-open]');
-    if(!btn) return;
-    const id  = btn.getAttribute('data-open');
-    if(!id) return;
-    loadReport(id);
-  });
-
-  function setOpen(open){
-    wrap.classList.toggle('is-collapsed', !open);
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.textContent = open ? 'Close Reports' : 'Open Reports';
-  }
-
-  toggle.addEventListener('click', () => {
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    setOpen(!isOpen);
-  });
-})();
-
-  const wrap   = $('.reports-omega');
-  const grid   = $('#reportGrid');
-  const toggle = $('#reportsToggle');
-  const viewer = $('#reportViewer');
-  if(!wrap || !grid || !toggle || !viewer) return;
-
-  wrap.classList.add('is-collapsed');
-
-  // 필요하면 여기 items에 DCAR-02, 03… 계속 추가 가능
-  const items = [
-    {
-      id: 'DCAR-01-2025',
-      title_kr: '등작 燈酌 DUNGZAK CESTLAVIE — On Light, Memory, and Being',
-      title_en: 'On Light, Memory, and Being',
-      snippet_kr: '기억에서 시작해 감정과 존재, 그리고 빛의 언어로 이어지는 등작의 첫 번째 미학 보고서.',
-      snippet_en: 'The first aesthetic report tracing the flow from memory through emotion and being, into the language of light.',
-      cat: 'theory'
-    }
-    // 이후 보고서는 같은 형식으로 이 배열에 추가 가능
-  ];
-
-  function render(cat){
-    const list = (cat === 'all')
-      ? items
-      : items.filter(x => x.cat === cat);
-
-    // 필터 바뀔 때마다 뷰어는 비워 둠
-    viewer.innerHTML = '';
-
-    if(!list.length){
-      grid.innerHTML = `
-        <article class="r-card">
-          <div class="r-in">
-            <h3 class="r-title">미학 보고서 업로드 대기 중 / Reports coming soon</h3>
-            <p class="r-sub">/reports/</p>
-            <div class="r-body">
-              <div class="ko">Admin · GitHub를 통해 DCAR 보고서를 업로드하면 이 영역에 자동으로 정리됩니다.</div>
-              <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-              <div class="en">Once DCAR reports are uploaded via Admin / GitHub, they will appear here.</div>
-            </div>
-          </div>
-        </article>
-      `;
-      return;
-    }
-
-    grid.innerHTML = list.map((r) => `
-      <article class="r-card">
-        <div class="r-in">
-          <div class="r-meta">
-            <span class="r-badge">${r.id}</span>
-            <span class="r-badge pdf">PDF</span>
-          </div>
-          <h3 class="r-title">${r.title_kr} · ${r.title_en}</h3>
-          <p class="r-sub">/reports/${r.id}.md</p>
-          <div class="r-body">
-            <div class="ko">${r.snippet_kr}</div>
-            <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-            <div class="en">${r.snippet_en}</div>
-          </div>
-          <div class="r-actions">
-            <a href="/reports/print-preview.html?file=${encodeURIComponent(r.id + '.md')}"
-               target="_blank" rel="noopener">
-              미리보기 / Print
-            </a>
-            <button type="button" data-open="${r.id}">
-              전체 보기 / Open
-            </button>
-          </div>
-        </div>
-      </article>
-    `).join('');
-  }
-
-  render('all');
-
-  $$('.r-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      $$('.r-tab').forEach(x => x.classList.remove('is-active'));
-      tab.classList.add('is-active');
-      const cat = tab.getAttribute('data-r') || 'all';
-      render(cat);
-    });
-  });
-
-  function escapeHtml(str){
-    return str.replace(/[&<>"']/g, ch => (
-      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
-    ));
-  }
-
-  async function loadReport(id){
-    viewer.innerHTML = '';
-    const meta = items.find(x => x.id === id) || null;
-
-    try{
-      const res = await fetch(`/reports/${id}.md`, { cache:'no-store' });
-      if(!res.ok) throw new Error('fetch failed');
-      const text = await res.text();
-
-      const header = meta ? `
-        <div class="r-viewer-header">
-          <div class="r-meta">
-            <span class="r-badge">${meta.id}</span>
-            <span class="r-badge pdf">PDF</span>
-          </div>
-          <h3 class="r-title">${meta.title_kr} · ${meta.title_en}</h3>
           <p class="r-sub">/reports/${meta.id}.md</p>
         </div>
       ` : '';
@@ -1708,9 +1516,9 @@ window.DZ_BIO = (function(){
     const shim = g(0.012);
     const pan  = ac.createStereoPanner();
 
-    const low   = o('sine', 62);   // D2
-    const low2  = o('sine', 124);  // D3
-    const floor = o('sine', 31);   // D1
+    const low   = o('sine', 62);
+    const low2  = o('sine', 124);
+    const floor = o('sine', 31);
     const ch1   = o('sine', 432);
     const ch2   = o('sine', 528);
 
@@ -1753,7 +1561,7 @@ window.DZ_BIO = (function(){
     analyser.fftSize = 512;
     pan.connect(analyser);
 
-    [low,low2,floor,ch1,ch2].forEach(o => o.start());
+    [low,low2,floor,ch1,ch2].forEach(osc => osc.start());
 
     [base.gain, sub.gain, mid.gain, shim.gain].forEach(gain => {
       const t = gain.value;
@@ -1839,6 +1647,6 @@ window.DZ_BIO = (function(){
     }
   });
 })();
-</script>
+  </script>
 </body>
 </html>

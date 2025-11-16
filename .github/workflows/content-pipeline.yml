@@ -24,72 +24,46 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Validate JSON files
+      # 1) Admin이 작성하는 reports/reports.json을 원본(source of truth)으로 사용
+      - name: Validate admin reports.json (source of truth)
         run: |
           sudo apt-get update -y
           sudo apt-get install -y jq
-          if [ -f "data/reports.json" ]; then
-            jq . data/reports.json > /dev/null
-            echo "✅ reports.json valid"
+          if [ -f "reports/reports.json" ]; then
+            jq . reports/reports.json > /dev/null
+            echo "✅ reports/reports.json is valid"
           else
-            echo '{ "reports": [] }' > data/reports.json
-            echo "⚙️ reports.json created"
+            echo "❌ reports/reports.json not found"
+            exit 1
           fi
 
-      - name: Prepare ImageMagick
+      # 2) data/reports.json 으로 복사만 (HTML 스캔, 자동 생성 없음)
+      - name: Sync reports.json to data folder
+        run: |
+          mkdir -p data
+          cp ./reports/reports.json ./data/reports.json
+          echo "📂 Copied reports/reports.json → data/reports.json"
+
+      # 3) 이미지 썸네일 생성 (기존 ImageMagick 단계, HTML 의존 X)
+      - name: Prepare thumbnails with ImageMagick
         run: |
           sudo apt-get install -y imagemagick
           mkdir -p public/thumbs
-          for img in $(find images -type f \( -name "*.jpg" -o -name "*.png" \)); do
-            convert "$img" -resize 1024x1024 "public/thumbs/$(basename "$img")"
-          done
-          echo "🖼️ Thumbnails generated."
+          if [ -d "images" ]; then
+            for img in $(find images -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" \)); do
+              out="public/thumbs/$(basename "$img")"
+              convert "$img" -resize 1024x1024 "$out"
+              echo "🖼 thumb: $out"
+            done
+          else
+            echo "⚠️ images folder not found, skipping thumbnails."
+          fi
 
-      - name: Sync Reports to JSON
-        run: |
-          mkdir -p data
-          echo '{ "reports": [] }' > data/reports.json
-          for f in $(find reports -type f -name "*.html"); do
-            ID=$(basename "$f" .html)
-            TITLE=$(grep -m1 "<title>" "$f" | sed 's/<[^>]*>//g')
-            echo "  - { id: \"$ID\", title: \"$TITLE\" }" >> data/reports.json
-          done
-          echo "📄 reports.json regenerated."
-
-      - name: Pre-render Reports HTML
-        run: |
-          mkdir -p build/reports
-          cp -r reports/* build/reports/
-          echo "✨ HTML pre-render complete."
-
+      # 4) 변경 파일만 커밋 & 푸시 (없으면 조용히 패스)
       - name: Commit & Push changes
         run: |
           git config user.name "Lumera Bot"
           git config user.email "actions@github.com"
-          git add .
-          git commit -m "Auto-sync reports & thumbnails"
-          git push || echo "No changes to commit."
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: pipeline
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./"
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          git add data/reports.json public/thumbs || true
+          git commit -m "Auto-sync reports.json & thumbnails" || echo "No changes to commit"
+          git push || echo "No changes to push"

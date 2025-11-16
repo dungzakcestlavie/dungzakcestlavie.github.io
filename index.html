@@ -1351,6 +1351,155 @@ window.DZ_BIO = (function(){
 
   wrap.classList.add('is-collapsed');
 
+  // 필요하면 여기 items에 DCAR-02, 03… 계속 추가 가능 (텍스트 그대로 유지)
+  const items = [
+    {
+      id: 'DCAR-01-2025',
+      title_kr: '등작 燈酌 DUNGZAK CESTLAVIE — On Light, Memory, and Being',
+      title_en: 'On Light, Memory, and Being',
+      snippet_kr: '기억에서 시작해 감정과 존재, 그리고 빛의 언어로 이어지는 등작의 첫 번째 미학 보고서.',
+      snippet_en: 'The first aesthetic report tracing the flow from memory through emotion and being, into the language of light.',
+      cat: 'theory'
+    }
+    // 이후 보고서는 같은 형식으로 이 배열에 추가 가능
+  ];
+
+  function render(cat){
+    const list = (cat === 'all')
+      ? items
+      : items.filter(x => x.cat === cat);
+
+    // 필터 바뀔 때마다 뷰어는 비워 둠
+    viewer.innerHTML = '';
+
+    if(!list.length){
+      grid.innerHTML = `
+        <article class="r-card">
+          <div class="r-in">
+            <h3 class="r-title">미학 보고서 업로드 대기 중 / Reports coming soon</h3>
+            <p class="r-sub">/reports/</p>
+            <div class="r-body">
+              <div class="ko">Admin · GitHub를 통해 DCAR 보고서를 업로드하면 이 영역에 자동으로 정리됩니다.</div>
+              <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
+              <div class="en">Once DCAR reports are uploaded via Admin / GitHub, they will appear here.</div>
+            </div>
+          </div>
+        </article>
+      `;
+      return;
+    }
+
+    grid.innerHTML = list.map((r) => `
+      <article class="r-card">
+        <div class="r-in">
+          <div class="r-meta">
+            <span class="r-badge">${r.id}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+
+          <!-- 언어별 제목 분리: 텍스트 그대로, UI만 분리 -->
+          <h3 class="r-title">
+            <span class="ko">${r.title_kr}</span>
+            <span class="en">${r.title_en}</span>
+          </h3>
+
+          <p class="r-sub">/reports/${r.id}.md</p>
+
+          <div class="r-body">
+            <div class="ko">${r.snippet_kr}</div>
+            <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
+            <div class="en">${r.snippet_en}</div>
+          </div>
+          <div class="r-actions">
+            <a href="/reports/print-preview.html?file=${encodeURIComponent(r.id + '.md')}"
+               target="_blank" rel="noopener">
+              미리보기 / Print
+            </a>
+            <button type="button" data-open="${r.id}">
+              전체 보기 / Open
+            </button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  render('all');
+
+  // 카테고리 탭
+  $$('.r-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('.r-tab').forEach(x => x.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      const cat = tab.getAttribute('data-r') || 'all';
+      render(cat);
+    });
+  });
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, ch => (
+      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
+    ));
+  }
+
+  async function loadReport(id){
+    viewer.innerHTML = '';
+    const meta = items.find(x => x.id === id) || null;
+
+    try{
+      const res = await fetch(`/reports/${id}.md`, { cache:'no-store' });
+      if(!res.ok) throw new Error('fetch failed');
+      const text = await res.text();
+
+      const header = meta ? `
+        <div class="r-viewer-header">
+          <div class="r-meta">
+            <span class="r-badge">${meta.id}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <!-- 여기서도 언어별 제목 분리 표시 (텍스트 변경 없음) -->
+          <h3 class="r-title">
+            <span class="ko">${meta.title_kr}</span>
+            <span class="en">${meta.title_en}</span>
+          </h3>
+          <p class="r-sub">/reports/${meta.id}.md</p>
+        </div>
+      ` : '';
+
+      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+    }catch(_){
+      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
+    }
+  }
+
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-open]');
+    if(!btn) return;
+    const id  = btn.getAttribute('data-open');
+    if(!id) return;
+    loadReport(id);
+  });
+
+  function setOpen(open){
+    wrap.classList.toggle('is-collapsed', !open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.textContent = open ? 'Close Reports' : 'Open Reports';
+  }
+
+  toggle.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!isOpen);
+  });
+})();
+
+  const wrap   = $('.reports-omega');
+  const grid   = $('#reportGrid');
+  const toggle = $('#reportsToggle');
+  const viewer = $('#reportViewer');
+  if(!wrap || !grid || !toggle || !viewer) return;
+
+  wrap.classList.add('is-collapsed');
+
   // 필요하면 여기 items에 DCAR-02, 03… 계속 추가 가능
   const items = [
     {

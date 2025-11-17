@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20 — Reports Auto Manager</title>
+<title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.21 — Works & Reports Auto Manager</title>
 <meta name="color-scheme" content="dark light">
 
 <style>
@@ -33,7 +33,7 @@ body{
 }
 
 main{
-  width:100%; max-width:1200px;
+  width:100%; max-width:1240px;
   padding:16px 12px 80px;
 }
 
@@ -53,6 +53,12 @@ main{
   color:var(--sub);
 }
 
+.badge-row{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 .badge{
   display:inline-flex;
   align-items:center;
@@ -63,34 +69,24 @@ main{
   background:rgba(0,0,0,.3);
   color:var(--accent);
   font-size:11px;
-  margin-top:6px;
-}
-
-.grid{
-  margin-top:20px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-@media (min-width:900px){
-  .grid{
-    display:grid;
-    grid-template-columns:minmax(260px,320px) minmax(0,1fr);
-    align-items:flex-start;
-  }
 }
 
 .card{
-  background:linear-gradient(145deg,rgba(17,26,55,0.95),rgba(5,9,30,0.98));
+  background:linear-gradient(145deg,rgba(17,26,55,0.96),rgba(5,9,30,0.98));
   border-radius:18px;
   border:1px solid var(--border);
   padding:14px 14px 16px;
   box-shadow:0 18px 40px rgba(0,0,0,0.55);
+  margin-top:16px;
 }
 
 .card h2{
   font-size:15px;
   margin:0 0 8px;
+}
+.card h3{
+  font-size:14px;
+  margin:10px 0 6px;
 }
 .card p.helper{
   font-size:12px;
@@ -128,10 +124,23 @@ input:focus,select:focus,textarea:focus{
   box-shadow:0 0 0 1px rgba(244,201,107,0.3);
 }
 textarea{
-  min-height:160px;
+  min-height:120px;
   resize:vertical;
 }
 
+textarea.full-text{
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+
+.token-input{
+  font-family:var(--mono);
+  font-size:11px;
+}
+
+/* 버튼들 */
 .btn-row{
   display:flex;
   flex-wrap:wrap;
@@ -167,6 +176,7 @@ button:disabled{
   cursor:default;
 }
 
+/* 상태바 */
 .status-bar{
   margin-top:10px;
   font-size:12px;
@@ -186,9 +196,17 @@ button:disabled{
 .status-bar.err .status-dot{background:var(--danger);}
 .status-text{flex:1; color:var(--sub);}
 
-.token-input{
-  font-family:var(--mono);
+/* 태그 / 리스트 */
+.tag-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid #343f7a;
   font-size:11px;
+  color:var(--sub);
+  margin-right:4px;
+  margin-top:6px;
 }
 
 .list{
@@ -221,22 +239,34 @@ button:disabled{
   padding:4px 10px;
 }
 
-.tag-pill{
-  display:inline-flex;
-  align-items:center;
-  padding:2px 8px;
-  border-radius:999px;
-  border:1px solid #343f7a;
-  font-size:11px;
-  color:var(--sub);
-  margin-right:4px;
+/* Works 영역 2열 */
+.works-grid{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+@media (min-width:880px){
+  .works-grid{
+    display:grid;
+    grid-template-columns:minmax(240px,320px) minmax(0,1fr);
+    align-items:flex-start;
+  }
 }
 
-textarea.full-text{
-  font-family:var(--mono);
-  font-size:12px;
-  line-height:1.5;
-  white-space:pre-wrap;
+/* Reports 카드 레이아웃 */
+.reports-grid{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+@media (min-width:880px){
+  .reports-grid{
+    display:grid;
+    grid-template-columns:minmax(260px,340px) minmax(0,1fr);
+    align-items:flex-start;
+  }
 }
 
 /* mobile safe-area */
@@ -252,541 +282,839 @@ textarea.full-text{
   *{scroll-behavior:auto !important; animation:none !important;transition:none !important;}
 }
 </style>
-</head> <body>
+</head> <body data-theme="dark">
 <main>
-  <header>
-    <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.20</div>
-    <div class="hero-sub">DCAR 미학 보고서 · GitHub 자동 연동 · reports.json + Markdown 완전 자동 관리</div>
+
+  <!-- HEADER -->
+  <header class="top-head">
+    <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.21</div>
+    <div class="hero-sub">100 작품 · DCAR 미학 보고서 · GitHub 자동 연동 시스템</div>
     <div class="badge">
-      <span>⚙️ GitHub Contents API</span>
-      <span>reports/ + reports.json 자동 업데이트</span>
+      <span>⚙️ Auto GitHub Manager</span>
+      <span>Works(100) + Reports(DCAR) 완전 자동화</span>
     </div>
   </header>
 
+  <!-- GRID: 왼쪽 설정 / 오른쪽 관리 -->
   <section class="grid">
-    <!-- 왼쪽: GitHub 연결 & 보고서 목록 -->
-    <section class="card">
-      <h2>Ⅰ. GitHub 연결 & 보고서 목록</h2>
+
+    <!-- LEFT: GitHub CONFIG + FILE STRUCTURE -->
+    <section class="card left">
+      <h2>Ⅰ. GitHub 연결 설정</h2>
       <p class="helper">
-        아래 설정은 한 번만 입력하면 됩니다. 토큰은 브라우저 LocalStorage에만 저장되고, 서버로 전송되지 않습니다.
+        토큰과 저장 경로를 지정하면 작품 / 보고서가 자동으로 업로드됩니다.
       </p>
 
       <div class="field">
         <label>GitHub Owner</label>
-        <input id="ownerInput" type="text" value="dungzakcestlavie" autocomplete="off">
+        <input id="ownerInput" type="text" value="dungzakcestlavie">
       </div>
 
       <div class="field">
         <label>Repository</label>
-        <input id="repoInput" type="text" value="dungzakcestlavie.github.io" autocomplete="off">
+        <input id="repoInput" type="text" value="dungzakcestlavie.github.io">
       </div>
 
       <div class="field">
         <label>Branch</label>
-        <input id="branchInput" type="text" value="main" autocomplete="off">
+        <input id="branchInput" type="text" value="main">
       </div>
 
       <div class="field">
-        <label>Personal Access Token (repo 권한)</label>
+        <label>Personal Access Token</label>
         <input id="tokenInput" type="password" class="token-input" placeholder="ghp_...">
-        <small>※ GitHub &gt; Settings &gt; Developer settings &gt; Personal access tokens 에서 새 토큰 생성 후 입력.</small>
       </div>
 
       <div class="btn-row">
-        <button type="button" class="primary" id="btnSaveConfig">🔐 설정 저장</button>
-        <button type="button" class="subtle" id="btnTestLoad">📥 GitHub에서 목록 불러오기</button>
-        <button type="button" class="danger" id="btnClearConfig">설정·토큰 초기화</button>
+        <button id="btnSaveConfig" class="primary">🔐 설정 저장</button>
+        <button id="btnLoadConfig" class="subtle">📥 저장된 설정 불러오기</button>
+        <button id="btnClearConfig" class="danger">초기화</button>
       </div>
 
-      <div class="status-bar" id="statusBar">
-        <div class="status-dot" id="statusDot"></div>
-        <div class="status-text" id="statusText">준비 완료.</div>
+      <div id="statusBar" class="status-bar">
+        <div id="statusDot" class="status-dot"></div>
+        <div id="statusText" class="status-text">준비됨</div>
       </div>
 
-      <div style="margin-top:10px;font-size:12px;color:var(--sub);">
-        <div class="tag-pill">JSON: <code>reports/reports.json</code></div>
-        <div class="tag-pill">Markdown: <code>reports/DCAR-XX-2025.md</code></div>
-      </div>
-
-      <h3 style="margin-top:14px;font-size:13px;">📚 저장된 보고서 목록</h3>
-      <div id="reportList" class="list">
-        <!-- 동적 생성 -->
+      <div class="tag-area">
+        <div class="tag-pill">images/standard/*.jpg</div>
+        <div class="tag-pill">images/zoom/*.jpg</div>
+        <div class="tag-pill">reports/*.md</div>
+        <div class="tag-pill">reports/reports.json</div>
+        <div class="tag-pill">works/works.json</div>
       </div>
     </section>
 
-    <!-- 오른쪽: 보고서 편집 -->
-    <section class="card">
-      <h2>Ⅱ. 보고서 편집 / 자동 저장</h2>
-      <p class="helper">
-        Report ID는 <strong>파일 이름</strong>입니다. 예: <code>DCAR-01-2025</code> → <code>reports/DCAR-01-2025.md</code> 로 저장됩니다.
-      </p>
+    <!-- RIGHT: WORKS + REPORTS -->
+    <section class="card right">
 
-      <div class="field">
-        <label>Report ID (예: DCAR-01-2025)</label>
-        <input id="fieldId" type="text" placeholder="DCAR-01-2025">
+      <!-- TABS -->
+      <div class="tab-bar">
+        <button class="tab active" data-tab="works">🎨 작품(Works) 100 자동관리</button>
+        <button class="tab" data-tab="reports">📚 미학 보고서 DCAR 자동관리</button>
       </div>
 
-      <div class="field">
-        <label>Category</label>
-        <select id="fieldCategory">
-          <option value="Theory">Theory</option>
-          <option value="Archive">Archive</option>
-          <option value="Practice">Practice</option>
-        </select>
+      <!-- WORKS TAB -->
+      <div id="tab-works" class="tab-content active">
+        <h2>Ⅱ. 작품 업로드 / 자동 분류</h2>
+        <p class="helper">
+          총 100점 작품을 5섹션 × 20점으로 자동 정렬합니다.<br>
+          파일명을 자동으로 생성하며 Index와 100% 연동됩니다.
+        </p>
+
+        <!-- 작업 업로드 -->
+        <div class="field">
+          <label>작품 이미지 업로드 (여러 개 가능)</label>
+          <input id="worksFiles" type="file" accept="image/*" multiple>
+        </div>
+
+        <div class="field">
+          <label>섹션 선택</label>
+          <select id="worksSection">
+            <option value="lightmemory">Light & Memory</option>
+            <option value="prayer">Human Prayer</option>
+            <option value="rebirth">Rebirth</option>
+            <option value="existence">Existence</option>
+            <option value="cosmos">Cosmos</option>
+          </select>
+          <small>섹션당 20개씩 자동 번호 배정됩니다.</small>
+        </div>
+
+        <div class="btn-row">
+          <button id="btnUploadWorks" class="primary">📤 작품 업로드</button>
+          <button id="btnReloadWorks" class="subtle">목록 새로고침</button>
+        </div>
+
+        <h3 style="margin-top:14px;">📑 현재 업로드된 작품 목록</h3>
+        <div id="worksList" class="list"></div>
       </div>
 
-      <div class="field">
-        <label>Year</label>
-        <input id="fieldYear" type="text" value="2025">
+      <!-- REPORTS TAB -->
+      <div id="tab-reports" class="tab-content">
+        <h2>Ⅲ. 미학 보고서 자동 관리 (DCAR)</h2>
+        <p class="helper">
+          reports.json + markdown 파일 자동 생성/업데이트.<br>
+          Index는 즉시 이 파일들을 불러옵니다.
+        </p>
+
+        <div class="field">
+          <label>Report ID (예: DCAR-09-2025)</label>
+          <input id="rId" type="text">
+        </div>
+
+        <div class="field">
+          <label>Title (KO)</label>
+          <input id="rTitleKo" type="text">
+        </div>
+
+        <div class="field">
+          <label>Title (EN)</label>
+          <input id="rTitleEn" type="text">
+        </div>
+
+        <div class="field">
+          <label>Summary (KO)</label>
+          <textarea id="rSummaryKo" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Summary (EN)</label>
+          <textarea id="rSummaryEn" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label>전체 보고서 텍스트 (KR/EN 혼용 · Markdown 그대로)</label>
+          <textarea id="rFull" class="full-text"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button id="btnSaveReport" class="primary">💾 보고서 저장</button>
+          <button id="btnNewReport" class="subtle">신규 보고서</button>
+        </div>
+
+        <h3 style="margin-top:14px;">📚 저장된 미학 보고서 목록</h3>
+        <div id="reportsList" class="list"></div>
       </div>
 
-      <div class="field">
-        <label>Title (EN)</label>
-        <input id="fieldTitleEn" type="text" placeholder="On Light, Memory, and Being">
-      </div>
-
-      <div class="field">
-        <label>Title (KO)</label>
-        <input id="fieldTitleKo" type="text" placeholder="빛, 기억, 존재에 관하여">
-      </div>
-
-      <div class="field">
-        <label>Summary (KO)</label>
-        <textarea id="fieldSummaryKo" rows="2" placeholder="요약(한글)을 입력하세요."></textarea>
-      </div>
-
-      <div class="field">
-        <label>Summary (EN)</label>
-        <textarea id="fieldSummaryEn" rows="2" placeholder="Summary in English."></textarea>
-      </div>
-
-      <div class="field">
-        <label>Full Text (KR/EN 혼용 · Markdown) — 실제 미학 보고서 원문</label>
-        <textarea id="fieldFullText" class="full-text" placeholder="여기에 DCAR 전체 텍스트를 그대로 붙여넣으세요. (한영 혼용 가능)"></textarea>
-      </div>
-
-      <div class="btn-row">
-        <button type="button" class="primary" id="btnSaveReport">💾 보고서 저장 (JSON + MD 자동 업로드)</button>
-        <button type="button" class="subtle" id="btnNewReport">＋ 새 보고서</button>
-        <button type="button" class="subtle" id="btnReloadSelected">선택된 보고서 다시 불러오기</button>
-      </div>
-
-      <p class="helper" style="margin-top:10px;">
-        저장 시 순서:
-        <br>1) <code>reports/reports.json</code> 을 업데이트
-        <br>2) <code>reports/&lt;Report ID&gt;.md</code> 로 전문 텍스트 저장
-      </p>
     </section>
   </section>
 </main>
+</body> <script>
+// ================================
+// Admin Ω.21 — Works & Reports Auto Manager
+// ================================
+(function(){
+  // ---------- DOM ----------
+  const ownerInput   = document.getElementById('ownerInput');
+  const repoInput    = document.getElementById('repoInput');
+  const branchInput  = document.getElementById('branchInput');
+  const tokenInput   = document.getElementById('tokenInput');
 
-<script>
-/* JS는 아래 ③ SCRIPT 블록에 이어집니다 */
-</script>
-</body>
-</html> <script>
-// ========== Admin Ω.20 — GitHub Auto Manager ==========
+  const statusBar    = document.getElementById('statusBar');
+  const statusDot    = document.getElementById('statusDot');
+  const statusText   = document.getElementById('statusText');
 
-// DOM 얻기
-const ownerInput  = document.getElementById('ownerInput');
-const repoInput   = document.getElementById('repoInput');
-const branchInput = document.getElementById('branchInput');
-const tokenInput  = document.getElementById('tokenInput');
+  const worksFiles   = document.getElementById('worksFiles');
+  const worksSection = document.getElementById('worksSection');
+  const btnUploadWorks = document.getElementById('btnUploadWorks');
+  const btnReloadWorks = document.getElementById('btnReloadWorks');
+  const worksList    = document.getElementById('worksList');
 
-const statusBar  = document.getElementById('statusBar');
-const statusDot  = document.getElementById('statusDot');
-const statusText = document.getElementById('statusText');
+  const rId          = document.getElementById('rId');
+  const rTitleKo     = document.getElementById('rTitleKo');
+  const rTitleEn     = document.getElementById('rTitleEn');
+  const rSummaryKo   = document.getElementById('rSummaryKo');
+  const rSummaryEn   = document.getElementById('rSummaryEn');
+  const rFull        = document.getElementById('rFull');
+  const btnSaveReport  = document.getElementById('btnSaveReport');
+  const btnNewReport   = document.getElementById('btnNewReport');
+  const reportsList    = document.getElementById('reportsList');
 
-const reportListEl = document.getElementById('reportList');
+  const btnSaveConfig  = document.getElementById('btnSaveConfig');
+  const btnLoadConfig  = document.getElementById('btnLoadConfig');
+  const btnClearConfig = document.getElementById('btnClearConfig');
 
-// 폼 요소
-const fieldId        = document.getElementById('fieldId');
-const fieldCategory  = document.getElementById('fieldCategory');
-const fieldYear      = document.getElementById('fieldYear');
-const fieldTitleEn   = document.getElementById('fieldTitleEn');
-const fieldTitleKo   = document.getElementById('fieldTitleKo');
-const fieldSummaryKo = document.getElementById('fieldSummaryKo');
-const fieldSummaryEn = document.getElementById('fieldSummaryEn');
-const fieldFullText  = document.getElementById('fieldFullText');
+  const tabButtons   = document.querySelectorAll('.tab-bar .tab');
+  const tabWorks     = document.getElementById('tab-works');
+  const tabReports   = document.getElementById('tab-reports');
 
-const btnSaveConfig    = document.getElementById('btnSaveConfig');
-const btnTestLoad      = document.getElementById('btnTestLoad');
-const btnClearConfig   = document.getElementById('btnClearConfig');
-const btnSaveReport    = document.getElementById('btnSaveReport');
-const btnNewReport     = document.getElementById('btnNewReport');
-const btnReloadSelected= document.getElementById('btnReloadSelected');
+  // ---------- PATH & STATE ----------
+  const WORKS_JSON_PATH   = 'data/works.json';       // Index가 읽는 경로
+  const REPORTS_JSON_PATH = 'reports/reports.json';  // Index Reports가 읽는 경로
 
-const REPORTS_JSON_PATH = 'reports/reports.json';
+  let worksJsonSha   = null;
+  let reportsJsonSha = null;
 
-let reportsData = { reports: [] };
-let reportsJsonSha = null;
-let currentReportId = null;
-
-// ---------- 유틸 ----------
-
-function setStatus(msg, type='info'){
-  statusText.textContent = msg;
-  statusBar.classList.remove('ok','err');
-  if(type === 'ok') statusBar.classList.add('ok');
-  if(type === 'err') statusBar.classList.add('err');
-}
-
-function getConfig(){
-  return {
-    owner: ownerInput.value.trim(),
-    repo: repoInput.value.trim(),
-    branch: branchInput.value.trim(),
-    token: tokenInput.value.trim()
+  // works.json 기본 구조 (100개 / 5섹션)
+  let worksData = {
+    "Light & Memory": [],
+    "Human Prayer": [],
+    "Rebirth": [],
+    "Existence": [],
+    "Cosmos": []
   };
-}
 
-function saveConfigToLocal(){
-  const cfg = getConfig();
-  localStorage.setItem('dz_admin_cfg', JSON.stringify({
-    owner: cfg.owner, repo: cfg.repo, branch: cfg.branch
-  }));
-  if(cfg.token){
-    localStorage.setItem('dz_admin_token', cfg.token);
+  // reports.json 기본 구조
+  let reportsData = { reports: [] };
+  let currentReportId = null;
+
+  const SECTION_LABELS = {
+    lightmemory: "Light & Memory",
+    prayer     : "Human Prayer",
+    rebirth    : "Rebirth",
+    existence  : "Existence",
+    cosmos     : "Cosmos"
+  };
+  const SECTION_CODES = {
+    lightmemory: "LM",
+    prayer     : "HP",
+    rebirth    : "RB",
+    existence  : "EX",
+    cosmos     : "CO"
+  };
+
+  // ---------- Util ----------
+  function setStatus(msg, type = 'info'){
+    if(statusText) statusText.textContent = msg;
+    if(!statusBar || !statusDot) return;
+    statusBar.classList.remove('ok', 'err');
+    if(type === 'ok') statusBar.classList.add('ok');
+    if(type === 'err') statusBar.classList.add('err');
   }
-  setStatus('설정을 저장했습니다. 이제 GitHub에서 목록을 불러올 수 있습니다.','ok');
-}
 
-function loadConfigFromLocal(){
-  try{
-    const rawCfg   = localStorage.getItem('dz_admin_cfg');
-    const rawToken = localStorage.getItem('dz_admin_token');
-    if(rawCfg){
-      const cfg = JSON.parse(rawCfg);
-      if(cfg.owner)  ownerInput.value  = cfg.owner;
-      if(cfg.repo)   repoInput.value   = cfg.repo;
-      if(cfg.branch) branchInput.value = cfg.branch;
+  function getConfig(){
+    return {
+      owner : ownerInput.value.trim(),
+      repo  : repoInput.value.trim(),
+      branch: branchInput.value.trim(),
+      token : tokenInput.value.trim()
+    };
+  }
+
+  function saveConfigToLocal(){
+    const cfg = getConfig();
+    localStorage.setItem('dz_admin_cfg', JSON.stringify({
+      owner: cfg.owner,
+      repo : cfg.repo,
+      branch: cfg.branch
+    }));
+    if(cfg.token){
+      localStorage.setItem('dz_admin_token', cfg.token);
     }
-    if(rawToken){
-      tokenInput.value = rawToken;
+    setStatus('GitHub 설정을 저장했습니다.', 'ok');
+  }
+
+  function loadConfigFromLocal(){
+    try{
+      const rawCfg   = localStorage.getItem('dz_admin_cfg');
+      const rawToken = localStorage.getItem('dz_admin_token');
+      if(rawCfg){
+        const cfg = JSON.parse(rawCfg);
+        if(cfg.owner)  ownerInput.value  = cfg.owner;
+        if(cfg.repo)   repoInput.value   = cfg.repo;
+        if(cfg.branch) branchInput.value = cfg.branch;
+      }
+      if(rawToken){
+        tokenInput.value = rawToken;
+      }
+      setStatus('저장된 설정을 불러왔습니다.', 'ok');
+    }catch(e){
+      console.error(e);
+      setStatus('저장된 설정을 불러오는 중 오류가 발생했습니다.', 'err');
     }
-  }catch(e){
-    console.error(e);
-  }
-}
-
-function clearConfig(){
-  localStorage.removeItem('dz_admin_cfg');
-  localStorage.removeItem('dz_admin_token');
-  tokenInput.value = '';
-  setStatus('저장된 설정과 토큰을 모두 삭제했습니다.','ok');
-}
-
-function encodeBase64(str){
-  return btoa(unescape(encodeURIComponent(str)));
-}
-
-function decodeBase64(str){
-  return decodeURIComponent(escape(atob(str)));
-}
-
-// GitHub API 호출
-async function ghFetch(path, options = {}){
-  const {owner, repo, branch, token} = getConfig();
-  if(!owner || !repo || !branch || !token){
-    throw new Error('GitHub 설정이 비어 있습니다. Owner, Repo, Branch, Token을 모두 입력하세요.');
   }
 
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch)}`;
+  function clearConfig(){
+    localStorage.removeItem('dz_admin_cfg');
+    localStorage.removeItem('dz_admin_token');
+    tokenInput.value = '';
+    setStatus('저장된 설정과 토큰을 모두 삭제했습니다.', 'ok');
+  }
 
-  const headers = Object.assign({
-    'Accept':'application/vnd.github+json',
-    'Authorization':`Bearer ${token}`
-  }, options.headers || {});
+  // 문자열(Base64) 유틸 (한글 포함)
+  function encodeBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function decodeBase64(str){
+    return decodeURIComponent(escape(atob(str)));
+  }
 
-  const res = await fetch(url, Object.assign({}, options, {headers}));
-  return res;
-}
+  // 파일 → Base64 (이미지 업로드용)
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const result = fr.result || '';
+        const base64 = String(result).split(',')[1] || '';
+        resolve(base64);
+      };
+      fr.onerror = reject;
+      fr.readAsDataURL(file);
+    });
+  }
 
-// ---------- reports.json 로드 / 저장 ----------
+  // GitHub Contents API - GET / PUT 공통
+  async function ghGet(path){
+    const cfg = getConfig();
+    if(!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token){
+      throw new Error('GitHub 설정이 비어 있습니다. Owner / Repo / Branch / Token을 확인하세요.');
+    }
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(cfg.branch)}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${cfg.token}`
+      }
+    });
+    return res;
+  }
 
-async function loadReportsJson(){
-  setStatus('GitHub에서 reports.json 불러오는 중…');
-  reportsJsonSha = null;
+  async function ghPut(path, base64Content, message, sha){
+    const cfg = getConfig();
+    if(!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token){
+      throw new Error('GitHub 설정이 비어 있습니다. Owner / Repo / Branch / Token을 확인하세요.');
+    }
 
-  try{
-    const res = await ghFetch(REPORTS_JSON_PATH, { method:'GET' });
+    const body = {
+      path,
+      message,
+      content: base64Content,
+      branch : cfg.branch
+    };
+    if(sha){
+      body.sha = sha;
+    }
+
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept':'application/vnd.github+json',
+        'Authorization':`Bearer ${cfg.token}`,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error((err && err.message) || `GitHub PUT 실패 (${res.status})`);
+    }
+    return res.json();
+  }
+
+  // ========================
+  //  WORKS — data/works.json
+  // ========================
+  async function loadWorksJson(){
+    setStatus('GitHub에서 data/works.json 불러오는 중…');
+
+    try{
+      const res = await ghGet(WORKS_JSON_PATH);
+
+      if(res.status === 404){
+        // 새로 시작
+        worksJsonSha = null;
+        worksData = {
+          "Light & Memory": [],
+          "Human Prayer": [],
+          "Rebirth": [],
+          "Existence": [],
+          "Cosmos": []
+        };
+        setStatus('data/works.json 이 없어 새로 시작합니다. (현재 0개)', 'ok');
+        renderWorksList();
+        return;
+      }
+
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        throw new Error('data/works.json 로드 실패: ' + (err.message || res.status));
+      }
+
+      const json = await res.json();
+      worksJsonSha = json.sha || null;
+      const content = decodeBase64(String(json.content || '').replace(/\n/g,''));
+      const parsed  = JSON.parse(content || '{}');
+
+      // 키가 없으면 기본 구조로 보정
+      worksData = Object.assign(
+        {
+          "Light & Memory": [],
+          "Human Prayer": [],
+          "Rebirth": [],
+          "Existence": [],
+          "Cosmos": []
+        },
+        parsed || {}
+      );
+
+      setStatus('data/works.json 로드 완료.', 'ok');
+      renderWorksList();
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || 'data/works.json 로드 중 오류가 발생했습니다.', 'err');
+      renderWorksList();
+    }
+  }
+
+  async function saveWorksJson(){
+    const jsonStr = JSON.stringify(worksData, null, 2);
+    const base64  = encodeBase64(jsonStr);
+    setStatus('data/works.json 저장 중…');
+    const result = await ghPut(
+      WORKS_JSON_PATH,
+      base64,
+      'Update data/works.json via Admin Ω.21',
+      worksJsonSha
+    );
+    worksJsonSha = result.content && result.content.sha || worksJsonSha;
+    setStatus('data/works.json 저장 완료.', 'ok');
+  }
+
+  function renderWorksList(){
+    worksList.innerHTML = '';
+    const sections = Object.keys(worksData);
+
+    let total = 0;
+    sections.forEach(sec => {
+      const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
+      total += arr.length;
+    });
+
+    if(total === 0){
+      const div = document.createElement('div');
+      div.className = 'list-item';
+      div.innerHTML = '<span class="meta">아직 업로드된 작품이 없습니다. (섹션별 최대 20점)</span>';
+      worksList.appendChild(div);
+      return;
+    }
+
+    sections.forEach(sec => {
+      const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
+      if(!arr.length) return;
+
+      const header = document.createElement('div');
+      header.className = 'list-item';
+      header.innerHTML = `<strong>${sec}</strong><span class="meta">${arr.length} / 20 작품</span>`;
+      worksList.appendChild(header);
+
+      arr.forEach((w, idx) => {
+        const row = document.createElement('div');
+        row.className = 'list-item';
+        const num = String(idx+1).padStart(2,'0');
+        const title = (w.title_kr || w.title_en || '').trim();
+        const metaTitle = title ? ` · ${title}` : '';
+        row.innerHTML =
+          `<span><strong>${num}</strong> — ${w.image || '(파일명 없음)'}${metaTitle}</span>` +
+          `<span class="meta">${w.year || ''}</span>`;
+        worksList.appendChild(row);
+      });
+    });
+  }
+
+  async function handleUploadWorks(){
+    const files = worksFiles.files;
+    const sectionKey = worksSection.value;
+
+    if(!files || !files.length){
+      setStatus('업로드할 이미지 파일을 선택해주세요.', 'err');
+      return;
+    }
+    if(!SECTION_LABELS[sectionKey]){
+      setStatus('섹션을 선택해주세요.', 'err');
+      return;
+    }
+
+    const label = SECTION_LABELS[sectionKey];
+    const code  = SECTION_CODES[sectionKey] || 'W';
+    if(!Array.isArray(worksData[label])){
+      worksData[label] = [];
+    }
+
+    let currentCount = worksData[label].length;
+    if(currentCount >= 20){
+      setStatus(`${label} 섹션은 이미 20점이 채워졌습니다.`, 'err');
+      return;
+    }
+
+    const available = 20 - currentCount;
+    const willUpload = Math.min(available, files.length);
+
+    if(willUpload < files.length){
+      setStatus(`이 섹션에는 ${available}점만 더 업로드할 수 있습니다. (앞에서 ${willUpload}점만 처리)`, 'info');
+    }
+
+    try{
+      btnUploadWorks.disabled = true;
+      setStatus(`이미지 ${willUpload}개 업로드 준비 중…`);
+
+      for(let i = 0; i < willUpload; i++){
+        const file = files[i];
+        currentCount++;
+        const indexStr = String(currentCount).padStart(2,'0');
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const safeExt = ext === 'jpeg' ? 'jpg' : ext;
+        const fileName = `DZ-${code}-${indexStr}.${safeExt}`;
+
+        setStatus(`[${i+1}/${willUpload}] ${fileName} 업로드 중…`);
+
+        // 파일 Base64 변환
+        const base64 = await fileToBase64(file);
+
+        // standard / zoom 동일 파일로 업로드 (원본 그대로)
+        await ghPut(
+          `images/standard/${fileName}`,
+          base64,
+          `Upload standard image ${fileName} via Admin Ω.21`
+        );
+        await ghPut(
+          `images/zoom/${fileName}`,
+          base64,
+          `Upload zoom image ${fileName} via Admin Ω.21`
+        );
+
+        // worksData에 항목 추가 (메타는 일단 비워두고, 나중에 수동 편집 가능)
+        worksData[label].push({
+          image      : fileName,
+          title_kr   : "",
+          title_en   : "",
+          material_kr: "",
+          material_en: "",
+          size_kr    : "",
+          size_en    : "",
+          year       : ""
+        });
+      }
+
+      // JSON 저장
+      await saveWorksJson();
+      renderWorksList();
+      setStatus(`섹션 "${label}" 에 작품 ${willUpload}점을 추가하고 JSON까지 저장했습니다.`, 'ok');
+      worksFiles.value = '';
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || '작품 업로드 중 오류가 발생했습니다.', 'err');
+    }finally{
+      btnUploadWorks.disabled = false;
+    }
+  }
+
+  // ==========================
+  //  REPORTS — reports.json
+  // ==========================
+  async function loadReportsJson(){
+    setStatus('GitHub에서 reports/reports.json 불러오는 중…');
+
+    try{
+      const res = await ghGet(REPORTS_JSON_PATH);
+
+      if(res.status === 404){
+        reportsData = { reports: [] };
+        reportsJsonSha = null;
+        setStatus('reports.json 이 없어 새로 시작합니다.', 'ok');
+        renderReportsList();
+        return;
+      }
+
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        throw new Error('reports.json 로드 실패: ' + (err.message || res.status));
+      }
+
+      const json = await res.json();
+      reportsJsonSha = json.sha || null;
+      const content = decodeBase64(String(json.content || '').replace(/\n/g,''));
+      const parsed = JSON.parse(content || '{"reports":[]}');
+      reportsData = parsed && Array.isArray(parsed.reports)
+        ? parsed
+        : { reports: [] };
+
+      setStatus(`reports.json 로드 완료. (${reportsData.reports.length}개)`, 'ok');
+      renderReportsList();
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || 'reports.json 로드 중 오류가 발생했습니다.', 'err');
+      renderReportsList();
+    }
+  }
+
+  async function saveReportsJson(){
+    const jsonStr = JSON.stringify(reportsData, null, 2);
+    const base64  = encodeBase64(jsonStr);
+    setStatus('reports.json 저장 중…');
+    const result = await ghPut(
+      REPORTS_JSON_PATH,
+      base64,
+      'Update reports.json via Admin Ω.21',
+      reportsJsonSha
+    );
+    reportsJsonSha = result.content && result.content.sha || reportsJsonSha;
+    setStatus('reports.json 저장 완료.', 'ok');
+  }
+
+  async function loadReportMarkdown(id){
+    const mdPath = `reports/${id}.md`;
+    setStatus(`${mdPath} 불러오는 중…`);
+
+    const res = await ghGet(mdPath);
 
     if(res.status === 404){
-      // 새로 시작
-      reportsData = { reports: [] };
-      reportsJsonSha = null;
-      setStatus('reports.json 이 아직 없어 새로 시작합니다.','ok');
-      renderReportList();
-      return;
+      setStatus(`${mdPath} 가 아직 없습니다. 새로 저장할 수 있습니다.`, 'ok');
+      rFull.value = '';
+      return { sha:null, content:'' };
     }
 
     if(!res.ok){
       const err = await res.json().catch(()=>({}));
-      throw new Error('reports.json 로드 실패: ' + (err.message || res.status));
+      throw new Error('Markdown 로드 실패: ' + (err.message || res.status));
     }
 
     const data = await res.json();
-    const content = decodeBase64(data.content.replace(/\n/g,''));
-    reportsData = JSON.parse(content || '{"reports":[]}');
-    if(!Array.isArray(reportsData.reports)){
-      reportsData = { reports: [] };
-    }
-    reportsJsonSha = data.sha;
-    setStatus(`reports.json 로드 성공 (${reportsData.reports.length}개).`,'ok');
-    renderReportList();
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || 'reports.json 로드 중 오류 발생','err');
-  }
-}
-
-async function saveReportsJson(){
-  const cfg = getConfig();
-  const bodyObj = {
-    path: REPORTS_JSON_PATH,
-    message: 'Update reports.json via Admin Ω.20',
-    content: encodeBase64(JSON.stringify(reportsData,null,2)),
-    branch: cfg.branch
-  };
-  if(reportsJsonSha){
-    bodyObj.sha = reportsJsonSha;
+    const md = decodeBase64(String(data.content || '').replace(/\n/g,''));
+    rFull.value = md;
+    setStatus(`${mdPath} 로드 완료.`, 'ok');
+    return { sha:data.sha, content:md };
   }
 
-  setStatus('reports.json GitHub에 저장 중…');
-
-  const res = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(REPORTS_JSON_PATH)}`, {
-    method:'PUT',
-    headers:{
-      'Accept':'application/vnd.github+json',
-      'Authorization':`Bearer ${cfg.token}`,
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify(bodyObj)
-  });
-
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error('reports.json 저장 실패: ' + (err.message || res.status));
+  async function saveReportMarkdown(id, existingSha){
+    const mdPath  = `reports/${id}.md`;
+    const base64  = encodeBase64(rFull.value || '');
+    setStatus(`${mdPath} 저장 중…`);
+    await ghPut(
+      mdPath,
+      base64,
+      `Update ${mdPath} via Admin Ω.21`,
+      existingSha || null
+    );
+    setStatus(`${mdPath} 저장 완료.`, 'ok');
   }
 
-  const data = await res.json();
-  reportsJsonSha = data.content && data.content.sha || reportsJsonSha;
-  setStatus('reports.json 이 성공적으로 저장되었습니다.','ok');
-}
-
-// ---------- Markdown (.md) 로드 / 저장 ----------
-
-async function loadMarkdownForId(reportId){
-  const mdPath = `reports/${reportId}.md`;
-  setStatus(`${mdPath} 불러오는 중…`);
-
-  const res = await ghFetch(mdPath, { method:'GET' });
-
-  if(res.status === 404){
-    setStatus(`${mdPath} 가 아직 없습니다. 새 파일로 저장 가능합니다.`,'ok');
-    fieldFullText.value = '';
-    return { sha:null, content:'' };
-  }
-
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error('Markdown 로드 실패: ' + (err.message || res.status));
-  }
-
-  const data = await res.json();
-  const md = decodeBase64(data.content.replace(/\n/g,''));
-  fieldFullText.value = md;
-  setStatus(`${mdPath} 로드 완료.`,'ok');
-  return { sha:data.sha, content:md };
-}
-
-async function saveMarkdownForId(reportId, existingSha=null){
-  const cfg = getConfig();
-  const mdPath = `reports/${reportId}.md`;
-  const bodyObj = {
-    path: mdPath,
-    message: `Update ${mdPath} via Admin Ω.20`,
-    content: encodeBase64(fieldFullText.value || ''),
-    branch: cfg.branch
-  };
-  if(existingSha){
-    bodyObj.sha = existingSha;
-  }
-
-  setStatus(`${mdPath} GitHub에 저장 중…`);
-
-  const res = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(mdPath)}`, {
-    method:'PUT',
-    headers:{
-      'Accept':'application/vnd.github+json',
-      'Authorization':`Bearer ${cfg.token}`,
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify(bodyObj)
-  });
-
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error('Markdown 저장 실패: ' + (err.message || res.status));
-  }
-
-  setStatus(`${mdPath} 저장 완료.`,'ok');
-}
-
-// ---------- UI 렌더링 ----------
-
-function renderReportList(){
-  reportListEl.innerHTML = '';
-  if(!reportsData.reports.length){
-    const empty = document.createElement('div');
-    empty.className = 'list-item';
-    empty.innerHTML = '<span class="meta">아직 등록된 보고서가 없습니다.</span>';
-    reportListEl.appendChild(empty);
-    return;
-  }
-
-  reportsData.reports
-    .slice()
-    .sort((a,b)=> (a.id||'').localeCompare(b.id||''))
-    .forEach(r=>{
+  function renderReportsList(){
+    reportsList.innerHTML = '';
+    if(!reportsData.reports.length){
       const div = document.createElement('div');
       div.className = 'list-item';
-
-      const title = document.createElement('strong');
-      title.textContent = `${r.id || ''} · ${r.title_ko || r.title_en || ''}`;
-      div.appendChild(title);
-
-      const meta = document.createElement('span');
-      meta.className = 'meta';
-      meta.textContent = `${r.year || ''} · ${r.category || ''}`;
-      div.appendChild(meta);
-
-      const btn = document.createElement('button');
-      btn.textContent = '이 보고서 불러오기';
-      btn.addEventListener('click', ()=>loadReportIntoForm(r.id));
-      div.appendChild(btn);
-
-      reportListEl.appendChild(div);
-    });
-}
-
-function clearForm(){
-  fieldId.value = '';
-  fieldCategory.value = 'Theory';
-  fieldYear.value = '2025';
-  fieldTitleEn.value = '';
-  fieldTitleKo.value = '';
-  fieldSummaryKo.value = '';
-  fieldSummaryEn.value = '';
-  fieldFullText.value = '';
-  currentReportId = null;
-  setStatus('새 보고서 입력 준비 완료.');
-}
-
-async function loadReportIntoForm(reportId){
-  const r = reportsData.reports.find(x=>x.id === reportId);
-  if(!r){
-    setStatus(`reports.json 에서 ${reportId} 를 찾을 수 없습니다.`, 'err');
-    return;
-  }
-
-  fieldId.value        = r.id || '';
-  fieldCategory.value  = r.category || 'Theory';
-  fieldYear.value      = r.year || '';
-  fieldTitleEn.value   = r.title_en || '';
-  fieldTitleKo.value   = r.title_ko || '';
-  fieldSummaryKo.value = r.summary_kr || r.summary_ko || '';
-  fieldSummaryEn.value = r.summary_en || '';
-  currentReportId      = r.id || '';
-
-  try{
-    await loadMarkdownForId(currentReportId);
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || 'Markdown 로드 중 오류','err');
-  }
-}
-
-// ---------- 저장 처리 ----------
-
-async function handleSaveReport(){
-  const id = fieldId.value.trim();
-  const titleEn = fieldTitleEn.value.trim();
-
-  if(!id || !titleEn){
-    setStatus('Report ID와 Title(EN)은 필수입니다.','err');
-    return;
-  }
-
-  const reportObj = {
-    id,
-    slug: id,
-    year: fieldYear.value.trim() || '2025',
-    category: fieldCategory.value || 'Theory',
-    title_en: titleEn,
-    title_ko: fieldTitleKo.value.trim(),
-    summary_kr: fieldSummaryKo.value.trim(),
-    summary_en: fieldSummaryEn.value.trim(),
-    md_path: `reports/${id}.md`
-  };
-
-  // reportsData 갱신
-  const idx = reportsData.reports.findIndex(r=>r.id === id);
-  if(idx >= 0){
-    reportsData.reports[idx] = reportObj;
-  }else{
-    reportsData.reports.push(reportObj);
-  }
-
-  try{
-    btnSaveReport.disabled = true;
-    await saveReportsJson();
-
-    // 기존 md sha 얻기
-    let mdSha = null;
-    try{
-      const res = await ghFetch(`reports/${id}.md`,{method:'GET'});
-      if(res.ok){
-        const data = await res.json();
-        mdSha = data.sha;
-      }
-    }catch(e){
-      console.warn('기존 md 확인 중 오류 (없을 수 있음):', e);
+      div.innerHTML = '<span class="meta">등록된 미학 보고서가 아직 없습니다.</span>';
+      reportsList.appendChild(div);
+      return;
     }
 
-    await saveMarkdownForId(id, mdSha);
-    await loadReportsJson(); // 목록 새로고침
-    currentReportId = id;
-    setStatus(`보고서 ${id} 가 JSON + Markdown 모두 저장되었습니다.`,'ok');
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || '보고서 저장 중 오류','err');
-  }finally{
-    btnSaveReport.disabled = false;
-  }
-}
+    reportsData.reports
+      .slice()
+      .sort((a,b)=>(a.id||'').localeCompare(b.id||''))
+      .forEach(r=>{
+        const row = document.createElement('div');
+        row.className = 'list-item';
+        const title = r.title_ko || r.title_en || '';
+        row.innerHTML =
+          `<strong>${r.id || ''}</strong>` +
+          `<span class="meta">${title}</span>`;
 
-// ---------- 이벤트 바인딩 & 초기화 ----------
+        const btn = document.createElement('button');
+        btn.textContent = '이 보고서 불러오기';
+        btn.addEventListener('click', () => loadReportIntoForm(r.id));
+        row.appendChild(btn);
 
-btnSaveConfig.addEventListener('click', saveConfigToLocal);
-btnClearConfig.addEventListener('click', ()=>{
-  if(confirm('저장된 Owner/Repo/Branch/Token을 모두 지울까요?')){
-    clearConfig();
+        reportsList.appendChild(row);
+      });
   }
-});
-btnTestLoad.addEventListener('click', loadReportsJson);
-btnSaveReport.addEventListener('click', handleSaveReport);
-btnNewReport.addEventListener('click', clearForm);
-btnReloadSelected.addEventListener('click', ()=>{
-  if(!currentReportId){
-    setStatus('먼저 왼쪽 목록에서 보고서를 선택하거나 ID를 입력하세요.','err');
-    return;
-  }
-  loadReportIntoForm(currentReportId);
-});
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  loadConfigFromLocal();
-  setStatus('Admin Ω.20 로드 완료. GitHub 설정을 확인한 뒤, "목록 불러오기"를 눌러주세요.');
-});
+  function clearReportForm(){
+    rId.value        = '';
+    rTitleKo.value   = '';
+    rTitleEn.value   = '';
+    rSummaryKo.value = '';
+    rSummaryEn.value = '';
+    rFull.value      = '';
+    currentReportId  = null;
+    setStatus('새 미학 보고서 입력 준비 완료.', 'ok');
+  }
+
+  async function loadReportIntoForm(id){
+    const r = reportsData.reports.find(x => x.id === id);
+    if(!r){
+      setStatus(`reports.json 에 ${id} 항목이 없습니다.`, 'err');
+      return;
+    }
+
+    rId.value        = r.id || '';
+    rTitleKo.value   = r.title_ko || '';
+    rTitleEn.value   = r.title_en || '';
+    rSummaryKo.value = r.summary_ko || r.summary_kr || '';
+    rSummaryEn.value = r.summary_en || '';
+    currentReportId  = r.id || '';
+
+    try{
+      await loadReportMarkdown(currentReportId);
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || 'Markdown 로드 중 오류가 발생했습니다.', 'err');
+    }
+  }
+
+  function guessYearFromId(id){
+    const m = /(\d{4})$/.exec(id || '');
+    return m ? m[1] : String(new Date().getFullYear());
+  }
+
+  async function handleSaveReport(){
+    const id    = rId.value.trim();
+    const tEn   = rTitleEn.value.trim();
+    const tKo   = rTitleKo.value.trim();
+    const sKo   = rSummaryKo.value.trim();
+    const sEn   = rSummaryEn.value.trim();
+
+    if(!id || !tEn){
+      setStatus('Report ID와 Title(EN)은 필수입니다.', 'err');
+      return;
+    }
+
+    const year = guessYearFromId(id);
+
+    const obj = {
+      id,
+      slug       : id,
+      year,
+      category   : 'Theory',
+      title_ko   : tKo,
+      title_en   : tEn,
+      summary_ko : sKo,
+      summary_kr : sKo,
+      summary_en : sEn,
+      md_path    : `reports/${id}.md`
+    };
+
+    const idx = reportsData.reports.findIndex(x => x.id === id);
+    if(idx >= 0){
+      reportsData.reports[idx] = obj;
+    }else{
+      reportsData.reports.push(obj);
+    }
+
+    try{
+      btnSaveReport.disabled = true;
+
+      // 1) reports.json 저장
+      await saveReportsJson();
+
+      // 2) 기존 md sha 확인
+      let mdSha = null;
+      try{
+        const res = await ghGet(`reports/${id}.md`);
+        if(res.ok){
+          const data = await res.json();
+          mdSha = data.sha;
+        }
+      }catch(e){
+        console.warn('기존 md 확인 중 오류 (없을 수 있음):', e);
+      }
+
+      // 3) markdown 저장
+      await saveReportMarkdown(id, mdSha);
+
+      // 4) 목록 새로고침
+      await loadReportsJson();
+      currentReportId = id;
+      setStatus(`보고서 ${id} 가 JSON + Markdown 모두 저장되었습니다.`, 'ok');
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || '보고서 저장 중 오류가 발생했습니다.', 'err');
+    }finally{
+      btnSaveReport.disabled = false;
+    }
+  }
+
+  // ==========================
+  //  TAB 전환
+  // ==========================
+  function switchTab(target){
+    tabButtons.forEach(btn => {
+      const t = btn.getAttribute('data-tab');
+      const active = (t === target);
+      btn.classList.toggle('active', active);
+    });
+    tabWorks.classList.toggle('active', target === 'works');
+    tabReports.classList.toggle('active', target === 'reports');
+  }
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      const t = btn.getAttribute('data-tab');
+      switchTab(t);
+    });
+  });
+
+  // ==========================
+  //  이벤트 바인딩
+  // ==========================
+  btnSaveConfig.addEventListener('click', saveConfigToLocal);
+  btnLoadConfig.addEventListener('click', loadConfigFromLocal);
+  btnClearConfig.addEventListener('click', ()=>{
+    if(confirm('저장된 Owner / Repo / Branch / Token을 모두 지울까요?')){
+      clearConfig();
+    }
+  });
+
+  btnUploadWorks.addEventListener('click', handleUploadWorks);
+  btnReloadWorks.addEventListener('click', loadWorksJson);
+
+  btnSaveReport.addEventListener('click', handleSaveReport);
+  btnNewReport.addEventListener('click', clearReportForm);
+
+  // ==========================
+  //  초기화
+  // ==========================
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // 설정 자동 불러오기
+    loadConfigFromLocal();
+    // Works / Reports JSON 불러오기 (토큰 없으면 오류 메시지만 출력)
+    loadWorksJson().catch(e => console.error(e));
+    loadReportsJson().catch(e => console.error(e));
+    switchTab('works');
+    setStatus('Admin Ω.21 로드 완료. GitHub 설정을 확인한 후 사용하세요.');
+  });
+
+})();
 </script>

@@ -257,7 +257,7 @@
   .r-viewer-header{margin-bottom:12px;}
   .r-viewer-header .r-title{white-space:normal;}
 
-  /* Reports 열림/닫힘 상태 */
+  /* Reports 열림/닫힘 상태 (v10에서는 사용 안 하지만 남겨둠) */
   .reports-omega.is-collapsed #reportGrid,
   .reports-omega.is-collapsed #reportViewer{
     display:none;
@@ -589,6 +589,7 @@
 
       <!-- slide list -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
+        <!-- (한국어 Bio 본문 그대로) -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2025 구구갤러리 목동, 서울, 대한민국</p>
@@ -627,6 +628,7 @@
           <p>《예술, 그 끝없는 사랑》(2024)</p>
         </div>
 
+        <!-- (영문 Bio 본문 그대로) -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
@@ -1296,7 +1298,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — JSON 기반 리스트 & 뷰어
+// Reports (DCAR) — JSON 리스트 & 새 탭 Open (v10)
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
@@ -1304,8 +1306,6 @@ window.DZ_BIO = (function(){
   const toggle = $('#reportsToggle');
   const viewer = $('#reportViewer');
   if(!wrap || !grid || !toggle || !viewer) return;
-
-  wrap.classList.add('is-collapsed');
 
   let items = [];
   let currentCat = 'all';
@@ -1317,7 +1317,10 @@ window.DZ_BIO = (function(){
   }
 
   function normaliseItem(r){
-    const cat = (r.category || 'Theory').toLowerCase(); // theory/archive/practice...
+    const cat = (r.category || 'Theory').toLowerCase();
+    const rawPath = r.md_path || ('/reports/' + r.id + '.md');
+    const path = rawPath.startsWith('/') ? rawPath : '/' + rawPath;
+
     return {
       id: r.id,
       title_ko: r.title_ko || r.title_en || '',
@@ -1325,8 +1328,12 @@ window.DZ_BIO = (function(){
       snippet_ko: r.summary_ko || '',
       snippet_en: r.summary_en || '',
       cat,
-      md_path: r.md_path || ''
+      path
     };
+  }
+
+  function findItem(id){
+    return items.find(x => x.id === id) || null;
   }
 
   async function loadData(){
@@ -1378,7 +1385,7 @@ window.DZ_BIO = (function(){
             <span class="ko">${escapeHtml(r.title_ko)}</span>
             <span class="en">${escapeHtml(r.title_en)}</span>
           </h3>
-          <p class="r-sub">/${escapeHtml(r.md_path || ('reports/' + r.id + '.md'))}</p>
+          <p class="r-sub">${escapeHtml(r.path)}</p>
           <div class="r-body">
             <div class="ko">${escapeHtml(r.snippet_ko)}</div>
             <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
@@ -1389,7 +1396,9 @@ window.DZ_BIO = (function(){
                target="_blank" rel="noopener">
               미리보기 / Print
             </a>
-            <button type="button" data-open="${escapeHtml(r.id)}">
+            <button type="button"
+                    data-open="${escapeHtml(r.id)}"
+                    data-path="${escapeHtml(r.path)}">
               전체 보기 / Open
             </button>
           </div>
@@ -1399,19 +1408,19 @@ window.DZ_BIO = (function(){
   }
 
   async function loadReport(id){
-    viewer.innerHTML = '';
-    const meta = items.find(x => x.id === id) || null;
+    const meta = findItem(id);
+    if(!meta) return;
 
-    const path = meta && meta.md_path
-      ? (meta.md_path.startsWith('/') ? meta.md_path : '/' + meta.md_path)
-      : ('/reports/' + id + '.md');
+    viewer.innerHTML = '';
+
+    const path = meta.path;
 
     try{
       const res = await fetch(path, { cache:'no-store' });
       if(!res.ok) throw new Error('fetch failed');
       const text = await res.text();
 
-      const header = meta ? `
+      const header = `
         <div class="r-viewer-header">
           <div class="r-meta">
             <span class="r-badge">${escapeHtml(meta.id)}</span>
@@ -1423,7 +1432,7 @@ window.DZ_BIO = (function(){
           </h3>
           <p class="r-sub">${escapeHtml(path)}</p>
         </div>
-      ` : '';
+      `;
 
       viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
     }catch(_){
@@ -1431,6 +1440,7 @@ window.DZ_BIO = (function(){
     }
   }
 
+  // 카테고리 탭
   $$('.r-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       $$('.r-tab').forEach(x => x.classList.remove('is-active'));
@@ -1440,23 +1450,22 @@ window.DZ_BIO = (function(){
     });
   });
 
+  // Open 버튼: 새 탭 + 내부 뷰어
   grid.addEventListener('click', e => {
     const btn = e.target.closest('button[data-open]');
     if(!btn) return;
-    const id  = btn.getAttribute('data-open');
-    if(!id) return;
-    loadReport(id);
+    const id   = btn.getAttribute('data-open');
+    const path = btn.getAttribute('data-path');
+    if(path){
+      try{ window.open(path, '_blank'); }catch(_){}
+    }
+    if(id) loadReport(id);
   });
 
-  function setOpen(open){
-    wrap.classList.toggle('is-collapsed', !open);
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.textContent = open ? 'Close Reports' : 'Open Reports';
-  }
-
+  // 토글 버튼: Reports 섹션으로 스크롤만
   toggle.addEventListener('click', () => {
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    setOpen(!isOpen);
+    const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior:'smooth' });
   });
 
   // 초기 데이터 로드

@@ -1,22 +1,20 @@
 {
-  "I 우리를 위해 기도해 주세요 · Pray for Us": [
+  "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us": [
     {
       "id": "DZ-003",
       "title_ko": "우리를 위해 기도해 주세요",
       "title_en": "Pray for Us",
-      "material_ko": "Acrylic on Canvas",
-      "material_en": "Acrylic on Canvas",
-      "size_ko": "162.2×130.3cm",
-      "size_en": "162.2×130.3cm",
+      "material_ko": "캔버스에 아크릴",
+      "material_en": "acrylic on canvas",
+      "size_ko": "162.2 × 130.3 cm",
+      "size_en": "162.2 × 130.3 cm",
       "year": "2025",
-      "image": "/images/zoom/DZ-003.jpg",
-      "zoom": "/images/zoom/DZ-003.jpg",
-      "section": "1"
+      "image": "DZ-003.jpg",
+      "zoom": "DZ-003.jpg"
     }
   ],
-
-  "II 인간 · Human Being": [],
-  "III 정신의 재탄생 · Rebirth of Mind": [],
-  "IV 존재의 회복 · Restoration of Being": [],
-  "V 빛의 초의식 · Metaconsciousness of Light": []
+  "Ⅱ 인간 · Human Being": [],
+  "Ⅲ 정신의 재탄생 · Rebirth of Mind": [],
+  "Ⅳ 존재의 회복 · Restoration of Being": [],
+  "Ⅴ 빛의 초의식 · Metaconsciousness of Light": []
 }

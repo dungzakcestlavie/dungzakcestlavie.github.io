@@ -271,7 +271,8 @@
     *{scroll-behavior:auto !important; animation:none !important;transition:none !important;}
   }
   </style>
-</head> <body data-theme="dark">
+</head>
+<body data-theme="dark">
   <main>
     <header class="top-head">
       <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.23</div>
@@ -339,11 +340,11 @@
           <div class="field">
             <label>섹션 선택 (홈페이지와 동일)</label>
             <select id="worksSection">
-              <option value="Ⅰ 우리를 위해 기도해 주세요 · Pray for Us">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</option>
-              <option value="Ⅱ 인간 · Human Being">Ⅱ 인간 · Human Being</option>
-              <option value="Ⅲ 정신의 재탄생 · Rebirth of Mind">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
-              <option value="Ⅳ 존재의 회복 · Restoration of Being">Ⅳ 존재의 회복 · Restoration of Being</option>
-              <option value="Ⅴ 빛의 초의식 · Metaconsciousness of Light">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
+              <option value="Pray for Us">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</option>
+              <option value="Human Being">Ⅱ 인간 · Human Being</option>
+              <option value="Rebirth of Mind">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
+              <option value="Restoration of Being">Ⅳ 존재의 회복 · Restoration of Being</option>
+              <option value="Metaconsciousness of Light">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
             </select>
           </div>
 
@@ -461,767 +462,773 @@
     </section>
   </main>
 
-  <!-- SCRIPT는 아래에 -->
-  <script> // =========================
-// 공통: DOM & 상태
-// =========================
-const ownerInput   = document.getElementById('ownerInput');
-const repoInput    = document.getElementById('repoInput');
-const branchInput  = document.getElementById('branchInput');
-const tokenInput   = document.getElementById('tokenInput');
+  <!-- SCRIPT -->
+  <script>
+  // =========================
+  // 공통: DOM & 상태
+  // =========================
+  const ownerInput   = document.getElementById('ownerInput');
+  const repoInput    = document.getElementById('repoInput');
+  const branchInput  = document.getElementById('branchInput');
+  const tokenInput   = document.getElementById('tokenInput');
 
-const statusBar    = document.getElementById('statusBar');
-const statusDot    = document.getElementById('statusDot');
-const statusText   = document.getElementById('statusText');
+  const statusBar    = document.getElementById('statusBar');
+  const statusDot    = document.getElementById('statusDot');
+  const statusText   = document.getElementById('statusText');
 
-// Works DOM
-const worksSectionSel = document.getElementById('worksSection');
-const worksFilesInput = document.getElementById('worksFiles');
-const worksTitleKo    = document.getElementById('worksTitleKo');
-const worksTitleEn    = document.getElementById('worksTitleEn');
-const worksMediumKo   = document.getElementById('worksMediumKo');
-const worksMediumEn   = document.getElementById('worksMediumEn');
-const worksSizeKo     = document.getElementById('worksSizeKo');
-const worksSizeEn     = document.getElementById('worksSizeEn');
-const worksYear       = document.getElementById('worksYear');
-const worksListEl     = document.getElementById('worksList');
+  // Works DOM
+  const worksSectionSel = document.getElementById('worksSection');
+  const worksFilesInput = document.getElementById('worksFiles');
+  const worksTitleKo    = document.getElementById('worksTitleKo');
+  const worksTitleEn    = document.getElementById('worksTitleEn');
+  const worksMediumKo   = document.getElementById('worksMediumKo');
+  const worksMediumEn   = document.getElementById('worksMediumEn');
+  const worksSizeKo     = document.getElementById('worksSizeKo');
+  const worksSizeEn     = document.getElementById('worksSizeEn');
+  const worksYear       = document.getElementById('worksYear');
+  const worksListEl     = document.getElementById('worksList');
 
-const btnUploadWorks   = document.getElementById('btnUploadWorks');
-const btnReloadWorks   = document.getElementById('btnReloadWorks');
-const btnUpdateMeta    = document.getElementById('btnUpdateMetaOnly');
+  const btnUploadWorks   = document.getElementById('btnUploadWorks');
+  const btnReloadWorks   = document.getElementById('btnReloadWorks');
+  const btnUpdateMeta    = document.getElementById('btnUpdateMetaOnly');
 
-// Reports DOM (기존 그대로)
-const rId        = document.getElementById('rId');
-const rCategory  = document.getElementById('rCategory');
-const rYear      = document.getElementById('rYear');
-const rTitleKo   = document.getElementById('rTitleKo');
-const rTitleEn   = document.getElementById('rTitleEn');
-const rSummaryKo = document.getElementById('rSummaryKo');
-const rSummaryEn = document.getElementById('rSummaryEn');
-const rFull      = document.getElementById('rFull');
-const reportsListEl = document.getElementById('reportsList');
+  // Reports DOM
+  const rId        = document.getElementById('rId');
+  const rCategory  = document.getElementById('rCategory');
+  const rYear      = document.getElementById('rYear');
+  const rTitleKo   = document.getElementById('rTitleKo');
+  const rTitleEn   = document.getElementById('rTitleEn');
+  const rSummaryKo = document.getElementById('rSummaryKo');
+  const rSummaryEn = document.getElementById('rSummaryEn');
+  const rFull      = document.getElementById('rFull');
+  const reportsListEl = document.getElementById('reportsList');
 
-const btnSaveConfig   = document.getElementById('btnSaveConfig');
-const btnLoadConfig   = document.getElementById('btnLoadConfig');
-const btnClearConfig  = document.getElementById('btnClearConfig');
+  const btnSaveConfig   = document.getElementById('btnSaveConfig');
+  const btnLoadConfig   = document.getElementById('btnLoadConfig');
+  const btnClearConfig  = document.getElementById('btnClearConfig');
 
-const btnSaveReport   = document.getElementById('btnSaveReport');
-const btnNewReport    = document.getElementById('btnNewReport');
-const btnReloadReports= document.getElementById('btnReloadReports');
+  const btnSaveReport   = document.getElementById('btnSaveReport');
+  const btnNewReport    = document.getElementById('btnNewReport');
+  const btnReloadReports= document.getElementById('btnReloadReports');
 
-// Tabs
-const tabButtons  = Array.from(document.querySelectorAll('.tab-bar .tab'));
-const tabWorks    = document.getElementById('tab-works');
-const tabReports  = document.getElementById('tab-reports');
+  // Tabs
+  const tabButtons  = Array.from(document.querySelectorAll('.tab-bar .tab'));
+  const tabWorks    = document.getElementById('tab-works');
+  const tabReports  = document.getElementById('tab-reports');
 
-// GitHub paths
-const WORKS_JSON_PATH   = 'data/works.json';
-const REPORTS_JSON_PATH = 'reports/reports.json';
+  // GitHub paths
+  const WORKS_JSON_PATH   = 'data/works.json';
+  const REPORTS_JSON_PATH = 'reports/reports.json';
 
-// Works & Reports 상태
-const EMPTY_WORKS = {
-  "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us": [],
-  "Ⅱ 인간 · Human Being": [],
-  "Ⅲ 정신의 재탄생 · Rebirth of Mind": [],
-  "Ⅳ 존재의 회복 · Restoration of Being": [],
-  "Ⅴ 빛의 초의식 · Metaconsciousness of Light": []
-};
-
-let worksData      = JSON.parse(JSON.stringify(EMPTY_WORKS));
-let worksJsonSha   = null;
-let currentWorkId  = null;
-let currentWorkSect= null;
-
-let reportsData    = { reports: [] };
-let reportsJsonSha = null;
-let currentReportId= null;
-
-// 섹션-프리픽스 맵 (새 규칙)
-const SECTION_PREFIX = {
-  "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us": "PFU",
-  "Ⅱ 인간 · Human Being": "HB",
-  "Ⅲ 정신의 재탄생 · Rebirth of Mind": "RM",
-  "Ⅳ 존재의 회복 · Restoration of Being": "RB",
-  "Ⅴ 빛의 초의식 · Metaconsciousness of Light": "ML"
-};
-
-// =========================
-// 공통 유틸
-// =========================
-function setStatus(msg, type){
-  statusText.textContent = msg;
-  statusBar.classList.remove('ok','err');
-  if(type === 'ok')  statusBar.classList.add('ok');
-  if(type === 'err') statusBar.classList.add('err');
-}
-
-function getConfig(){
-  return {
-    owner : ownerInput.value.trim(),
-    repo  : repoInput.value.trim(),
-    branch: branchInput.value.trim(),
-    token : tokenInput.value.trim()
+  // ===== 섹션 키(영문) ↔ 라벨(한/영표기) 매핑 =====
+  const SECTION_LABEL_MAP = {
+    "Pray for Us"               : "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us",
+    "Human Being"               : "Ⅱ 인간 · Human Being",
+    "Rebirth of Mind"           : "Ⅲ 정신의 재탄생 · Rebirth of Mind",
+    "Restoration of Being"      : "Ⅳ 존재의 회복 · Restoration of Being",
+    "Metaconsciousness of Light": "Ⅴ 빛의 초의식 · Metaconsciousness of Light"
   };
-}
 
-function saveConfigToLocal(){
-  const cfg = getConfig();
-  localStorage.setItem('dz_admin_cfg', JSON.stringify({
-    owner: cfg.owner,
-    repo: cfg.repo,
-    branch: cfg.branch
-  }));
-  if(cfg.token){
-    localStorage.setItem('dz_admin_token', cfg.token);
-  }
-  setStatus('GitHub 설정을 저장했습니다.', 'ok');
-}
-
-function loadConfigFromLocal(){
-  try{
-    const rawCfg   = localStorage.getItem('dz_admin_cfg');
-    const rawToken = localStorage.getItem('dz_admin_token');
-    if(rawCfg){
-      const cfg = JSON.parse(rawCfg);
-      if(cfg.owner)  ownerInput.value  = cfg.owner;
-      if(cfg.repo)   repoInput.value   = cfg.repo;
-      if(cfg.branch) branchInput.value = cfg.branch;
-    }
-    if(rawToken){
-      tokenInput.value = rawToken;
-    }
-    setStatus('저장된 설정을 불러왔습니다.', 'ok');
-  }catch(e){
-    console.error(e);
-    setStatus('저장된 설정을 불러오는 중 오류가 발생했습니다.', 'err');
-  }
-}
-
-function clearConfig(){
-  localStorage.removeItem('dz_admin_cfg');
-  localStorage.removeItem('dz_admin_token');
-  tokenInput.value = '';
-  setStatus('저장된 설정과 토큰을 모두 삭제했습니다.', 'ok');
-}
-
-function encodeBase64(str){
-  return btoa(unescape(encodeURIComponent(str)));
-}
-function decodeBase64(str){
-  return decodeURIComponent(escape(atob(str)));
-}
-
-// GitHub Contents API GET
-async function ghFetch(path, options = {}){
-  const cfg = getConfig();
-  if(!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token){
-    throw new Error('GitHub 설정이 비어 있습니다.');
-  }
-  const url =
-    `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(cfg.branch)}`;
-
-  const headers = Object.assign({
-    'Accept':'application/vnd.github+json',
-    'Authorization':`Bearer ${cfg.token}`
-  }, options.headers || {});
-
-  const res = await fetch(url, Object.assign({}, options, { headers }));
-  return res;
-}
-
-async function ghGetSha(path){
-  try{
-    const res = await ghFetch(path,{method:'GET'});
-    if(!res.ok) return null;
-    const data = await res.json();
-    return data.sha || null;
-  }catch(e){
-    return null;
-  }
-}
-
-async function ghPutText(path, contentStr, message, existingSha){
-  const cfg = getConfig();
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
-  const bodyObj = {
-    path,
-    message,
-    content: encodeBase64(contentStr),
-    branch: cfg.branch
+  // 기본 빈 구조 (JSON 키는 영문으로만)
+  const EMPTY_WORKS = {
+    "Pray for Us": [],
+    "Human Being": [],
+    "Rebirth of Mind": [],
+    "Restoration of Being": [],
+    "Metaconsciousness of Light": []
   };
-  if(existingSha){
-    bodyObj.sha = existingSha;
-  }
-  const res = await fetch(url,{
-    method:'PUT',
-    headers:{
-      'Accept':'application/vnd.github+json',
-      'Authorization':`Bearer ${cfg.token}`,
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify(bodyObj)
-  });
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error((err && err.message) || `GitHub 저장 실패 (${res.status})`);
-  }
-  return res.json();
-}
 
-function readFileAsBase64(file){
-  return new Promise((resolve, reject)=>{
-    const fr = new FileReader();
-    fr.onload = e=>{
-      const result = String(e.target.result || '');
-      const base64 = result.split(',')[1] || '';
-      resolve(base64);
+  let worksData      = JSON.parse(JSON.stringify(EMPTY_WORKS));
+  let worksJsonSha   = null;
+  let currentWorkId  = null;
+  let currentWorkSect= null;
+
+  let reportsData    = { reports: [] };
+  let reportsJsonSha = null;
+  let currentReportId= null;
+
+  // 섹션 프리픽스 (ID)
+  const SECTION_PREFIX = {
+    "Pray for Us"               : "PFU",
+    "Human Being"               : "HB",
+    "Rebirth of Mind"           : "RM",
+    "Restoration of Being"      : "RB",
+    "Metaconsciousness of Light": "ML"
+  };
+
+  // =========================
+  // 공통 유틸
+  // =========================
+  function setStatus(msg, type){
+    statusText.textContent = msg;
+    statusBar.classList.remove('ok','err');
+    if(type === 'ok')  statusBar.classList.add('ok');
+    if(type === 'err') statusBar.classList.add('err');
+  }
+
+  function getConfig(){
+    return {
+      owner : ownerInput.value.trim(),
+      repo  : repoInput.value.trim(),
+      branch: branchInput.value.trim(),
+      token : tokenInput.value.trim()
     };
-    fr.onerror = ()=>reject(new Error('파일을 읽는 중 오류가 발생했습니다.'));
-    fr.readAsDataURL(file);
-  });
-}
-
-async function ghPutImage(path, base64, message){
-  const cfg = getConfig();
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
-  const existingSha = await ghGetSha(path);
-  const bodyObj = {
-    path,
-    message,
-    content: base64,
-    branch: cfg.branch
-  };
-  if(existingSha){
-    bodyObj.sha = existingSha;
   }
-  const res = await fetch(url,{
-    method:'PUT',
-    headers:{
-      'Accept':'application/vnd.github+json',
-      'Authorization':`Bearer ${cfg.token}`,
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify(bodyObj)
-  });
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error((err && err.message) || `이미지 업로드 실패 (${res.status})`);
-  }
-  return res.json();
-}
 
-// =========================
-// Works — data/works.json
-// =========================
-async function loadWorksJson(){
-  setStatus('GitHub에서 data/works.json 불러오는 중…');
-  worksJsonSha = null;
-  try{
-    const res = await ghFetch(WORKS_JSON_PATH,{method:'GET'});
-    if(res.status === 404){
-      worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
-      worksJsonSha = null;
-      setStatus('data/works.json 이 아직 없어 새로 시작합니다.', 'ok');
-      renderWorksList();
-      return;
+  function saveConfigToLocal(){
+    const cfg = getConfig();
+    localStorage.setItem('dz_admin_cfg', JSON.stringify({
+      owner: cfg.owner,
+      repo: cfg.repo,
+      branch: cfg.branch
+    }));
+    if(cfg.token){
+      localStorage.setItem('dz_admin_token', cfg.token);
     }
+    setStatus('GitHub 설정을 저장했습니다.', 'ok');
+  }
+
+  function loadConfigFromLocal(){
+    try{
+      const rawCfg   = localStorage.getItem('dz_admin_cfg');
+      const rawToken = localStorage.getItem('dz_admin_token');
+      if(rawCfg){
+        const cfg = JSON.parse(rawCfg);
+        if(cfg.owner)  ownerInput.value  = cfg.owner;
+        if(cfg.repo)   repoInput.value   = cfg.repo;
+        if(cfg.branch) branchInput.value = cfg.branch;
+      }
+      if(rawToken){
+        tokenInput.value = rawToken;
+      }
+      setStatus('저장된 설정을 불러왔습니다.', 'ok');
+    }catch(e){
+      console.error(e);
+      setStatus('저장된 설정을 불러오는 중 오류가 발생했습니다.', 'err');
+    }
+  }
+
+  function clearConfig(){
+    localStorage.removeItem('dz_admin_cfg');
+    localStorage.removeItem('dz_admin_token');
+    tokenInput.value = '';
+    setStatus('저장된 설정과 토큰을 모두 삭제했습니다.', 'ok');
+  }
+
+  function encodeBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function decodeBase64(str){
+    return decodeURIComponent(escape(atob(str)));
+  }
+
+  // GitHub Contents API GET
+  async function ghFetch(path, options = {}){
+    const cfg = getConfig();
+    if(!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token){
+      throw new Error('GitHub 설정이 비어 있습니다.');
+    }
+    const url =
+      `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(cfg.branch)}`;
+
+    const headers = Object.assign({
+      'Accept':'application/vnd.github+json',
+      'Authorization':`Bearer ${cfg.token}`
+    }, options.headers || {});
+
+    const res = await fetch(url, Object.assign({}, options, { headers }));
+    return res;
+  }
+
+  async function ghGetSha(path){
+    try{
+      const res = await ghFetch(path,{method:'GET'});
+      if(!res.ok) return null;
+      const data = await res.json();
+      return data.sha || null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  async function ghPutText(path, contentStr, message, existingSha){
+    const cfg = getConfig();
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const bodyObj = {
+      path,
+      message,
+      content: encodeBase64(contentStr),
+      branch: cfg.branch
+    };
+    if(existingSha){
+      bodyObj.sha = existingSha;
+    }
+    const res = await fetch(url,{
+      method:'PUT',
+      headers:{
+        'Accept':'application/vnd.github+json',
+        'Authorization':`Bearer ${cfg.token}`,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify(bodyObj)
+    });
     if(!res.ok){
       const err = await res.json().catch(()=>({}));
-      throw new Error('data/works.json 로드 실패: ' + (err.message || res.status));
+      throw new Error((err && err.message) || `GitHub 저장 실패 (${res.status})`);
     }
-    const data = await res.json();
-    const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
-    let parsed = JSON.parse(content || '{}');
-    if(typeof parsed !== 'object' || !parsed){
-      parsed = {};
+    return res.json();
+  }
+
+  function readFileAsBase64(file){
+    return new Promise((resolve, reject)=>{
+      const fr = new FileReader();
+      fr.onload = e=>{
+        const result = String(e.target.result || '');
+        const base64 = result.split(',')[1] || '';
+        resolve(base64);
+      };
+      fr.onerror = ()=>reject(new Error('파일을 읽는 중 오류가 발생했습니다.'));
+      fr.readAsDataURL(file);
+    });
+  }
+
+  async function ghPutImage(path, base64, message){
+    const cfg = getConfig();
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const existingSha = await ghGetSha(path);
+    const bodyObj = {
+      path,
+      message,
+      content: base64,
+      branch: cfg.branch
+    };
+    if(existingSha){
+      bodyObj.sha = existingSha;
     }
-    // 새 구조 기준으로 머지
-    worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
-    Object.keys(worksData).forEach(key=>{
-      if(Array.isArray(parsed[key])){
-        worksData[key] = parsed[key];
-      }
+    const res = await fetch(url,{
+      method:'PUT',
+      headers:{
+        'Accept':'application/vnd.github+json',
+        'Authorization':`Bearer ${cfg.token}`,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify(bodyObj)
     });
-
-    worksJsonSha = data.sha || null;
-    setStatus('data/works.json 로드 성공.', 'ok');
-    renderWorksList();
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || '작품 목록 로드 중 오류가 발생했습니다.', 'err');
-  }
-}
-
-async function saveWorksJson(){
-  setStatus('data/works.json GitHub에 저장 중…');
-  const pretty = JSON.stringify(worksData, null, 2);
-  const res = await ghPutText(
-    WORKS_JSON_PATH,
-    pretty,
-    'Update data/works.json via Admin Ω.23',
-    worksJsonSha
-  );
-  worksJsonSha = res && res.content && res.content.sha || worksJsonSha;
-  setStatus('data/works.json 저장 완료.', 'ok');
-}
-
-function renderWorksList(){
-  worksListEl.innerHTML = '';
-  const sections = Object.keys(worksData);
-  let any = false;
-
-  sections.forEach(sec=>{
-    const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
-    arr.forEach(w=>{
-      any = true;
-      const div = document.createElement('div');
-      div.className = 'list-item';
-
-      const title = document.createElement('strong');
-      const idStr = w.id ? ` · ${w.id}` : '';
-      title.textContent = `${sec}${idStr} · ${w.title_ko || w.title_en || ''}`;
-      div.appendChild(title);
-
-      const meta = document.createElement('span');
-      meta.className = 'meta';
-      const sizeStr = w.size_ko || w.size_en || '';
-      const matStr  = w.material_ko || w.material_en || '';
-      const yr      = w.year || '';
-      meta.textContent = [matStr, sizeStr, yr].filter(Boolean).join(' · ');
-      div.appendChild(meta);
-
-      if(w.image){
-        const imgSpan = document.createElement('span');
-        imgSpan.className = 'meta';
-        imgSpan.textContent = `파일: ${w.image}`;
-        div.appendChild(imgSpan);
-      }
-
-      const btn = document.createElement('button');
-      btn.textContent = '이 작품 불러오기';
-      btn.addEventListener('click', ()=>{
-        loadWorkIntoForm(sec, w.id);
-      });
-      div.appendChild(btn);
-
-      worksListEl.appendChild(div);
-    });
-  });
-
-  if(!any){
-    const empty = document.createElement('div');
-    empty.className = 'list-item';
-    empty.innerHTML = '<span class="meta">아직 등록된 작품이 없습니다.</span>';
-    worksListEl.appendChild(empty);
-  }
-}
-
-function findWork(sec, id){
-  const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
-  return arr.find(w=>w.id === id) || null;
-}
-
-function loadWorkIntoForm(sec, id){
-  const w = findWork(sec, id);
-  if(!w){
-    setStatus(`${sec} 에서 ${id} 를 찾을 수 없습니다.`, 'err');
-    return;
-  }
-  worksSectionSel.value = sec;
-  worksTitleKo.value  = w.title_ko || '';
-  worksTitleEn.value  = w.title_en || '';
-  worksMediumKo.value = w.material_ko || '';
-  worksMediumEn.value = w.material_en || '';
-  worksSizeKo.value   = w.size_ko || '';
-  worksSizeEn.value   = w.size_en || '';
-  worksYear.value     = w.year || '';
-  currentWorkId       = w.id || null;
-  currentWorkSect     = sec;
-  setStatus(`작품 ${sec} · ${w.id} 메타데이터를 불러왔습니다.`, 'ok');
-}
-
-function getNextIndex(sec){
-  const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
-  return arr.length + 1;
-}
-
-async function handleUploadWorks(){
-  const sec = worksSectionSel.value;
-  if(!sec){
-    setStatus('섹션을 선택하세요.', 'err');
-    return;
-  }
-  const files   = Array.from(worksFilesInput.files || []);
-  const titleKo = worksTitleKo.value.trim();
-  const yearVal = worksYear.value.trim();
-
-  if(!files.length && !currentWorkId){
-    setStatus('새 작품을 추가하려면 이미지를 선택하거나, 기존 작품을 먼저 선택하세요.', 'err');
-    return;
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error((err && err.message) || `이미지 업로드 실패 (${res.status})`);
+    }
+    return res.json();
   }
 
-  // 새 이미지 업로드
-  if(files.length){
+  // =========================
+  // Works — data/works.json
+  // =========================
+  async function loadWorksJson(){
+    setStatus('GitHub에서 data/works.json 불러오는 중…');
+    worksJsonSha = null;
     try{
-      btnUploadWorks.disabled = true;
-      setStatus('작품 이미지 업로드 및 data/works.json 갱신 중…');
-
-      if(!Array.isArray(worksData[sec])){
-        worksData[sec] = [];
+      const res = await ghFetch(WORKS_JSON_PATH,{method:'GET'});
+      if(res.status === 404){
+        worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
+        worksJsonSha = null;
+        setStatus('data/works.json 이 아직 없어 새로 시작합니다.', 'ok');
+        renderWorksList();
+        return;
       }
-      let baseCount = worksData[sec].length;
-      const prefix  = SECTION_PREFIX[sec] || 'WK';
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        throw new Error('data/works.json 로드 실패: ' + (err.message || res.status));
+      }
+      const data = await res.json();
+      const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
+      let parsed = JSON.parse(content || '{}');
+      if(typeof parsed !== 'object' || !parsed){
+        parsed = {};
+      }
+      // 새 구조 기준으로 머지 (모르는 키는 버림)
+      worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
+      Object.keys(worksData).forEach(key=>{
+        if(Array.isArray(parsed[key])){
+          worksData[key] = parsed[key];
+        }
+      });
 
-      for(let i=0;i<files.length;i++){
-        const file = files[i];
-        const extMatch = file.name.match(/\.[^.]+$/);
-        const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
+      worksJsonSha = data.sha || null;
+      setStatus('data/works.json 로드 성공.', 'ok');
+      renderWorksList();
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || '작품 목록 로드 중 오류가 발생했습니다.', 'err');
+    }
+  }
 
-        const idx = baseCount + 1;
-        if(idx > 20){
-          setStatus(`${sec} 섹션은 20점을 초과할 수 없습니다.`, 'err');
-          break;
+  async function saveWorksJson(){
+    setStatus('data/works.json GitHub에 저장 중…');
+    const pretty = JSON.stringify(worksData, null, 2);
+    const res = await ghPutText(
+      WORKS_JSON_PATH,
+      pretty,
+      'Update data/works.json via Admin Ω.23',
+      worksJsonSha
+    );
+    worksJsonSha = res && res.content && res.content.sha || worksJsonSha;
+    setStatus('data/works.json 저장 완료.', 'ok');
+  }
+
+  function renderWorksList(){
+    worksListEl.innerHTML = '';
+    const sections = Object.keys(worksData);
+    let any = false;
+
+    sections.forEach(secKey=>{
+      const arr = Array.isArray(worksData[secKey]) ? worksData[secKey] : [];
+      const label = SECTION_LABEL_MAP[secKey] || secKey;
+      arr.forEach(w=>{
+        any = true;
+        const div = document.createElement('div');
+        div.className = 'list-item';
+
+        const title = document.createElement('strong');
+        const idStr = w.id ? ` · ${w.id}` : '';
+        title.textContent = `${label}${idStr} · ${w.title_ko || w.title_en || ''}`;
+        div.appendChild(title);
+
+        const meta = document.createElement('span');
+        meta.className = 'meta';
+        const sizeStr = w.size_ko || w.size_en || '';
+        const matStr  = w.material_ko || w.material_en || '';
+        const yr      = w.year || '';
+        meta.textContent = [matStr, sizeStr, yr].filter(Boolean).join(' · ');
+        div.appendChild(meta);
+
+        if(w.image){
+          const imgSpan = document.createElement('span');
+          imgSpan.className = 'meta';
+          imgSpan.textContent = `파일: ${w.image}`;
+          div.appendChild(imgSpan);
         }
 
-        const id    = `${prefix}-${String(idx).padStart(2,'0')}`;
-        const fname = `${id}${ext}`;
-        const base64 = await readFileAsBase64(file);
+        const btn = document.createElement('button');
+        btn.textContent = '이 작품 불러오기';
+        btn.addEventListener('click', ()=>{
+          loadWorkIntoForm(secKey, w.id);
+        });
+        div.appendChild(btn);
 
-        await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.23`);
-        await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.23`);
+        worksListEl.appendChild(div);
+      });
+    });
 
-        const entry = {
-          id,
-          title_ko   : titleKo,
-          title_en   : worksTitleEn.value.trim(),
-          material_ko: worksMediumKo.value.trim(),
-          material_en: worksMediumEn.value.trim().toLowerCase(), // 항상 소문자
-          size_ko    : worksSizeKo.value.trim(),
-          size_en    : worksSizeEn.value.trim(),
-          year       : yearVal || '',
-          image      : fname
-        };
+    if(!any){
+      const empty = document.createElement('div');
+      empty.className = 'list-item';
+      empty.innerHTML = '<span class="meta">아직 등록된 작품이 없습니다.</span>';
+      worksListEl.appendChild(empty);
+    }
+  }
 
-        worksData[sec].push(entry);
-        baseCount++;
-        currentWorkId   = id;
-        currentWorkSect = sec;
+  function findWork(secKey, id){
+    const arr = Array.isArray(worksData[secKey]) ? worksData[secKey] : [];
+    return arr.find(w=>w.id === id) || null;
+  }
+
+  function loadWorkIntoForm(secKey, id){
+    const w = findWork(secKey, id);
+    if(!w){
+      setStatus(`${secKey} 에서 ${id} 를 찾을 수 없습니다.`, 'err');
+      return;
+    }
+    worksSectionSel.value = secKey;
+    worksTitleKo.value  = w.title_ko || '';
+    worksTitleEn.value  = w.title_en || '';
+    worksMediumKo.value = w.material_ko || '';
+    worksMediumEn.value = w.material_en || '';
+    worksSizeKo.value   = w.size_ko || '';
+    worksSizeEn.value   = w.size_en || '';
+    worksYear.value     = w.year || '';
+    currentWorkId       = w.id || null;
+    currentWorkSect     = secKey;
+    setStatus(`작품 ${secKey} · ${w.id} 메타데이터를 불러왔습니다.`, 'ok');
+  }
+
+  async function handleUploadWorks(){
+    const secKey = worksSectionSel.value;
+    if(!secKey){
+      setStatus('섹션을 선택하세요.', 'err');
+      return;
+    }
+    const files   = Array.from(worksFilesInput.files || []);
+    const titleKo = worksTitleKo.value.trim();
+    const yearVal = worksYear.value.trim();
+
+    if(!files.length && !currentWorkId){
+      setStatus('새 작품을 추가하려면 이미지를 선택하거나, 기존 작품을 먼저 선택하세요.', 'err');
+      return;
+    }
+
+    // 새 이미지 업로드
+    if(files.length){
+      try{
+        btnUploadWorks.disabled = true;
+        setStatus('작품 이미지 업로드 및 data/works.json 갱신 중…');
+
+        if(!Array.isArray(worksData[secKey])){
+          worksData[secKey] = [];
+        }
+        let baseCount = worksData[secKey].length;
+        const prefix  = SECTION_PREFIX[secKey] || 'WK';
+
+        for(let i=0;i<files.length;i++){
+          const file = files[i];
+          const extMatch = file.name.match(/\.[^.]+$/);
+          const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
+
+          const idx = baseCount + 1;
+          if(idx > 20){
+            setStatus(`${SECTION_LABEL_MAP[secKey] || secKey} 섹션은 20점을 초과할 수 없습니다.`, 'err');
+            break;
+          }
+
+          const id    = `${prefix}-${String(idx).padStart(2,'0')}`;
+          const fname = `${id}${ext}`;
+          const base64 = await readFileAsBase64(file);
+
+          await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.23`);
+          await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.23`);
+
+          const entry = {
+            id,
+            title_ko   : titleKo,
+            title_en   : worksTitleEn.value.trim(),
+            material_ko: worksMediumKo.value.trim(),
+            material_en: worksMediumEn.value.trim().toLowerCase(), // 항상 소문자
+            size_ko    : worksSizeKo.value.trim(),
+            size_en    : worksSizeEn.value.trim(),
+            year       : yearVal || '',
+            image      : fname
+          };
+
+          worksData[secKey].push(entry);
+          baseCount++;
+          currentWorkId   = id;
+          currentWorkSect = secKey;
+        }
+
+        await saveWorksJson();
+        renderWorksList();
+        setStatus('작품 업로드 및 data/works.json 저장이 완료되었습니다.', 'ok');
+
+      }catch(e){
+        console.error(e);
+        setStatus(e.message || '작품 업로드 중 오류가 발생했습니다.', 'err');
+      }finally{
+        btnUploadWorks.disabled = false;
       }
+      return;
+    }
+
+    // 메타데이터만 수정
+    if(!currentWorkId || !currentWorkSect){
+      setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
+      return;
+    }
+    try{
+      const arr = Array.isArray(worksData[currentWorkSect]) ? worksData[currentWorkSect] : [];
+      const idx = arr.findIndex(w=>w.id === currentWorkId);
+      if(idx < 0){
+        setStatus('선택된 작품을 찾을 수 없습니다.', 'err');
+        return;
+      }
+      const old = arr[idx];
+      arr[idx] = Object.assign({}, old, {
+        title_ko   : worksTitleKo.value.trim(),
+        title_en   : worksTitleEn.value.trim(),
+        material_ko: worksMediumKo.value.trim(),
+        material_en: worksMediumEn.value.trim().toLowerCase(),
+        size_ko    : worksSizeKo.value.trim(),
+        size_en    : worksSizeEn.value.trim(),
+        year       : worksYear.value.trim()
+      });
+      worksData[currentWorkSect] = arr;
 
       await saveWorksJson();
       renderWorksList();
-      setStatus('작품 업로드 및 data/works.json 저장이 완료되었습니다.', 'ok');
+      setStatus(`작품 ${currentWorkSect} · ${currentWorkId} 메타데이터를 수정했습니다.`, 'ok');
 
     }catch(e){
       console.error(e);
-      setStatus(e.message || '작품 업로드 중 오류가 발생했습니다.', 'err');
-    }finally{
-      btnUploadWorks.disabled = false;
+      setStatus(e.message || '메타데이터 수정 중 오류가 발생했습니다.', 'err');
     }
-    return;
   }
 
-  // 메타데이터만 수정
-  if(!currentWorkId || !currentWorkSect){
-    setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
-    return;
-  }
-  try{
-    const arr = Array.isArray(worksData[currentWorkSect]) ? worksData[currentWorkSect] : [];
-    const idx = arr.findIndex(w=>w.id === currentWorkId);
-    if(idx < 0){
-      setStatus('선택된 작품을 찾을 수 없습니다.', 'err');
+  async function handleUpdateMetaOnly(){
+    if(!currentWorkId || !currentWorkSect){
+      setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
       return;
     }
-    const old = arr[idx];
-    arr[idx] = Object.assign({}, old, {
-      title_ko   : worksTitleKo.value.trim(),
-      title_en   : worksTitleEn.value.trim(),
-      material_ko: worksMediumKo.value.trim(),
-      material_en: worksMediumEn.value.trim().toLowerCase(),
-      size_ko    : worksSizeKo.value.trim(),
-      size_en    : worksSizeEn.value.trim(),
-      year       : worksYear.value.trim()
-    });
-    worksData[currentWorkSect] = arr;
-
-    await saveWorksJson();
-    renderWorksList();
-    setStatus(`작품 ${currentWorkSect} · ${currentWorkId} 메타데이터를 수정했습니다.`, 'ok');
-
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || '메타데이터 수정 중 오류가 발생했습니다.', 'err');
+    await handleUploadWorks();
   }
-}
 
-async function handleUpdateMetaOnly(){
-  if(!currentWorkId || !currentWorkSect){
-    setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
-    return;
-  }
-  await handleUploadWorks();
-}
+  // =========================
+  // Reports — reports.json + markdown
+  // (기존 구조 그대로 유지)
+  // =========================
+  async function loadReportsJson(){
+    setStatus('GitHub에서 reports.json 불러오는 중…');
+    reportsJsonSha = null;
+    try{
+      const res = await ghFetch(REPORTS_JSON_PATH,{method:'GET'});
+      if(res.status === 404){
+        reportsData = { reports: [] };
+        reportsJsonSha = null;
+        setStatus('reports.json 이 아직 없어 새로 시작합니다.', 'ok');
+        renderReportsList();
+        return;
+      }
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        throw new Error('reports.json 로드 실패: ' + (err.message || res.status));
+      }
+      const data = await res.json();
+      const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
+      let parsed = JSON.parse(content || '{"reports":[]}');
+      if(!parsed || !Array.isArray(parsed.reports)){
+        parsed = { reports: [] };
+      }
+      reportsData = parsed;
+      reportsJsonSha = data.sha || null;
 
-// =========================
-// Reports — reports.json + markdown
-// (기존 구조 그대로 유지)
-// =========================
-async function loadReportsJson(){
-  setStatus('GitHub에서 reports.json 불러오는 중…');
-  reportsJsonSha = null;
-  try{
-    const res = await ghFetch(REPORTS_JSON_PATH,{method:'GET'});
-    if(res.status === 404){
-      reportsData = { reports: [] };
-      reportsJsonSha = null;
-      setStatus('reports.json 이 아직 없어 새로 시작합니다.', 'ok');
+      setStatus('reports.json 로드 성공.', 'ok');
       renderReportsList();
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || '보고서 목록 로드 중 오류가 발생했습니다.', 'err');
+    }
+  }
+
+  async function saveReportsJson(){
+    setStatus('reports.json GitHub에 저장 중…');
+    const pretty = JSON.stringify(reportsData, null, 2);
+    const res = await ghPutText(
+      REPORTS_JSON_PATH,
+      pretty,
+      'Update reports.json via Admin Ω.23',
+      reportsJsonSha
+    );
+    reportsJsonSha = res && res.content && res.content.sha || reportsJsonSha;
+    setStatus('reports.json 저장 완료.', 'ok');
+  }
+
+  function renderReportsList(){
+    reportsListEl.innerHTML = '';
+    if(!Array.isArray(reportsData.reports) || !reportsData.reports.length){
+      const empty = document.createElement('div');
+      empty.className = 'list-item';
+      empty.innerHTML = '<span class="meta">아직 등록된 미학 보고서가 없습니다.</span>';
+      reportsListEl.appendChild(empty);
       return;
+    }
+    reportsData.reports
+      .slice()
+      .sort((a,b)=> (a.id||'').localeCompare(b.id||''))
+      .forEach(r=>{
+        const div = document.createElement('div');
+        div.className = 'list-item';
+
+        const title = document.createElement('strong');
+        title.textContent = `${r.id || ''} · ${r.title_ko || r.title_en || ''}`;
+        div.appendChild(title);
+
+        const meta = document.createElement('span');
+        meta.className = 'meta';
+        meta.textContent = `${r.year || ''} · ${r.category || ''}`;
+        div.appendChild(meta);
+
+        const btn = document.createElement('button');
+        btn.textContent = '이 보고서 불러오기';
+        btn.addEventListener('click', ()=>loadReportIntoForm(r.id));
+        div.appendChild(btn);
+
+        reportsListEl.appendChild(div);
+      });
+  }
+
+  async function loadMarkdownForReport(id){
+    const mdPath = `reports/${id}.md`;
+    setStatus(`${mdPath} 불러오는 중…`);
+    const res = await ghFetch(mdPath,{method:'GET'});
+    if(res.status === 404){
+      rFull.value = '';
+      setStatus(`${mdPath} 가 아직 없습니다. 새 파일로 저장 가능합니다.`, 'ok');
+      return { sha:null, content:'' };
     }
     if(!res.ok){
       const err = await res.json().catch(()=>({}));
-      throw new Error('reports.json 로드 실패: ' + (err.message || res.status));
+      throw new Error('Markdown 로드 실패: ' + (err.message || res.status));
     }
     const data = await res.json();
-    const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
-    let parsed = JSON.parse(content || '{"reports":[]}');
-    if(!parsed || !Array.isArray(parsed.reports)){
-      parsed = { reports: [] };
+    const text = decodeBase64(String(data.content || '').replace(/\n/g,''));
+    rFull.value = text;
+    setStatus(`${mdPath} 로드 완료.`, 'ok');
+    return { sha:data.sha || null, content:text };
+  }
+
+  async function saveMarkdownForReport(id, existingSha){
+    const mdPath = `reports/${id}.md`;
+    setStatus(`${mdPath} GitHub에 저장 중…`);
+    await ghPutText(
+      mdPath,
+      rFull.value || '',
+      `Update ${mdPath} via Admin Ω.23`,
+      existingSha || null
+    );
+    setStatus(`${mdPath} 저장 완료.`, 'ok');
+  }
+
+  function clearReportForm(){
+    rId.value        = '';
+    rCategory.value  = 'Theory';
+    rYear.value      = '2025';
+    rTitleKo.value   = '';
+    rTitleEn.value   = '';
+    rSummaryKo.value = '';
+    rSummaryEn.value = '';
+    rFull.value      = '';
+    currentReportId  = null;
+    setStatus('새 보고서 입력 준비 완료.', 'ok');
+  }
+
+  async function loadReportIntoForm(id){
+    const r = Array.isArray(reportsData.reports)
+      ? reportsData.reports.find(x=>x.id === id)
+      : null;
+    if(!r){
+      setStatus(`reports.json 에서 ${id} 를 찾을 수 없습니다.`, 'err');
+      return;
     }
-    reportsData = parsed;
-    reportsJsonSha = data.sha || null;
+    rId.value        = r.id || '';
+    rCategory.value  = r.category || 'Theory';
+    rYear.value      = r.year || '';
+    rTitleKo.value   = r.title_ko || '';
+    rTitleEn.value   = r.title_en || '';
+    rSummaryKo.value = r.summary_kr || r.summary_ko || '';
+    rSummaryEn.value = r.summary_en || '';
+    currentReportId  = r.id || '';
 
-    setStatus('reports.json 로드 성공.', 'ok');
-    renderReportsList();
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || '보고서 목록 로드 중 오류가 발생했습니다.', 'err');
-  }
-}
-
-async function saveReportsJson(){
-  setStatus('reports.json GitHub에 저장 중…');
-  const pretty = JSON.stringify(reportsData, null, 2);
-  const res = await ghPutText(
-    REPORTS_JSON_PATH,
-    pretty,
-    'Update reports.json via Admin Ω.23',
-    reportsJsonSha
-  );
-  reportsJsonSha = res && res.content && res.content.sha || reportsJsonSha;
-  setStatus('reports.json 저장 완료.', 'ok');
-}
-
-function renderReportsList(){
-  reportsListEl.innerHTML = '';
-  if(!Array.isArray(reportsData.reports) || !reportsData.reports.length){
-    const empty = document.createElement('div');
-    empty.className = 'list-item';
-    empty.innerHTML = '<span class="meta">아직 등록된 미학 보고서가 없습니다.</span>';
-    reportsListEl.appendChild(empty);
-    return;
-  }
-  reportsData.reports
-    .slice()
-    .sort((a,b)=> (a.id||'').localeCompare(b.id||''))
-    .forEach(r=>{
-      const div = document.createElement('div');
-      div.className = 'list-item';
-
-      const title = document.createElement('strong');
-      title.textContent = `${r.id || ''} · ${r.title_ko || r.title_en || ''}`;
-      div.appendChild(title);
-
-      const meta = document.createElement('span');
-      meta.className = 'meta';
-      meta.textContent = `${r.year || ''} · ${r.category || ''}`;
-      div.appendChild(meta);
-
-      const btn = document.createElement('button');
-      btn.textContent = '이 보고서 불러오기';
-      btn.addEventListener('click', ()=>loadReportIntoForm(r.id));
-      div.appendChild(btn);
-
-      reportsListEl.appendChild(div);
-    });
-}
-
-async function loadMarkdownForReport(id){
-  const mdPath = `reports/${id}.md`;
-  setStatus(`${mdPath} 불러오는 중…`);
-  const res = await ghFetch(mdPath,{method:'GET'});
-  if(res.status === 404){
-    rFull.value = '';
-    setStatus(`${mdPath} 가 아직 없습니다. 새 파일로 저장 가능합니다.`, 'ok');
-    return { sha:null, content:'' };
-  }
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error('Markdown 로드 실패: ' + (err.message || res.status));
-  }
-  const data = await res.json();
-  const text = decodeBase64(String(data.content || '').replace(/\n/g,''));
-  rFull.value = text;
-  setStatus(`${mdPath} 로드 완료.`, 'ok');
-  return { sha:data.sha || null, content:text };
-}
-
-async function saveMarkdownForReport(id, existingSha){
-  const mdPath = `reports/${id}.md`;
-  setStatus(`${mdPath} GitHub에 저장 중…`);
-  await ghPutText(
-    mdPath,
-    rFull.value || '',
-    `Update ${mdPath} via Admin Ω.23`,
-    existingSha || null
-  );
-  setStatus(`${mdPath} 저장 완료.`, 'ok');
-}
-
-function clearReportForm(){
-  rId.value        = '';
-  rCategory.value  = 'Theory';
-  rYear.value      = '2025';
-  rTitleKo.value   = '';
-  rTitleEn.value   = '';
-  rSummaryKo.value = '';
-  rSummaryEn.value = '';
-  rFull.value      = '';
-  currentReportId  = null;
-  setStatus('새 보고서 입력 준비 완료.', 'ok');
-}
-
-async function loadReportIntoForm(id){
-  const r = Array.isArray(reportsData.reports)
-    ? reportsData.reports.find(x=>x.id === id)
-    : null;
-  if(!r){
-    setStatus(`reports.json 에서 ${id} 를 찾을 수 없습니다.`, 'err');
-    return;
-  }
-  rId.value        = r.id || '';
-  rCategory.value  = r.category || 'Theory';
-  rYear.value      = r.year || '';
-  rTitleKo.value   = r.title_ko || '';
-  rTitleEn.value   = r.title_en || '';
-  rSummaryKo.value = r.summary_kr || r.summary_ko || '';
-  rSummaryEn.value = r.summary_en || '';
-  currentReportId  = r.id || '';
-
-  try{
-    await loadMarkdownForReport(currentReportId);
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || 'Markdown 로드 중 오류가 발생했습니다.', 'err');
-  }
-}
-
-async function handleSaveReport(){
-  const id = rId.value.trim();
-  if(!id){
-    setStatus('Report ID를 입력하세요. (예: DCAR-03-2025)', 'err');
-    return;
-  }
-  const reportObj = {
-    id,
-    slug      : id,
-    year      : rYear.value.trim() || '2025',
-    category  : rCategory.value || 'Theory',
-    title_ko  : rTitleKo.value.trim(),
-    title_en  : rTitleEn.value.trim(),
-    summary_kr: rSummaryKo.value.trim(),
-    summary_en: rSummaryEn.value.trim(),
-    md_path   : `reports/${id}.md`
-  };
-
-  if(!Array.isArray(reportsData.reports)){
-    reportsData.reports = [];
-  }
-  const idx = reportsData.reports.findIndex(x=>x.id === id);
-  if(idx >= 0){
-    reportsData.reports[idx] = reportObj;
-  }else{
-    reportsData.reports.push(reportObj);
-  }
-
-  try{
-    btnSaveReport.disabled = true;
-    await saveReportsJson();
-
-    let mdSha = null;
     try{
-      const res = await ghFetch(`reports/${id}.md`,{method:'GET'});
-      if(res.ok){
-        const data = await res.json();
-        mdSha = data.sha || null;
-      }
+      await loadMarkdownForReport(currentReportId);
     }catch(e){
-      // 없음 → 신규 생성
+      console.error(e);
+      setStatus(e.message || 'Markdown 로드 중 오류가 발생했습니다.', 'err');
+    }
+  }
+
+  async function handleSaveReport(){
+    const id = rId.value.trim();
+    if(!id){
+      setStatus('Report ID를 입력하세요. (예: DCAR-03-2025)', 'err');
+      return;
+    }
+    const reportObj = {
+      id,
+      slug      : id,
+      year      : rYear.value.trim() || '2025',
+      category  : rCategory.value || 'Theory',
+      title_ko  : rTitleKo.value.trim(),
+      title_en  : rTitleEn.value.trim(),
+      summary_kr: rSummaryKo.value.trim(),
+      summary_en: rSummaryEn.value.trim(),
+      md_path   : `reports/${id}.md`
+    };
+
+    if(!Array.isArray(reportsData.reports)){
+      reportsData.reports = [];
+    }
+    const idx = reportsData.reports.findIndex(x=>x.id === id);
+    if(idx >= 0){
+      reportsData.reports[idx] = reportObj;
+    }else{
+      reportsData.reports.push(reportObj);
     }
 
-    await saveMarkdownForReport(id, mdSha);
-    await loadReportsJson();
+    try{
+      btnSaveReport.disabled = true;
+      await saveReportsJson();
 
-    currentReportId = id;
-    setStatus(`보고서 ${id} 저장 완료.`, 'ok');
+      let mdSha = null;
+      try{
+        const res = await ghFetch(`reports/${id}.md`,{method:'GET'});
+        if(res.ok){
+          const data = await res.json();
+          mdSha = data.sha || null;
+        }
+      }catch(e){
+        // 없음 → 신규 생성
+      }
 
-  }catch(e){
-    console.error(e);
-    setStatus(e.message || '보고서 저장 중 오류가 발생했습니다.', 'err');
-  }finally{
-    btnSaveReport.disabled = false;
+      await saveMarkdownForReport(id, mdSha);
+      await loadReportsJson();
+
+      currentReportId = id;
+      setStatus(`보고서 ${id} 저장 완료.`, 'ok');
+
+    }catch(e){
+      console.error(e);
+      setStatus(e.message || '보고서 저장 중 오류가 발생했습니다.', 'err');
+    }finally{
+      btnSaveReport.disabled = false;
+    }
   }
-}
 
-// =========================
-// Tabs
-// =========================
-function switchTab(name){
+  // =========================
+  // Tabs
+  // =========================
+  function switchTab(name){
+    tabButtons.forEach(btn=>{
+      const target = btn.getAttribute('data-tab');
+      const active = (target === name);
+      btn.classList.toggle('active', active);
+    });
+    tabWorks.classList.toggle('active', name === 'works');
+    tabReports.classList.toggle('active', name === 'reports');
+  }
+
   tabButtons.forEach(btn=>{
-    const target = btn.getAttribute('data-tab');
-    const active = (target === name);
-    btn.classList.toggle('active', active);
+    btn.addEventListener('click', ()=>{
+      const target = btn.getAttribute('data-tab');
+      if(target) switchTab(target);
+    });
   });
-  tabWorks.classList.toggle('active', name === 'works');
-  tabReports.classList.toggle('active', name === 'reports');
-}
 
-tabButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const target = btn.getAttribute('data-tab');
-    if(target) switchTab(target);
+  // =========================
+  // 이벤트 바인딩
+  // =========================
+  btnSaveConfig.addEventListener('click', saveConfigToLocal);
+  btnLoadConfig.addEventListener('click', loadConfigFromLocal);
+  btnClearConfig.addEventListener('click', ()=>{
+    if(confirm('저장된 Owner / Repo / Branch / Token을 모두 지울까요?')){
+      clearConfig();
+    }
   });
-});
 
-// =========================
-// 이벤트 바인딩
-// =========================
-btnSaveConfig.addEventListener('click', saveConfigToLocal);
-btnLoadConfig.addEventListener('click', loadConfigFromLocal);
-btnClearConfig.addEventListener('click', ()=>{
-  if(confirm('저장된 Owner / Repo / Branch / Token을 모두 지울까요?')){
-    clearConfig();
-  }
-});
+  btnUploadWorks.addEventListener('click', handleUploadWorks);
+  btnUpdateMeta.addEventListener('click', handleUpdateMetaOnly);
+  btnReloadWorks.addEventListener('click', loadWorksJson);
 
-btnUploadWorks.addEventListener('click', handleUploadWorks);
-btnUpdateMeta.addEventListener('click', handleUpdateMetaOnly);
-btnReloadWorks.addEventListener('click', loadWorksJson);
+  btnSaveReport.addEventListener('click', handleSaveReport);
+  btnNewReport.addEventListener('click', clearReportForm);
+  btnReloadReports.addEventListener('click', loadReportsJson);
 
-btnSaveReport.addEventListener('click', handleSaveReport);
-btnNewReport.addEventListener('click', clearReportForm);
-btnReloadReports.addEventListener('click', loadReportsJson);
-
-// =========================
-// 초기화
-// =========================
-document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    loadConfigFromLocal();
-  }catch(e){}
-  setStatus('Admin Ω.23 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
-});
+  // =========================
+  // 초기화
+  // =========================
+  document.addEventListener('DOMContentLoaded', ()=>{
+    try{
+      loadConfigFromLocal();
+    }catch(e){}
+    setStatus('Admin Ω.23 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
+  });
   </script>
 </body>
 </html>

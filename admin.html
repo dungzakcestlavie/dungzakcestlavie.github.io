@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.22 — Works & DCAR Auto Manager</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.23 — Works & DCAR Auto Manager</title>
   <meta name="color-scheme" content="dark light">
 
   <style>
@@ -207,18 +207,6 @@
   .status-bar.err .status-dot{background:var(--danger);}
   .status-text{flex:1; color:var(--sub);}
 
-  .tag-pill{
-    display:inline-flex;
-    align-items:center;
-    padding:2px 8px;
-    border-radius:999px;
-    border:1px solid #343f7a;
-    font-size:11px;
-    color:var(--sub);
-    margin-right:4px;
-    margin-top:6px;
-  }
-
   .list{
     border-radius:12px;
     border:1px solid #202953;
@@ -286,7 +274,7 @@
 </head> <body data-theme="dark">
   <main>
     <header class="top-head">
-      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.22</div>
+      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.23</div>
       <div class="hero-sub">100 작품 · DCAR 미학 보고서 · GitHub 자동 연동 시스템</div>
       <div class="badge-row">
         <div class="badge">
@@ -351,11 +339,11 @@
           <div class="field">
             <label>섹션 선택 (홈페이지와 동일)</label>
             <select id="worksSection">
-              <option value="Light & Memory">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</option>
-              <option value="Human Prayer">Ⅱ 인간 · Human Being</option>
-              <option value="Rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
-              <option value="Existence">Ⅳ 존재의 회복 · Restoration of Being</option>
-              <option value="Cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
+              <option value="Ⅰ 우리를 위해 기도해 주세요 · Pray for Us">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</option>
+              <option value="Ⅱ 인간 · Human Being">Ⅱ 인간 · Human Being</option>
+              <option value="Ⅲ 정신의 재탄생 · Rebirth of Mind">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
+              <option value="Ⅳ 존재의 회복 · Restoration of Being">Ⅳ 존재의 회복 · Restoration of Being</option>
+              <option value="Ⅴ 빛의 초의식 · Metaconsciousness of Light">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
             </select>
           </div>
 
@@ -411,9 +399,70 @@
 
         <!-- REPORTS -->
         <div id="tab-reports" class="tab-content">
-          <!-- ⚠️⚠️⚠️ DCAR 전부 그대로 유지 -->
-          <!-- 기존 코드 100% 동일 (요청대로 절대 수정 없음) --> <script>
-// =========================
+          <!-- ⚠ DCAR 미학 보고서: 데이터 구조/텍스트 절대 변경 없음 -->
+          <h2>Ⅲ. 미학 보고서 DCAR 자동 관리</h2>
+          <p class="helper">기존 DCAR 구조를 그대로 사용합니다. (ID · 요약 · 전체 텍스트)</p>
+
+          <div class="field">
+            <label>Report ID (예: DCAR-03-2025)</label>
+            <input id="rId" placeholder="DCAR-03-2025">
+          </div>
+
+          <div class="field">
+            <label>Category</label>
+            <select id="rCategory">
+              <option value="Theory">Theory</option>
+              <option value="Practice">Practice</option>
+              <option value="Note">Note</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Year</label>
+            <input id="rYear" value="2025">
+          </div>
+
+          <div class="field">
+            <label>제목 (KO)</label>
+            <input id="rTitleKo">
+          </div>
+
+          <div class="field">
+            <label>Title (EN)</label>
+            <input id="rTitleEn">
+          </div>
+
+          <div class="field">
+            <label>요약 (KO)</label>
+            <textarea id="rSummaryKo"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Summary (EN)</label>
+            <textarea id="rSummaryEn"></textarea>
+          </div>
+
+          <div class="field">
+            <label>전체 본문 (Markdown · 한영 혼용 가능)</label>
+            <textarea id="rFull" class="full-text"></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button id="btnSaveReport" class="primary">💾 보고서 저장</button>
+            <button id="btnNewReport" class="subtle">🆕 새 보고서</button>
+            <button id="btnReloadReports" class="subtle">📥 목록 불러오기</button>
+          </div>
+
+          <h3 style="margin-top:14px;">📑 등록된 DCAR 보고서 목록</h3>
+          <div id="reportsList" class="list"></div>
+        </div>
+
+      </section>
+    </section>
+  </main>
+
+  <!-- SCRIPT는 아래에 -->
+  <script> // =========================
 // 공통: DOM & 상태
 // =========================
 const ownerInput   = document.getElementById('ownerInput');
@@ -441,7 +490,7 @@ const btnUploadWorks   = document.getElementById('btnUploadWorks');
 const btnReloadWorks   = document.getElementById('btnReloadWorks');
 const btnUpdateMeta    = document.getElementById('btnUpdateMetaOnly');
 
-// Reports DOM
+// Reports DOM (기존 그대로)
 const rId        = document.getElementById('rId');
 const rCategory  = document.getElementById('rCategory');
 const rYear      = document.getElementById('rYear');
@@ -470,28 +519,30 @@ const WORKS_JSON_PATH   = 'data/works.json';
 const REPORTS_JSON_PATH = 'reports/reports.json';
 
 // Works & Reports 상태
-let worksData = {
-  "Light & Memory": [],
-  "Human Prayer": [],
-  "Rebirth": [],
-  "Existence": [],
-  "Cosmos": []
+const EMPTY_WORKS = {
+  "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us": [],
+  "Ⅱ 인간 · Human Being": [],
+  "Ⅲ 정신의 재탄생 · Rebirth of Mind": [],
+  "Ⅳ 존재의 회복 · Restoration of Being": [],
+  "Ⅴ 빛의 초의식 · Metaconsciousness of Light": []
 };
-let worksJsonSha    = null;
-let currentWorkId   = null;
-let currentWorkSect = null;
 
-let reportsData = { reports: [] };
+let worksData      = JSON.parse(JSON.stringify(EMPTY_WORKS));
+let worksJsonSha   = null;
+let currentWorkId  = null;
+let currentWorkSect= null;
+
+let reportsData    = { reports: [] };
 let reportsJsonSha = null;
-let currentReportId = null;
+let currentReportId= null;
 
-// 섹션-프리픽스 맵
+// 섹션-프리픽스 맵 (새 규칙)
 const SECTION_PREFIX = {
-  "Light & Memory": "LM",
-  "Human Prayer": "HP",
-  "Rebirth": "RB",
-  "Existence": "EX",
-  "Cosmos": "CM"
+  "Ⅰ 우리를 위해 기도해 주세요 · Pray for Us": "PFU",
+  "Ⅱ 인간 · Human Being": "HB",
+  "Ⅲ 정신의 재탄생 · Rebirth of Mind": "RM",
+  "Ⅳ 존재의 회복 · Restoration of Being": "RB",
+  "Ⅴ 빛의 초의식 · Metaconsciousness of Light": "ML"
 };
 
 // =========================
@@ -566,14 +617,14 @@ async function ghFetch(path, options = {}){
   if(!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token){
     throw new Error('GitHub 설정이 비어 있습니다.');
   }
-  const url = 
+  const url =
     `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(cfg.branch)}`;
-  
+
   const headers = Object.assign({
     'Accept':'application/vnd.github+json',
     'Authorization':`Bearer ${cfg.token}`
   }, options.headers || {});
-  
+
   const res = await fetch(url, Object.assign({}, options, { headers }));
   return res;
 }
@@ -668,13 +719,7 @@ async function loadWorksJson(){
   try{
     const res = await ghFetch(WORKS_JSON_PATH,{method:'GET'});
     if(res.status === 404){
-      worksData = {
-        "Light & Memory": [],
-        "Human Prayer": [],
-        "Rebirth": [],
-        "Existence": [],
-        "Cosmos": []
-      };
+      worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
       worksJsonSha = null;
       setStatus('data/works.json 이 아직 없어 새로 시작합니다.', 'ok');
       renderWorksList();
@@ -685,18 +730,18 @@ async function loadWorksJson(){
       throw new Error('data/works.json 로드 실패: ' + (err.message || res.status));
     }
     const data = await res.json();
-    const content = decodeBase64(String(data.content || '').replace(/\\n/g,''));
+    const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
     let parsed = JSON.parse(content || '{}');
     if(typeof parsed !== 'object' || !parsed){
       parsed = {};
     }
-    worksData = Object.assign({
-      "Light & Memory": [],
-      "Human Prayer": [],
-      "Rebirth": [],
-      "Existence": [],
-      "Cosmos": []
-    }, parsed);
+    // 새 구조 기준으로 머지
+    worksData = JSON.parse(JSON.stringify(EMPTY_WORKS));
+    Object.keys(worksData).forEach(key=>{
+      if(Array.isArray(parsed[key])){
+        worksData[key] = parsed[key];
+      }
+    });
 
     worksJsonSha = data.sha || null;
     setStatus('data/works.json 로드 성공.', 'ok');
@@ -713,7 +758,7 @@ async function saveWorksJson(){
   const res = await ghPutText(
     WORKS_JSON_PATH,
     pretty,
-    'Update data/works.json via Admin Ω.22',
+    'Update data/works.json via Admin Ω.23',
     worksJsonSha
   );
   worksJsonSha = res && res.content && res.content.sha || worksJsonSha;
@@ -795,7 +840,7 @@ function loadWorkIntoForm(sec, id){
   setStatus(`작품 ${sec} · ${w.id} 메타데이터를 불러왔습니다.`, 'ok');
 }
 
-function getNextWorkNumber(sec){
+function getNextIndex(sec){
   const arr = Array.isArray(worksData[sec]) ? worksData[sec] : [];
   return arr.length + 1;
 }
@@ -806,7 +851,7 @@ async function handleUploadWorks(){
     setStatus('섹션을 선택하세요.', 'err');
     return;
   }
-  const files = Array.from(worksFilesInput.files || []);
+  const files   = Array.from(worksFilesInput.files || []);
   const titleKo = worksTitleKo.value.trim();
   const yearVal = worksYear.value.trim();
 
@@ -815,17 +860,21 @@ async function handleUploadWorks(){
     return;
   }
 
+  // 새 이미지 업로드
   if(files.length){
     try{
       btnUploadWorks.disabled = true;
       setStatus('작품 이미지 업로드 및 data/works.json 갱신 중…');
 
-      const prefix = SECTION_PREFIX[sec] || 'WK';
-      let baseCount = Array.isArray(worksData[sec]) ? worksData[sec].length : 0;
+      if(!Array.isArray(worksData[sec])){
+        worksData[sec] = [];
+      }
+      let baseCount = worksData[sec].length;
+      const prefix  = SECTION_PREFIX[sec] || 'WK';
 
       for(let i=0;i<files.length;i++){
         const file = files[i];
-        const extMatch = file.name.match(/\\.[^.]+$/);
+        const extMatch = file.name.match(/\.[^.]+$/);
         const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
 
         const idx = baseCount + 1;
@@ -834,28 +883,25 @@ async function handleUploadWorks(){
           break;
         }
 
-        const id   = `${prefix}-${String(idx).padStart(2,'0')}`;
-        const fname= `${id}${ext}`;
+        const id    = `${prefix}-${String(idx).padStart(2,'0')}`;
+        const fname = `${id}${ext}`;
         const base64 = await readFileAsBase64(file);
 
-        await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.22`);
-        await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.22`);
+        await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.23`);
+        await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.23`);
 
         const entry = {
           id,
           title_ko   : titleKo,
           title_en   : worksTitleEn.value.trim(),
           material_ko: worksMediumKo.value.trim(),
-          material_en: worksMediumEn.value.trim(),
+          material_en: worksMediumEn.value.trim().toLowerCase(), // 항상 소문자
           size_ko    : worksSizeKo.value.trim(),
           size_en    : worksSizeEn.value.trim(),
           year       : yearVal || '',
           image      : fname
         };
 
-        if(!Array.isArray(worksData[sec])){
-          worksData[sec] = [];
-        }
         worksData[sec].push(entry);
         baseCount++;
         currentWorkId   = id;
@@ -892,7 +938,7 @@ async function handleUploadWorks(){
       title_ko   : worksTitleKo.value.trim(),
       title_en   : worksTitleEn.value.trim(),
       material_ko: worksMediumKo.value.trim(),
-      material_en: worksMediumEn.value.trim(),
+      material_en: worksMediumEn.value.trim().toLowerCase(),
       size_ko    : worksSizeKo.value.trim(),
       size_en    : worksSizeEn.value.trim(),
       year       : worksYear.value.trim()
@@ -919,6 +965,7 @@ async function handleUpdateMetaOnly(){
 
 // =========================
 // Reports — reports.json + markdown
+// (기존 구조 그대로 유지)
 // =========================
 async function loadReportsJson(){
   setStatus('GitHub에서 reports.json 불러오는 중…');
@@ -937,7 +984,7 @@ async function loadReportsJson(){
       throw new Error('reports.json 로드 실패: ' + (err.message || res.status));
     }
     const data = await res.json();
-    const content = decodeBase64(String(data.content || '').replace(/\\n/g,''));
+    const content = decodeBase64(String(data.content || '').replace(/\n/g,''));
     let parsed = JSON.parse(content || '{"reports":[]}');
     if(!parsed || !Array.isArray(parsed.reports)){
       parsed = { reports: [] };
@@ -959,7 +1006,7 @@ async function saveReportsJson(){
   const res = await ghPutText(
     REPORTS_JSON_PATH,
     pretty,
-    'Update reports.json via Admin Ω.22',
+    'Update reports.json via Admin Ω.23',
     reportsJsonSha
   );
   reportsJsonSha = res && res.content && res.content.sha || reportsJsonSha;
@@ -1014,7 +1061,7 @@ async function loadMarkdownForReport(id){
     throw new Error('Markdown 로드 실패: ' + (err.message || res.status));
   }
   const data = await res.json();
-  const text = decodeBase64(String(data.content || '').replace(/\\n/g,''));
+  const text = decodeBase64(String(data.content || '').replace(/\n/g,''));
   rFull.value = text;
   setStatus(`${mdPath} 로드 완료.`, 'ok');
   return { sha:data.sha || null, content:text };
@@ -1026,7 +1073,7 @@ async function saveMarkdownForReport(id, existingSha){
   await ghPutText(
     mdPath,
     rFull.value || '',
-    `Update ${mdPath} via Admin Ω.22`,
+    `Update ${mdPath} via Admin Ω.23`,
     existingSha || null
   );
   setStatus(`${mdPath} 저장 완료.`, 'ok');
@@ -1173,6 +1220,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   try{
     loadConfigFromLocal();
   }catch(e){}
-  setStatus('Admin Ω.22 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
+  setStatus('Admin Ω.23 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
 });
-</script>
+  </script>
+</body>
+</html>

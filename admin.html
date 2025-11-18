@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.23 — Works & DCAR Auto Manager</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.27 — Works & DCAR Auto Manager</title>
   <meta name="color-scheme" content="dark light">
 
   <style>
@@ -275,7 +275,7 @@
 <body data-theme="dark">
   <main>
     <header class="top-head">
-      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.23</div>
+      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.27</div>
       <div class="hero-sub">100 작품 · DCAR 미학 보고서 · GitHub 자동 연동 시스템</div>
       <div class="badge-row">
         <div class="badge">
@@ -769,7 +769,7 @@
     const res = await ghPutText(
       WORKS_JSON_PATH,
       pretty,
-      'Update data/works.json via Admin Ω.23',
+      'Update data/works.json via Admin Ω.27',
       worksJsonSha
     );
     worksJsonSha = res && res.content && res.content.sha || worksJsonSha;
@@ -852,6 +852,7 @@
     setStatus(`작품 ${secKey} · ${w.id} 메타데이터를 불러왔습니다.`, 'ok');
   }
 
+  // ----- 여기부터: 업로드 로직 (Admin Ω.27에서 수정) -----
   async function handleUploadWorks(){
     const secKey = worksSectionSel.value;
     if(!secKey){
@@ -862,12 +863,13 @@
     const titleKo = worksTitleKo.value.trim();
     const yearVal = worksYear.value.trim();
 
+    // 새 작품 추가인데 이미지도 없고 기준 작품도 없으면 에러
     if(!files.length && !currentWorkId){
       setStatus('새 작품을 추가하려면 이미지를 선택하거나, 기존 작품을 먼저 선택하세요.', 'err');
       return;
     }
 
-    // 새 이미지 업로드
+    // --- 1) 이미지가 선택된 경우: 원본 파일 이름/확장자를 그대로 사용 ---
     if(files.length){
       try{
         btnUploadWorks.disabled = true;
@@ -881,22 +883,37 @@
 
         for(let i=0;i<files.length;i++){
           const file = files[i];
-          const extMatch = file.name.match(/\.[^.]+$/);
-          const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
 
+          // (1) 원래 파일 이름 / 확장자 추출
+          const originalName = file.name || 'image';
+          const dotIndex = originalName.lastIndexOf('.');
+
+          const ext = dotIndex >= 0
+            ? originalName.slice(dotIndex).toLowerCase()
+            : '.jpg'; // 확장자 없으면 jpg로
+
+          const base = dotIndex >= 0
+            ? originalName.slice(0, dotIndex)
+            : originalName;
+
+          // 공백 → _, 나머지 문자는 그대로 둠
+          const safeBase = base.trim().replace(/\s+/g, '_');
+          const fname = `${safeBase}${ext}`;
+
+          // (2) 섹션 내 ID는 PFU-01, PFU-02 … 유지
           const idx = baseCount + 1;
           if(idx > 20){
             setStatus(`${SECTION_LABEL_MAP[secKey] || secKey} 섹션은 20점을 초과할 수 없습니다.`, 'err');
             break;
           }
+          const id = `${prefix}-${String(idx).padStart(2,'0')}`;
 
-          const id    = `${prefix}-${String(idx).padStart(2,'0')}`;
-          const fname = `${id}${ext}`;
+          // (3) GitHub에 업로드 (standard / zoom)
           const base64 = await readFileAsBase64(file);
+          await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.27`);
+          await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.27`);
 
-          await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.23`);
-          await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.23`);
-
+          // (4) works.json 엔트리 추가
           const entry = {
             id,
             title_ko   : titleKo,
@@ -906,7 +923,7 @@
             size_ko    : worksSizeKo.value.trim(),
             size_en    : worksSizeEn.value.trim(),
             year       : yearVal || '',
-            image      : fname
+            image      : fname   // 🔹 원래 이름 기반 파일명
           };
 
           worksData[secKey].push(entry);
@@ -928,7 +945,7 @@
       return;
     }
 
-    // 메타데이터만 수정
+    // --- 2) 이미지 없이 메타데이터만 수정 ---
     if(!currentWorkId || !currentWorkSect){
       setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
       return;
@@ -972,7 +989,7 @@
 
   // =========================
   // Reports — reports.json + markdown
-  // (기존 구조 그대로 유지)
+  // (기존 구조 그대로 유지 · 미학 보고서 로직 건드리지 않음)
   // =========================
   async function loadReportsJson(){
     setStatus('GitHub에서 reports.json 불러오는 중…');
@@ -1227,7 +1244,7 @@
     try{
       loadConfigFromLocal();
     }catch(e){}
-    setStatus('Admin Ω.23 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
+    setStatus('Admin Ω.27 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
   });
   </script>
 </body>

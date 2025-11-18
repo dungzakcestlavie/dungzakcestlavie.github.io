@@ -60,11 +60,19 @@
   #waves{z-index:0;opacity:.48}
   #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
 
-  /* header */
+  /* header = 메인 콘솔 바 */
   header{
     position:sticky;top:0;z-index:5;
     padding:10px 12px;
-    background:linear-gradient(180deg,rgba(9,14,30,.9),rgba(9,14,30,.7));
+    background:
+      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.82)),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.04) 0,
+        rgba(255,255,255,.04) 1px,
+        transparent 1px,
+        transparent 4px
+      );
     border-bottom:1px solid rgba(255,255,255,.08);
     backdrop-filter:blur(12px);
   }
@@ -73,6 +81,7 @@
     color:var(--gold);
     text-align:center;
     font-size:clamp(18px,5vw,24px);
+    letter-spacing:.06em;
   }
   nav.primary{
     display:flex;gap:10px;justify-content:center;
@@ -81,13 +90,32 @@
   nav.primary button{
     all:unset;cursor:pointer;
     color:var(--fg);font-weight:700;
-    padding:6px 12px;border-radius:12px;
+    padding:6px 14px;border-radius:999px;
+    border:1px solid rgba(140,165,230,.35);
+    font-size:.92rem;
+    letter-spacing:.03em;
+    background:radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,.0));
+    position:relative;
+    overflow:hidden;
+  }
+  nav.primary button::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,.18),transparent);
+    opacity:0;transform:translateX(-100%);
+    transition:transform .5s ease,opacity .5s ease;
+  }
+  nav.primary button:hover::after{
+    opacity:1;transform:translateX(100%);
   }
   nav.primary button:hover,
   nav.primary button.active{
     background:linear-gradient(180deg,#f7e4a5,#e6c777);
     color:#0a1230;
+    border-color:#f0de98;
+    box-shadow:0 0 18px rgba(230,199,119,.45);
   }
+
   .lang{
     display:flex;gap:8px;justify-content:center;
     margin-top:8px;
@@ -96,12 +124,17 @@
     all:unset;cursor:pointer;
     border:1px solid #2a335f;border-radius:10px;
     padding:6px 12px;color:#cfe0ff;
+    font-size:.86rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    background:radial-gradient(circle at top,rgba(110,150,255,.12),rgba(8,10,26,0));
   }
   .lang button.active,
   .lang button:hover{
-    background:#1a2144;
+    background:linear-gradient(140deg,#1a2144,#273368);
     color:var(--gold);
     border-color:#3a447a;
+    box-shadow:0 0 10px rgba(110,150,255,.45);
   }
 
   /* layout */
@@ -114,32 +147,51 @@
   .poemwrap{
     max-width:860px;margin:18px auto 0;
     text-align:left;
-    background:rgba(16,22,48,.35);
-    border:1px solid #223;border-radius:12px;
+    background:radial-gradient(circle at top,rgba(230,199,119,.08),rgba(16,22,48,.35));
+    border:1px solid rgba(60,85,150,.85);
+    border-radius:12px;
     padding:14px;
+    box-shadow:0 0 26px rgba(40,70,140,.55);
   }
   .poem p{margin:8px 0}
 
-  /* works */
+  /* works = 섹터 그리드 */
   .tabs{
     display:flex;gap:8px;flex-wrap:wrap;
     justify-content:center;
     margin:10px 0 16px;
   }
   .tab{
-    padding:9px 14px;border-radius:999px;
+    padding:9px 16px;border-radius:999px;
     border:1px solid var(--line);
-    background:#0f1838;color:#bbcaf8;
-    cursor:pointer;font-size:.92rem;
+    background:radial-gradient(circle at top,#111a3a,#050814);
+    color:#bbcaf8;
+    cursor:pointer;font-size:.9rem;
     white-space:nowrap;
+    position:relative;
+    overflow:hidden;
+  }
+  .tab::before{
+    content:"";
+    position:absolute;left:10px;top:50%;
+    width:6px;height:6px;border-radius:50%;
+    background:rgba(160,190,255,.35);
+    transform:translateY(-50%);
+  }
+  .tab.active::before{
+    background:var(--gold);
+    box-shadow:0 0 8px rgba(230,199,119,.9);
   }
   .tab.active{
     background:linear-gradient(180deg,var(--gold),#f0df9e);
     color:#0a1230;border-color:#d9c16a;
+    box-shadow:0 0 18px rgba(230,199,119,.45);
   }
+
   .tabpanel{display:none;animation:fade .28s ease}
   .tabpanel.active{display:block}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
   .grid{
     display:grid;gap:10px;
     grid-template-columns:repeat(2,1fr);
@@ -148,18 +200,29 @@
     .grid{grid-template-columns:repeat(4,1fr)}
   }
   .card{
-    background:var(--panel);
-    border:1px solid var(--line);
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.06),rgba(5,8,20,0)),
+      linear-gradient(180deg,#0f1630,#050816);
+    border:1px solid rgba(40,60,120,.9);
     border-radius:10px;
     overflow:hidden;
     opacity:0;transform:translateY(8px);
-    transition:opacity .55s,transform .55s,box-shadow .6s;
+    transition:opacity .55s,transform .55s,box-shadow .6s,border-color .4s;
+    position:relative;
+  }
+  .card::after{
+    content:"";
+    position:absolute;inset:0;
+    background:radial-gradient(circle at center,rgba(255,255,255,.05),transparent 60%);
+    opacity:0;transition:opacity .4s ease;
+    pointer-events:none;
   }
   .card.visible{opacity:1;transform:translateY(0)}
   .card:hover{
-    box-shadow:0 0 16px rgba(230,199,119,.28);
+    box-shadow:0 0 18px rgba(230,199,119,.35);
     border-color:var(--gold);
   }
+  .card:hover::after{opacity:1}
   .card img{
     width:100%;aspect-ratio:1/1;
     object-fit:cover;display:block;
@@ -171,17 +234,20 @@
     display:flex;gap:12px;align-items:center;
     justify-content:space-between;margin-bottom:12px;
   }
-  .r-tabs{display:flex;gap:8px}
+  .r-tabs{display:flex;gap:8px;flex-wrap:wrap}
   .r-tab{
     cursor:pointer;
     border:1px solid #2a366b;
-    background:#0e1840;color:#dfe7ff;
-    border-radius:10px;
-    padding:8px 12px;font-weight:700;
+    background:radial-gradient(circle at top,#141f4a,#050815);
+    color:#dfe7ff;
+    border-radius:999px;
+    padding:7px 12px;font-weight:700;
+    font-size:.9rem;
   }
   .r-tab.is-active{
     outline:2px solid #6aa3ff;
-    background:#132252;
+    background:linear-gradient(180deg,#1a2758,#0d1534);
+    box-shadow:0 0 14px rgba(120,170,255,.55);
   }
   .r-grid{display:grid;gap:12px}
   @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
@@ -189,7 +255,9 @@
   .r-card{
     position:relative;
     border:1px solid #243169;
-    background:linear-gradient(180deg,#0d1534,#0b1128);
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.08),transparent 55%),
+      linear-gradient(180deg,#0d1534,#050814);
     border-radius:14px;overflow:hidden;
   }
   .r-card .r-in{padding:14px 14px 12px}
@@ -201,7 +269,8 @@
   }
   .r-sub{
     margin:0 0 10px;
-    font-size:13px;color:#a9b7e8;
+    font-size:12px;color:#6f82c2;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
   }
   .r-meta{
     display:flex;gap:8px;align-items:center;
@@ -212,6 +281,7 @@
     border:1px solid #345;
     padding:2px 7px;border-radius:999px;
     background:#0c183b;color:#cfe0ff;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
   }
   .r-badge.pdf{
     border-color:#7b6322;
@@ -226,19 +296,21 @@
     overflow:hidden;
   }
   .r-actions{
-    display:flex;gap:8px;margin-top:12px;
+    display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;
   }
   .r-actions a,
   .r-actions button{
     all:unset;cursor:pointer;
     border:1px solid #2a366b;
     background:#0e1840;color:#dfe7ff;
-    border-radius:10px;padding:8px 12px;
+    border-radius:999px;padding:7px 12px;
     font-weight:700;
+    font-size:.88rem;
   }
   .r-actions a:hover,
   .r-actions button:hover{
-    background:#15265a;
+    background:linear-gradient(140deg,#1a2758,#0f183c);
+    box-shadow:0 0 10px rgba(110,150,255,.55);
   }
 
   .r-viewer{
@@ -257,12 +329,6 @@
   .r-viewer-header{margin-bottom:12px;}
   .r-viewer-header .r-title{white-space:normal;}
 
-  /* Reports 열림/닫힘 상태 (v10에서는 사용 안 하지만 남겨둠) */
-  .reports-omega.is-collapsed #reportGrid,
-  .reports-omega.is-collapsed #reportViewer{
-    display:none;
-  }
-
   /* BIO MODAL */
   #bio-modal[hidden]{display:none}
   #bio-modal{position:fixed;inset:0;z-index:9999}
@@ -276,7 +342,9 @@
     margin:4vh auto;
     width:min(960px,94vw);
     max-height:90vh;overflow:auto;
-    background:linear-gradient(180deg,#0a1022,#0b132a);
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.08),transparent 55%),
+      linear-gradient(180deg,#0a1022,#0b132a);
     color:#eaeef7;
     border:1px solid rgba(255,215,120,.20);
     border-radius:16px;
@@ -299,6 +367,7 @@
     background:transparent;color:#f2dca6;
     padding:6px 10px;border-radius:10px;
     cursor:pointer;
+    font-size:.86rem;
   }
   .bio-lang .lang.active{
     box-shadow:0 0 8px rgba(255,215,120,.55);
@@ -327,10 +396,10 @@
   }
   .slide-wrap{
     overflow:hidden;
-    transition:max-height .45s ease;
-    max-height:0;
+    transition:max-height .45s ease,opacity .45s ease;
+    max-height:0;opacity:0;
   }
-  .slide-wrap[data-open="true"]{max-height:9999px}
+  .slide-wrap[data-open="true"]{max-height:9999px;opacity:1}
   @media(max-width:480px){
     .bio-card{width:94vw;max-height:86vh}
   }
@@ -408,11 +477,22 @@
   }
   .links a{
     color:#cfe0ff;text-decoration:none;
+    border-radius:999px;
+    padding:6px 12px;
+    border:1px solid rgba(120,150,230,.4);
+    font-size:.9rem;
   }
-  .links a:hover{color:#cbe0ff}
+  .links a:hover{
+    color:#0a1230;
+    background:linear-gradient(140deg,#f5e0a0,#e6c777);
+    border-color:#f0de98;
+    box-shadow:0 0 14px rgba(230,199,119,.5);
+  }
   small{
     display:block;margin-top:6px;
     color:#9fb0d8;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.04em;
   }
 
   #ctrl{
@@ -726,7 +806,7 @@ const $$ = (q, root) => Array.from((root || document).querySelectorAll(q));
 const $  = (q, root) => (root || document).querySelector(q);
 
 // =========================
-// Site Language (KR / EN / HYBRID)
+– Site Language (KR / EN / HYBRID)
 // =========================
 (function(){
   const body  = document.body;
@@ -1024,6 +1104,7 @@ window.DZ_BIO = (function(){
 
 // =========================
 // Works Loader (JSON → Grid)
+//  - IMPORTANT: "로드중입니다" / "업로드 대기" 문구 완전 제거
 // =========================
 (function(){
   const MAP = {
@@ -1100,14 +1181,9 @@ window.DZ_BIO = (function(){
     if(!host) return;
     const list = Array.isArray(worksObj[key]) ? worksObj[key].slice(0,20) : [];
 
+    // ★ 여기: 데이터가 없어도 아무 메시지도 안 보이게 처리
     if(!list.length){
-      host.innerHTML = `
-        <div class="grid">
-          <article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">
-            업로드 대기 중입니다. / Upload works JSON &amp; images.
-          </article>
-        </div>
-      `;
+      host.innerHTML = `<div class="grid"></div>`;
       return;
     }
 
@@ -1298,7 +1374,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — JSON 리스트 & 새 탭 Open (v10)
+// Reports (DCAR) — JSON 리스트 & 새 탭 Open
 // =========================
 (function(){
   const wrap   = $('.reports-omega');

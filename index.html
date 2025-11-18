@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,15 +14,15 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.11" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- Favicon (임시 이모지) -->
@@ -73,7 +73,6 @@
     color:var(--gold);
     text-align:center;
     font-size:clamp(18px,5vw,24px);
-    letter-spacing:.04em;
   }
   nav.primary{
     display:flex;gap:10px;justify-content:center;
@@ -154,11 +153,11 @@
     border-radius:10px;
     overflow:hidden;
     opacity:0;transform:translateY(8px);
-    transition:opacity .55s,transform .55s,box-shadow .6s,border-color .4s;
+    transition:opacity .55s,transform .55s,box-shadow .6s;
   }
   .card.visible{opacity:1;transform:translateY(0)}
   .card:hover{
-    box-shadow:0 0 18px rgba(230,199,119,.32);
+    box-shadow:0 0 16px rgba(230,199,119,.28);
     border-color:var(--gold);
   }
   .card img{
@@ -172,7 +171,7 @@
     display:flex;gap:12px;align-items:center;
     justify-content:space-between;margin-bottom:12px;
   }
-  .r-tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .r-tabs{display:flex;gap:8px}
   .r-tab{
     cursor:pointer;
     border:1px solid #2a366b;
@@ -452,7 +451,7 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.17</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.11</div>
 
     <nav class="primary" aria-label="Primary">
       <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
@@ -469,7 +468,7 @@
   </header>
 
   <main>
-    <!-- 1) POEM (텍스트 절대 변경 없음) -->
+    <!-- 1) POEM -->
     <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
@@ -543,7 +542,7 @@
       <div id="panel-cosmos" class="tabpanel"></div>
     </section>
 
-    <!-- 3) REPORTS (DCAR) -->
+    <!-- 3) REPORTS -->
     <section id="reports" style="display:none">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -717,7 +716,8 @@ Numerous private collections worldwide.</p>
       <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
     </div>
 
-    <small>등작 燈酌 DUNGZAK CESTLAVIE</small>
+    <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
+    <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>  <script>
 // =========================
 // Shorthands
@@ -1024,19 +1024,14 @@ window.DZ_BIO = (function(){
 
 // =========================
 // Works Loader (JSON → Grid)
-//   - JSON 키: "Pray for Us", "Human Being", "Rebirth of Mind",
-//              "Restoration of Being", "Metaconsciousness of Light"
-//   - 이미지 파일 이름은 JSON의 image 그대로 사용
-//   - "업로드 대기 중" 문구 완전 삭제 (빈 그리드만 표시)
 // =========================
 (function(){
-  // panel id → JSON key
-  const SECTION_KEY_BY_PANEL = {
-    pray   : 'Pray for Us',
-    human  : 'Human Being',
-    rebirth: 'Rebirth of Mind',
-    exist  : 'Restoration of Being',
-    cosmos : 'Metaconsciousness of Light'
+  const MAP = {
+    pray   : 'Light & Memory',
+    human  : 'Human Prayer',
+    rebirth: 'Rebirth',
+    exist  : 'Existence',
+    cosmos : 'Cosmos'
   };
 
   const panels = {
@@ -1056,24 +1051,19 @@ window.DZ_BIO = (function(){
   }
 
   async function getWorks(){
-    // 기본 구조 (방어용)
-    const empty = {
-      'Pray for Us': [],
-      'Human Being': [],
-      'Rebirth of Mind': [],
-      'Restoration of Being': [],
-      'Metaconsciousness of Light': []
-    };
-
     try {
-      const data = await fetchJSON('/data/works.json');
-      return Object.assign(empty, data || {});
+      return await fetchJSON('/data/works.json');
     } catch(_){
       try {
-        const data2 = await fetchJSON('/artworks.json');
-        return Object.assign(empty, data2 || {});
+        return await fetchJSON('/artworks.json');
       } catch(__){
-        return empty;
+        return {
+          [MAP.pray]   : [],
+          [MAP.human]  : [],
+          [MAP.rebirth]: [],
+          [MAP.exist]  : [],
+          [MAP.cosmos] : []
+        };
       }
     }
   }
@@ -1083,29 +1073,21 @@ window.DZ_BIO = (function(){
   }
 
   function cardHTML(w){
-    // Admin Ω 계열 JSON 호환: *_ko / *_en 우선 사용
-    const titleKo = w.title_ko || w.title_kr || '';
-    const titleEn = w.title_en || '';
-    const matKo   = w.material_ko || w.material_kr || '';
-    const matEn   = w.material_en || '';
-    const sizeKo  = w.size_ko || w.size_kr || '';
-    const sizeEn  = w.size_en || '';
-    const year    = w.year || '';
-
     const title = isKR()
-      ? (titleKo || titleEn || '')
-      : (titleEn || titleKo || '');
-    const meta  = isKR()
-      ? (matKo || '')
-      : (matEn || '');
-    const size  = isKR()
-      ? (sizeKo || '')
-      : (sizeEn || '');
+      ? (w.title_kr || w.title_en || '')
+      : (w.title_en || w.title_kr || '');
+    const meta = isKR()
+      ? (w.material_kr || '')
+      : (w.material_en || '');
+    const size = isKR()
+      ? (w.size_kr || '')
+      : (w.size_en || '');
+    const year  = w.year || '';
+    const file  = (w.image || '').replace(/\s+/g,'_') || 'placeholder.jpg';
 
-    const file  = (w.image || '').trim(); // 이름 그대로 사용
     const ssrc  = '/images/standard/' + file;
     const zsrc  = '/images/zoom/' + file;
-    const alt   = [title, meta, size, year].filter(Boolean).join(' · ');
+    const alt   = [title,meta,size,year].filter(Boolean).join(' · ');
 
     return `
       <article class="card" data-zoom="${zsrc}">
@@ -1114,13 +1096,18 @@ window.DZ_BIO = (function(){
     `;
   }
 
-  async function renderPanel(host, sectionKey, worksObj){
+  async function renderPanel(host, key, worksObj){
     if(!host) return;
-    const list = Array.isArray(worksObj[sectionKey]) ? worksObj[sectionKey].slice(0,20) : [];
+    const list = Array.isArray(worksObj[key]) ? worksObj[key].slice(0,20) : [];
 
     if(!list.length){
-      // "업로드 대기 중" 같은 문구 없이, 그냥 빈 그리드만
-      host.innerHTML = `<div class="grid"></div>`;
+      host.innerHTML = `
+        <div class="grid">
+          <article class="card visible" style="grid-column:1/-1;padding:20px;text-align:center;opacity:.8">
+            업로드 대기 중입니다. / Upload works JSON &amp; images.
+          </article>
+        </div>
+      `;
       return;
     }
 
@@ -1151,11 +1138,11 @@ window.DZ_BIO = (function(){
 
     async function renderAll(){
       await Promise.all([
-        renderPanel(panels.pray,    SECTION_KEY_BY_PANEL.pray,    worksObj),
-        renderPanel(panels.human,   SECTION_KEY_BY_PANEL.human,   worksObj),
-        renderPanel(panels.rebirth, SECTION_KEY_BY_PANEL.rebirth, worksObj),
-        renderPanel(panels.exist,   SECTION_KEY_BY_PANEL.exist,   worksObj),
-        renderPanel(panels.cosmos,  SECTION_KEY_BY_PANEL.cosmos,  worksObj)
+        renderPanel(panels.pray,    MAP.pray,    worksObj),
+        renderPanel(panels.human,   MAP.human,   worksObj),
+        renderPanel(panels.rebirth, MAP.rebirth, worksObj),
+        renderPanel(panels.exist,   MAP.exist,   worksObj),
+        renderPanel(panels.cosmos,  MAP.cosmos,  worksObj)
       ]);
     }
 
@@ -1311,9 +1298,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — JSON 리스트 & 새 탭 Open
-//  - 버튼 라벨: "Download" (영어)
-//  - Report 텍스트는 그대로
+// Reports (DCAR) — JSON 리스트 & 새 탭 Open (v10)
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
@@ -1340,7 +1325,7 @@ window.DZ_BIO = (function(){
       id: r.id,
       title_ko: r.title_ko || r.title_en || '',
       title_en: r.title_en || r.title_ko || '',
-      snippet_ko: r.summary_ko || r.summary_kr || '',
+      snippet_ko: r.summary_ko || '',
       snippet_en: r.summary_en || '',
       cat,
       path
@@ -1409,7 +1394,7 @@ window.DZ_BIO = (function(){
           <div class="r-actions">
             <a href="/reports/print-preview.html?file=${encodeURIComponent(r.id + '.md')}"
                target="_blank" rel="noopener">
-              Download
+              미리보기 / Print
             </a>
             <button type="button"
                     data-open="${escapeHtml(r.id)}"

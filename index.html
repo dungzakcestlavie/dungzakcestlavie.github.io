@@ -806,7 +806,7 @@ const $$ = (q, root) => Array.from((root || document).querySelectorAll(q));
 const $  = (q, root) => (root || document).querySelector(q);
 
 // =========================
-– Site Language (KR / EN / HYBRID)
+// Site Language (KR / EN / HYBRID)
 // =========================
 (function(){
   const body  = document.body;
@@ -837,7 +837,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Primary Navigation (Poem / Works / Reports)
+–- Primary Navigation (Poem / Works / Reports)
 // =========================
 (function(){
   const sections = ['poem','works','reports'];
@@ -1104,7 +1104,6 @@ window.DZ_BIO = (function(){
 
 // =========================
 // Works Loader (JSON → Grid)
-//  - IMPORTANT: "로드중입니다" / "업로드 대기" 문구 완전 제거
 // =========================
 (function(){
   const MAP = {
@@ -1181,7 +1180,6 @@ window.DZ_BIO = (function(){
     if(!host) return;
     const list = Array.isArray(worksObj[key]) ? worksObj[key].slice(0,20) : [];
 
-    // ★ 여기: 데이터가 없어도 아무 메시지도 안 보이게 처리
     if(!list.length){
       host.innerHTML = `<div class="grid"></div>`;
       return;
@@ -1434,19 +1432,7 @@ window.DZ_BIO = (function(){
       : items.filter(x => x.cat === cat);
 
     if(!list.length){
-      grid.innerHTML = `
-        <article class="r-card">
-          <div class="r-in">
-            <h3 class="r-title">미학 보고서 업로드 대기 중 / Reports coming soon</h3>
-            <p class="r-sub">/reports/</p>
-            <div class="r-body">
-              <div class="ko">Admin · GitHub를 통해 DCAR 보고서를 업로드하면 이 영역에 자동으로 정리됩니다.</div>
-              <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
-              <div class="en">Once DCAR reports are uploaded via Admin / GitHub, they will appear here.</div>
-            </div>
-          </div>
-        </article>
-      `;
+      grid.innerHTML = '';
       return;
     }
 
@@ -1516,7 +1502,6 @@ window.DZ_BIO = (function(){
     }
   }
 
-  // 카테고리 탭
   $$('.r-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       $$('.r-tab').forEach(x => x.classList.remove('is-active'));
@@ -1526,7 +1511,6 @@ window.DZ_BIO = (function(){
     });
   });
 
-  // Open 버튼: 새 탭 + 내부 뷰어
   grid.addEventListener('click', e => {
     const btn = e.target.closest('button[data-open]');
     if(!btn) return;
@@ -1538,13 +1522,11 @@ window.DZ_BIO = (function(){
     if(id) loadReport(id);
   });
 
-  // 토글 버튼: Reports 섹션으로 스크롤만
   toggle.addEventListener('click', () => {
     const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top, behavior:'smooth' });
   });
 
-  // 초기 데이터 로드
   loadData();
 })();
 
@@ -1759,5 +1741,3 @@ window.DZ_BIO = (function(){
   });
 })();
   </script>
-</body>
-</html>

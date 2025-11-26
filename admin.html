@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.27 — Works & DCAR Auto Manager</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.28 — Works & DCAR Auto Manager v50</title>
   <meta name="color-scheme" content="dark light">
 
   <style>
@@ -271,10 +271,11 @@
     *{scroll-behavior:auto !important; animation:none !important;transition:none !important;}
   }
   </style>
-</head> <body data-theme="dark">
+</head>
+<body data-theme="dark">
   <main>
     <header class="top-head">
-      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.27</div>
+      <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.28 · v50</div>
       <div class="hero-sub">100 작품 · DCAR 미학 보고서 · GitHub 자동 연동 시스템</div>
       <div class="badge-row">
         <div class="badge">
@@ -459,7 +460,9 @@
 
       </section>
     </section>
-  </main>  <!-- SCRIPT -->
+  </main>
+
+  <!-- SCRIPT -->
   <script>
   // =========================
   // 공통: DOM & 상태
@@ -489,7 +492,7 @@
   const btnReloadWorks   = document.getElementById('btnReloadWorks');
   const btnUpdateMeta    = document.getElementById('btnUpdateMetaOnly');
 
-  // Reports DOM (미학 보고서 쪽은 기존 로직 그대로 유지)
+  // Reports DOM
   const rId        = document.getElementById('rId');
   const rCategory  = document.getElementById('rCategory');
   const rYear      = document.getElementById('rYear');
@@ -766,7 +769,7 @@
     const res = await ghPutText(
       WORKS_JSON_PATH,
       pretty,
-      'Update data/works.json via Admin Ω.27',
+      'Update data/works.json via Admin Ω.28 v50',
       worksJsonSha
     );
     worksJsonSha = res && res.content && res.content.sha || worksJsonSha;
@@ -851,23 +854,24 @@
 
   // =========================
   // Works 업로드 로직
-  //  - 파일 이름이 뭐든 상관없이
+  //  - 파일 이름, 확장자 어떤 것이든
   //  - ID 기반 안전 파일명으로 자동 저장
   // =========================
   function getSafeImageExtension(file){
     const original = file.name || '';
     const match = original.match(/\.([^.]+)$/);
+    let ext = '';
+
     if(match && match[1]){
-      let ext = match[1].toLowerCase();
-      if(ext === 'jpeg') ext = 'jpg';
-      return '.' + ext;
+      ext = match[1].toLowerCase();
+    }else if(file.type && file.type.startsWith('image/')){
+      ext = file.type.split('/')[1].toLowerCase();
     }
-    if(file.type && file.type.startsWith('image/')){
-      let ext = file.type.split('/')[1].toLowerCase();
-      if(ext === 'jpeg') ext = 'jpg';
-      return '.' + ext;
-    }
-    return '.jpg';
+
+    if(ext === 'jpeg') ext = 'jpg';
+    if(!ext) ext = 'jpg';
+
+    return '.' + ext;
   }
 
   function getNextIndexForSection(secKey){
@@ -923,19 +927,19 @@
           const file = files[i];
           const id   = `${prefix}-${String(nextIdx).padStart(2,'0')}`;
           const ext  = getSafeImageExtension(file);
-          const fname= `${id}${ext}`; // 🔹 항상 ASCII/ID 기반 안전 파일명
+          const fname= `${id}${ext}`; // 항상 ASCII/ID 기반 안전 파일명
 
           const base64 = await readFileAsBase64(file);
 
           await ghPutImage(
             `images/standard/${fname}`,
             base64,
-            `Upload standard image ${fname} via Admin Ω.27`
+            `Upload standard image ${fname} via Admin Ω.28 v50`
           );
           await ghPutImage(
             `images/zoom/${fname}`,
             base64,
-            `Upload zoom image ${fname} via Admin Ω.27`
+            `Upload zoom image ${fname} via Admin Ω.28 v50`
           );
 
           const entry = {
@@ -947,7 +951,7 @@
             size_ko    : worksSizeKo.value.trim(),
             size_en    : worksSizeEn.value.trim(),
             year       : yearVal || '',
-            image      : fname
+            image      : fname            // index.html에서 images/standard/ + fname 으로 사용
           };
 
           arr.push(entry);
@@ -1039,7 +1043,7 @@
       if(!parsed || !Array.isArray(parsed.reports)){
         parsed = { reports: [] };
       }
-      reportsData = parsed;
+      reportsData    = parsed;
       reportsJsonSha = data.sha || null;
 
       setStatus('reports.json 로드 성공.', 'ok');
@@ -1056,7 +1060,7 @@
     const res = await ghPutText(
       REPORTS_JSON_PATH,
       pretty,
-      'Update reports.json via Admin Ω.23',
+      'Update reports.json via Admin Ω.28 v50',
       reportsJsonSha
     );
     reportsJsonSha = res && res.content && res.content.sha || reportsJsonSha;
@@ -1123,7 +1127,7 @@
     await ghPutText(
       mdPath,
       rFull.value || '',
-      `Update ${mdPath} via Admin Ω.23`,
+      `Update ${mdPath} via Admin Ω.28 v50`,
       existingSha || null
     );
     setStatus(`${mdPath} 저장 완료.`, 'ok');
@@ -1267,7 +1271,7 @@
     try{
       loadConfigFromLocal();
     }catch(e){}
-    setStatus('Admin Ω.27 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
+    setStatus('Admin Ω.28 v50 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
   }
 
   if(document.readyState === 'loading'){

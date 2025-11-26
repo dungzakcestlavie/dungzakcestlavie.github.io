@@ -271,8 +271,7 @@
     *{scroll-behavior:auto !important; animation:none !important;transition:none !important;}
   }
   </style>
-</head>
-<body data-theme="dark">
+</head> <body data-theme="dark">
   <main>
     <header class="top-head">
       <div class="hero-title">등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.27</div>
@@ -460,9 +459,7 @@
 
       </section>
     </section>
-  </main>
-
-  <!-- SCRIPT -->
+  </main>  <!-- SCRIPT -->
   <script>
   // =========================
   // 공통: DOM & 상태
@@ -492,7 +489,7 @@
   const btnReloadWorks   = document.getElementById('btnReloadWorks');
   const btnUpdateMeta    = document.getElementById('btnUpdateMetaOnly');
 
-  // Reports DOM
+  // Reports DOM (미학 보고서 쪽은 기존 로직 그대로 유지)
   const rId        = document.getElementById('rId');
   const rCategory  = document.getElementById('rCategory');
   const rYear      = document.getElementById('rYear');
@@ -852,13 +849,47 @@
     setStatus(`작품 ${secKey} · ${w.id} 메타데이터를 불러왔습니다.`, 'ok');
   }
 
-  // ----- 여기부터: 업로드 로직 (Admin Ω.27에서 수정) -----
+  // =========================
+  // Works 업로드 로직
+  //  - 파일 이름이 뭐든 상관없이
+  //  - ID 기반 안전 파일명으로 자동 저장
+  // =========================
+  function getSafeImageExtension(file){
+    const original = file.name || '';
+    const match = original.match(/\.([^.]+)$/);
+    if(match && match[1]){
+      let ext = match[1].toLowerCase();
+      if(ext === 'jpeg') ext = 'jpg';
+      return '.' + ext;
+    }
+    if(file.type && file.type.startsWith('image/')){
+      let ext = file.type.split('/')[1].toLowerCase();
+      if(ext === 'jpeg') ext = 'jpg';
+      return '.' + ext;
+    }
+    return '.jpg';
+  }
+
+  function getNextIndexForSection(secKey){
+    const arr = Array.isArray(worksData[secKey]) ? worksData[secKey] : [];
+    let maxIdx = 0;
+    arr.forEach(w=>{
+      const m = String(w.id || '').match(/-(\d+)$/);
+      if(m){
+        const n = parseInt(m[1], 10);
+        if(n > maxIdx) maxIdx = n;
+      }
+    });
+    return maxIdx + 1;
+  }
+
   async function handleUploadWorks(){
     const secKey = worksSectionSel.value;
     if(!secKey){
       setStatus('섹션을 선택하세요.', 'err');
       return;
     }
+
     const files   = Array.from(worksFilesInput.files || []);
     const titleKo = worksTitleKo.value.trim();
     const yearVal = worksYear.value.trim();
@@ -869,7 +900,7 @@
       return;
     }
 
-    // --- 1) 이미지가 선택된 경우: 원본 파일 이름/확장자를 그대로 사용 ---
+    // ===== 1) 이미지가 있는 경우: 새 작품 추가 + ID 기반 파일명 =====
     if(files.length){
       try{
         btnUploadWorks.disabled = true;
@@ -878,42 +909,35 @@
         if(!Array.isArray(worksData[secKey])){
           worksData[secKey] = [];
         }
-        let baseCount = worksData[secKey].length;
+        const arr = worksData[secKey];
         const prefix  = SECTION_PREFIX[secKey] || 'WK';
 
+        let nextIdx = getNextIndexForSection(secKey);
+
         for(let i=0;i<files.length;i++){
-          const file = files[i];
-
-          // (1) 원래 파일 이름 / 확장자 추출
-          const originalName = file.name || 'image';
-          const dotIndex = originalName.lastIndexOf('.');
-
-          const ext = dotIndex >= 0
-            ? originalName.slice(dotIndex).toLowerCase()
-            : '.jpg'; // 확장자 없으면 jpg로
-
-          const base = dotIndex >= 0
-            ? originalName.slice(0, dotIndex)
-            : originalName;
-
-          // 공백 → _, 나머지 문자는 그대로 둠
-          const safeBase = base.trim().replace(/\s+/g, '_');
-          const fname = `${safeBase}${ext}`;
-
-          // (2) 섹션 내 ID는 PFU-01, PFU-02 … 유지
-          const idx = baseCount + 1;
-          if(idx > 20){
+          if(nextIdx > 20){
             setStatus(`${SECTION_LABEL_MAP[secKey] || secKey} 섹션은 20점을 초과할 수 없습니다.`, 'err');
             break;
           }
-          const id = `${prefix}-${String(idx).padStart(2,'0')}`;
 
-          // (3) GitHub에 업로드 (standard / zoom)
+          const file = files[i];
+          const id   = `${prefix}-${String(nextIdx).padStart(2,'0')}`;
+          const ext  = getSafeImageExtension(file);
+          const fname= `${id}${ext}`; // 🔹 항상 ASCII/ID 기반 안전 파일명
+
           const base64 = await readFileAsBase64(file);
-          await ghPutImage(`images/standard/${fname}`, base64, `Upload standard image ${fname} via Admin Ω.27`);
-          await ghPutImage(`images/zoom/${fname}`,     base64, `Upload zoom image ${fname} via Admin Ω.27`);
 
-          // (4) works.json 엔트리 추가
+          await ghPutImage(
+            `images/standard/${fname}`,
+            base64,
+            `Upload standard image ${fname} via Admin Ω.27`
+          );
+          await ghPutImage(
+            `images/zoom/${fname}`,
+            base64,
+            `Upload zoom image ${fname} via Admin Ω.27`
+          );
+
           const entry = {
             id,
             title_ko   : titleKo,
@@ -923,14 +947,16 @@
             size_ko    : worksSizeKo.value.trim(),
             size_en    : worksSizeEn.value.trim(),
             year       : yearVal || '',
-            image      : fname   // 🔹 원래 이름 기반 파일명
+            image      : fname
           };
 
-          worksData[secKey].push(entry);
-          baseCount++;
+          arr.push(entry);
           currentWorkId   = id;
           currentWorkSect = secKey;
+          nextIdx++;
         }
+
+        worksData[secKey] = arr;
 
         await saveWorksJson();
         renderWorksList();
@@ -945,7 +971,7 @@
       return;
     }
 
-    // --- 2) 이미지 없이 메타데이터만 수정 ---
+    // ===== 2) 이미지 없이 메타데이터만 수정 =====
     if(!currentWorkId || !currentWorkSect){
       setStatus('메타데이터만 수정하려면 먼저 작품을 선택하세요.', 'err');
       return;
@@ -989,7 +1015,7 @@
 
   // =========================
   // Reports — reports.json + markdown
-  // (기존 구조 그대로 유지 · 미학 보고서 로직 건드리지 않음)
+  // ⚠ 미학 보고서 로직/구조는 등작 코드 그대로 유지
   // =========================
   async function loadReportsJson(){
     setStatus('GitHub에서 reports.json 불러오는 중…');
@@ -1219,33 +1245,36 @@
   });
 
   // =========================
-  // 이벤트 바인딩
+  // 이벤트 바인딩 + 초기화
   // =========================
-  btnSaveConfig.addEventListener('click', saveConfigToLocal);
-  btnLoadConfig.addEventListener('click', loadConfigFromLocal);
-  btnClearConfig.addEventListener('click', ()=>{
-    if(confirm('저장된 Owner / Repo / Branch / Token을 모두 지울까요?')){
-      clearConfig();
-    }
-  });
+  function initAdmin(){
+    btnSaveConfig.addEventListener('click', saveConfigToLocal);
+    btnLoadConfig.addEventListener('click', loadConfigFromLocal);
+    btnClearConfig.addEventListener('click', ()=>{
+      if(confirm('저장된 Owner / Repo / Branch / Token을 모두 지울까요?')){
+        clearConfig();
+      }
+    });
 
-  btnUploadWorks.addEventListener('click', handleUploadWorks);
-  btnUpdateMeta.addEventListener('click', handleUpdateMetaOnly);
-  btnReloadWorks.addEventListener('click', loadWorksJson);
+    btnUploadWorks.addEventListener('click', handleUploadWorks);
+    btnUpdateMeta.addEventListener('click', handleUpdateMetaOnly);
+    btnReloadWorks.addEventListener('click', loadWorksJson);
 
-  btnSaveReport.addEventListener('click', handleSaveReport);
-  btnNewReport.addEventListener('click', clearReportForm);
-  btnReloadReports.addEventListener('click', loadReportsJson);
+    btnSaveReport.addEventListener('click', handleSaveReport);
+    btnNewReport.addEventListener('click', clearReportForm);
+    btnReloadReports.addEventListener('click', loadReportsJson);
 
-  // =========================
-  // 초기화
-  // =========================
-  document.addEventListener('DOMContentLoaded', ()=>{
     try{
       loadConfigFromLocal();
     }catch(e){}
     setStatus('Admin Ω.27 로드 완료. GitHub 설정 확인 후 진행하세요.', 'ok');
-  });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initAdmin);
+  }else{
+    initAdmin();
+  }
   </script>
 </body>
 </html>

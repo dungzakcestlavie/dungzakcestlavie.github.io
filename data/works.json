@@ -1,37 +1,24 @@
 {
-  "0": {
-    "id": "DZ-003",
-    "title_kr": "우리를 위해 기도해 주세요",
-    "title_en": "Pray for Us",
-    "material_ko": "캔버스에 아크릴",
-    "material_en": "Acrylic on canvas",
-    "size_ko": "162.2 × 130.3 cm",
-    "size_en": "162.2 × 130.3 cm",
-    "year": "2025",
-    "image": "/images/zoom/DZ-003.jpg",
-    "zoom": "/images/zoom/DZ-003.jpg",
-    "section": "1"
-  },
-
-  "Light & Memory": [],
-
-  "Human Prayer": [
+  "I 우리를 위해 기도해 주세요 · Pray for Us": [
     {
-      "id": "HP-01",
-      "title_ko": "우리를 위해 기도해 주세요",
+      "id": "DZ-003",
+      "title_kr": "우리를 위해 기도해 주세요",
       "title_en": "Pray for Us",
       "material_ko": "캔버스에 아크릴",
-      "material_en": "Acrylic on canvas",
+      "material_en": "acrylic on canvas",
       "size_ko": "162.2 × 130.3 cm",
       "size_en": "162.2 × 130.3 cm",
       "year": "2025",
-      "image": "HP-01.jpg"
+      "image": "/images/zoom/DZ-003.jpg",
+      "zoom": "/images/zoom/DZ-003.jpg"
     }
   ],
 
-  "Existence": [],
+  "II 인간 · Human Being": [],
 
-  "Mind": [],
+  "III 정신의 재탄생 · Rebirth of Mind": [],
 
-  "Cosmos": []
+  "IV 존재의 회복 · Restoration of Being": [],
+
+  "V 빛의 초의식 · Metaconsciousness of Light": []
 }

@@ -3,20 +3,34 @@
     {
       "id": "DZ-001",
       "section_id": 1,
-      "section_kr": "Ⅰ 우리를 위해 기도해 주세요",
+      "section_kr": "I 우리를 위해 기도해 주세요",
       "section_en": "Pray for Us",
       "title_kr": "입맞춤",
       "title_en": "The Kiss",
       "material_kr": "캔버스에 오일스틱과 아크릴",
       "material_en": "oil stick and acrylic on canvas",
-      "size_kr": "162.2 × 130.3 cm",
-      "size_en": "162.2 × 130.3 cm",
+      "size_kr": "162.2 x 130.3 cm",
+      "size_en": "162.2 x 130.3 cm",
       "year": 2024,
       "image": "DZ-001.jpg",
       "zoom": "DZ-001.jpg"
+    },
+    {
+      "id": "DZ-002",
+      "section_id": 1,
+      "section_kr": "I 우리를 위해 기도해 주세요",
+      "section_en": "Pray for Us",
+      "title_kr": "눈물 속에 우주가 있으니: 우리를 위해 기도해 주세요",
+      "title_en": "Tears Contain the Universe: Pray for Us",
+      "material_kr": "캔버스에 아크릴",
+      "material_en": "acrylic on canvas",
+      "size_kr": "130.3 x 162.2 cm",
+      "size_en": "130.3 x 162.2 cm",
+      "year": 2025,
+      "image": "DZ-002.jpg",
+      "zoom": "DZ-002.jpg"
     }
   ],
-
   "Human Being": [],
   "Rebirth of Mind": [],
   "Restoration of Being": [],

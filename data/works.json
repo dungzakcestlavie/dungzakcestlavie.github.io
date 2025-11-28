@@ -1,24 +1,24 @@
 {
-  "I 우리를 위해 기도해 주세요 · Pray for Us": [
+  "Light & Memory": [
     {
-      "id": "DZ-003",
-      "title_kr": "우리를 위해 기도해 주세요",
-      "title_en": "Pray for Us",
-      "material_ko": "캔버스에 아크릴",
-      "material_en": "acrylic on canvas",
-      "size_ko": "162.2 × 130.3 cm",
+      "id": "DZ-001",
+      "section_id": 1,
+      "section_kr": "Ⅰ 우리를 위해 기도해 주세요",
+      "section_en": "Pray for Us",
+      "title_kr": "입맞춤",
+      "title_en": "The Kiss",
+      "material_kr": "캔버스에 오일스틱과 아크릴",
+      "material_en": "oil stick and acrylic on canvas",
+      "size_kr": "162.2 × 130.3 cm",
       "size_en": "162.2 × 130.3 cm",
-      "year": "2025",
-      "image": "/images/zoom/DZ-003.jpg",
-      "zoom": "/images/zoom/DZ-003.jpg"
+      "year": 2024,
+      "image": "DZ-001.jpg",
+      "zoom": "DZ-001.jpg"
     }
   ],
 
-  "II 인간 · Human Being": [],
-
-  "III 정신의 재탄생 · Rebirth of Mind": [],
-
-  "IV 존재의 회복 · Restoration of Being": [],
-
-  "V 빛의 초의식 · Metaconsciousness of Light": []
-} 
+  "Human Being": [],
+  "Rebirth of Mind": [],
+  "Restoration of Being": [],
+  "Metaconsciousness of Light": []
+}

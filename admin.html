@@ -1,854 +1,650 @@
 <!doctype html>
 <html lang="ko" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.29 — Works Auto Manager v52</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="color-scheme" content="dark light">
+  <meta charset="utf-8" />
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.29 — Works & DCAR Auto Manager</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
 
   <style>
     :root{
-      --bg:#050814;
-      --panel:#0c1024;
-      --panel-soft:#131838;
-      --ink:#f3f4ff;
+      --bg:#0b1020;
+      --panel:#111a37;
+      --ink:#eaf0ff;
       --sub:#9faee6;
       --accent:#f4c96b;
-      --accent-soft:rgba(244,201,107,.2);
-      --danger:#ff5a7a;
-      --ok:#6be6a8;
-      --border:rgba(255,255,255,.08);
-      --radius:18px;
-      --shadow:0 24px 80px rgba(0,0,0,.7);
-      --font-main:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
-      --mono:ui-monospace,Menlo,Monaco,Consolas,"SF Mono",monospace;
+      --accent-soft:rgba(244,201,107,.15);
+      --danger:#ff6b81;
+      --ok:#3fd6a5;
+      --border:#273260;
+      --input-bg:#0d1330;
     }
     *{box-sizing:border-box;}
     html,body{
       margin:0;
       padding:0;
-      background:radial-gradient(circle at 10% -10%,#233268 0,#050814 52%,#000000 100%);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Noto Sans KR",system-ui,sans-serif;
+      background:radial-gradient(circle at top,#18224a 0,#050814 55%,#020309 100%);
       color:var(--ink);
-      font-family:var(--font-main);
     }
     body{
       min-height:100vh;
-      display:flex;
-      justify-content:center;
-      padding:32px 12px 40px;
+      padding:12px 10px 32px;
     }
     .shell{
-      width:100%;
-      max-width:1024px;
-      background:linear-gradient(145deg,rgba(9,12,30,.96),rgba(7,10,26,.98));
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,.04);
-      padding:22px 18px 26px;
-      position:relative;
-      overflow:hidden;
-    }
-    .shell::before{
-      content:"";
-      position:absolute;
-      inset:-120px;
-      background:
-        radial-gradient(circle at 0 0,rgba(244,201,107,.18) 0,transparent 55%),
-        radial-gradient(circle at 120% 20%,rgba(122,197,255,.22) 0,transparent 55%);
-      opacity:.8;
-      pointer-events:none;
-      mix-blend-mode:screen;
-    }
-    .shell-inner{
-      position:relative;
-      z-index:1;
+      max-width:960px;
+      margin:0 auto;
     }
     header{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px 18px;
-      justify-content:space-between;
-      align-items:flex-end;
-      margin-bottom:18px;
+      text-align:center;
+      padding:4px 0 8px;
     }
-    .title-block h1{
-      font-size:18px;
-      letter-spacing:.06em;
+    header h1{
       margin:0;
-      color:var(--accent);
+      font-size:20px;
+      letter-spacing:.06em;
     }
-    .title-sub{
-      margin-top:4px;
-      font-size:11px;
+    header h2{
+      margin:4px 0 0;
+      font-size:12px;
       color:var(--sub);
+      font-weight:400;
     }
-    .badge-row{
+    .pill-row{
       display:flex;
       flex-wrap:wrap;
-      gap:6px;
-      margin-top:8px;
+      gap:8px;
+      justify-content:center;
+      margin:14px 0 10px;
     }
     .pill{
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:4px 10px;
+      padding:6px 12px;
       border-radius:999px;
-      font-size:10px;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      border:1px solid rgba(244,201,107,.45);
-      background:rgba(10,10,16,.7);
-      backdrop-filter:blur(10px);
-    }
-    .pill span.icon{
+      border:1px solid rgba(244,201,107,.35);
+      background:linear-gradient(135deg,rgba(244,201,107,.12),rgba(15,22,55,.9));
       font-size:11px;
-    }
-    main{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-    section.panel{
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,.04) 0,transparent 45%),
-                 radial-gradient(circle at 120% 0,rgba(75,139,255,.12) 0,transparent 45%),
-                 var(--panel);
-      border-radius:var(--radius);
-      border:1px solid var(--border);
-      padding:14px 14px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    section.panel h2{
-      margin:0 0 10px;
-      font-size:13px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--sub);
-    }
-    section.panel h2 strong{
       color:var(--accent);
-      font-weight:700;
+      cursor:default;
     }
-    .panel-caption{
-      font-size:11px;
+    .pill span.emoji{font-size:14px;}
+
+    .tab-row{
+      display:inline-flex;
+      border-radius:999px;
+      padding:3px;
+      background:rgba(3,6,20,.9);
+      border:1px solid rgba(255,255,255,.05);
+      margin:0 auto 14px;
+    }
+    .tab{
+      padding:5px 14px;
+      border-radius:999px;
+      font-size:12px;
+      cursor:pointer;
+      border:none;
+      background:transparent;
       color:var(--sub);
-      margin-bottom:10px;
     }
-    .grid{
-      display:grid;
-      grid-template-columns:1.15fr 1.7fr;
-      gap:12px;
+    .tab.active{
+      background:var(--accent-soft);
+      color:var(--accent);
     }
-    @media (max-width:768px){
-      .shell{padding:20px 12px 20px;border-radius:0;}
-      .grid{grid-template-columns:1fr;}
+
+    .panel{
+      border-radius:18px;
+      background:radial-gradient(circle at top left,#1b244d 0, #070b1b 55%, #050714 100%);
+      border:1px solid var(--border);
+      padding:18px 16px 18px;
+      margin-bottom:16px;
+      box-shadow:0 22px 45px rgba(0,0,0,.55);
     }
-    label{
+    .panel h3{
+      margin:0 0 10px;
+      font-size:15px;
+      letter-spacing:.08em;
+      color:var(--accent);
+    }
+    .panel small{
+      display:block;
+      margin-top:2px;
+      color:var(--sub);
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .field{
+      margin:10px 0;
+    }
+    .field label{
       display:block;
       font-size:11px;
       color:var(--sub);
-      margin-bottom:4px;
+      margin-bottom:3px;
     }
-    input[type="text"],
-    input[type="number"],
-    input[type="password"],
-    textarea,
-    select{
+    .field input,
+    .field select,
+    .field textarea{
       width:100%;
-      background:rgba(5,8,20,.9);
-      border-radius:11px;
-      border:1px solid rgba(255,255,255,.16);
-      padding:7px 9px;
-      font-size:12px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:var(--input-bg);
       color:var(--ink);
+      font-size:13px;
       outline:none;
     }
-    textarea{min-height:72px;resize:vertical;}
-    input:focus,
-    textarea:focus,
-    select:focus{
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus{
       border-color:var(--accent);
-      box-shadow:0 0 0 1px rgba(244,201,107,.4);
+      box-shadow:0 0 0 1px rgba(244,201,107,.3);
     }
-    input[type="file"]{
-      font-size:11px;
-    }
-    .row{
+    .field textarea{min-height:70px;resize:vertical;}
+
+    .btn-row{
       display:flex;
+      flex-wrap:wrap;
       gap:8px;
-      align-items:center;
-    }
-    .row.stretch > *{flex:1;}
-    .hint{
-      font-size:10px;
-      color:var(--sub);
-      margin-top:3px;
+      margin-top:10px;
     }
     .btn{
-      border-radius:999px;
-      border:none;
       padding:7px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(10,16,40,.95);
+      color:var(--ink);
       font-size:12px;
-      font-weight:600;
-      letter-spacing:.06em;
-      text-transform:uppercase;
       cursor:pointer;
       display:inline-flex;
       align-items:center;
       gap:6px;
-      transition:transform .08s ease,box-shadow .08s ease,background .12s ease;
-      white-space:nowrap;
     }
     .btn-primary{
-      background:linear-gradient(120deg,#f4c96b,#ffdf9c);
-      color:#2a1904;
-      box-shadow:0 12px 30px rgba(0,0,0,.65);
-    }
-    .btn-primary:active{
-      transform:translateY(1px) scale(.99);
-      box-shadow:0 4px 14px rgba(0,0,0,.7);
-    }
-    .btn-ghost{
-      background:rgba(8,10,22,.9);
-      color:var(--sub);
-      border:1px solid rgba(255,255,255,.18);
-    }
-    .btn-ghost:active{
-      transform:translateY(1px) scale(.99);
+      background:linear-gradient(135deg,#f4c96b,#f19b4c);
+      color:#05040a;
+      border-color:rgba(0,0,0,.3);
+      font-weight:600;
     }
     .btn-danger{
-      background:rgba(255,90,122,.1);
-      border:1px solid var(--danger);
-      color:#ffd6df;
+      background:rgba(255,76,110,.12);
+      border-color:rgba(255,76,110,.7);
+      color:#ff9fb1;
     }
-    .pill-mini{
-      display:inline-flex;
-      align-items:center;
-      padding:3px 8px;
-      border-radius:999px;
-      font-size:10px;
-      border:1px solid rgba(255,255,255,.16);
-      color:var(--sub);
-      gap:4px;
+    .btn[disabled]{
+      opacity:.45;
+      cursor:wait;
     }
-    .status-bar{
-      margin-top:10px;
-      padding:7px 9px;
-      border-radius:11px;
-      font-size:11px;
-      line-height:1.5;
-      background:rgba(5,10,30,.94);
-      border:1px solid rgba(255,255,255,.12);
+
+    .hint{
       display:flex;
-      gap:8px;
       align-items:flex-start;
+      gap:8px;
+      margin-top:10px;
+      padding:8px 9px;
+      border-radius:12px;
+      background:rgba(11,18,40,.95);
+      border:1px dashed rgba(255,255,255,.14);
+      font-size:11px;
+      color:var(--sub);
+    }
+    .hint-emoji{font-size:14px;line-height:1;}
+    .status{
+      margin-top:10px;
+      font-size:11px;
+      min-height:14px;
       white-space:pre-line;
     }
-    .status-bar strong{
-      font-weight:600;
-    }
-    .status-icon{
-      font-size:13px;
-      margin-top:1px;
-    }
-    .status-ok{
-      border-color:rgba(107,230,168,.7);
-      background:radial-gradient(circle at 0 0,rgba(107,230,168,.25),transparent 55%),rgba(8,16,26,.96);
-    }
-    .status-error{
-      border-color:rgba(255,90,122,.8);
-      background:radial-gradient(circle at 0 0,rgba(255,90,122,.24),transparent 55%),rgba(16,8,14,.96);
-    }
-    .status-neutral{
-      opacity:.9;
-    }
-    footer{
-      margin-top:12px;
-      font-size:10px;
-      color:var(--sub);
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    footer span.emph{
-      color:var(--accent);
-    }
-    .mono{font-family:var(--mono);}
-    .pill-tabs{
-      display:inline-flex;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      overflow:hidden;
-      background:rgba(6,8,22,.9);
-    }
-    .pill-tabs button{
-      border:none;
-      background:none;
-      padding:5px 10px;
+    .status.ok{color:var(--ok);}
+    .status.err{color:var(--danger);}
+
+    .divider-label{
+      margin:18px 0 4px;
       font-size:11px;
-      color:var(--sub);
-      cursor:pointer;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:rgba(159,174,230,.85);
     }
-    .pill-tabs button.active{
-      background:var(--accent-soft);
-      color:var(--accent);
-      font-weight:600;
-    }
-    .divider{
-      height:1px;
-      margin:12px 0 10px;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,.26),transparent);
-      opacity:.5;
+
+    @media (min-width:720px){
+      body{padding:18px 18px 40px;}
+      header h1{font-size:22px;}
+      .panel{padding:20px 20px 20px;}
+      .field-inline{
+        display:flex;
+        gap:10px;
+      }
+      .field-inline .field{flex:1;}
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="shell-inner">
-      <header>
-        <div class="title-block">
-          <h1>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.29</h1>
-          <div class="title-sub">
-            Works(100) 자동 관리 · DCAR 미학 보고서 파일은 유지 · GitHub Pages 연동
-          </div>
-          <div class="badge-row">
-            <div class="pill"><span class="icon">⚙️</span><span>Auto GitHub Manager</span></div>
-            <div class="pill"><span class="icon">🖼</span><span>Works JSON 구조 고정</span></div>
-            <div class="pill"><span class="icon">📄</span><span>DCAR Reports · Untouched</span></div>
-          </div>
-        </div>
-        <div>
-          <div class="pill-tabs">
-            <button type="button" class="active" id="tab-works">Works</button>
-            <button type="button" disabled>DCAR (고정)</button>
-          </div>
-        </div>
-      </header>
-
-      <main>
-        <!-- I. GitHub 설정 -->
-        <section class="panel" id="panel-github">
-          <h2><strong>I.</strong> GitHub 연결 설정</h2>
-          <p class="panel-caption">
-            아래 값은 브라우저 <span class="mono">localStorage</span>에만 저장됩니다.  
-            한번 설정하면 이후에는 다시 입력할 필요가 없습니다.
-          </p>
-          <div class="grid">
-            <div>
-              <label for="ghOwner">GitHub Owner</label>
-              <input id="ghOwner" type="text" placeholder="예: dungzakcestlavie">
-
-              <label for="ghRepo" style="margin-top:8px;">Repository</label>
-              <input id="ghRepo" type="text" placeholder="예: dungzakcestlavie.github.io">
-
-              <label for="ghBranch" style="margin-top:8px;">Branch</label>
-              <input id="ghBranch" type="text" value="main">
-            </div>
-            <div>
-              <label for="ghToken">Personal Access Token</label>
-              <input id="ghToken" type="password" autocomplete="off"
-                placeholder="github_pat_로 시작하는 토큰을 입력하세요">
-              <div class="hint">
-                · 이 토큰은 <strong>브라우저 안에만 저장</strong>되며, 서버로 전송되지 않습니다.<br>
-                · 레포지토리 <span class="mono">contents</span> 권한만 있으면 됩니다.
-              </div>
-              <div style="margin-top:10px;" class="row">
-                <button type="button" class="btn btn-primary" id="btnSaveSettings">설정 저장</button>
-                <button type="button" class="btn btn-ghost" id="btnLoadSettings">불러오기</button>
-                <button type="button" class="btn btn-danger" id="btnResetSettings">초기화</button>
-              </div>
-            </div>
-          </div>
-          <div id="status-settings" class="status-bar status-neutral" aria-live="polite">
-            <div class="status-icon">ℹ️</div>
-            <div>
-              <strong>알림</strong> GitHub 설정을 저장한 후 작품 업로드를 진행해 주세요.
-            </div>
-          </div>
-        </section>
-
-        <!-- II. 작품 업로드 / 메타데이터 자동 관리 -->
-        <section class="panel" id="panel-works">
-          <h2><strong>II.</strong> 작품 업로드 · 메타데이터 자동 관리</h2>
-          <p class="panel-caption">
-            한 번에 1점씩 업로드합니다. 이미지는 <span class="mono">/images/zoom/DZ-XXX.jpg</span>로 저장되고,  
-            <span class="mono">data/works.json</span>에 자동으로 추가됩니다.
-          </p>
-
-          <div class="grid">
-            <!-- 왼쪽: 파일 + 섹션 선택 -->
-            <div>
-              <label for="workFile">작품 이미지 파일</label>
-              <input id="workFile" type="file" accept="image/*">
-              <div class="hint">
-                · 가급적 3000px 이상 JPG 사용<br>
-                · 파일 이름은 자동으로 <span class="mono">DZ-XXX.jpg</span>로 정리됩니다.
-              </div>
-
-              <label for="workSection" style="margin-top:10px;">섹션 선택 (Section)</label>
-              <select id="workSection">
-                <option value="I 우리를 위해 기도해 주세요 · Pray for Us">I 우리를 위해 기도해 주세요 · Pray for Us</option>
-                <option value="II 인간 · Human Being">II 인간 · Human Being</option>
-                <option value="III 정신의 재탄생 · Rebirth of Mind">III 정신의 재탄생 · Rebirth of Mind</option>
-                <option value="IV 존재의 회복 · Restoration of Being">IV 존재의 회복 · Restoration of Being</option>
-                <option value="V 빛의 초의식 · Metaconsciousness of Light">V 빛의 초의식 · Metaconsciousness of Light</option>
-              </select>
-              <div class="hint">
-                · 섹션 이름은 사이트 Works 섹션 구조와 완전히 동일하게 유지됩니다.
-              </div>
-
-              <div class="divider"></div>
-
-              <div class="pill-mini">
-                <span>다음 작품 ID / 파일명 미리보기:</span>
-                <span class="mono" id="nextIdPreview">DZ-???</span>
-              </div>
-            </div>
-
-            <!-- 오른쪽: 메타데이터 -->
-            <div>
-              <div class="row stretch">
-                <div>
-                  <label for="titleKo">작품명 (KO)</label>
-                  <input id="titleKo" type="text" placeholder="예: 우리를 위해 기도해 주세요">
-                </div>
-                <div>
-                  <label for="titleEn">Title (EN)</label>
-                  <input id="titleEn" type="text" placeholder="예: Pray for Us">
-                </div>
-              </div>
-
-              <div class="row stretch" style="margin-top:8px;">
-                <div>
-                  <label for="materialKo">재료 (KO)</label>
-                  <input id="materialKo" type="text" placeholder="예: 캔버스에 아크릴">
-                </div>
-                <div>
-                  <label for="materialEn">Material (EN · 소문자)</label>
-                  <input id="materialEn" type="text" placeholder="예: acrylic on canvas">
-                </div>
-              </div>
-
-              <div class="row stretch" style="margin-top:8px;">
-                <div>
-                  <label for="sizeKo">크기 (KO)</label>
-                  <input id="sizeKo" type="text" placeholder="예: 162.2 × 130.3 cm">
-                </div>
-                <div>
-                  <label for="sizeEn">Size (EN)</label>
-                  <input id="sizeEn" type="text" placeholder="예: 162.2 × 130.3 cm">
-                </div>
-              </div>
-
-              <div class="row" style="margin-top:8px%;">
-                <div style="flex:0 0 120px;">
-                  <label for="year">제작년도 (Year)</label>
-                  <input id="year" type="number" min="1900" max="2100" value="2025">
-                </div>
-                <div style="flex:1;">
-                  <label for="note">비고 / 내부 메모 (선택)</label>
-                  <input id="note" type="text" placeholder="예: 구구갤러리 출품작, 인천아트쇼 등">
-                </div>
-              </div>
-
-              <div style="margin-top:12px;" class="row">
-                <button type="button" class="btn btn-primary" id="btnUploadWork">작품 업로드</button>
-                <button type="button" class="btn btn-ghost" id="btnDryRun">미리보기 (Dry Run)</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="status-works" class="status-bar status-neutral" aria-live="polite">
-            <div class="status-icon">🌙</div>
-            <div>
-              <strong>대기 중</strong> 작품을 선택하고 메타데이터를 입력한 후  
-              <strong>‘작품 업로드’</strong>를 누르면, 이미지와 <span class="mono">works.json</span>이 자동 업데이트됩니다.
-            </div>
-          </div>
-        </section>
-
-        <!-- III. DCAR 안내 (구조는 유지, 코드 변경 없음) -->
-        <section class="panel" id="panel-dcar">
-          <h2><strong>III.</strong> DCAR 미학 보고서 — 구조 유지 안내</h2>
-          <p class="panel-caption">
-            DCAR 미학 보고서(텍스트, PDF, 마크다운 등)는 기존 구조를 <strong>그대로 유지</strong>합니다.<br>
-            이 Admin Ω.29는 <strong>작품(Works)만</strong> 자동 관리하며, DCAR 파일들은 수정하거나 재구성하지 않습니다.
-          </p>
-          <div class="status-bar status-neutral">
-            <div class="status-icon">📚</div>
-            <div>
-              <strong>고정 규칙</strong>  
-              · DCAR-01 ~ DCAR-09 및 이후 보고서들의 <strong>텍스트와 파일 구조는 절대 변경하지 않음</strong>  
-              · Index(Homepage)는 기존 DCAR 로딩 스크립트를 그대로 사용  
-              · Admin에서 DCAR 관련 자동 편집 기능은 제공하지 않고, 필요 시 수동 커밋으로만 관리
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer>
-        <div>© 등작 燈酌 DUNGZAK CESTLAVIE · <span class="emph">Works Admin Ω.29 v52</span></div>
-        <div>Orchestrated with Lumera — Light · Memory · Being.</div>
-      </footer>
+<div class="shell">
+  <header>
+    <h1>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.29</h1>
+    <h2>Works(100) 자동 관리 · DCAR 보고서 파일은 그대로 유지 · GitHub Pages 연동</h2>
+    <div class="pill-row">
+      <div class="pill"><span class="emoji">⚙️</span><span>AUTO GITHUB MANAGER</span></div>
+      <div class="pill"><span class="emoji">🖼️</span><span>WORKS JSON 구조 고정</span></div>
+      <div class="pill"><span class="emoji">📑</span><span>DCAR REPORTS · UNTOUCHED</span></div>
     </div>
-  </div>
+    <div class="tab-row" aria-label="Admin Tabs">
+      <button class="tab active" type="button" id="tabWorks">Works</button>
+      <button class="tab" type="button" id="tabDCAR">DCAR (고정)</button>
+    </div>
+  </header>
 
-  <!-- 스크립트 -->
-  <script>
-  /********************************************
-   * 공통 유틸
-   ********************************************/
-  const $ = (id) => document.getElementById(id);
+  <!-- I. GitHub 연결 설정 -->
+  <section class="panel" id="githubPanel">
+    <h3>I. GITHUB 연결 설정</h3>
+    <small>
+      아래 값은 브라우저 <strong>localStorage</strong>에만 저장됩니다. 서버로 전송되지 않습니다.
+      한 번 저장하면 이후에는 다시 입력할 필요가 없습니다.
+    </small>
 
-  function setStatus(el, kind, icon, message){
-    el.classList.remove("status-ok","status-error","status-neutral");
-    if(kind === "ok") el.classList.add("status-ok");
-    else if(kind === "error") el.classList.add("status-error");
-    else el.classList.add("status-neutral");
-    el.querySelector(".status-icon").textContent = icon;
-    el.querySelector("div:nth-child(2)").innerHTML = message;
-  }
+    <div class="field">
+      <label for="githubOwner">GitHub Owner</label>
+      <input id="githubOwner" autocomplete="off" placeholder="예: dungzakcestlavie" />
+    </div>
 
-  // UTF-8 문자열을 base64로 인코딩
-  function encodeBase64(str){
-    return btoa(unescape(encodeURIComponent(str)));
-  }
-  // base64 → UTF-8
-  function decodeBase64(str){
-    return decodeURIComponent(escape(atob(str)));
-  }
+    <div class="field">
+      <label for="githubRepo">Repository</label>
+      <input id="githubRepo" autocomplete="off" placeholder="예: dungzakcestlavie.github.io" />
+    </div>
 
-  /********************************************
-   * GitHub 설정 로드/저장
-   ********************************************/
-  const LS_KEY = "dungzak_admin_github";
+    <div class="field">
+      <label for="githubBranch">Branch</label>
+      <input id="githubBranch" autocomplete="off" value="main" />
+    </div>
 
-  function loadSettings(){
+    <div class="field">
+      <label for="githubToken">Personal Access Token (github_pat_…)</label>
+      <input id="githubToken" autocomplete="off" placeholder="github_pat_ 로 시작하는 토큰을 입력하세요" />
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" type="button" id="saveSettingsBtn">설정 저장</button>
+      <button class="btn" type="button" id="loadSettingsBtn">불러오기</button>
+      <button class="btn btn-danger" type="button" id="resetSettingsBtn">초기화</button>
+    </div>
+
+    <div class="hint">
+      <span class="hint-emoji">ℹ️</span>
+      <span>
+        GitHub 토큰에는 <strong>repo &gt; contents: read/write</strong> 권한만 있으면 됩니다.<br>
+        설정을 저장한 뒤 아래에서 작품 업로드를 진행해 주세요.
+      </span>
+    </div>
+
+    <div id="settingsStatus" class="status"></div>
+  </section>
+
+  <!-- II. 작품 업로드 · 메타데이터 자동 관리 -->
+  <section class="panel" id="worksPanel">
+    <h3>II. 작품 업로드 · 메타데이터 자동 관리</h3>
+    <small>
+      한 번에 1점씩 업로드합니다. 이미지는 <code>/images/zoom/DZ-XXX.jpg</code>로 저장되고,
+      <code>data/works.json</code>에 자동으로 추가됩니다.
+    </small>
+
+    <div class="divider-label">1 · 작품 이미지 파일</div>
+    <div class="field">
+      <label for="workFile">작품 이미지 (권장 3000px 이상 JPG)</label>
+      <input id="workFile" type="file" accept="image/jpeg,image/jpg,image/png" />
+    </div>
+
+    <div class="divider-label">2 · 기본 메타데이터</div>
+    <div class="field">
+      <label for="workSection">섹션 이름 (예: I 우리를 위해 기도해 주세요 · Pray for Us)</label>
+      <input id="workSection" autocomplete="off" />
+    </div>
+
+    <div class="field-inline">
+      <div class="field">
+        <label for="workTitleKr">제목 (KR)</label>
+        <input id="workTitleKr" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="workTitleEn">Title (EN)</label>
+        <input id="workTitleEn" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="field-inline">
+      <div class="field">
+        <label for="workYear">연도 (Year)</label>
+        <input id="workYear" autocomplete="off" placeholder="예: 2025" />
+      </div>
+      <div class="field">
+        <label for="workSize">사이즈 (Size)</label>
+        <input id="workSize" autocomplete="off" placeholder="예: 162.2×130.3cm" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="workMaterial">재료 / Material</label>
+      <input id="workMaterial" autocomplete="off" placeholder="예: acrylic on canvas" />
+    </div>
+
+    <div class="field">
+      <label for="workNote">추가 메모 (선택)</label>
+      <textarea id="workNote" placeholder="전시 정보, 시리즈명, 비고 등"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" type="button" id="uploadWorkBtn">작품 업로드</button>
+    </div>
+
+    <div class="hint">
+      <span class="hint-emoji">📡</span>
+      <span>
+        업로드 시 Admin이 자동으로 다음 ID를 계산하여 <code>DZ-XXX</code> 파일명을 만들고,
+        <code>data/works.json</code> 끝에 항목을 추가합니다.<br>
+        DCAR 보고서 파일(<code>reports/</code>)은 절대 수정하지 않습니다.
+      </span>
+    </div>
+
+    <div id="uploadStatus" class="status"></div>
+  </section>
+
+  <!-- DCAR 탭 내용 (지금은 안내만) -->
+  <section class="panel" id="dcarPanel" style="display:none;">
+    <h3>DCAR REPORTS · UNTOUCHED</h3>
+    <small>
+      이 영역에서는 DCAR 미학 보고서 파일을 <strong>조회만</strong> 합니다.
+      Admin Ω.29에서는 보고서 원문을 변경하지 않고, 파일 구조를 그대로 유지합니다.
+    </small>
+    <p style="margin-top:10px;font-size:12px;color:var(--sub);line-height:1.6;">
+      DCAR-01 ~ DCAR-10 전체 텍스트는 GitHub 저장소의 <code>/reports</code> 및
+      <code>/data/reports.json</code>에 보존됩니다. 향후 버전에서 조회·다운로드 전용
+      뷰어가 추가될 수 있지만, 자동 수정 기능은 포함되지 않습니다.
+    </p>
+  </section>
+</div>
+
+<script>
+  // ---- 공통 ----
+  const qs = (sel) => document.querySelector(sel);
+
+  // ---- 탭 전환 ----
+  const tabWorks = qs('#tabWorks');
+  const tabDCAR  = qs('#tabDCAR');
+  const worksPanel = qs('#worksPanel');
+  const dcarPanel  = qs('#dcarPanel');
+
+  tabWorks.addEventListener('click', () => {
+    tabWorks.classList.add('active');
+    tabDCAR.classList.remove('active');
+    worksPanel.style.display = '';
+    dcarPanel.style.display = 'none';
+  });
+  tabDCAR.addEventListener('click', () => {
+    tabDCAR.classList.add('active');
+    tabWorks.classList.remove('active');
+    worksPanel.style.display = 'none';
+    dcarPanel.style.display = '';
+  });
+
+  // ---- GitHub 설정 ----
+  const STORAGE_KEY = 'dz_admin_github_settings_v3';
+
+  const ownerInput  = qs('#githubOwner');
+  const repoInput   = qs('#githubRepo');
+  const branchInput = qs('#githubBranch');
+  const tokenInput  = qs('#githubToken');
+  const settingsStatus = qs('#settingsStatus');
+
+  function loadSettings(showMessage = false){
     try{
-      const raw = localStorage.getItem(LS_KEY);
-      if(!raw) return;
-      const cfg = JSON.parse(raw);
-      $("ghOwner").value  = cfg.owner || "";
-      $("ghRepo").value   = cfg.repo || "";
-      $("ghBranch").value = cfg.branch || "main";
-      $("ghToken").value  = cfg.token || "";
-      setStatus($("status-settings"), "ok", "✅",
-        "<strong>완료</strong> 저장된 GitHub 설정을 불러왔습니다.");
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        if(showMessage){
+          settingsStatus.textContent = '저장된 설정이 없습니다.';
+          settingsStatus.className = 'status';
+        }
+        return;
+      }
+      const s = JSON.parse(raw);
+      ownerInput.value  = s.owner || '';
+      repoInput.value   = s.repo || '';
+      branchInput.value = s.branch || 'main';
+      tokenInput.value  = s.token || '';
+      if(showMessage){
+        settingsStatus.textContent = '저장된 설정을 불러왔습니다.';
+        settingsStatus.className = 'status ok';
+      }
     }catch(e){
       console.error(e);
+      if(showMessage){
+        settingsStatus.textContent = '설정을 불러오는 중 오류가 발생했습니다.';
+        settingsStatus.className = 'status err';
+      }
     }
   }
 
   function saveSettings(){
-    const owner  = $("ghOwner").value.trim();
-    const repo   = $("ghRepo").value.trim();
-    const branch = $("ghBranch").value.trim() || "main";
-    const token  = $("ghToken").value.trim();
+    const owner  = ownerInput.value.trim();
+    const repo   = repoInput.value.trim();
+    const branch = branchInput.value.trim() || 'main';
+    const token  = tokenInput.value.trim();
 
     if(!owner || !repo || !branch || !token){
-      setStatus($("status-settings"), "error", "⚠️",
-        "<strong>오류</strong> Owner / Repository / Branch / Token을 모두 입력해 주세요.");
+      settingsStatus.textContent = '모든 항목을 입력해 주세요.';
+      settingsStatus.className = 'status err';
       return;
     }
-
-    const cfg = {owner, repo, branch, token};
-    localStorage.setItem(LS_KEY, JSON.stringify(cfg));
-    setStatus($("status-settings"), "ok", "✅",
-      "<strong>저장됨</strong> GitHub 설정이 브라우저에 안전하게 저장되었습니다.");
+    const data = {owner, repo, branch, token};
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    settingsStatus.textContent = 'GitHub 설정이 저장되었습니다.';
+    settingsStatus.className = 'status ok';
   }
 
   function resetSettings(){
-    localStorage.removeItem(LS_KEY);
-    $("ghOwner").value  = "";
-    $("ghRepo").value   = "";
-    $("ghBranch").value = "main";
-    $("ghToken").value  = "";
-    setStatus($("status-settings"), "neutral", "ℹ️",
-      "<strong>초기화</strong> GitHub 설정이 모두 삭제되었습니다. 다시 입력해 주세요.");
+    localStorage.removeItem(STORAGE_KEY);
+    ownerInput.value = '';
+    repoInput.value = '';
+    branchInput.value = 'main';
+    tokenInput.value = '';
+    settingsStatus.textContent = '설정을 초기화했습니다.';
+    settingsStatus.className = 'status';
   }
 
-  $("btnSaveSettings").addEventListener("click", saveSettings);
-  $("btnLoadSettings").addEventListener("click", loadSettings);
-  $("btnResetSettings").addEventListener("click", resetSettings);
+  qs('#saveSettingsBtn').addEventListener('click', saveSettings);
+  qs('#loadSettingsBtn').addEventListener('click', () => loadSettings(true));
+  qs('#resetSettingsBtn').addEventListener('click', resetSettings);
 
-  // 초기 로드
-  loadSettings();
+  // 초기 자동 로드 (메시지는 표시하지 않음)
+  loadSettings(false);
 
-  /********************************************
-   * GitHub API 래퍼
-   ********************************************/
-  function getConfig(){
-    const raw = localStorage.getItem(LS_KEY);
+  // ---- GitHub API 유틸 ----
+  function getCurrentSettings(){
+    const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return null;
-    try{return JSON.parse(raw);}catch(e){return null;}
+    try{
+      return JSON.parse(raw);
+    }catch(e){
+      console.error(e);
+      return null;
+    }
   }
 
-  async function ghFetch(path, options = {}){
-    const cfg = getConfig();
-    if(!cfg){
-      throw new Error("GitHub 설정을 먼저 저장해 주세요.");
-    }
-    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/${path}`;
-    const headers = {
-      "Accept":"application/vnd.github+json",
-      "Authorization":`Bearer ${cfg.token}`
-    };
-    if(options.method && options.method !== "GET"){
-      headers["Content-Type"] = "application/json";
-    }
-    const res = await fetch(url, {...options, headers});
+  async function githubRequest(path, options = {}){
+    const settings = getCurrentSettings();
+    if(!settings) throw new Error('GitHub 설정이 비어 있습니다.');
+
+    const {owner, repo, branch, token} = settings;
+    const base = `https://api.github.com/repos/${owner}/${repo}`;
+    const url = `${base}${path}`;
+
+    const headers = Object.assign({
+      'Accept':'application/vnd.github+json',
+      'Authorization':`Bearer ${token}`,
+    }, options.headers || {});
+
+    const res = await fetch(url, {
+      method: options.method || 'GET',
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+
     if(!res.ok){
       const text = await res.text();
-      throw new Error(\`GitHub 오류 (\${res.status}) : \${text}\`);
+      throw new Error(`GitHub API 오류 (${res.status}): ${text}`);
     }
     return res.json();
   }
 
-  /********************************************
-   * works.json 헬퍼
-   * 구조:
-   * {
-   *   "I 우리를 위해 기도해 주세요 · Pray for Us": [ {..작품..}, ... ],
-   *   "II 인간 · Human Being": [],
-   *   ...
-   * }
-   ********************************************/
-  const SECTION_KEYS = [
-    "I 우리를 위해 기도해 주세요 · Pray for Us",
-    "II 인간 · Human Being",
-    "III 정신의 재탄생 · Rebirth of Mind",
-    "IV 존재의 회복 · Restoration of Being",
-    "V 빛의 초의식 · Metaconsciousness of Light"
-  ];
+  // ---- 작품 업로드 ----
+  const uploadBtn    = qs('#uploadWorkBtn');
+  const uploadStatus = qs('#uploadStatus');
 
-  async function loadWorksJson(){
-    try{
-      const data = await ghFetch("contents/data/works.json");
-      const jsonStr = decodeBase64(data.content);
-      const parsed = JSON.parse(jsonStr);
-      return {json: parsed, sha: data.sha};
-    }catch(e){
-      // 파일이 없으면 기본 구조로 새로 생성
-      const base = {};
-      SECTION_KEYS.forEach(k => base[k] = []);
-      return {json: base, sha: null};
+  async function uploadWork(){
+    const fileInput = qs('#workFile');
+    const file = fileInput.files[0];
+
+    const section  = qs('#workSection').value.trim();
+    const titleKr  = qs('#workTitleKr').value.trim();
+    const titleEn  = qs('#workTitleEn').value.trim();
+    const year     = qs('#workYear').value.trim();
+    const size     = qs('#workSize').value.trim();
+    const material = qs('#workMaterial').value.trim();
+    const note     = qs('#workNote').value.trim();
+
+    uploadStatus.className = 'status';
+    uploadStatus.textContent = '';
+
+    if(!getCurrentSettings()){
+      uploadStatus.textContent = '먼저 GitHub 설정을 저장해 주세요.';
+      uploadStatus.className = 'status err';
+      return;
     }
-  }
-
-  function getNextIdFromWorks(worksJson){
-    let max = 0;
-    for(const key of Object.keys(worksJson)){
-      const arr = worksJson[key] || [];
-      arr.forEach(w=>{
-        const m = String(w.id || "").match(/DZ-(\d+)/);
-        if(m){
-          const num = parseInt(m[1],10);
-          if(num > max) max = num;
-        }
-      });
+    if(!file){
+      uploadStatus.textContent = '업로드할 작품 이미지를 선택해 주세요.';
+      uploadStatus.className = 'status err';
+      return;
     }
-    const next = max + 1;
-    return "DZ-" + String(next).padStart(3,"0");
-  }
-
-  async function refreshNextIdPreview(){
-    try{
-      const {json} = await loadWorksJson();
-      const nextId = getNextIdFromWorks(json);
-      $("nextIdPreview").textContent = nextId + ".jpg";
-    }catch(e){
-      console.error(e);
-      $("nextIdPreview").textContent = "DZ-???";
+    if(!section || !titleKr || !year){
+      uploadStatus.textContent = '섹션, 제목(한글), 연도는 필수입니다.';
+      uploadStatus.className = 'status err';
+      return;
     }
-  }
-  refreshNextIdPreview();
-
-  /********************************************
-   * 이미지 파일 → base64 (본문만)
-   ********************************************/
-  function fileToBase64(file){
-    return new Promise((resolve,reject)=>{
-      const reader = new FileReader();
-      reader.onload = () => {
-        const res = reader.result;
-        const base64 = String(res).split(",")[1]; // data:*/*;base64, 이후 부분
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  /********************************************
-   * 작품 업로드 메인 로직
-   ********************************************/
-  let isUploading = false;
-
-  $("btnUploadWork").addEventListener("click", async () => {
-    if(isUploading) return;
-    isUploading = true;
-
-    const statusEl = $("status-works");
-    setStatus(statusEl, "neutral", "🌘",
-      "<strong>진행 중</strong> GitHub에 이미지와 works.json을 업로드하고 있습니다...");
 
     try{
-      const cfg = getConfig();
-      if(!cfg) throw new Error("먼저 GitHub 설정을 저장해 주세요.");
+      uploadBtn.disabled = true;
+      uploadStatus.textContent = '현재 ID 확인 중…';
+      const settings = getCurrentSettings();
+      const branch   = settings.branch || 'main';
 
-      const file = $("workFile").files[0];
-      if(!file) throw new Error("작품 이미지 파일을 선택해 주세요.");
-
-      const sectionKey = $("workSection").value;
-      const titleKo = $("titleKo").value.trim();
-      const titleEn = $("titleEn").value.trim();
-      const materialKo = $("materialKo").value.trim();
-      let materialEn = $("materialEn").value.trim();
-      const sizeKo = $("sizeKo").value.trim();
-      const sizeEn = $("sizeEn").value.trim();
-      const year = $("year").value.trim();
-      const note = $("note").value.trim();
-
-      if(!titleKo || !titleEn || !materialKo || !materialEn || !sizeKo || !sizeEn || !year){
-        throw new Error("작품명, 재료, 크기, 제작연도를 모두 입력해 주세요.");
+      // 1) works.json 읽기 (없으면 빈 배열)
+      let works = [];
+      let worksSha = null;
+      try{
+        const data = await githubRequest(`/contents/data/works.json?ref=${encodeURIComponent(branch)}`);
+        worksSha = data.sha;
+        const content = atob(data.content.replace(/\n/g,''));
+        works = JSON.parse(content);
+        if(!Array.isArray(works)){ works = []; }
+      }catch(e){
+        // 404인 경우 새로 생성
+        console.warn('works.json을 새로 생성합니다.', e.message);
+        works = [];
+        worksSha = null;
       }
 
-      // material_en은 항상 소문자로
-      materialEn = materialEn.toLowerCase();
+      // 2) 다음 ID 계산
+      let maxId = 0;
+      for(const w of works){
+        if(!w.id) continue;
+        const n = parseInt(String(w.id).replace(/[^0-9]/g,''),10);
+        if(!isNaN(n) && n>maxId) maxId = n;
+      }
+      const nextNum = maxId + 1;
+      const idStr = String(nextNum).padStart(3,'0');
+      const workId = `DZ-${idStr}`;
+      const filename = `${workId}.jpg`;
 
-      // 1) 기존 works.json 불러오기 및 다음 ID 계산
-      const {json: worksJson, sha: worksSha} = await loadWorksJson();
-      const nextId = getNextIdFromWorks(worksJson);
-      const fileName = \`\${nextId}.jpg\`;
-      const imagePath = \`images/zoom/\${fileName}\`;
+      uploadStatus.textContent = `새 ID: ${workId} · 이미지 업로드 중…`;
 
-      // 2) 이미지 GitHub 업로드
-      const imgBase64 = await fileToBase64(file);
-      await ghFetch(\`contents/\${imagePath}\`,{
-        method:"PUT",
-        body:JSON.stringify({
-          message:\`Add image \${fileName}\`,
-          content:imgBase64,
-          branch:cfg.branch
-        })
+      // 3) 파일 Base64 인코딩
+      const fileBase64 = await new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          const base64 = String(result).split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = err => reject(err);
+        reader.readAsDataURL(file);
       });
 
-      // 3) works.json 갱신
-      if(!worksJson[sectionKey]) worksJson[sectionKey] = [];
+      // 4) 이미지 업로드
+      const imgPath = `images/zoom/${filename}`;
+      await githubRequest(`/contents/${encodeURIComponent(imgPath)}`, {
+        method:'PUT',
+        body:{
+          message:`Add image ${filename}`,
+          content:fileBase64,
+          branch
+        }
+      });
 
+      uploadStatus.textContent = `이미지 업로드 완료 · works.json 업데이트 중…`;
+
+      // 5) works.json 업데이트
       const newWork = {
-        id: nextId,
-        title_kr: titleKo,
+        id: workId,
+        section,
+        title_kr: titleKr,
         title_en: titleEn,
-        material_ko: materialKo,
-        material_en: materialEn,
-        size_ko: sizeKo,
-        size_en: sizeEn,
-        year: year,
-        image: \`/\${imagePath}\`,
-        zoom: \`/\${imagePath}\`,
-        note: note
+        year,
+        size,
+        material,
+        note,
+        image: `/${imgPath}`
       };
+      works.push(newWork);
 
-      worksJson[sectionKey].push(newWork);
+      const newWorksContent = btoa(unescape(encodeURIComponent(JSON.stringify(works, null, 2))));
 
-      const newJsonStr = JSON.stringify(worksJson,null,2);
-      const encoded = encodeBase64(newJsonStr);
-
-      const body = {
-        message:\`Update works.json — add \${nextId}\`,
-        content: encoded,
-        branch: cfg.branch
+      const worksBody = {
+        message:`Add work ${workId}`,
+        content:newWorksContent,
+        branch
       };
-      if(worksSha) body.sha = worksSha;
+      if(worksSha){
+        worksBody.sha = worksSha;
+      }
 
-      await ghFetch("contents/data/works.json",{
-        method:"PUT",
-        body:JSON.stringify(body)
+      await githubRequest(`/contents/data/works.json`, {
+        method:'PUT',
+        body:worksBody
       });
 
-      setStatus(statusEl,"ok","✨",
-        "<strong>완료</strong> 작품이 성공적으로 업로드되었습니다.<br>" +
-        "· ID: <span class='mono'>" + nextId + "</span><br>" +
-        "· 이미지: <span class='mono'>/" + imagePath + "</span><br>" +
-        "· 섹션: " + sectionKey + "<br><br>" +
-        "GitHub Pages 빌드가 완료되면 홈페이지 Works에 자동 반영됩니다.");
+      uploadStatus.textContent =
+        `업로드 완료: ${workId}\n이미지와 메타데이터가 GitHub에 저장되었습니다.`;
+      uploadStatus.className = 'status ok';
 
-      // 폼 초기화 일부
-      $("workFile")..value = "";
-      $("titleKo").value = "";
-      $("titleEn").value = "";
-      $("materialKo").value = "";
-      $("materialEn").value = "";
-      $("sizeKo").value = "";
-      $("sizeEn").value = "";
-      $("note").value = "";
+      // 입력값 초기화 (섹션은 유지)
+      fileInput.value = '';
+      qs('#workTitleKr').value = '';
+      qs('#workTitleEn').value = '';
+      qs('#workYear').value = '';
+      qs('#workSize').value = '';
+      qs('#workMaterial').value = '';
+      qs('#workNote').value = '';
 
-      refreshNextIdPreview();
     }catch(err){
       console.error(err);
-      setStatus($("status-works"),"error","⚠️",
-        "<strong>업로드 실패</strong> " + (err.message || err));
+      uploadStatus.textContent = `업로드 중 오류가 발생했습니다:\n${err.message}`;
+      uploadStatus.className = 'status err';
     }finally{
-      isUploading = false;
+      uploadBtn.disabled = false;
     }
-  });
+  }
 
-  /********************************************
-   * Dry Run: 실제 업로드 없이 JSON 구조 미리보기
-   ********************************************/
-  $("btnDryRun").addEventListener("click", async () => {
-    const statusEl = $("status-works");
-    try{
-      const {json} = await loadWorksJson();
-      const nextId = getNextIdFromWorks(json);
-
-      const sectionKey = $("workSection").value;
-      const titleKo = $("titleKo").value.trim() || "우리를 위해 기도해 주세요";
-      const titleEn = $("titleEn").value.trim() || "Pray for Us";
-      const materialKo = $("materialKo").value.trim() || "캔버스에 아크릴";
-      const sizeKo = $("sizeKo").value.trim() || "162.2 × 130.3 cm";
-      const sizeEn = $("sizeEn").value.trim() || "162.2 × 130.3 cm";
-      const year = $("year").value.trim() || "2025";
-
-      const materialEn = ( $("materialEn").value.trim() || "acrylic on canvas" ).toLowerCase();
-
-      const sample = {
-        id: nextId,
-        title_kr: titleKo,
-        title_en: titleEn,
-        material_ko: materialKo,
-        material_en: materialEn,
-        size_ko: sizeKo,
-        size_en: sizeEn,
-        year: year,
-        image: "/images/zoom/" + nextId + ".jpg",
-        zoom: "/images/zoom/" + nextId + ".jpg"
-      };
-
-      const escaped = JSON.stringify(sample,null,2)
-        .replace(/</g,"&lt;").replace(/>/g,"&gt;");
-
-      setStatus(statusEl,"neutral","🔎",
-        "<strong>Dry Run</strong> 실제 업로드 없이 구조만 미리 봅니다.<br>" +
-        "섹션: " + sectionKey + "<br>" +
-        "추가될 객체 예시:<br>" +
-        "<span class='mono'>" + escaped + "</span>");
-    }catch(err){
-      console.error(err);
-      setStatus(statusEl,"error","⚠️",
-        "<strong>미리보기 실패</strong> " + (err.message || err));
-    }
-  });
-
-  /********************************************
-   * 탭 UI (지금은 Works만)
-   ********************************************/
-  $("tab-works").addEventListener("click", ()=>{
-    $("tab-works").classList.add("active");
-  });
-  </script>
+  uploadBtn.addEventListener('click', uploadWork);
+</script>
 </body>
 </html>

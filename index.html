@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,19 +14,18 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.13" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.14" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
-  <!-- 데이터 프리로드 (Works / Reports) -->
-  <link rel="preload" as="fetch" href="/data/works.json" crossorigin="anonymous">
+  <!-- 데이터 프리로드 (Reports) : Works는 진입 시점에만 로드 -->
   <link rel="preload" as="fetch" href="/reports/reports.json" crossorigin="anonymous">
 
   <!-- Favicon (임시 이모지) -->
@@ -536,7 +535,7 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.13</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.14</div>
 
     <nav class="primary" aria-label="Primary">
       <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
@@ -848,6 +847,8 @@ const $  = (q, root) => (root || document).querySelector(q);
   const sections = ['poem','works','reports'];
 
   function showSection(id){
+    if(!sections.includes(id)) id = 'poem';
+
     sections.forEach(secId => {
       const el = document.getElementById(secId);
       if(!el) return;
@@ -860,16 +861,24 @@ const $  = (q, root) => (root || document).querySelector(q);
       if(active) btn.setAttribute('aria-current','page');
       else btn.removeAttribute('aria-current');
     });
+
+    // 섹션 변경 이벤트 → Works/Reports 쪽에서 필요 시점에만 데이터 로딩
+    document.dispatchEvent(new CustomEvent('dz-section-change', { detail: id }));
   }
 
   $$('nav.primary button[data-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.getAttribute('data-target');
-      if(target) showSection(target);
+      if(target) {
+        history.replaceState(null, '', '#' + target); // 해시 동기화
+        showSection(target);
+      }
     });
   });
 
-  showSection('poem'); // default
+  const hash = (location.hash || '').replace('#','');
+  const initial = ['poem','works','reports'].includes(hash) ? hash : 'poem';
+  showSection(initial);
 
   const bioTab = $('#tab-bio');
   if(bioTab){
@@ -1004,7 +1013,9 @@ const $  = (q, root) => (root || document).querySelector(q);
   window.addEventListener('resize', resize, { passive:true });
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive:true });
+  window.addEventListener('mousemove', e => {
+    tx = e.clientX; ty = e.clientY;
+  }, { passive:true });
   window.addEventListener('touchmove', e => {
     const p = e.touches[0];
     tx = p.clientX; ty = p.clientY;
@@ -1108,7 +1119,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid) — Ω.13 Fast: 초기 1섹션 렌더 + 필요시 렌더
+// Works Loader (JSON → Grid) — Ω.14 : Works 섹션 진입 시점에만 로딩
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1131,6 +1142,7 @@ window.DZ_BIO = (function(){
   const renderState = {
     pray:false, human:false, rebirth:false, exist:false, cosmos:false
   };
+  let initialTriggered = false;
 
   function fetchJSON(url){
     return fetch(url).then(r => {
@@ -1219,7 +1231,7 @@ window.DZ_BIO = (function(){
     const host = PANELS[key];
     if(!host) return;
 
-    if(renderState[key] && !force) return; // 이미 렌더된 경우, 강제 요청 아니면 skip
+    if(renderState[key] && !force) return;
 
     const worksObj = await getWorks();
     const sectionName = SECTION_KEYS[key];
@@ -1236,40 +1248,45 @@ window.DZ_BIO = (function(){
     renderState[key] = true;
   }
 
-  async function renderInitial(){
-    // 초기에는 'pray' 섹션만 렌더해서 첫 화면 속도 최적화
-    await renderPanel('pray', true);
+  // 언어 변경 시 이미 렌더된 섹션만 재렌더
+  document.addEventListener('dz-lang-change', () => {
+    if(!worksCache) return;
+    Object.keys(renderState).forEach(key => {
+      if(renderState[key]) renderPanel(key, true);
+    });
+  });
+
+  // Works 섹션으로 처음 진입할 때에만 초기 pray 섹션 로딩
+  document.addEventListener('dz-section-change', e => {
+    if(e.detail === 'works' && !initialTriggered){
+      initialTriggered = true;
+      renderPanel('pray', false);
+    }
+  });
+
+  // Works 내부 탭 전환 시 해당 섹션만 추가 로딩
+  $$('.tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('.tabs .tab').forEach(x => x.classList.remove('active'));
+      tab.classList.add('active');
+
+      $$('.tabpanel').forEach(p => p.classList.remove('active'));
+      const panelKey = tab.getAttribute('data-panel');
+      const panelId  = 'panel-' + panelKey;
+      const panelEl  = document.getElementById(panelId);
+      if(panelEl) panelEl.classList.add('active');
+
+      if(panelKey && !renderState[panelKey]){
+        renderPanel(panelKey, false);
+      }
+    });
+  });
+
+  // 만약 해시가 #works인 상태로 바로 진입하면 즉시 한 번 렌더
+  if((location.hash || '').replace('#','') === 'works'){
+    initialTriggered = true;
+    renderPanel('pray', false);
   }
-
-  (function init(){
-    renderInitial();
-
-    // 언어 바뀌면, 이미 렌더된 섹션만 재렌더 (불필요한 작업 최소화)
-    document.addEventListener('dz-lang-change', () => {
-      if(!worksCache) return;
-      Object.keys(renderState).forEach(key => {
-        if(renderState[key]) renderPanel(key, true);
-      });
-    });
-
-    // 탭 전환 시 해당 섹션이 아직 렌더 안 되어 있으면 그때 렌더
-    $$('.tabs .tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        $$('.tabs .tab').forEach(x => x.classList.remove('active'));
-        tab.classList.add('active');
-
-        $$('.tabpanel').forEach(p => p.classList.remove('active'));
-        const panelKey = tab.getAttribute('data-panel');
-        const panelId  = 'panel-' + panelKey;
-        const panelEl  = document.getElementById(panelId);
-        if(panelEl) panelEl.classList.add('active');
-
-        if(panelKey && !renderState[panelKey]){
-          renderPanel(panelKey, false);
-        }
-      });
-    });
-  })();
 })();
 
 // =========================

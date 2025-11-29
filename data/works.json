@@ -303,7 +303,21 @@
 }
 
   ],
-  "Human Being": [],
+  "Human Being": [{
+  "id": "DZ-021",
+  "section_id": 2,
+  "section_kr": "II 인간",
+  "section_en": "Human Being",
+  "title_kr": "하루하루",
+  "title_en": "day after day",
+  "material_kr": "캔버스에 오일스틱, 아크릴",
+  "material_en": "oil stick, acrylic on canvas",
+  "size_kr": "72.7 x 90.9 cm",
+  "size_en": "72.7 x 90.9 cm",
+  "year": 2025,
+  "image": "images/standard/DZ-021.jpg",
+  "zoom": "images/zoom/DZ-021.jpg"
+}],
   "Rebirth of Mind": [],
   "Restoration of Being": [],
   "Metaconsciousness of Light": []

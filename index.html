@@ -1,9 +1,7 @@
-<!doctype html>
-<html lang="ko" translate="no">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,15 +12,15 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.14" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.15" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- Favicon (임시 이모지) -->
@@ -57,8 +55,8 @@
 
   /* canvases */
   #waves,#trail{position:fixed;inset:0;pointer-events:none}
-  #waves{z-index:0;opacity:.48}
-  #trail{z-index:1;opacity:.70;mix-blend-mode:screen}
+  #waves{z-index:0;opacity:.45}
+  #trail{z-index:1;opacity:.65;mix-blend-mode:screen}
 
   /* header = 메인 콘솔 바 */
   header{
@@ -532,7 +530,7 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.14</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.15</div>
 
     <nav class="primary" aria-label="Primary">
       <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
@@ -737,10 +735,10 @@
           <p>2025 Walking with Art in Iksan, Republic of Korea</p>
           <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
           <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Republic of Korea</p>
-          <p>2022 Two-person Exhibition (Kim Young-woo & DUNGZAK CESTLAVIE), Artem Gallery, Seoul</p>
+          <p>2022 Two-person Exhibition (Kim Young-woo &amp; DUNGZAK CESTLAVIE), Artem Gallery, Seoul</p>
           <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
           <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
-          <p>2000 Two-person Exhibition (José Delgado & DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
+          <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
           <br><p><strong>Collections</strong></p>
           <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland;
 Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); 
@@ -888,7 +886,8 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves & Cursor Trail (연산 축소 버전)
+// Background Waves & Cursor Trail
+// (연산량 크게 줄인 Ω.15 버전)
 // =========================
 (function(){
   const prefersReduced =
@@ -917,6 +916,8 @@ const $  = (q, root) => (root || document).querySelector(q);
   let tx = px;
   let ty = py;
   let visible = true;
+  let lastTime = 0;
+  const FRAME_INTERVAL = 1000 / 42; // 약 42fps로 제한 (연산량 감소)
 
   function resize(){
     DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -928,18 +929,19 @@ const $  = (q, root) => (root || document).querySelector(q);
     });
   }
 
-  function waveY(x, k, t){
-    const f1 = 0.003 + k*0.0007;
-    const f2 = 0.006 + k*0.0006;
-    const a1 = 26 + k*12;
-    const a2 = 14 + k*8;
-    const dr = t * (0.75 + k*0.15);
-    const base = window.innerHeight*0.30 + k*108 + Math.sin(t*0.5 + k)*12;
+  // 파동 3개, x 간격 14px → 연산량 감소
+  function waveY(x, bandIndex, t){
+    const f1 = 0.003 + bandIndex*0.0006;
+    const f2 = 0.005 + bandIndex*0.0005;
+    const a1 = 22 + bandIndex*10;
+    const a2 = 12 + bandIndex*6;
+    const drift = t * (0.7 + bandIndex*0.15);
+    const base = window.innerHeight*0.30 + bandIndex*110 + Math.sin(t*0.45 + bandIndex)*10;
     const u = x / window.innerWidth;
-    const curve = 0.9 + (u*u*(3-2*u))*0.2;
+    const curve = 0.9 + (u*u*(3-2*u))*0.18;
     return base
-      + Math.sin(x*f1 + dr*1.1 + Math.sin(dr*0.7 + k)*0.25)*a1*curve
-      + Math.sin(x*f2 + dr*0.85)*a2;
+      + Math.sin(x*f1 + drift*1.05 + Math.sin(drift*0.65 + bandIndex)*0.24)*a1*curve
+      + Math.sin(x*f2 + drift*0.82)*a2;
   }
 
   function frame(now){
@@ -948,55 +950,61 @@ const $  = (q, root) => (root || document).querySelector(q);
       return;
     }
 
+    if(now - lastTime < FRAME_INTERVAL){
+      requestAnimationFrame(frame);
+      return;
+    }
+    lastTime = now;
+
     const t = now * 0.001;
-    const cycle = (t % 30);
+    const cycle = (t % 24);
     let hue;
-    if(cycle < 15){
-      hue = 200 + (260-200)*(cycle/15);
-    }else if(cycle < 22.5){
-      hue = 260 + (45-260)*((cycle-15)/7.5);
+    if(cycle < 10){
+      hue = 205 + (255-205)*(cycle/10);
+    }else if(cycle < 17){
+      hue = 255 + (48-255)*((cycle-10)/7);
     }else{
-      hue = 45 + (200-45)*((cycle-22.5)/7.5);
+      hue = 48 + (205-48)*((cycle-17)/7);
     }
 
     wctx.clearRect(0,0,window.innerWidth,window.innerHeight);
 
-    // x step 6 → 10으로 줄여 GPU/CPU 연산량 감소 (시각 분위기는 유지)
-    for(let k=0; k<4; k++){
+    // 3개의 웨이브만 렌더
+    for(let k=0; k<3; k++){
       wctx.beginPath();
-      for(let x=0; x<=window.innerWidth; x+=10){
+      for(let x=0; x<=window.innerWidth; x+=14){
         const y = waveY(x,k,t);
         if(x === 0) wctx.moveTo(x,y);
         else        wctx.lineTo(x,y);
       }
       const y0 = waveY(0,k,t);
-      const g = wctx.createLinearGradient(0,y0-140,0,y0+140);
-      g.addColorStop(0,`hsla(${(hue + k*12)%360},60%,70%,.10)`);
-      g.addColorStop(0.5,'hsla(45,70%,68%,.30)');
-      g.addColorStop(1,`hsla(${(hue + 60 + k*12)%360},60%,60%,.10)`);
+      const g = wctx.createLinearGradient(0,y0-120,0,y0+120);
+      g.addColorStop(0,`hsla(${(hue + k*10)%360},60%,70%,.10)`);
+      g.addColorStop(0.5,'hsla(45,70%,68%,.26)');
+      g.addColorStop(1,`hsla(${(hue + 50 + k*10)%360},60%,60%,.08)`);
 
       wctx.strokeStyle = g;
-      wctx.lineWidth   = 1.1 + k*0.45;
-      wctx.globalAlpha = 0.9 - k*0.12;
-      wctx.shadowBlur  = 16;
-      wctx.shadowColor = 'rgba(160,200,255,.18)';
+      wctx.lineWidth   = 1 + k*0.4;
+      wctx.globalAlpha = 0.9 - k*0.15;
+      wctx.shadowBlur  = 10;
+      wctx.shadowColor = 'rgba(160,200,255,.16)';
       wctx.stroke();
     }
     wctx.globalAlpha = 1;
     wctx.shadowBlur  = 0;
 
     // Trail
-    px += (tx - px) * 0.16;
-    py += (ty - py) * 0.16;
+    px += (tx - px) * 0.18;
+    py += (ty - py) * 0.18;
     const speed = Math.hypot(tx - px, ty - py);
-    const radius = 96 + Math.min(speed*160, 240);
+    const radius = 80 + Math.min(speed*150, 210);
 
     tctx.fillStyle = 'rgba(0,0,0,.12)';
     tctx.fillRect(0,0,window.innerWidth,window.innerHeight);
 
     const grad = tctx.createRadialGradient(px,py,0, px,py,radius);
-    grad.addColorStop(0,`hsla(${hue},70%,68%,.22)`);
-    grad.addColorStop(0.55,'rgba(140,185,255,.14)');
+    grad.addColorStop(0,`hsla(${hue},70%,68%,.20)`);
+    grad.addColorStop(0.55,'rgba(140,185,255,.12)');
     grad.addColorStop(1,'rgba(140,185,255,0)');
 
     tctx.fillStyle = grad;
@@ -1230,7 +1238,7 @@ window.DZ_BIO = (function(){
     const sectionName = SECTION_KEYS[key];
     const listRaw = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
 
-    // 28점 기준: 슬라이스 없이 전체 렌더 (나중에 늘어나도 정상 동작)
+    // 28점 기준: 전체 사용 (슬라이스 없음)
     const list = listRaw;
 
     if(!list.length){
@@ -1277,8 +1285,6 @@ window.DZ_BIO = (function(){
       }
     });
   });
-
-  // 해시가 #works인 상태로 진입하면 섹션 이벤트가 이미 한 번 발생 → 별도 중복 호출 없음
 })();
 
 // =========================
@@ -1584,7 +1590,7 @@ window.DZ_BIO = (function(){
     }
   });
 
-  // 만약 해시로 바로 #reports로 진입한 경우
+  // 해시로 바로 #reports로 진입 시
   const initialHash = (location.hash || '').replace('#','');
   if(initialHash === 'reports'){
     loadData();

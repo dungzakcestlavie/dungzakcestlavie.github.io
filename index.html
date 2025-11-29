@@ -529,8 +529,7 @@
     opacity:.9;
   }
   </style>
-</head>
-<body class="korean">
+</head> <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
@@ -804,9 +803,7 @@ Numerous private collections worldwide.</p>
 
     <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">©DUNGZAK CESTLAVIE</small>
-  </footer>
-
-  <script>
+  </footer>  <script>
 // =========================
 // Shorthands
 // =========================
@@ -1111,7 +1108,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid) — Ω.13: 즉시 src 로드, 빠른 탭 전환
+// Works Loader (JSON → Grid) — Ω.13 Fast: 초기 1섹션 렌더 + 필요시 렌더
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1122,7 +1119,7 @@ window.DZ_BIO = (function(){
     cosmos : 'Metaconsciousness of Light'
   };
 
-  const panels = {
+  const PANELS = {
     pray   : $('#panel-pray'),
     human  : $('#panel-human'),
     rebirth: $('#panel-rebirth'),
@@ -1131,6 +1128,9 @@ window.DZ_BIO = (function(){
   };
 
   let worksCache = null;
+  const renderState = {
+    pray:false, human:false, rebirth:false, exist:false, cosmos:false
+  };
 
   function fetchJSON(url){
     return fetch(url).then(r => {
@@ -1215,60 +1215,58 @@ window.DZ_BIO = (function(){
     `;
   }
 
-  async function renderPanel(host, key, worksObj){
+  async function renderPanel(key, force){
+    const host = PANELS[key];
     if(!host) return;
-    const list = Array.isArray(worksObj[key]) ? worksObj[key].slice(0,20) : [];
+
+    if(renderState[key] && !force) return; // 이미 렌더된 경우, 강제 요청 아니면 skip
+
+    const worksObj = await getWorks();
+    const sectionName = SECTION_KEYS[key];
+    const list = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName].slice(0,20) : [];
 
     if(!list.length){
       host.innerHTML = `<div class="grid"></div>`;
+      renderState[key] = true;
       return;
     }
 
-    host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
+    const html = list.map(cardHTML).join('');
+    host.innerHTML = `<div class="grid">${html}</div>`;
+    renderState[key] = true;
   }
 
-  async function renderAll(){
-    const worksObj = await getWorks();
-    await Promise.all([
-      renderPanel(panels.pray,    SECTION_KEYS.pray,    worksObj),
-      renderPanel(panels.human,   SECTION_KEYS.human,   worksObj),
-      renderPanel(panels.rebirth, SECTION_KEYS.rebirth, worksObj),
-      renderPanel(panels.exist,   SECTION_KEYS.exist,   worksObj),
-      renderPanel(panels.cosmos,  SECTION_KEYS.cosmos,  worksObj)
-    ]);
+  async function renderInitial(){
+    // 초기에는 'pray' 섹션만 렌더해서 첫 화면 속도 최적화
+    await renderPanel('pray', true);
   }
 
   (function init(){
-    renderAll();
+    renderInitial();
 
-    // 언어 바뀌면 alt/텍스트 다시 렌더
+    // 언어 바뀌면, 이미 렌더된 섹션만 재렌더 (불필요한 작업 최소화)
     document.addEventListener('dz-lang-change', () => {
-      if(!worksCache){
-        renderAll();
-      }else{
-        (async () => {
-          const obj = worksCache;
-          await Promise.all([
-            renderPanel(panels.pray,    SECTION_KEYS.pray,    obj),
-            renderPanel(panels.human,   SECTION_KEYS.human,   obj),
-            renderPanel(panels.rebirth, SECTION_KEYS.rebirth, obj),
-            renderPanel(panels.exist,   SECTION_KEYS.exist,   obj),
-            renderPanel(panels.cosmos,  SECTION_KEYS.cosmos,  obj)
-          ]);
-        })();
-      }
+      if(!worksCache) return;
+      Object.keys(renderState).forEach(key => {
+        if(renderState[key]) renderPanel(key, true);
+      });
     });
 
-    // 탭 전환
+    // 탭 전환 시 해당 섹션이 아직 렌더 안 되어 있으면 그때 렌더
     $$('.tabs .tab').forEach(tab => {
       tab.addEventListener('click', () => {
         $$('.tabs .tab').forEach(x => x.classList.remove('active'));
         tab.classList.add('active');
 
         $$('.tabpanel').forEach(p => p.classList.remove('active'));
-        const panelId = 'panel-' + tab.getAttribute('data-panel');
-        const panelEl = document.getElementById(panelId);
+        const panelKey = tab.getAttribute('data-panel');
+        const panelId  = 'panel-' + panelKey;
+        const panelEl  = document.getElementById(panelId);
         if(panelEl) panelEl.classList.add('active');
+
+        if(panelKey && !renderState[panelKey]){
+          renderPanel(panelKey, false);
+        }
       });
     });
   })();
@@ -1347,7 +1345,9 @@ window.DZ_BIO = (function(){
   if(next) next.addEventListener('click', () => openAt(idx + 1));
   if(closeBtn) closeBtn.addEventListener('click', hide);
 
-  lb.addEventListener('click', e => { if(e.target === lb) hide(); });
+  lb.addEventListener('click', e => {
+    if(e.target === lb) hide();
+  });
 
   lb.addEventListener('wheel', e => {
     if(!lb.classList.contains('on')) return;

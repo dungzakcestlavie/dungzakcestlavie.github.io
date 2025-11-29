@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,15 +14,15 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.12" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.13" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.13" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- 데이터 프리로드 (Works / Reports) -->
@@ -210,7 +210,7 @@
     border:1px solid rgba(40,60,120,.9);
     border-radius:10px;
     overflow:hidden;
-    opacity:0;transform:translateY(8px);
+    opacity:1;transform:translateY(0);
     transition:opacity .55s,transform .55s,box-shadow .6s,border-color .4s;
     position:relative;
   }
@@ -221,7 +221,6 @@
     opacity:0;transition:opacity .4s ease;
     pointer-events:none;
   }
-  .card.visible{opacity:1;transform:translateY(0)}
   .card:hover{
     box-shadow:0 0 18px rgba(230,199,119,.35);
     border-color:var(--gold);
@@ -231,6 +230,7 @@
     width:100%;aspect-ratio:1/1;
     object-fit:cover;display:block;
     background:#050816;
+    transition:opacity .25s ease;
   }
 
   /* reports */
@@ -529,14 +529,15 @@
     opacity:.9;
   }
   </style>
-</head> <body class="korean">
+</head>
+<body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
   <canvas id="trail" aria-hidden="true"></canvas>
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.12</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.13</div>
 
     <nav class="primary" aria-label="Primary">
       <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
@@ -803,7 +804,9 @@ Numerous private collections worldwide.</p>
 
     <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">©DUNGZAK CESTLAVIE</small>
-  </footer> <script>
+  </footer>
+
+  <script>
 // =========================
 // Shorthands
 // =========================
@@ -1108,10 +1111,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid) — Ω.12 업그레이드
-// - 섹션 키 정확 매칭
-// - image/zoom 경로 자동 인식 (파일명 / images/standard 포함 둘 다 지원)
-// - 공통 IntersectionObserver로 빠르게 로딩
+// Works Loader (JSON → Grid) — Ω.13: 즉시 src 로드, 빠른 탭 전환
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1131,33 +1131,8 @@ window.DZ_BIO = (function(){
   };
 
   let worksCache = null;
-  let io = null;
-
-  function ensureObserver(){
-    if(io) return io;
-    try{
-      io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if(!e.isIntersecting) return;
-          const img  = e.target;
-          const card = img.closest('.card');
-          const src  = img.getAttribute('data-src');
-          if(src){
-            img.src = src;
-            img.removeAttribute('data-src');
-          }
-          if(card) card.classList.add('visible');
-          io.unobserve(img);
-        });
-      }, { rootMargin:'260px 0px' });
-    }catch(_){
-      io = null;
-    }
-    return io;
-  }
 
   function fetchJSON(url){
-    // 기본 캐시 활용 (no-store 제거 → 속도 향상)
     return fetch(url).then(r => {
       if(!r.ok) throw new Error('Fetch error');
       return r.json();
@@ -1187,10 +1162,8 @@ window.DZ_BIO = (function(){
   function normalisePath(raw, baseDir){
     if(!raw) return '';
     let v = String(raw).trim();
-
     if(!v) return '';
     if(v.startsWith('http://') || v.startsWith('https://')) return v;
-
     if(v.includes('/')){
       return v.startsWith('/') ? v : '/' + v.replace(/^\/+/, '');
     }
@@ -1236,7 +1209,7 @@ window.DZ_BIO = (function(){
       <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
                data-title="${(title || '').replace(/"/g,'&quot;')}">
         <img loading="lazy" decoding="async"
-             data-src="${standard.replace(/"/g,'&quot;')}"
+             src="${standard.replace(/"/g,'&quot;')}"
              alt="${alt.replace(/"/g,'&quot;')}">
       </article>
     `;
@@ -1252,22 +1225,6 @@ window.DZ_BIO = (function(){
     }
 
     host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
-
-    const obs = ensureObserver();
-    const imgs = $$(`#${host.id} img[data-src]`);
-    if(obs){
-      imgs.forEach(img => obs.observe(img));
-    }else{
-      imgs.forEach(img => {
-        const src = img.getAttribute('data-src');
-        if(src){
-          img.src = src;
-          img.removeAttribute('data-src');
-        }
-        const card = img.closest('.card');
-        if(card) card.classList.add('visible');
-      });
-    }
   }
 
   async function renderAll(){
@@ -1282,7 +1239,6 @@ window.DZ_BIO = (function(){
   }
 
   (function init(){
-    // 첫 렌더
     renderAll();
 
     // 언어 바뀌면 alt/텍스트 다시 렌더
@@ -1821,6 +1777,6 @@ window.DZ_BIO = (function(){
     }
   });
 })();
-</script>
+  </script>
 </body>
 </html>

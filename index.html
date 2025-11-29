@@ -25,9 +25,6 @@
   <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.14" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
-  <!-- 데이터 프리로드 (Reports) : Works는 진입 시점에만 로드 -->
-  <link rel="preload" as="fetch" href="/reports/reports.json" crossorigin="anonymous">
-
   <!-- Favicon (임시 이모지) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>">
 
@@ -862,7 +859,7 @@ const $  = (q, root) => (root || document).querySelector(q);
       else btn.removeAttribute('aria-current');
     });
 
-    // 섹션 변경 이벤트 → Works/Reports 쪽에서 필요 시점에만 데이터 로딩
+    // 섹션 변경 이벤트 → Works/Reports는 여기서만 로딩 트리거
     document.dispatchEvent(new CustomEvent('dz-section-change', { detail: id }));
   }
 
@@ -891,7 +888,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves & Cursor Trail
+// Background Waves & Cursor Trail (연산 축소 버전)
 // =========================
 (function(){
   const prefersReduced =
@@ -964,9 +961,10 @@ const $  = (q, root) => (root || document).querySelector(q);
 
     wctx.clearRect(0,0,window.innerWidth,window.innerHeight);
 
+    // x step 6 → 10으로 줄여 GPU/CPU 연산량 감소 (시각 분위기는 유지)
     for(let k=0; k<4; k++){
       wctx.beginPath();
-      for(let x=0; x<=window.innerWidth; x+=6){
+      for(let x=0; x<=window.innerWidth; x+=10){
         const y = waveY(x,k,t);
         if(x === 0) wctx.moveTo(x,y);
         else        wctx.lineTo(x,y);
@@ -1119,7 +1117,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid) — Ω.14 : Works 섹션 진입 시점에만 로딩
+// Works Loader (JSON → Grid) — 28점 기준, 섹션 진입 시 1회 로드
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1153,17 +1151,12 @@ window.DZ_BIO = (function(){
 
   async function getWorks(){
     if(worksCache) return worksCache;
-    let data = null;
     try {
-      data = await fetchJSON('/data/works.json');
+      const data = await fetchJSON('/data/works.json');
+      worksCache = data || {};
     } catch(_){
-      try {
-        data = await fetchJSON('/works.json');
-      } catch(__){
-        data = {};
-      }
+      worksCache = {};
     }
-    worksCache = data || {};
     return worksCache;
   }
 
@@ -1235,7 +1228,10 @@ window.DZ_BIO = (function(){
 
     const worksObj = await getWorks();
     const sectionName = SECTION_KEYS[key];
-    const list = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName].slice(0,20) : [];
+    const listRaw = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
+
+    // 28점 기준: 슬라이스 없이 전체 렌더 (나중에 늘어나도 정상 동작)
+    const list = listRaw;
 
     if(!list.length){
       host.innerHTML = `<div class="grid"></div>`;
@@ -1282,11 +1278,7 @@ window.DZ_BIO = (function(){
     });
   });
 
-  // 만약 해시가 #works인 상태로 바로 진입하면 즉시 한 번 렌더
-  if((location.hash || '').replace('#','') === 'works'){
-    initialTriggered = true;
-    renderPanel('pray', false);
-  }
+  // 해시가 #works인 상태로 진입하면 섹션 이벤트가 이미 한 번 발생 → 별도 중복 호출 없음
 })();
 
 // =========================
@@ -1426,7 +1418,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — JSON 리스트 & 새 탭 Open
+// Reports (DCAR) — 섹션 진입 시점에만 reports.json 로드
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
@@ -1437,6 +1429,7 @@ window.DZ_BIO = (function(){
 
   let items = [];
   let currentCat = 'all';
+  let reportsLoaded = false;
 
   function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, ch => (
@@ -1465,6 +1458,9 @@ window.DZ_BIO = (function(){
   }
 
   async function loadData(){
+    if(reportsLoaded) return;
+    reportsLoaded = true;
+
     try{
       const res = await fetch('/reports/reports.json');
       if(!res.ok) throw new Error('fetch failed');
@@ -1581,7 +1577,18 @@ window.DZ_BIO = (function(){
     window.scrollTo({ top, behavior:'smooth' });
   });
 
-  loadData();
+  // Reports 섹션이 실제로 열릴 때까지 reports.json은 로드하지 않음
+  document.addEventListener('dz-section-change', e => {
+    if(e.detail === 'reports'){
+      loadData();
+    }
+  });
+
+  // 만약 해시로 바로 #reports로 진입한 경우
+  const initialHash = (location.hash || '').replace('#','');
+  if(initialHash === 'reports'){
+    loadData();
+  }
 })();
 
 // =========================

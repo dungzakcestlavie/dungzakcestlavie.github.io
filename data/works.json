@@ -285,7 +285,7 @@
   "image": "images/standard/DZ-019.jpg",
   "zoom": "images/zoom/DZ-019.jpg"
 },
-{
+{표
   
   "id": "DZ-020",
   "section_id": 1,
@@ -317,7 +317,22 @@
   "year": 2025,
   "image": "images/standard/DZ-021.jpg",
   "zoom": "images/zoom/DZ-021.jpg"
-}],
+},
+{
+  "id": "DZ-022",
+  "section_id": 2,
+  "section_kr": "II 인간",
+  "section_en": "Human Being",
+  "title_kr": "우리는 함께예요",
+  "title_en": "We're in this together",
+  "material_kr": "캔버스에 오일파스텔, 인디언 잉크, 아크릴",
+  "material_en": "oil pastel, indian ink, acrylic on canvas",
+  "size_kr": "60.6 x 72.7 cm",
+  "size_en": "60.6 x 72.7 cm",
+  "year": 2025,
+  "image": "images/standard/DZ-022.jpg",
+  "zoom": "images/zoom/DZ-022.jpg"
+},],
   "Rebirth of Mind": [],
   "Restoration of Being": [],
   "Metaconsciousness of Light": []

@@ -798,7 +798,7 @@ Numerous private collections worldwide.</p>
 
     <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">©DUNGZAK CESTLAVIE</small>
-  </footer>  <script>
+  </footer> <script>
 // =========================
 // Shorthands
 // =========================
@@ -1103,15 +1103,18 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid)
+// Works Loader (JSON → Grid) — Ω.12 업그레이드
+// - 섹션 키 정확 매칭
+// - image/zoom 경로 자동 인식 (파일명 / images/standard 포함 둘 다 지원)
+// - 공통 IntersectionObserver로 빠르게 로딩
 // =========================
 (function(){
-  const MAP = {
+  const SECTION_KEYS = {
     pray   : 'Light & Memory',
-    human  : 'Human Prayer',
-    rebirth: 'Rebirth',
-    exist  : 'Existence',
-    cosmos : 'Cosmos'
+    human  : 'Human Being',
+    rebirth: 'Rebirth of Mind',
+    exist  : 'Restoration of Being',
+    cosmos : 'Metaconsciousness of Light'
   };
 
   const panels = {
@@ -1122,6 +1125,32 @@ window.DZ_BIO = (function(){
     cosmos : $('#panel-cosmos')
   };
 
+  let worksCache = null;
+  let io = null;
+
+  function ensureObserver(){
+    if(io) return io;
+    try{
+      io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if(!e.isIntersecting) return;
+          const img  = e.target;
+          const card = img.closest('.card');
+          const src  = img.getAttribute('data-src');
+          if(src){
+            img.src = src;
+            img.removeAttribute('data-src');
+          }
+          if(card) card.classList.add('visible');
+          io.unobserve(img);
+        });
+      }, { rootMargin:'200px 0px' });
+    }catch(_){
+      io = null;
+    }
+    return io;
+  }
+
   function fetchJSON(url){
     return fetch(url, { cache:'no-store' })
       .then(r => {
@@ -1131,25 +1160,56 @@ window.DZ_BIO = (function(){
   }
 
   async function getWorks(){
+    if(worksCache) return worksCache;
+    let data = null;
     try {
-      return await fetchJSON('/data/works.json');
+      data = await fetchJSON('/data/works.json');
     } catch(_){
       try {
-        return await fetchJSON('/artworks.json');
+        data = await fetchJSON('/works.json');
       } catch(__){
-        return {
-          [MAP.pray]   : [],
-          [MAP.human]  : [],
-          [MAP.rebirth]: [],
-          [MAP.exist]  : [],
-          [MAP.cosmos] : []
-        };
+        data = {};
       }
     }
+    worksCache = data || {};
+    return worksCache;
   }
 
   function isKR(){
     return !document.body.classList.contains('english');
+  }
+
+  function normalisePath(raw, baseDir){
+    if(!raw) return '';
+    let v = String(raw).trim();
+
+    if(!v) return '';
+    if(v.startsWith('http://') || v.startsWith('https://')) return v;
+
+    if(v.includes('/')){
+      // 이미 경로가 있으면 맨 앞에 /만 보정
+      return v.startsWith('/') ? v : '/' + v.replace(/^\/+/, '');
+    }
+    // 순수 파일명인 경우
+    return baseDir + v;
+  }
+
+  function resolveStandard(w){
+    const img = (w.image || '').trim();
+    if(!img) return '';
+    return normalisePath(img, '/images/standard/');
+  }
+
+  function resolveZoom(w, standard){
+    let z = (w.zoom || '').trim();
+    if(!z){
+      // zoom이 없으면 image 기반
+      const img = (w.image || '').trim();
+      if(!img) return standard;
+      z = img;
+    }
+    const path = normalisePath(z, '/images/zoom/');
+    return path || standard;
   }
 
   function cardHTML(w){
@@ -1163,15 +1223,19 @@ window.DZ_BIO = (function(){
       ? (w.size_kr || '')
       : (w.size_en || '');
     const year  = w.year || '';
-    const file  = (w.image || '').replace(/\s+/g,'_') || 'placeholder.jpg';
 
-    const ssrc  = '/images/standard/' + file;
-    const zsrc  = '/images/zoom/' + file;
-    const alt   = [title,meta,size,year].filter(Boolean).join(' · ');
+    const standard = resolveStandard(w);
+    const zoom     = resolveZoom(w, standard);
+
+    const altParts = [title, meta, size, year].filter(Boolean);
+    const alt      = altParts.join(' · ');
 
     return `
-      <article class="card" data-zoom="${zsrc}">
-        <img loading="lazy" decoding="async" data-src="${ssrc}" alt="${alt}">
+      <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
+               data-title="${(title || '').replace(/"/g,'&quot;')}">
+        <img loading="lazy" decoding="async"
+             data-src="${standard.replace(/"/g,'&quot;')}"
+             alt="${alt.replace(/"/g,'&quot;')}">
       </article>
     `;
   }
@@ -1187,43 +1251,59 @@ window.DZ_BIO = (function(){
 
     host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
 
-    try {
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if(e.isIntersecting){
-            const img = e.target;
-            const card = img.closest('.card');
-            if(img.dataset.src){
-              img.src = img.dataset.src;
-              img.removeAttribute('data-src');
-            }
-            if(card) card.classList.add('visible');
-            io.unobserve(img);
-          }
-        });
-      }, { rootMargin:'200px' });
-
-      $$(`#${host.id} img[loading][data-src]`).forEach(img => io.observe(img));
-    } catch(_){}
+    const obs = ensureObserver();
+    const imgs = $$(`#${host.id} img[data-src]`);
+    if(obs){
+      imgs.forEach(img => obs.observe(img));
+    }else{
+      // Fallback: observer 미지원이면 즉시 로드
+      imgs.forEach(img => {
+        const src = img.getAttribute('data-src');
+        if(src){
+          img.src = src;
+          img.removeAttribute('data-src');
+        }
+        const card = img.closest('.card');
+        if(card) card.classList.add('visible');
+      });
+    }
   }
 
-  (async function initWorks(){
+  async function renderAll(){
     const worksObj = await getWorks();
+    await Promise.all([
+      renderPanel(panels.pray,    SECTION_KEYS.pray,    worksObj),
+      renderPanel(panels.human,   SECTION_KEYS.human,   worksObj),
+      renderPanel(panels.rebirth, SECTION_KEYS.rebirth, worksObj),
+      renderPanel(panels.exist,   SECTION_KEYS.exist,   worksObj),
+      renderPanel(panels.cosmos,  SECTION_KEYS.cosmos,  worksObj)
+    ]);
+  }
 
-    async function renderAll(){
-      await Promise.all([
-        renderPanel(panels.pray,    MAP.pray,    worksObj),
-        renderPanel(panels.human,   MAP.human,   worksObj),
-        renderPanel(panels.rebirth, MAP.rebirth, worksObj),
-        renderPanel(panels.exist,   MAP.exist,   worksObj),
-        renderPanel(panels.cosmos,  MAP.cosmos,  worksObj)
-      ]);
-    }
+  (function init(){
+    // 첫 렌더
+    renderAll();
 
-    await renderAll();
+    // 언어 바뀌면 alt/텍스트 다시 렌더
+    document.addEventListener('dz-lang-change', () => {
+      // worksCache는 그대로 두고, 렌더만 새로
+      if(!worksCache){
+        renderAll();
+      }else{
+        (async () => {
+          const obj = worksCache;
+          await Promise.all([
+            renderPanel(panels.pray,    SECTION_KEYS.pray,    obj),
+            renderPanel(panels.human,   SECTION_KEYS.human,   obj),
+            renderPanel(panels.rebirth, SECTION_KEYS.rebirth, obj),
+            renderPanel(panels.exist,   SECTION_KEYS.exist,   obj),
+            renderPanel(panels.cosmos,  SECTION_KEYS.cosmos,  obj)
+          ]);
+        })();
+      }
+    });
 
-    document.addEventListener('dz-lang-change', renderAll);
-
+    // 탭 전환
     $$('.tabs .tab').forEach(tab => {
       tab.addEventListener('click', () => {
         $$('.tabs .tab').forEach(x => x.classList.remove('active'));
@@ -1263,7 +1343,8 @@ window.DZ_BIO = (function(){
     if(!panel) { list = []; return; }
     list = Array.from(panel.querySelectorAll('.card')).map(card => {
       const zoomSrc = card.getAttribute('data-zoom');
-      const alt     = (card.querySelector('img') || {}).alt || '';
+      const imgEl   = card.querySelector('img');
+      const alt     = imgEl ? imgEl.alt : (card.getAttribute('data-title') || '');
       return { zoomSrc, alt, card };
     }).filter(x => x.zoomSrc);
   }
@@ -1740,6 +1821,4 @@ window.DZ_BIO = (function(){
     }
   });
 })();
-  </script>
-</body>
-</html>
+</script>

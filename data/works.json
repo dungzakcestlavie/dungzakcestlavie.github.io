@@ -12,8 +12,8 @@
       "size_kr": "162.2 x 130.3 cm",
       "size_en": "162.2 x 130.3 cm",
       "year": 2024,
-      "image": "DZ-001.jpg",
-      "zoom": "DZ-001.jpg"
+      "image": "images/standard/DZ-001.jpg",
+      "zoom": "images/zoom/DZ-001.jpg"
     },
     {
       "id": "DZ-002",
@@ -27,9 +27,9 @@
       "size_kr": "130.3 x 162.2 cm",
       "size_en": "130.3 x 162.2 cm",
       "year": 2025,
-      "image": "DZ-002.jpg",
-      "zoom": "DZ-002.jpg"
-    }, 
+      "image": "images/standard/DZ-002.jpg",
+      "zoom": "images/zoom/DZ-002.jpg"
+    },
     {
       "id": "DZ-003",
       "section_id": 1,
@@ -42,8 +42,8 @@
       "size_kr": "116.8 x 91 cm",
       "size_en": "116.8 x 91 cm",
       "year": 2024,
-      "image": "DZ-003.jpg",
-      "zoom": "DZ-003.jpg"
+      "image": "images/standard/DZ-003.jpg",
+      "zoom": "images/zoom/DZ-003.jpg"
     },
     {
       "id": "DZ-004",
@@ -57,9 +57,9 @@
       "size_kr": "130.3 x 162.2 cm",
       "size_en": "130.3 x 162.2 cm",
       "year": 2024,
-      "image": "DZ-004.jpg",
-      "zoom": "DZ-004.jpg"
-    }, 
+      "image": "images/standard/DZ-004.jpg",
+      "zoom": "images/zoom/DZ-004.jpg"
+    },
     {
       "id": "DZ-005",
       "section_id": 1,
@@ -72,8 +72,8 @@
       "size_kr": "130.3 x 162.2 cm",
       "size_en": "130.3 x 162.2 cm",
       "year": 2025,
-      "image": "DZ-005.jpg",
-      "zoom": "DZ-005.jpg"
+      "image": "images/standard/DZ-005.jpg",
+      "zoom": "images/zoom/DZ-005.jpg"
     },
     {
       "id": "DZ-006",
@@ -87,9 +87,9 @@
       "size_kr": "91 x 116.8 cm",
       "size_en": "91 x 116.8 cm",
       "year": 2024,
-      "image": "DZ-006.jpg",
-      "zoom": "DZ-006.jpg"
-    }, 
+      "image": "images/standard/DZ-006.jpg",
+      "zoom": "images/zoom/DZ-006.jpg"
+    },
     {
       "id": "DZ-007",
       "section_id": 1,
@@ -102,9 +102,9 @@
       "size_kr": "116.8 x 91 cm",
       "size_en": "116.8 x 91 cm",
       "year": 2024,
-      "image": "DZ-007.jpg",
-      "zoom": "DZ-007.jpg"
-    }, 
+      "image": "images/standard/DZ-007.jpg",
+      "zoom": "images/zoom/DZ-007.jpg"
+    },
     {
       "id": "DZ-008",
       "section_id": 1,
@@ -117,9 +117,9 @@
       "size_kr": "60.6 x 72.7 cm",
       "size_en": "60.6 x 72.7 cm",
       "year": 2025,
-      "image": "DZ-008.jpg",
-      "zoom": "DZ-008.jpg"
-    }, 
+      "image": "images/standard/DZ-008.jpg",
+      "zoom": "images/zoom/DZ-008.jpg"
+    },
     {
       "id": "DZ-009",
       "section_id": 1,
@@ -132,9 +132,9 @@
       "size_kr": "72.7 x 90.9 cm",
       "size_en": "72.7 x 90.9 cm",
       "year": 2025,
-      "image": "DZ-009.jpg",
-      "zoom": "DZ-009.jpg"
-    }, 
+      "image": "images/standard/DZ-009.jpg",
+      "zoom": "images/zoom/DZ-009.jpg"
+    },
     {
       "id": "DZ-010",
       "section_id": 1,
@@ -147,9 +147,9 @@
       "size_kr": "72.7 x 60.6 cm",
       "size_en": "72.7 x 60.6 cm",
       "year": 2025,
-      "image": "DZ-010.jpg",
-      "zoom": "DZ-010.jpg"
-    }, 
+      "image": "images/standard/DZ-010.jpg",
+      "zoom": "images/zoom/DZ-010.jpg"
+    },
     {
       "id": "DZ-011",
       "section_id": 1,
@@ -162,8 +162,8 @@
       "size_kr": "162.2 x 130.3 cm",
       "size_en": "162.2 x 130.3 cm",
       "year": 2025,
-      "image": "DZ-011.jpg",
-      "zoom": "DZ-011.jpg"
+      "image": "images/standard/DZ-011.jpg",
+      "zoom": "images/zoom/DZ-011.jpg"
     },
     {
       "id": "DZ-012",
@@ -177,9 +177,9 @@
       "size_kr": "72.7 x 60.6 cm",
       "size_en": "72.7 x 60.6 cm",
       "year": 2024,
-      "image": "DZ-012.jpg",
-      "zoom": "DZ-012.jpg"
-    }, 
+      "image": "images/standard/DZ-012.jpg",
+      "zoom": "images/zoom/DZ-012.jpg"
+    },
     {
       "id": "DZ-013",
       "section_id": 1,
@@ -192,9 +192,9 @@
       "size_kr": "116.8 x 91 cm",
       "size_en": "116.8 x 91 cm",
       "year": 2025,
-      "image": "DZ-013.jpg",
-      "zoom": "DZ-013.jpg"
-    }, 
+      "image": "images/standard/DZ-013.jpg",
+      "zoom": "images/zoom/DZ-013.jpg"
+    },
     {
       "id": "DZ-014",
       "section_id": 1,
@@ -207,9 +207,9 @@
       "size_kr": "116.8 x 91 cm",
       "size_en": "116.8 x 91 cm",
       "year": 2025,
-      "image": "DZ-014.jpg",
-      "zoom": "DZ-014.jpg"
-    }, 
+      "image": "images/standard/DZ-014.jpg",
+      "zoom": "images/zoom/DZ-014.jpg"
+    },
     {
       "id": "DZ-015",
       "section_id": 1,
@@ -222,9 +222,9 @@
       "size_kr": "116.8 x 91 cm",
       "size_en": "116.8 x 91 cm",
       "year": 2025,
-      "image": "DZ-015.jpg",
-      "zoom": "DZ-015.jpg"
-    }, 
+      "image": "images/standard/DZ-015.jpg",
+      "zoom": "images/zoom/DZ-015.jpg"
+    },
     {
       "id": "DZ-016",
       "section_id": 1,
@@ -237,9 +237,9 @@
       "size_kr": "37.9 x 37.9 cm",
       "size_en": "37.9 x 37.9 cm",
       "year": 2025,
-      "image": "DZ-016.jpg",
-      "zoom": "DZ-016.jpg"
-    }, 
+      "image": "images/standard/DZ-016.jpg",
+      "zoom": "images/zoom/DZ-016.jpg"
+    },
     {
       "id": "DZ-017",
       "section_id": 1,
@@ -254,7 +254,7 @@
       "year": 2025,
       "image": "images/standard/DZ-017.jpg",
       "zoom": "images/zoom/DZ-017.jpg"
-    }, 
+    },
     {
       "id": "DZ-018",
       "section_id": 1,
@@ -269,7 +269,7 @@
       "year": 2025,
       "image": "images/standard/DZ-018.jpg",
       "zoom": "images/zoom/DZ-018.jpg"
-    }, 
+    },
     {
       "id": "DZ-019",
       "section_id": 1,

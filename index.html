@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,16 +14,20 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.11" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.12" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.11" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.12" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
+
+  <!-- 데이터 프리로드 (Works / Reports) -->
+  <link rel="preload" as="fetch" href="/data/works.json" crossorigin="anonymous">
+  <link rel="preload" as="fetch" href="/reports/reports.json" crossorigin="anonymous">
 
   <!-- Favicon (임시 이모지) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2286%22>✨</text></svg>">
@@ -226,6 +230,7 @@
   .card img{
     width:100%;aspect-ratio:1/1;
     object-fit:cover;display:block;
+    background:#050816;
   }
 
   /* reports */
@@ -531,7 +536,7 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.11</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.12</div>
 
     <nav class="primary" aria-label="Primary">
       <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
@@ -1144,7 +1149,7 @@ window.DZ_BIO = (function(){
           if(card) card.classList.add('visible');
           io.unobserve(img);
         });
-      }, { rootMargin:'200px 0px' });
+      }, { rootMargin:'260px 0px' });
     }catch(_){
       io = null;
     }
@@ -1152,11 +1157,11 @@ window.DZ_BIO = (function(){
   }
 
   function fetchJSON(url){
-    return fetch(url, { cache:'no-store' })
-      .then(r => {
-        if(!r.ok) throw new Error('Fetch error');
-        return r.json();
-      });
+    // 기본 캐시 활용 (no-store 제거 → 속도 향상)
+    return fetch(url).then(r => {
+      if(!r.ok) throw new Error('Fetch error');
+      return r.json();
+    });
   }
 
   async function getWorks(){
@@ -1187,10 +1192,8 @@ window.DZ_BIO = (function(){
     if(v.startsWith('http://') || v.startsWith('https://')) return v;
 
     if(v.includes('/')){
-      // 이미 경로가 있으면 맨 앞에 /만 보정
       return v.startsWith('/') ? v : '/' + v.replace(/^\/+/, '');
     }
-    // 순수 파일명인 경우
     return baseDir + v;
   }
 
@@ -1203,7 +1206,6 @@ window.DZ_BIO = (function(){
   function resolveZoom(w, standard){
     let z = (w.zoom || '').trim();
     if(!z){
-      // zoom이 없으면 image 기반
       const img = (w.image || '').trim();
       if(!img) return standard;
       z = img;
@@ -1256,7 +1258,6 @@ window.DZ_BIO = (function(){
     if(obs){
       imgs.forEach(img => obs.observe(img));
     }else{
-      // Fallback: observer 미지원이면 즉시 로드
       imgs.forEach(img => {
         const src = img.getAttribute('data-src');
         if(src){
@@ -1286,7 +1287,6 @@ window.DZ_BIO = (function(){
 
     // 언어 바뀌면 alt/텍스트 다시 렌더
     document.addEventListener('dz-lang-change', () => {
-      // worksCache는 그대로 두고, 렌더만 새로
       if(!worksCache){
         renderAll();
       }else{
@@ -1493,7 +1493,7 @@ window.DZ_BIO = (function(){
 
   async function loadData(){
     try{
-      const res = await fetch('/reports/reports.json', { cache:'no-store' });
+      const res = await fetch('/reports/reports.json');
       if(!res.ok) throw new Error('fetch failed');
       const data = await res.json();
       const arr = Array.isArray(data.reports) ? data.reports : [];
@@ -1559,7 +1559,7 @@ window.DZ_BIO = (function(){
     const path = meta.path;
 
     try{
-      const res = await fetch(path, { cache:'no-store' });
+      const res = await fetch(path);
       if(!res.ok) throw new Error('fetch failed');
       const text = await res.text();
 
@@ -1822,3 +1822,5 @@ window.DZ_BIO = (function(){
   });
 })();
 </script>
+</body>
+</html>

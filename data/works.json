@@ -332,7 +332,24 @@
       "year": 2025,
       "image": "images/standard/DZ-022.jpg",
       "zoom": "images/zoom/DZ-022.jpg"
-    }
+    },
+    {
+  "id": "DZ-023",
+  "section_id": 2,
+  "section_kr": "Ⅱ 인간",
+  "section_en": "Human Being",
+  "title_kr": "작별의 입맞춤",
+  "title_en": "Kiss of Farewell",
+  "material_kr": "캔버스에 오일스틱, 연필, 아크릴",
+  "material_en": "oil stick, pencil, acrylic on canvas",
+  "size_kr": "72.7x60.6cm",
+  "size_en": "72.7×60.6 cm",
+  "year": "2025",
+  "image": "/images/standard/DZ-023.jpg",
+  "zoom": "/images/zoom/DZ-023.jpg",
+  "description_kr": "",
+  "description_en": ""
+}
   ],
 
   "Rebirth of Mind": [],

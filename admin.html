@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.30 — Works & DCAR Manager</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.31 — Works & DCAR Manager</title>
 
   <meta name="color-scheme" content="dark light" />
-  <meta name="description" content="Admin Ω.30 — Works & Aesthetic Reports (DCAR) Manager for dungzak.art" />
+  <meta name="description" content="Admin Ω.31 — Works & Aesthetic Reports (DCAR) Manager for dungzak.art" />
 
   <style>
   :root{
@@ -219,7 +219,7 @@
   <header>
     <div class="brand">
       <div>
-        <div class="brand-title">Admin Ω.30 · Works & DCAR Manager</div>
+        <div class="brand-title">Admin Ω.31 · Works & DCAR Manager</div>
         <div class="brand-sub">등작 燈酌 DUNGZAK CESTLAVIE — dungzak.art 관리 전용 (로컬 복사·붙여넣기)</div>
       </div>
       <div class="nav-tabs" role="tablist">
@@ -237,7 +237,7 @@
         <h2>안내 · Intro</h2>
       </div>
       <p class="hint">
-        이 Admin Ω.30은 <strong>GitHub에 자동으로 업로드하지 않고</strong>, 브라우저 안에서<br>
+        이 Admin Ω.31은 <strong>GitHub에 자동으로 업로드하지 않고</strong>, 브라우저 안에서<br>
         <strong>① Works → <code>data/works.json</code></strong> / <strong>② DCAR → <code>reports/reports.json</code> + 각 <code>DCAR-XX-2025.md</code></strong>를
         <strong>생성·편집·삭제</strong>해서 <strong>복사·붙여넣기</strong> 하기 위한 도구입니다.
       </p>
@@ -245,6 +245,7 @@
         <li><strong>삭제 버튼</strong>은 이 페이지의 목록에서만 삭제합니다. GitHub의 파일은 오빠가 직접 삭제해야 합니다.</li>
         <li><strong>브라우저 LocalStorage</strong>에 임시 저장되므로, 새로고침해도 목록이 남습니다(같은 브라우저/기기 기준).</li>
         <li><strong>DCAR 본문</strong>은 ‘한·영 혼용 텍스트’를 그대로 <strong>무한 붙여넣기</strong>해서 쓸 수 있도록 큰 텍스트박스로 되어 있습니다.</li>
+        <li><strong>works.json / reports.json 붙여넣기 → “JSON → 목록 불러오기”</strong>로 기존 데이터도 바로 다시 불러올 수 있습니다.</li>
       </ul>
     </section>
 
@@ -252,7 +253,7 @@
     <section id="tab-works" class="admin-block hidden">
       <div class="block-head">
         <h2>Works Manager — 작품 5섹션 관리</h2>
-        <small>섹션은 Index와 동일하게 고정: I~V (우리를 위해 기도해 주세요 / 인간 / 정신의 재탄생 / 존재의 회복 / 빛의 초의식)</small>
+        <small>섹션은 Index와 완전히 동일하게 고정: I~V (우리를 위해 기도해 주세요 / 인간 / 정신의 재탄생 / 존재의 회복 / 빛의 초의식)</small>
       </div>
 
       <div class="flex-row">
@@ -266,10 +267,10 @@
             <label for="wSection">섹션 선택 (Index와 동일)</label>
             <select id="wSection">
               <option value="Light & Memory">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us (Light & Memory)</option>
-              <option value="Human Prayer">Ⅱ 인간 · Human Being (Human Prayer)</option>
-              <option value="Rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind (Rebirth)</option>
-              <option value="Existence">Ⅳ 존재의 회복 · Restoration of Being (Existence)</option>
-              <option value="Cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light (Cosmos)</option>
+              <option value="Human Being">Ⅱ 인간 · Human Being</option>
+              <option value="Rebirth of Mind">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
+              <option value="Restoration of Being">Ⅳ 존재의 회복 · Restoration of Being</option>
+              <option value="Metaconsciousness of Light">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
             </select>
 
             <div class="small-row">
@@ -352,6 +353,10 @@
       <div class="out-area">
         <label for="wJsonOut">➜ <code>data/works.json</code>에 그대로 복사·붙여넣기 (섹션별 5개 키 구조)</label>
         <textarea id="wJsonOut" class="out" spellcheck="false"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" id="wImportBtn">JSON → 목록 불러오기</button>
+        </div>
+        <div id="wJsonError" class="error-msg"></div>
       </div>
     </section>
 
@@ -447,6 +452,10 @@
       <div class="out-area">
         <label for="rJsonOut">➜ <code>reports/reports.json</code>에 그대로 복사·붙여넣기 (배열 구조)</label>
         <textarea id="rJsonOut" class="out" spellcheck="false"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" id="rImportBtn">reports.json → 목록 불러오기</button>
+        </div>
+        <div id="rJsonError" class="error-msg"></div>
       </div>
     </section>
   </main>
@@ -496,7 +505,8 @@
   // ============================
   const WORKS_STORAGE_KEY = 'dz_admin_works_v1';
 
-  let works = loadLocal(WORKS_STORAGE_KEY, []); // flat list: {id,section,title_kr,...}
+  // flat list: {id,section,title_kr,...}
+  let works = loadLocal(WORKS_STORAGE_KEY, []);
 
   const wId      = $('#wId');
   const wSection = $('#wSection');
@@ -511,6 +521,15 @@
   const wTableBody = $('#wTable tbody');
   const wJsonOut = $('#wJsonOut');
   const wError   = $('#wError');
+  const wJsonError = $('#wJsonError');
+
+  const WORK_SECTION_KEYS = [
+    "Light & Memory",
+    "Human Being",
+    "Rebirth of Mind",
+    "Restoration of Being",
+    "Metaconsciousness of Light"
+  ];
 
   function clearWorkForm(){
     wId.value = '';
@@ -544,16 +563,16 @@
       </tr>
     `).join('');
 
-    // JSON 구조: { "Light & Memory":[...], "Human Prayer":[...], ... }
+    // JSON 구조: { "Light & Memory":[...], "Human Being":[...], ... }
     const bySection = {
       "Light & Memory": [],
-      "Human Prayer": [],
-      "Rebirth": [],
-      "Existence": [],
-      "Cosmos": []
+      "Human Being": [],
+      "Rebirth of Mind": [],
+      "Restoration of Being": [],
+      "Metaconsciousness of Light": []
     };
     works.forEach(w=>{
-      const key = w.section || 'Light & Memory';
+      const key = WORK_SECTION_KEYS.includes(w.section) ? w.section : "Light & Memory";
       if(!bySection[key]) bySection[key] = [];
       bySection[key].push({
         id: w.id || '',
@@ -572,6 +591,8 @@
 
   function upsertWork(){
     wError.textContent = '';
+    wJsonError.textContent = '';
+
     const id = (wId.value || '').trim();
     const sec = wSection.value || 'Light & Memory';
     const title_kr = (wTitleKo.value||'').trim();
@@ -616,8 +637,48 @@
     renderWorksTable();
   }
 
+  function importWorksFromJson(){
+    wJsonError.textContent = '';
+    wError.textContent = '';
+    try{
+      const txt = (wJsonOut.value || '').trim();
+      if(!txt){
+        wJsonError.textContent = '불러올 JSON이 없습니다. GitHub의 works.json을 붙여넣고 다시 시도하세요.';
+        return;
+      }
+      const obj = JSON.parse(txt);
+      const list = [];
+
+      WORK_SECTION_KEYS.forEach(sec=>{
+        const arr = Array.isArray(obj[sec]) ? obj[sec] : [];
+        arr.forEach(item=>{
+          list.push({
+            id: item.id || '',
+            section: sec,
+            title_kr: item.title_kr || '',
+            title_en: item.title_en || '',
+            material_kr: item.material_kr || '',
+            material_en: item.material_en || '',
+            size_kr: item.size_kr || '',
+            size_en: item.size_en || '',
+            year: item.year || '',
+            image: item.image || ''
+          });
+        });
+      });
+
+      works = list;
+      saveLocal(WORKS_STORAGE_KEY, works);
+      renderWorksTable();
+      wJsonError.textContent = 'JSON에서 작품 목록을 불러왔습니다.';
+    }catch(err){
+      wJsonError.textContent = 'JSON 파싱에 실패했습니다. 형식을 다시 확인하세요.';
+    }
+  }
+
   $('#wAddBtn').addEventListener('click', upsertWork);
   $('#wResetBtn').addEventListener('click', clearWorkForm);
+  $('#wImportBtn').addEventListener('click', importWorksFromJson);
 
   wTableBody.addEventListener('click', e=>{
     const btn = e.target.closest('button');
@@ -661,7 +722,7 @@
   // ============================
   const REPORTS_STORAGE_KEY = 'dz_admin_reports_v1';
 
-  // 초기값: DCAR-10 메타만 기본으로 하나 넣어 둠 (본문은 비워둠)
+  // 초기값: 로컬에 아무것도 없을 때만 DCAR-10 메타 하나 기본 세팅
   let reports = loadLocal(REPORTS_STORAGE_KEY, [
     {
       id: 'DCAR-10-2025',
@@ -687,6 +748,7 @@
   const rJsonOut   = $('#rJsonOut');
   const rMdOut     = $('#rMdOut');
   const rError     = $('#rError');
+  const rJsonError = $('#rJsonError');
 
   function clearReportForm(){
     rId.value = '';
@@ -732,6 +794,7 @@
 
   function upsertReport(){
     rError.textContent = '';
+    rJsonError.textContent = '';
 
     const id    = (rId.value||'').trim();
     const cat   = rCat.value || 'Theory';
@@ -763,8 +826,39 @@
     rError.textContent = '저장되었습니다. (reports.json과 MD 내용은 아래 출력 영역에서 복사하세요.)';
   }
 
+  function importReportsFromJson(){
+    rJsonError.textContent = '';
+    rError.textContent = '';
+    try{
+      const txt = (rJsonOut.value || '').trim();
+      if(!txt){
+        rJsonError.textContent = '불러올 JSON이 없습니다. GitHub의 reports.json을 붙여넣고 다시 시도하세요.';
+        return;
+      }
+      const obj = JSON.parse(txt);
+      const arr = Array.isArray(obj.reports) ? obj.reports : [];
+      reports = arr.map(item=>({
+        id: item.id || '',
+        category: item.category || 'Theory',
+        md_filename: (item.md_path || '').replace(/^\/?reports\//,''),
+        title_ko: item.title_ko || '',
+        title_en: item.title_en || '',
+        summary_ko: item.summary_ko || '',
+        summary_en: item.summary_en || '',
+        body: '' // 본문은 개별 MD 파일에 붙여넣기
+      }));
+      saveLocal(REPORTS_STORAGE_KEY, reports);
+      renderReportsTable();
+      rMdOut.value = '';
+      rJsonError.textContent = 'reports.json에서 목록을 불러왔습니다.';
+    }catch(err){
+      rJsonError.textContent = 'JSON 파싱에 실패했습니다. 형식을 다시 확인하세요.';
+    }
+  }
+
   $('#rAddBtn').addEventListener('click', upsertReport);
   $('#rResetBtn').addEventListener('click', clearReportForm);
+  $('#rImportBtn').addEventListener('click', importReportsFromJson);
 
   rTableBody.addEventListener('click', e=>{
     const btn = e.target.closest('button');
@@ -794,9 +888,9 @@
       if(r.title_ko) headerLines.push(`# ${r.title_ko}`);
       if(r.title_en) headerLines.push(`# ${r.title_en}`);
       if(r.id) headerLines.push('');
-      const base = headerLines.join('\n');
+      const base = headerLines.join('\\n');
       const body = r.body || '';
-      rMdOut.value = body ? (base + '\n\n' + body) : (base + '\n\n(여기에 본문을 붙여넣으세요)');
+      rMdOut.value = body ? (base + '\\n\\n' + body) : (base + '\\n\\n(여기에 본문을 붙여넣으세요)');
     }
 
     if(delIdx !== null && delIdx !== undefined && delIdx !== ''){

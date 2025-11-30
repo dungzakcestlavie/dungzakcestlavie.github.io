@@ -466,34 +466,35 @@
       "zoom": "images/zoom/DZ-030.jpg"
     },
     {
-  "id": "DZ-031",
-  "section_id": 2,
-  "section_kr": "II 인간",
-  "section_en": "Human Being",
-  "title_kr": "독특하고 절묘한",
-  "title_en": "Unique and Exquisite",
-  "material_kr": "종이에 아크릴",
-  "material_en": "acrylic on paper",
-  "size_kr": "54 x 78 cm",
-  "size_en": "54 x 78 cm",
-  "year": 2019,
-  "image": "images/standard/DZ-031.jpg",
-  "zoom": "images/zoom/DZ-031.jpg"
-},{
-  "id": "DZ-032",
-  "section_id": 2,
-  "section_kr": "II 인간",
-  "section_en": "Human Being",
-  "title_kr": "미묘한 차이",
-  "title_en": "Nuance",
-  "material_kr": "종이에 연필, 수채",
-  "material_en": "pencil, watercolour on paper",
-  "size_kr": "78 x 54 cm",
-  "size_en": "78 x 54 cm",
-  "year": 2006,
-  "image": "images/standard/DZ-032.jpg",
-  "zoom": "images/zoom/DZ-032.jpg"
-}
+      "id": "DZ-031",
+      "section_id": 2,
+      "section_kr": "II 인간",
+      "section_en": "Human Being",
+      "title_kr": "독특하고 절묘한",
+      "title_en": "Unique and Exquisite",
+      "material_kr": "종이에 아크릴",
+      "material_en": "acrylic on paper",
+      "size_kr": "54 x 78 cm",
+      "size_en": "54 x 78 cm",
+      "year": 2019,
+      "image": "images/standard/DZ-031.jpg",
+      "zoom": "images/zoom/DZ-031.jpg"
+    },
+    {
+      "id": "DZ-032",
+      "section_id": 2,
+      "section_kr": "II 인간",
+      "section_en": "Human Being",
+      "title_kr": "미묘한 차이",
+      "title_en": "Nuance",
+      "material_kr": "종이에 연필, 수채",
+      "material_en": "pencil, watercolour on paper",
+      "size_kr": "78 x 54 cm",
+      "size_en": "78 x 54 cm",
+      "year": 2006,
+      "image": "images/standard/DZ-032.jpg",
+      "zoom": "images/zoom/DZ-032.jpg"
+    }
   ],
 
   "Rebirth of Mind": [],

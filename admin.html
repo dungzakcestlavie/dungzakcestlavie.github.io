@@ -209,6 +209,24 @@
     background:#050814;
   }
 
+  /* 이미지 리사이저 결과 리스트 */
+  .img-result-list{
+    margin-top:8px;
+    font-size:11px;
+    max-height:180px;
+    overflow:auto;
+    border-radius:8px;
+    border:1px solid rgba(70,90,150,.6);
+    background:#050814;
+    padding:6px 8px;
+  }
+  .img-result-item{
+    margin-bottom:6px;
+  }
+  .img-result-item a{
+    text-decoration:none;
+  }
+
   @media(max-width:600px){
     header{padding:8px 10px}
     .brand-sub{flex-basis:100%}
@@ -319,7 +337,8 @@
 
             <p class="hint" style="margin-top:4px">
               ※ <strong>이미지 파일명</strong>은 <code>/images/standard/</code>와 <code>/images/zoom/</code> 폴더에
-              <strong>같은 이름</strong>으로 올린다고 가정합니다. (예: <code>/images/standard/DZ-001.jpg</code>, <code>/images/zoom/DZ-001.jpg</code>)
+              <strong>같은 이름</strong>으로 올린다고 가정합니다. (예: <code>/images/standard/DZ-001.jpg</code>, <code>/images/zoom/DZ-001.jpg</code>)<br>
+              ▶ 이 아래 <strong>이미지 리사이즈 도구</strong>로 기존·신규 이미지를 먼저 가볍게 만든 뒤 업로드하면, Index 로딩 속도가 크게 빨라집니다.
             </p>
 
             <div class="btn-row">
@@ -357,6 +376,28 @@
           <button type="button" class="btn" id="wImportBtn">JSON → 목록 불러오기</button>
         </div>
         <div id="wJsonError" class="error-msg"></div>
+      </div>
+
+      <!-- IMAGE OPTIMIZER: 기존/신규 모두 4000px 이하 자동 축소 -->
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-title">이미지 리사이즈 · 4000px 이하 자동 축소 (기존 + 신규 파일 모두)</div>
+        <p class="hint">
+          • 카메라/폰에서 가져온 큰 원본, <strong>이미 사이트에 쓰고 있는 이미지</strong>까지 한 번에 재가공할 수 있습니다.<br>
+          • 긴 변이 <strong>4000px를 넘는 경우만</strong> 자동 축소하고, <strong>JPEG(품질 0.9)</strong>로 저장합니다.<br>
+          • 결과 이미지를 다운로드해서 <code>/images/standard</code>, <code>/images/zoom</code>에 다시 올리면<br>
+            32점, 100점까지도 로딩 속도가 훨씬 빨라집니다.
+        </p>
+        <label for="imgInput">이미지 선택 (여러 장 가능)</label>
+        <input id="imgInput" type="file" accept="image/*" multiple>
+
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="imgResizeBtn">선택한 이미지 4000px로 리사이즈</button>
+        </div>
+        <div id="imgMsg" class="error-msg" style="min-height:14px"></div>
+
+        <div id="imgResult" class="img-result-list" aria-live="polite">
+          아직 변환된 이미지가 없습니다.
+        </div>
       </div>
     </section>
 
@@ -497,6 +538,171 @@
           sec.classList.toggle('hidden', sec.id !== id);
         });
       });
+    });
+  })();
+
+  // ============================
+  // Image Optimizer (4000px cap)
+  // ============================
+  const DZ_MAX_DIM = 4000;           // 긴 변 최대 4000px
+  const DZ_UPLOAD_MIME = 'image/jpeg';
+  const DZ_UPLOAD_QUALITY = 0.9;     // 0~1 (0.9: 고화질 + 용량 절감)
+
+  function dzLoadImageFromFile(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload  = () => resolve(img);
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function dzDownscaleImageFile(file, maxDim = DZ_MAX_DIM){
+    if(!file.type.startsWith('image/')) return file; // 이미지가 아니면 그대로
+
+    const img = await dzLoadImageFromFile(file);
+    const w = img.naturalWidth  || img.width;
+    const h = img.naturalHeight || img.height;
+    const longest = Math.max(w, h);
+
+    // 이미 충분히 작은 경우: 원본 그대로
+    if(longest <= maxDim){
+      return file;
+    }
+
+    const scale   = maxDim / longest;
+    const targetW = Math.round(w * scale);
+    const targetH = Math.round(h * scale);
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, targetW, targetH);
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    const blob = await new Promise(resolve => {
+      canvas.toBlob(
+        b => resolve(b),
+        DZ_UPLOAD_MIME,
+        DZ_UPLOAD_QUALITY
+      );
+    });
+
+    const safeName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+    const resizedFile = new File([blob], safeName, {
+      type: DZ_UPLOAD_MIME,
+      lastModified: Date.now()
+    });
+
+    console.log(
+      `[DZ-RESIZE] "${file.name}" ${w}x${h} → "${safeName}" ${targetW}x${targetH}`
+    );
+
+    return resizedFile;
+  }
+
+  async function dzPrepareUploadFiles(fileList, maxDim = DZ_MAX_DIM){
+    const files = Array.from(fileList || []);
+    const out   = [];
+    for(const f of files){
+      try{
+        const processed = await dzDownscaleImageFile(f, maxDim);
+        out.push({ original:f, processed });
+      }catch(err){
+        console.error('[DZ-RESIZE] error:', err);
+        out.push({ original:f, processed:f });
+      }
+    }
+    return out;
+  }
+
+  (function(){
+    const input = $('#imgInput');
+    const btn   = $('#imgResizeBtn');
+    const msg   = $('#imgMsg');
+    const resultBox = $('#imgResult');
+    if(!input || !btn || !msg || !resultBox) return;
+
+    function fmtSize(bytes){
+      if(bytes === 0) return '0 KB';
+      if(!bytes && bytes !== 0) return '';
+      const kb = bytes / 1024;
+      if(kb < 1024) return kb.toFixed(1) + ' KB';
+      return (kb/1024).toFixed(2) + ' MB';
+    }
+
+    function clearUrls(){
+      // 기존 링크 URL 정리 (메모리 누수 방지)
+      const links = resultBox.querySelectorAll('a[data-url]');
+      links.forEach(a => {
+        const u = a.getAttribute('data-url');
+        if(u) URL.revokeObjectURL(u);
+      });
+    }
+
+    btn.addEventListener('click', async () => {
+      msg.textContent = '';
+      clearUrls();
+      const files = input.files;
+      if(!files || !files.length){
+        msg.textContent = '이미지 파일을 먼저 선택해 주세요.';
+        return;
+      }
+
+      msg.textContent = '이미지 리사이즈 중입니다... (브라우저 내 처리)';
+      resultBox.textContent = '';
+
+      try{
+        const processedList = await dzPrepareUploadFiles(files, DZ_MAX_DIM);
+
+        if(!processedList.length){
+          msg.textContent = '처리할 이미지가 없습니다.';
+          resultBox.textContent = '처리 결과가 없습니다.';
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+
+        processedList.forEach(({ original, processed }) => {
+          const url = URL.createObjectURL(processed);
+          const changed = (processed !== original);
+
+          const item = document.createElement('div');
+          item.className = 'img-result-item';
+          item.innerHTML = `
+            <div>
+              <strong>${processed.name}</strong>
+              ${changed
+                ? '<span style="color:#f4e8b3"> (리사이즈 완료)</span>'
+                : '<span style="color:#9fb0e3"> (원본 크기 유지)</span>'}
+            </div>
+            <div>
+              원본: ${original.name} (${fmtSize(original.size)}) → 결과: ${fmtSize(processed.size)}
+              &nbsp;|&nbsp;
+              <a href="${url}" data-url="${url}" download="${processed.name}">다운로드</a>
+            </div>
+          `;
+          frag.appendChild(item);
+        });
+
+        resultBox.textContent = '';
+        resultBox.appendChild(frag);
+        msg.textContent = '이미지 변환이 완료되었습니다. 링크를 눌러 파일을 저장한 뒤 /images/standard · /images/zoom에 업로드하세요.';
+      }catch(err){
+        console.error(err);
+        msg.textContent = '이미지 처리 중 오류가 발생했습니다. 다시 시도해 주세요.';
+        if(!resultBox.textContent.trim()){
+          resultBox.textContent = '오류로 인해 결과를 표시할 수 없습니다.';
+        }
+      }
     });
   })();
 
@@ -888,9 +1094,9 @@
       if(r.title_ko) headerLines.push(`# ${r.title_ko}`);
       if(r.title_en) headerLines.push(`# ${r.title_en}`);
       if(r.id) headerLines.push('');
-      const base = headerLines.join('\\n');
+      const base = headerLines.join('\n');
       const body = r.body || '';
-      rMdOut.value = body ? (base + '\\n\\n' + body) : (base + '\\n\\n(여기에 본문을 붙여넣으세요)');
+      rMdOut.value = body ? (base + '\n\n' + body) : (base + '\n\n(여기에 본문을 붙여넣으세요)');
     }
 
     if(delIdx !== null && delIdx !== undefined && delIdx !== ''){

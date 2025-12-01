@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,15 +14,15 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE ∮21 · Lightflow" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- Favicon (임시 이모지) -->
@@ -30,8 +30,14 @@
 
   <style>
   :root{
-    --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
-    --panel:#0f1630; --line:#1b2652; --max:1180px;
+    --bg:#070c1a;
+    --fg:#eaf0ff;
+    --gold:#e6c777;
+    --gold-soft:rgba(230,199,119,.18);
+    --muted:#a8b7e8;
+    --panel:#0f1630;
+    --line:#1b2652;
+    --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -49,7 +55,7 @@
   body.hybrid .ko,
   body.hybrid .en{display:inherit}
 
-  /* motion 줄이기 옵션 */
+  /* motion 줄이기 옵션 (오프라인·저사양 보호) */
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
     #waves{display:none !important}
@@ -58,7 +64,7 @@
   /* canvases */
   #waves{
     position:fixed;inset:0;pointer-events:none;
-    z-index:0;opacity:.42;
+    z-index:0;opacity:.38;
   }
 
   /* layout 공통 */
@@ -70,9 +76,9 @@
   /* header = 메인 콘솔 바 */
   header{
     position:sticky;top:0;z-index:5;
-    padding:10px 12px;
+    padding:10px 12px 8px;
     background:
-      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.82)),
+      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.84)),
       repeating-linear-gradient(
         0deg,
         rgba(255,255,255,.04) 0,
@@ -88,11 +94,20 @@
     color:var(--gold);
     text-align:center;
     font-size:clamp(18px,5vw,24px);
-    letter-spacing:.06em;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    text-shadow:0 0 18px rgba(230,199,119,.55);
+  }
+  .brand-sub{
+    margin-top:2px;
+    font-size:11px;
+    text-align:center;
+    color:#c4d2ff;
+    letter-spacing:.18em;
   }
   nav.primary{
     display:flex;gap:10px;justify-content:center;
-    margin-top:8px;flex-wrap:wrap;
+    margin-top:10px;flex-wrap:wrap;
   }
   nav.primary button{
     all:unset;cursor:pointer;
@@ -101,19 +116,22 @@
     border:1px solid rgba(140,165,230,.35);
     font-size:.92rem;
     letter-spacing:.03em;
-    background:radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,.0));
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,0.0));
     position:relative;
     overflow:hidden;
+    min-width:86px;
+    text-align:center;
   }
   nav.primary button::after{
     content:"";
     position:absolute;inset:0;
     background:linear-gradient(120deg,transparent,rgba(255,255,255,.18),transparent);
-    opacity:0;transform:translateX(-100%);
-    transition:transform .5s ease,opacity .5s ease;
+    opacity:0;transform:translateX(-120%);
+    transition:transform .45s ease,opacity .45s ease;
   }
   nav.primary button:hover::after{
-    opacity:1;transform:translateX(100%);
+    opacity:1;transform:translateX(120%);
   }
   nav.primary button:hover,
   nav.primary button.active{
@@ -135,6 +153,8 @@
     letter-spacing:.04em;
     text-transform:uppercase;
     background:radial-gradient(circle at top,rgba(110,150,255,.12),rgba(8,10,26,0));
+    min-width:56px;
+    text-align:center;
   }
   .lang button.active,
   .lang button:hover{
@@ -150,10 +170,11 @@
   .poemwrap{
     max-width:860px;margin:18px auto 0;
     text-align:left;
-    background:radial-gradient(circle at top,rgba(230,199,119,.08),rgba(16,22,48,.35));
-    border:1px solid rgba(60,85,150,.85);
-    border-radius:12px;
-    padding:14px;
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.10),rgba(16,22,48,.40));
+    border:1px solid rgba(60,85,150,.9);
+    border-radius:14px;
+    padding:16px 16px 18px;
     box-shadow:0 0 26px rgba(40,70,140,.55);
   }
   .poem p{margin:8px 0}
@@ -191,9 +212,9 @@
     box-shadow:0 0 18px rgba(230,199,119,.45);
   }
 
-  .tabpanel{display:none;animation:fade .28s ease}
+  .tabpanel{display:none;animation:fade .26s ease}
   .tabpanel.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
   .grid{
     display:grid;gap:10px;
@@ -209,19 +230,18 @@
     border:1px solid rgba(40,60,120,.9);
     border-radius:10px;
     overflow:hidden;
-    opacity:1;transform:translateY(0);
-    transition:opacity .55s,transform .55s,box-shadow .6s,border-color .4s;
+    transition:opacity .4s,transform .4s,box-shadow .45s,border-color .3s;
     position:relative;
   }
   .card::after{
     content:"";
     position:absolute;inset:0;
     background:radial-gradient(circle at center,rgba(255,255,255,.05),transparent 60%);
-    opacity:0;transition:opacity .4s ease;
+    opacity:0;transition:opacity .3s ease;
     pointer-events:none;
   }
   .card:hover{
-    box-shadow:0 0 18px rgba(230,199,119,.35);
+    box-shadow:0 0 16px rgba(230,199,119,.35);
     border-color:var(--gold);
   }
   .card:hover::after{opacity:1}
@@ -229,7 +249,6 @@
     width:100%;aspect-ratio:1/1;
     object-fit:cover;display:block;
     background:#050816;
-    transition:opacity .25s ease;
   }
 
   /* 3) REPORTS */
@@ -237,6 +256,7 @@
   .reports-omega .r-head{
     display:flex;gap:12px;align-items:center;
     justify-content:space-between;margin-bottom:12px;
+    flex-wrap:wrap;
   }
   .r-tabs{display:flex;gap:8px;flex-wrap:wrap}
   .r-tab{
@@ -252,6 +272,20 @@
     outline:2px solid #6aa3ff;
     background:linear-gradient(180deg,#1a2758,#0d1534);
     box-shadow:0 0 14px rgba(120,170,255,.55);
+  }
+  .r-toggle{
+    border-radius:999px;
+    border:1px solid #374278;
+    background:linear-gradient(180deg,#111a3b,#070b1c);
+    color:#e7ecff;
+    padding:6px 12px;
+    font-size:.86rem;
+    cursor:pointer;
+    display:flex;align-items:center;gap:4px;
+  }
+  .r-toggle:hover{
+    border-color:#4c5a9a;
+    box-shadow:0 0 8px rgba(110,150,255,.45);
   }
   .r-grid{display:grid;gap:12px}
   @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
@@ -397,6 +431,7 @@
     background:transparent;color:#f9e6b7;
     padding:.6rem .75rem;
     cursor:pointer;
+    font-size:.9rem;
   }
   .slide-wrap{
     overflow:hidden;
@@ -534,45 +569,26 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.17</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮21</div>
+    <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
-      <button type="button" data-target="works" class="active" aria-current="page">Works</button>
-      <button type="button" data-target="poem">Poem</button>
+      <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
+      <button type="button" data-target="works">Works</button>
       <button type="button" data-target="reports">Reports</button>
       <button type="button" id="tab-bio">Artist Bio</button>
     </nav>
 
     <div class="lang" aria-label="Language">
-      <button type="button" id="koBtn" class="active" aria-pressed="true">KR</button>
-      <button type="button" id="enBtn" aria-pressed="false">EN</button>
-      <button type="button" id="hyBtn" aria-pressed="false">KR+EN</button>
+      <button type="button" id="koBtn" class="active">KR</button>
+      <button type="button" id="enBtn">EN</button>
+      <button type="button" id="hyBtn">KR+EN</button>
     </div>
   </header>
 
   <main>
-    <!-- 1) WORKS – 최초 진입 시 바로 표시 -->
-    <section id="works" style="display:block">
-      <h2 class="ko">작품 아카이브</h2>
-      <h2 class="en">Artworks</h2>
-
-      <div class="tabs" role="tablist">
-        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
-        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
-        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
-      </div>
-
-      <div id="panel-pray" class="tabpanel active"></div>
-      <div id="panel-human" class="tabpanel"></div>
-      <div id="panel-rebirth" class="tabpanel"></div>
-      <div id="panel-exist" class="tabpanel"></div>
-      <div id="panel-cosmos" class="tabpanel"></div>
-    </section>
-
-    <!-- 2) POEM – 초기에는 숨김, 탭 클릭 시 표시 -->
-    <section id="poem" class="hero" style="display:none">
+    <!-- 1) POEM -->
+    <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
 
@@ -625,7 +641,27 @@
       </div>
     </section>
 
-    <!-- 3) REPORTS – 초기 숨김, 진입 시 데이터 로드 (개선 버전) -->
+    <!-- 2) WORKS -->
+    <section id="works" style="display:none">
+      <h2 class="ko">작품 아카이브</h2>
+      <h2 class="en">Artworks</h2>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
+        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
+        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
+        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
+        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
+      </div>
+
+      <div id="panel-pray" class="tabpanel active"></div>
+      <div id="panel-human" class="tabpanel"></div>
+      <div id="panel-rebirth" class="tabpanel"></div>
+      <div id="panel-exist" class="tabpanel"></div>
+      <div id="panel-cosmos" class="tabpanel"></div>
+    </section>
+
+    <!-- 3) REPORTS -->
     <section id="reports" style="display:none">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -644,19 +680,12 @@
         </div>
 
         <div id="reportGrid" class="r-grid"></div>
-        <div id="reportViewer" class="r-viewer" aria-live="polite">
-          <p class="ko" style="opacity:.85">
-            왼쪽 목록에서 보고서를 선택하면, 이 영역에 전체 텍스트가 표시됩니다.
-          </p>
-          <p class="en" style="opacity:.85">
-            Choose a report from the list to view its full text here.
-          </p>
-        </div>
+        <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
       </div>
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL -->
+  <!-- ARTIST BIO MODAL (텍스트 그대로) -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -849,13 +878,13 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Primary Navigation (Works / Poem / Reports)
+// Primary Navigation (Poem / Works / Reports)
 // =========================
 (function(){
-  const sections = ['works','poem','reports'];
+  const sections = ['poem','works','reports'];
 
   function showSection(id){
-    if(!sections.includes(id)) id = 'works';
+    if(!sections.includes(id)) id = 'poem';
 
     sections.forEach(secId => {
       const el = document.getElementById(secId);
@@ -884,7 +913,7 @@ const $  = (q, root) => (root || document).querySelector(q);
   });
 
   const hash = (location.hash || '').replace('#','');
-  const initial = ['works','poem','reports'].includes(hash) ? hash : 'works';
+  const initial = ['poem','works','reports'].includes(hash) ? hash : 'poem';
   showSection(initial);
 
   const bioTab = $('#tab-bio');
@@ -898,7 +927,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves (경량 버전 + 0.6초 지연 시작)
+// Background Waves (경량 버전: 단일 캔버스 · 2개 웨이브 · 30fps)
 // =========================
 (function(){
   const prefersReduced =
@@ -954,6 +983,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 
         ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
 
+        // 2개의 웨이브만 렌더링
         for(let k=0; k<2; k++){
           ctx.beginPath();
           for(let x=0; x<=window.innerWidth; x+=18){
@@ -985,10 +1015,7 @@ const $  = (q, root) => (root || document).querySelector(q);
   window.addEventListener('resize', resize, { passive:true });
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  // 초기 렌더링 방해 줄이기 위해 0.6초 후 시작
-  setTimeout(() => {
-    requestAnimationFrame(frame);
-  }, 600);
+  requestAnimationFrame(frame);
 })();
 
 // =========================
@@ -1086,7 +1113,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid) — 첫 8장은 fetchpriority=high
+// Works Loader (JSON → Grid)
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1161,7 +1188,7 @@ window.DZ_BIO = (function(){
     return path || standard;
   }
 
-  function cardHTML(w, index){
+  function cardHTML(w){
     const title = isKR()
       ? (w.title_kr || w.title_en || '')
       : (w.title_en || w.title_kr || '');
@@ -1179,14 +1206,10 @@ window.DZ_BIO = (function(){
     const altParts = [title, meta, size, year].filter(Boolean);
     const alt      = altParts.join(' · ');
 
-    const priorityAttrs = index < 8
-      ? 'loading="eager" fetchpriority="high"'
-      : 'loading="lazy" fetchpriority="auto"';
-
     return `
       <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
                data-title="${(title || '').replace(/"/g,'&quot;')}">
-        <img ${priorityAttrs} decoding="async"
+        <img loading="lazy" decoding="async"
              src="${standard.replace(/"/g,'&quot;')}"
              alt="${alt.replace(/"/g,'&quot;')}">
       </article>
@@ -1210,7 +1233,7 @@ window.DZ_BIO = (function(){
       return;
     }
 
-    const html = list.map((w,i) => cardHTML(w,i)).join('');
+    const html = list.map(cardHTML).join('');
     host.innerHTML = `<div class="grid">${html}</div>`;
     renderState[key] = true;
   }
@@ -1222,7 +1245,6 @@ window.DZ_BIO = (function(){
     });
   });
 
-  // 사이트 진입 시 Works 섹션이 기본 → pray 섹션 바로 로딩
   document.addEventListener('dz-section-change', e => {
     if(e.detail === 'works' && !initialTriggered){
       initialTriggered = true;
@@ -1230,7 +1252,6 @@ window.DZ_BIO = (function(){
     }
   });
 
-  // Works 내부 탭 전환
   $$('.tabs .tab').forEach(tab => {
     tab.addEventListener('click', () => {
       $$('.tabs .tab').forEach(x => x.classList.remove('active'));
@@ -1247,11 +1268,6 @@ window.DZ_BIO = (function(){
       }
     });
   });
-
-  // 해시로 #works로 직접 진입하는 경우도 대비
-  if((location.hash || '').replace('#','') === 'works'){
-    renderPanel('pray', false);
-  }
 })();
 
 // =========================
@@ -1391,7 +1407,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — 섹션 진입 시점에만 reports.json 로드 + MD 캐시
+// Reports (DCAR) — 섹션 진입 시점에만 reports.json 로드
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
@@ -1403,7 +1419,6 @@ window.DZ_BIO = (function(){
   let items = [];
   let currentCat = 'all';
   let reportsLoaded = false;
-  const reportBodyCache = {}; // id → raw markdown text 캐시
 
   function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, ch => (
@@ -1445,10 +1460,16 @@ window.DZ_BIO = (function(){
       items = [];
     }
     render(currentCat);
+
+    // 섹션이 준비되면 첫 번째 보고서를 자동으로 열어둠 (이전처럼)
+    if(items.length){
+      loadReport(items[0].id);
+    }
   }
 
   function render(cat){
     currentCat = cat;
+    viewer.innerHTML = '';
 
     const list = (cat === 'all')
       ? items
@@ -1492,37 +1513,11 @@ window.DZ_BIO = (function(){
     `).join('');
   }
 
-  function renderViewer(meta, text){
-    const header = `
-      <div class="r-viewer-header">
-        <div class="r-meta">
-          <span class="r-badge">${escapeHtml(meta.id)}</span>
-          <span class="r-badge pdf">PDF</span>
-        </div>
-        <h3 class="r-title">
-          <span class="ko">${escapeHtml(meta.title_ko)}</span>
-          <span class="en">${escapeHtml(meta.title_en)}</span>
-        </h3>
-        <p class="r-sub">${escapeHtml(meta.path)}</p>
-      </div>
-    `;
-    viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
-  }
-
   async function loadReport(id){
     const meta = findItem(id);
     if(!meta) return;
 
-    // 캐시에 있으면 바로 표시
-    if(reportBodyCache[id]){
-      renderViewer(meta, reportBodyCache[id]);
-      return;
-    }
-
-    viewer.innerHTML = `
-      <p class="ko" style="opacity:.85">보고서를 불러오는 중입니다...</p>
-      <p class="en" style="opacity:.85">Loading report text...</p>
-    `;
+    viewer.innerHTML = '';
 
     const path = meta.path;
 
@@ -1531,50 +1526,56 @@ window.DZ_BIO = (function(){
       if(!res.ok) throw new Error('fetch failed');
       const text = await res.text();
 
-      reportBodyCache[id] = text; // 캐시에 저장
-      renderViewer(meta, text);
-    }catch(_){
-      viewer.innerHTML = `
-        <p class="ko">보고서를 불러오는 중 오류가 발생했습니다.</p>
-        <p class="en">An error occurred while loading the report.</p>
+      const header = `
+        <div class="r-viewer-header">
+          <div class="r-meta">
+            <span class="r-badge">${escapeHtml(meta.id)}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">
+            <span class="ko">${escapeHtml(meta.title_ko)}</span>
+            <span class="en">${escapeHtml(meta.title_en)}</span>
+          </h3>
+          <p class="r-sub">${escapeHtml(path)}</p>
+        </div>
       `;
+
+      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+    }catch(_){
+      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
     }
   }
 
-  // 카테고리 탭 클릭
   $$('.r-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       $$('.r-tab').forEach(x => x.classList.remove('is-active'));
       tab.classList.add('is-active');
       const cat = tab.getAttribute('data-r') || 'all';
       render(cat);
+      // 탭을 바꾸면 첫 번째 항목을 다시 열어줌
+      const first = (cat === 'all' ? items[0] : items.find(x => x.cat === cat));
+      if(first) loadReport(first.id);
     });
   });
 
-  // 그리드에서 "전체 보기 / Open" 클릭
   grid.addEventListener('click', e => {
     const btn = e.target.closest('button[data-open]');
     if(!btn) return;
-    const id = btn.getAttribute('data-open');
-    if(id) loadReport(id);
+    const id   = btn.getAttribute('data-open');
+    if(id) loadReport(id); // 예전처럼: 새 창 없이 아래에서 완전히 열기
   });
 
-  // "Open Reports" 버튼: 섹션 상단으로 스크롤 + 데이터 로드
   toggle.addEventListener('click', () => {
     const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top, behavior:'smooth' });
-    toggle.setAttribute('aria-expanded','true');
-    loadData();
   });
 
-  // 네비게이션에서 Reports 섹션 진입 시 JSON 로드
   document.addEventListener('dz-section-change', e => {
     if(e.detail === 'reports'){
       loadData();
     }
   });
 
-  // URL이 #reports 로 시작되면 진입 시 바로 로드
   const initialHash = (location.hash || '').replace('#','');
   if(initialHash === 'reports'){
     loadData();

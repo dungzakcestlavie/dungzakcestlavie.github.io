@@ -48,6 +48,27 @@
     overflow-x:hidden;
   }
 
+  /* 🔹 바탕선(센터 라인) 추가 — 파동 위, 콘텐츠 아래 은은하게 */
+  body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:50%;
+    transform:translateX(-0.5px);
+    width:1px;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(143,170,255,.32),
+        rgba(230,199,119,.70),
+        rgba(5,8,20,0)
+      );
+    opacity:.45;
+    pointer-events:none;
+    z-index:1;
+  }
+
   /* 언어 토글: 텍스트는 .ko / .en 클래스로만 제어 (내용 변경 없음) */
   .ko,.en{display:inherit}
   body.korean .en{display:none}
@@ -810,13 +831,11 @@ Numerous private collections worldwide.</p>
     </div>
   </div>
 
-  <!-- LIGHTBOX -->
+  <!-- LIGHTBOX (◀ ▶ 화살표 제거 버전) -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
       <div id="lbCap" class="lb-caption"></div>
-      <button id="lbPrev" class="lb-arrow lb-prev">◀</button>
-      <button id="lbNext" class="lb-arrow lb-next">▶</button>
     </div>
     <button id="lbClose" class="lb-close">✕</button>
   </div>
@@ -1007,7 +1026,7 @@ const $  = (q, root) => (root || document).querySelector(q);
   let DPR = 1;
   let visible = true;
   let lastTime = 0;
-  const FRAME_INTERVAL = 1000 / 24; // 24fps로 더 가볍게
+  const FRAME_INTERVAL = 1000 / 24; // 24fps
 
   function resize(){
     DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
@@ -1363,56 +1382,44 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Lightbox (Artwork Zoom) — Works 영역만 이벤트 감지
+// Lightbox (Artwork Zoom) — 화살표 없이, 스크롤로 작품 선택
 // =========================
 (function(){
   const lb   = $('#lightbox');
   const img  = $('#lbImg');
   const cap  = $('#lbCap');
-  const prev = $('#lbPrev');
-  const next = $('#lbNext');
   const closeBtn = $('#lbClose');
   const worksSection = $('#works');
 
   if(!lb || !img || !worksSection) return;
 
-  let list = [];
-  let idx  = 0;
   let zoom = 1;
   let ox = 0, oy = 0;
   let dragging = false;
   let startX = 0, startY = 0;
 
-  function collectCards(){
-    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
-    if(!panel) { list = []; return; }
-    list = Array.from(panel.querySelectorAll('.card')).map(card => {
-      const zoomSrc = card.getAttribute('data-zoom');
-      const imgEl   = card.querySelector('img');
-      const alt     = imgEl ? imgEl.alt : (card.getAttribute('data-title') || '');
-      return { zoomSrc, alt, card };
-    }).filter(x => x.zoomSrc);
+  function applyTransform(){
+    img.style.transform = `translate(${ox}px,${oy}px) scale(${zoom})`;
+    img.style.cursor    = (zoom > 1 ? 'grab' : 'zoom-in');
   }
 
-  function openAt(i){
-    if(!list.length) return;
-    idx = (i + list.length) % list.length;
+  function openFromCard(card){
+    const zoomSrc = card.getAttribute('data-zoom');
+    const imgEl   = card.querySelector('img');
+    const alt     = imgEl ? imgEl.alt : (card.getAttribute('data-title') || '');
+    if(!zoomSrc) return;
 
-    const item = list[idx];
-    img.src    = item.zoomSrc;
-    img.alt    = item.alt || '';
-    cap.textContent = item.alt || '';
+    img.src = zoomSrc;
+    img.alt = alt || '';
+    cap.textContent = alt || '';
 
-    zoom = 1; ox = 0; oy = 0;
+    zoom = 1;
+    ox = 0;
+    oy = 0;
     applyTransform();
 
     lb.classList.add('on');
     lb.setAttribute('aria-hidden','false');
-  }
-
-  function applyTransform(){
-    img.style.transform = `translate(${ox}px,${oy}px) scale(${zoom})`;
-    img.style.cursor    = (zoom > 1 ? 'grab' : 'zoom-in');
   }
 
   function hide(){
@@ -1420,27 +1427,21 @@ window.DZ_BIO = (function(){
     lb.setAttribute('aria-hidden','true');
   }
 
-  // Works 영역에만 클릭 이벤트 위임
+  // Works 카드 클릭 → Lightbox 열기
   worksSection.addEventListener('click', e => {
     const card = e.target.closest('.card');
     if(!card) return;
-
-    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
-    const cards = panel ? Array.from(panel.querySelectorAll('.card')) : [];
-    collectCards();
-
-    const index = cards.indexOf(card);
-    openAt(index >= 0 ? index : 0);
+    openFromCard(card);
   });
 
-  if(prev) prev.addEventListener('click', () => openAt(idx - 1));
-  if(next) next.addEventListener('click', () => openAt(idx + 1));
   if(closeBtn) closeBtn.addEventListener('click', hide);
 
+  // 바깥 검은 영역 클릭 시 닫기
   lb.addEventListener('click', e => {
     if(e.target === lb) hide();
   });
 
+  // 휠 줌
   lb.addEventListener('wheel', e => {
     if(!lb.classList.contains('on')) return;
     e.preventDefault();
@@ -1451,7 +1452,8 @@ window.DZ_BIO = (function(){
     zoom = Math.min(5, Math.max(1, zoom * delta));
 
     if(zoom === 1){
-      ox = 0; oy = 0;
+      ox = 0;
+      oy = 0;
     }else{
       const rect = img.getBoundingClientRect();
       const cx = e.clientX - rect.left - rect.width/2 - ox;
@@ -1463,6 +1465,7 @@ window.DZ_BIO = (function(){
     applyTransform();
   }, { passive:false });
 
+  // 드래그로 이동
   img.addEventListener('mousedown', e => {
     if(zoom === 1) return;
     dragging = true;
@@ -1484,11 +1487,10 @@ window.DZ_BIO = (function(){
     if(zoom > 1) img.style.cursor = 'grab';
   });
 
+  // 키보드: ESC 닫기 / + - 줌
   window.addEventListener('keydown', e => {
     if(!lb.classList.contains('on')) return;
     if(e.key === 'Escape') hide();
-    else if(e.key === 'ArrowLeft')  openAt(idx - 1);
-    else if(e.key === 'ArrowRight') openAt(idx + 1);
     else if(e.key === '+'){
       zoom = Math.min(zoom*1.25, 5);
       applyTransform();
@@ -1840,3 +1842,4 @@ window.DZ_BIO = (function(){
   });
 })();
 </script>
+</html>

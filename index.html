@@ -862,9 +862,21 @@ const $  = (q, root) => (root || document).querySelector(q);
     else if(lang === 'en') body.classList.add('english');
     else body.classList.add('hybrid');
 
-    if(koBtn){ koBtn.classList.toggle('active', lang === 'ko'); koBtn.setAttribute('aria-pressed', lang === 'ko' ? 'true' : 'false'); }
-    if(enBtn){ enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
-    if(hyBtn){ hyBtn.classList.toggle('active', lang === 'hy'); hyBtn.setAttribute('aria-pressed', lang === 'hy' ? 'true' : 'false'); }
+    if(koBtn){
+      const on = lang === 'ko';
+      koBtn.classList.toggle('active', on);
+      koBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    if(enBtn){
+      const on = lang === 'en';
+      enBtn.classList.toggle('active', on);
+      enBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    if(hyBtn){
+      const on = lang === 'hy';
+      hyBtn.classList.toggle('active', on);
+      hyBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
 
     localStorage.setItem('dz_site_lang', lang);
     document.dispatchEvent(new CustomEvent('dz-lang-change', { detail: lang }));
@@ -880,9 +892,37 @@ const $  = (q, root) => (root || document).querySelector(q);
 
 // =========================
 // Primary Navigation (Poem / Works / Reports)
+// - 섹션 전환시 부드러운 페이드
 // =========================
 (function(){
   const sections = ['poem','works','reports'];
+  const headerEl = document.querySelector('header');
+
+  function animateShow(el){
+    if(!el) return;
+    el.style.display = 'block';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(8px)';
+    el.style.transition = 'none';
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity .26s ease, transform .26s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  }
+
+  function animateHide(el){
+    if(!el || el.style.display === 'none') return;
+    el.style.transition = 'opacity .22s ease, transform .22s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-4px)';
+    setTimeout(() => {
+      el.style.display = 'none';
+      el.style.opacity = '';
+      el.style.transform = '';
+      el.style.transition = '';
+    }, 230);
+  }
 
   function showSection(id){
     if(!sections.includes(id)) id = 'poem';
@@ -890,7 +930,13 @@ const $  = (q, root) => (root || document).querySelector(q);
     sections.forEach(secId => {
       const el = document.getElementById(secId);
       if(!el) return;
-      el.style.display = (secId === id) ? 'block' : 'none';
+      if(secId === id){
+        if(el.style.display !== 'block'){
+          animateShow(el);
+        }
+      }else{
+        animateHide(el);
+      }
     });
 
     $$('nav.primary button[data-target]').forEach(btn => {
@@ -899,6 +945,12 @@ const $  = (q, root) => (root || document).querySelector(q);
       if(active) btn.setAttribute('aria-current','page');
       else btn.removeAttribute('aria-current');
     });
+
+    // 섹션 바뀔 때 상단 근처로 부드럽게 스크롤
+    if(headerEl){
+      const top = headerEl.getBoundingClientRect().bottom + window.scrollY - 8;
+      window.scrollTo({ top, behavior:'smooth' });
+    }
 
     document.dispatchEvent(new CustomEvent('dz-section-change', { detail: id }));
   }
@@ -915,7 +967,18 @@ const $  = (q, root) => (root || document).querySelector(q);
 
   const hash = (location.hash || '').replace('#','');
   const initial = ['poem','works','reports'].includes(hash) ? hash : 'poem';
-  showSection(initial);
+  // 초기에는 바로 보여주기 (페이드 없이)
+  sections.forEach(secId => {
+    const el = document.getElementById(secId);
+    if(!el) return;
+    el.style.display = (secId === initial) ? 'block' : 'none';
+  });
+  $$('nav.primary button[data-target]').forEach(btn => {
+    const active = btn.getAttribute('data-target') === initial;
+    btn.classList.toggle('active', active);
+    if(active) btn.setAttribute('aria-current','page');
+  });
+  document.dispatchEvent(new CustomEvent('dz-section-change', { detail: initial }));
 
   const bioTab = $('#tab-bio');
   if(bioTab){
@@ -928,7 +991,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves (경량 버전)
+// Background Waves (경량 버전, 24fps)
 // =========================
 (function(){
   const prefersReduced =
@@ -944,7 +1007,7 @@ const $  = (q, root) => (root || document).querySelector(q);
   let DPR = 1;
   let visible = true;
   let lastTime = 0;
-  const FRAME_INTERVAL = 1000 / 30; // 30fps
+  const FRAME_INTERVAL = 1000 / 24; // 24fps로 더 가볍게
 
   function resize(){
     DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
@@ -998,10 +1061,10 @@ const $  = (q, root) => (root || document).querySelector(q);
           g.addColorStop(1,`hsla(${(hue + 40 + k*10)%360},60%,55%,.06)`);
 
           ctx.strokeStyle = g;
-          ctx.lineWidth   = 1 + k*0.4;
-          ctx.globalAlpha = 0.85 - k*0.18;
-          ctx.shadowBlur  = 8;
-          ctx.shadowColor = 'rgba(160,200,255,.18)';
+          ctx.lineWidth   = 0.9 + k*0.3;
+          ctx.globalAlpha = 0.8 - k*0.18;
+          ctx.shadowBlur  = 6;
+          ctx.shadowColor = 'rgba(160,200,255,.16)';
           ctx.stroke();
         }
         ctx.globalAlpha = 1;
@@ -1114,6 +1177,7 @@ window.DZ_BIO = (function(){
 
 // =========================
 // Works Loader (JSON → Grid)
+// - JSON 사전 프리로드 + 필요 패널만 렌더
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1133,27 +1197,40 @@ window.DZ_BIO = (function(){
   };
 
   let worksCache = null;
+  let worksPromise = null;
   const renderState = {
     pray:false, human:false, rebirth:false, exist:false, cosmos:false
   };
   let initialTriggered = false;
 
   function fetchJSON(url){
-    return fetch(url).then(r => {
+    return fetch(url, { cache:'force-cache' }).then(r => {
       if(!r.ok) throw new Error('Fetch error');
       return r.json();
     });
   }
 
-  async function getWorks(){
-    if(worksCache) return worksCache;
-    try {
-      const data = await fetchJSON('/data/works.json');
-      worksCache = data || {};
-    } catch(_){
-      worksCache = {};
-    }
-    return worksCache;
+  function getWorks(){
+    if(worksCache) return Promise.resolve(worksCache);
+    if(worksPromise) return worksPromise;
+
+    worksPromise = fetchJSON('/data/works.json')
+      .then(data => {
+        worksCache = data || {};
+        return worksCache;
+      })
+      .catch(() => {
+        worksCache = {};
+        return worksCache;
+      });
+    return worksPromise;
+  }
+
+  // 페이지가 한가할 때 미리 JSON만 받아두기 (Works 32점 빠른 첫 진입)
+  if('requestIdleCallback' in window){
+    requestIdleCallback(() => { getWorks(); });
+  }else{
+    setTimeout(() => { getWorks(); }, 1200);
   }
 
   function isKR(){
@@ -1209,7 +1286,7 @@ window.DZ_BIO = (function(){
     return `
       <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
                data-title="${(title || '').replace(/"/g,'&quot;')}">
-        <img loading="lazy" decoding="async"
+        <img loading="lazy" decoding="async" fetchpriority="low"
              src="${standard.replace(/"/g,'&quot;')}"
              alt="${alt.replace(/"/g,'&quot;')}">
       </article>
@@ -1219,13 +1296,11 @@ window.DZ_BIO = (function(){
   async function renderPanel(key, force){
     const host = PANELS[key];
     if(!host) return;
-
     if(renderState[key] && !force) return;
 
     const worksObj = await getWorks();
     const sectionName = SECTION_KEYS[key];
-    const listRaw = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
-    const list = listRaw;
+    const list = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
 
     if(!list.length){
       host.innerHTML = `<div class="grid"></div>`;
@@ -1233,11 +1308,11 @@ window.DZ_BIO = (function(){
       return;
     }
 
-    const html = list.map(cardHTML).join('');
-    host.innerHTML = `<div class="grid">${html}</div>`;
+    host.innerHTML = `<div class="grid">${list.map(cardHTML).join('')}</div>`;
     renderState[key] = true;
   }
 
+  // 언어 바뀌면 이미 렌더된 패널만 다시 렌더 (텍스트만 재구성)
   document.addEventListener('dz-lang-change', () => {
     if(!worksCache) return;
     Object.keys(renderState).forEach(key => {
@@ -1245,6 +1320,7 @@ window.DZ_BIO = (function(){
     });
   });
 
+  // Works 섹션 처음 열릴 때만 첫 패널 렌더
   document.addEventListener('dz-section-change', e => {
     if(e.detail === 'works' && !initialTriggered){
       initialTriggered = true;
@@ -1252,26 +1328,42 @@ window.DZ_BIO = (function(){
     }
   });
 
-  $$('.tabs .tab').forEach(tab => {
+  // Works 탭 전환 (버튼 이동시 매끄럽게)
+  const tabs = $$('.tabs .tab');
+  const panels = $$('.tabpanel');
+
+  tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      $$('.tabs .tab').forEach(x => x.classList.remove('active'));
+      const panelKey = tab.getAttribute('data-panel');
+      if(!panelKey) return;
+
+      tabs.forEach(x => x.classList.remove('active'));
       tab.classList.add('active');
 
-      $$('.tabpanel').forEach(p => p.classList.remove('active'));
-      const panelKey = tab.getAttribute('data-panel');
-      const panelId  = 'panel-' + panelKey;
-      const panelEl  = document.getElementById(panelId);
-      if(panelEl) panelEl.classList.add('active');
+      panels.forEach(p => {
+        if(p.id === 'panel-' + panelKey){
+          p.classList.add('active');
+        }else{
+          p.classList.remove('active');
+        }
+      });
 
-      if(panelKey && !renderState[panelKey]){
+      if(!renderState[panelKey]){
         renderPanel(panelKey, false);
+      }
+
+      // 탭 클릭 시 Works 상단으로 살짝 스크롤
+      const worksSec = $('#works');
+      if(worksSec){
+        const top = worksSec.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior:'smooth' });
       }
     });
   });
 })();
 
 // =========================
-// Lightbox (Artwork Zoom)
+// Lightbox (Artwork Zoom) — Works 영역만 이벤트 감지
 // =========================
 (function(){
   const lb   = $('#lightbox');
@@ -1280,8 +1372,9 @@ window.DZ_BIO = (function(){
   const prev = $('#lbPrev');
   const next = $('#lbNext');
   const closeBtn = $('#lbClose');
+  const worksSection = $('#works');
 
-  if(!lb || !img) return;
+  if(!lb || !img || !worksSection) return;
 
   let list = [];
   let idx  = 0;
@@ -1327,7 +1420,8 @@ window.DZ_BIO = (function(){
     lb.setAttribute('aria-hidden','true');
   }
 
-  document.addEventListener('click', e => {
+  // Works 영역에만 클릭 이벤트 위임
+  worksSection.addEventListener('click', e => {
     const card = e.target.closest('.card');
     if(!card) return;
 
@@ -1448,7 +1542,7 @@ window.DZ_BIO = (function(){
     reportsLoaded = true;
 
     try{
-      const res = await fetch('/reports/reports.json');
+      const res = await fetch('/reports/reports.json', { cache:'force-cache' });
       if(!res.ok) throw new Error('fetch failed');
       const data = await res.json();
       const arr = Array.isArray(data.reports) ? data.reports : [];

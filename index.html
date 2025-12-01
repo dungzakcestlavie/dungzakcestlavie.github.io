@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Σ.21</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -13,25 +13,16 @@
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
 
-  <!-- PWA / APP -->
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="DUNGZAK CESTLAVIE" />
-
-  <!-- Preload: Works JSON (앱 셸 진입 직후 바로 캐시용) -->
-  <link rel="preload" href="/data/works.json" as="fetch" crossorigin="anonymous" />
-
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Σ.21" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Σ.21" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE ∮21 · Lightflow" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Σ.21" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- Favicon (임시 이모지) -->
@@ -39,8 +30,14 @@
 
   <style>
   :root{
-    --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --muted:#a8b7e8;
-    --panel:#0f1630; --line:#1b2652; --max:1180px;
+    --bg:#070c1a;
+    --fg:#eaf0ff;
+    --gold:#e6c777;
+    --gold-soft:rgba(230,199,119,.18);
+    --muted:#a8b7e8;
+    --panel:#0f1630;
+    --line:#1b2652;
+    --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -58,7 +55,7 @@
   body.hybrid .ko,
   body.hybrid .en{display:inherit}
 
-  /* motion 줄이기 옵션 */
+  /* motion 줄이기 옵션 (오프라인·저사양 보호) */
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
     #waves{display:none !important}
@@ -67,7 +64,7 @@
   /* canvases */
   #waves{
     position:fixed;inset:0;pointer-events:none;
-    z-index:0;opacity:.42;
+    z-index:0;opacity:.38;
   }
 
   /* layout 공통 */
@@ -79,9 +76,9 @@
   /* header = 메인 콘솔 바 */
   header{
     position:sticky;top:0;z-index:5;
-    padding:10px 12px;
+    padding:10px 12px 8px;
     background:
-      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.82)),
+      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.84)),
       repeating-linear-gradient(
         0deg,
         rgba(255,255,255,.04) 0,
@@ -97,11 +94,20 @@
     color:var(--gold);
     text-align:center;
     font-size:clamp(18px,5vw,24px);
-    letter-spacing:.06em;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    text-shadow:0 0 18px rgba(230,199,119,.55);
+  }
+  .brand-sub{
+    margin-top:2px;
+    font-size:11px;
+    text-align:center;
+    color:#c4d2ff;
+    letter-spacing:.18em;
   }
   nav.primary{
     display:flex;gap:10px;justify-content:center;
-    margin-top:8px;flex-wrap:wrap;
+    margin-top:10px;flex-wrap:wrap;
   }
   nav.primary button{
     all:unset;cursor:pointer;
@@ -110,19 +116,22 @@
     border:1px solid rgba(140,165,230,.35);
     font-size:.92rem;
     letter-spacing:.03em;
-    background:radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,.0));
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,0.0));
     position:relative;
     overflow:hidden;
+    min-width:86px;
+    text-align:center;
   }
   nav.primary button::after{
     content:"";
     position:absolute;inset:0;
     background:linear-gradient(120deg,transparent,rgba(255,255,255,.18),transparent);
-    opacity:0;transform:translateX(-100%);
-    transition:transform .5s ease,opacity .5s ease;
+    opacity:0;transform:translateX(-120%);
+    transition:transform .45s ease,opacity .45s ease;
   }
   nav.primary button:hover::after{
-    opacity:1;transform:translateX(100%);
+    opacity:1;transform:translateX(120%);
   }
   nav.primary button:hover,
   nav.primary button.active{
@@ -144,6 +153,8 @@
     letter-spacing:.04em;
     text-transform:uppercase;
     background:radial-gradient(circle at top,rgba(110,150,255,.12),rgba(8,10,26,0));
+    min-width:56px;
+    text-align:center;
   }
   .lang button.active,
   .lang button:hover{
@@ -159,10 +170,11 @@
   .poemwrap{
     max-width:860px;margin:18px auto 0;
     text-align:left;
-    background:radial-gradient(circle at top,rgba(230,199,119,.08),rgba(16,22,48,.35));
-    border:1px solid rgba(60,85,150,.85);
-    border-radius:12px;
-    padding:14px;
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.10),rgba(16,22,48,.40));
+    border:1px solid rgba(60,85,150,.9);
+    border-radius:14px;
+    padding:16px 16px 18px;
     box-shadow:0 0 26px rgba(40,70,140,.55);
   }
   .poem p{margin:8px 0}
@@ -200,9 +212,9 @@
     box-shadow:0 0 18px rgba(230,199,119,.45);
   }
 
-  .tabpanel{display:none;animation:fade .28s ease}
+  .tabpanel{display:none;animation:fade .26s ease}
   .tabpanel.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
   .grid{
     display:grid;gap:10px;
@@ -218,19 +230,18 @@
     border:1px solid rgba(40,60,120,.9);
     border-radius:10px;
     overflow:hidden;
-    opacity:1;transform:translateY(0);
-    transition:opacity .55s,transform .55s,box-shadow .6s,border-color .4s;
+    transition:opacity .4s,transform .4s,box-shadow .45s,border-color .3s;
     position:relative;
   }
   .card::after{
     content:"";
     position:absolute;inset:0;
     background:radial-gradient(circle at center,rgba(255,255,255,.05),transparent 60%);
-    opacity:0;transition:opacity .4s ease;
+    opacity:0;transition:opacity .3s ease;
     pointer-events:none;
   }
   .card:hover{
-    box-shadow:0 0 18px rgba(230,199,119,.35);
+    box-shadow:0 0 16px rgba(230,199,119,.35);
     border-color:var(--gold);
   }
   .card:hover::after{opacity:1}
@@ -238,7 +249,6 @@
     width:100%;aspect-ratio:1/1;
     object-fit:cover;display:block;
     background:#050816;
-    transition:opacity .25s ease;
   }
 
   /* 3) REPORTS */
@@ -246,6 +256,7 @@
   .reports-omega .r-head{
     display:flex;gap:12px;align-items:center;
     justify-content:space-between;margin-bottom:12px;
+    flex-wrap:wrap;
   }
   .r-tabs{display:flex;gap:8px;flex-wrap:wrap}
   .r-tab{
@@ -261,6 +272,20 @@
     outline:2px solid #6aa3ff;
     background:linear-gradient(180deg,#1a2758,#0d1534);
     box-shadow:0 0 14px rgba(120,170,255,.55);
+  }
+  .r-toggle{
+    border-radius:999px;
+    border:1px solid #374278;
+    background:linear-gradient(180deg,#111a3b,#070b1c);
+    color:#e7ecff;
+    padding:6px 12px;
+    font-size:.86rem;
+    cursor:pointer;
+    display:flex;align-items:center;gap:4px;
+  }
+  .r-toggle:hover{
+    border-color:#4c5a9a;
+    box-shadow:0 0 8px rgba(110,150,255,.45);
   }
   .r-grid{display:grid;gap:12px}
   @media(min-width:680px){.r-grid{grid-template-columns:repeat(2,1fr)}}
@@ -406,6 +431,7 @@
     background:transparent;color:#f9e6b7;
     padding:.6rem .75rem;
     cursor:pointer;
+    font-size:.9rem;
   }
   .slide-wrap{
     overflow:hidden;
@@ -488,20 +514,14 @@
     display:flex;gap:18px;flex-wrap:wrap;
     justify-content:center;margin-bottom:10px;
   }
-  .links button{
-    color:#cfe0ff;
+  .links a{
+    color:#cfe0ff;text-decoration:none;
     border-radius:999px;
-    padding:8px 14px;
+    padding:6px 12px;
     border:1px solid rgba(120,150,230,.4);
     font-size:.9rem;
-    background:transparent;
-    display:flex;align-items:center;gap:6px;
-    cursor:pointer;
   }
-  .links button span.icon{
-    font-size:1.05rem;
-  }
-  .links button:hover{
+  .links a:hover{
     color:#0a1230;
     background:linear-gradient(140deg,#f5e0a0,#e6c777);
     border-color:#f0de98;
@@ -549,45 +569,26 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Σ.21</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮21</div>
+    <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
-      <button type="button" data-target="works" class="active" aria-current="page">Works</button>
-      <button type="button" data-target="poem">Poem</button>
+      <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
+      <button type="button" data-target="works">Works</button>
       <button type="button" data-target="reports">Reports</button>
       <button type="button" id="tab-bio">Artist Bio</button>
     </nav>
 
     <div class="lang" aria-label="Language">
-      <button type="button" id="koBtn" class="active" aria-pressed="true">KR</button>
-      <button type="button" id="enBtn" aria-pressed="false">EN</button>
-      <button type="button" id="hyBtn" aria-pressed="false">KR+EN</button>
+      <button type="button" id="koBtn" class="active">KR</button>
+      <button type="button" id="enBtn">EN</button>
+      <button type="button" id="hyBtn">KR+EN</button>
     </div>
   </header>
 
   <main>
-    <!-- 1) WORKS – 최초 진입 시 바로 표시 -->
-    <section id="works" style="display:block">
-      <h2 class="ko">작품 아카이브</h2>
-      <h2 class="en">Artworks</h2>
-
-      <div class="tabs" role="tablist">
-        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
-        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
-        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
-      </div>
-
-      <div id="panel-pray" class="tabpanel active"></div>
-      <div id="panel-human" class="tabpanel"></div>
-      <div id="panel-rebirth" class="tabpanel"></div>
-      <div id="panel-exist" class="tabpanel"></div>
-      <div id="panel-cosmos" class="tabpanel"></div>
-    </section>
-
-    <!-- 2) POEM – 불변 텍스트 (〈파리의 센느강〉) -->
-    <section id="poem" class="hero" style="display:none">
+    <!-- 1) POEM -->
+    <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
 
@@ -640,7 +641,27 @@
       </div>
     </section>
 
-    <!-- 3) REPORTS – 미학 보고서 DCAR -->
+    <!-- 2) WORKS -->
+    <section id="works" style="display:none">
+      <h2 class="ko">작품 아카이브</h2>
+      <h2 class="en">Artworks</h2>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
+        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
+        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
+        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
+        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
+      </div>
+
+      <div id="panel-pray" class="tabpanel active"></div>
+      <div id="panel-human" class="tabpanel"></div>
+      <div id="panel-rebirth" class="tabpanel"></div>
+      <div id="panel-exist" class="tabpanel"></div>
+      <div id="panel-cosmos" class="tabpanel"></div>
+    </section>
+
+    <!-- 3) REPORTS -->
     <section id="reports" style="display:none">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -664,7 +685,7 @@
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL (불변 텍스트) -->
+  <!-- ARTIST BIO MODAL (텍스트 그대로) -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -708,7 +729,7 @@
           <br><p><strong>국외 주요전시</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
           <p>2015 모스크바 국제공항 『삶과 예술의 간격』, 모스크바, 러시아</p>
-          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 &amp; 전시, 베트남</p>
+          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 & 전시, 베트남</p>
           <p>2011 Open Art in Amsterdam, 네덜란드</p>
           <p>2006 Linka Gallery, 암스테르담, 네덜란드</p>
           <p>2005 Lune Cafe, 몽파르나스, 파리, 프랑스</p>
@@ -741,13 +762,13 @@
           <p>2009 Art Gallery You, Busan, Republic of Korea</p>
           <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
           <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+          <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
           <p>2000 Gallery Soho, Busan, Republic of Korea</p>
           <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
           <br><p><strong>Major International Exhibitions</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
           <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
+          <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
           <p>2011 Open Art in Amsterdam, Netherlands</p>
           <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
           <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
@@ -802,13 +823,12 @@ Numerous private collections worldwide.</p>
   <!-- SOUND PLAYER -->
   <div id="fftBar"><span></span></div>
   <div id="ctrl">
-    <button id="soundBtn" class="ctrlbtn" aria-label="Play ambient sound">✨</button>
-    <button id="soundStopBtn" class="ctrlbtn" disabled aria-label="Stop ambient sound">🔇</button>
+    <button id="soundBtn" class="ctrlbtn">✨</button>
+    <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
   </div>
 
-  <!-- FOOTER + 직관적 링크 + 초간단 QR 영역 -->
+  <!-- FOOTER -->
   <footer>
-    <!-- 직관적 텍스트 링크 (탭/모바일 최적) -->
     <div class="links">
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
       <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
@@ -817,359 +837,957 @@ Numerous private collections worldwide.</p>
       <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
     </div>
 
-    <!-- 초경량 QR (정적 이미지만 로딩: /qr/*.svg 만 준비하면 오프라인에서도 즉시 표시) -->
-    <div class="qr-links" style="
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:12px;
-      margin:10px auto 4px;
-      max-width:420px;
-    ">
-      <figure style="margin:0; text-align:center; font-size:11px; color:#9fb0d8;">
-        <img src="/qr/flickr-dungzak.svg" alt="Flickr QR" loading="lazy" decoding="async" style="width:56px;height:56px;display:block;margin:0 auto 4px;background:#020312;border-radius:10px;">
-        <figcaption>Flickr</figcaption>
-      </figure>
-      <figure style="margin:0; text-align:center; font-size:11px; color:#9fb0d8;">
-        <img src="/qr/instagram-dungzak.svg" alt="Instagram QR" loading="lazy" decoding="async" style="width:56px;height:56px;display:block;margin:0 auto 4px;background:#020312;border-radius:10px;">
-        <figcaption>Instagram</figcaption>
-      </figure>
-      <figure style="margin:0; text-align:center; font-size:11px; color:#9fb0d8;">
-        <img src="/qr/youtube-dungzak.svg" alt="YouTube QR" loading="lazy" decoding="async" style="width:56px;height:56px;display:block;margin:0 auto 4px;background:#020312;border-radius:10px;">
-        <figcaption>YouTube</figcaption>
-      </figure>
-      <figure style="margin:0; text-align:center; font-size:11px; color:#9fb0d8;">
-        <img src="/qr/naver-info.svg" alt="Naver Info QR" loading="lazy" decoding="async" style="width:56px;height:56px;display:block;margin:0 auto 4px;background:#020312;border-radius:10px;">
-        <figcaption>Naver Info</figcaption>
-      </figure>
-      <figure style="margin:0; text-align:center; font-size:11px; color:#9fb0d8;">
-        <img src="/qr/email-dungzak.svg" alt="Email QR" loading="lazy" decoding="async" style="width:56px;height:56px;display:block;margin:0 auto 4px;background:#020312;border-radius:10px;">
-        <figcaption>Email</figcaption>
-      </figure>
-    </div>
-
     <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">©DUNGZAK CESTLAVIE</small>
-  </footer> <script>
-/* ============================================================
-   0) SERVICE WORKER (OFFLINE MODE)
-============================================================ */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
+  </footer>  <script>
+// =========================
+// Shorthands
+// =========================
+const $$ = (q, root) => Array.from((root || document).querySelectorAll(q));
+const $  = (q, root) => (root || document).querySelector(q);
 
-/* ============================================================
-   1) SHORTCUTS
-============================================================ */
-const $  = (q, r=document) => r.querySelector(q);
-const $$ = (q, r=document) => [...r.querySelectorAll(q)];
+// =========================
+// Site Language (KR / EN / HYBRID)
+// =========================
+(function(){
+  const body  = document.body;
+  const koBtn = $('#koBtn');
+  const enBtn = $('#enBtn');
+  const hyBtn = $('#hyBtn');
 
-/* ============================================================
-   2) LANGUAGE TOGGLE (KR / EN / BOTH)
-============================================================ */
-const bodyEl = document.body;
-$('#koBtn').onclick = ()=>{ bodyEl.className='korean'; setLangBtn('koBtn'); };
-$('#enBtn').onclick = ()=>{ bodyEl.className='english'; setLangBtn('enBtn'); };
-$('#hyBtn').onclick = ()=>{ bodyEl.className='hybrid'; setLangBtn('hyBtn'); };
+  function setSiteLang(lang){ // 'ko' | 'en' | 'hy'
+    body.classList.remove('korean','english','hybrid');
+    if(lang === 'ko') body.classList.add('korean');
+    else if(lang === 'en') body.classList.add('english');
+    else body.classList.add('hybrid');
 
-function setLangBtn(active){
-  ['koBtn','enBtn','hyBtn'].forEach(id=>{
-    const b = $('#'+id);
-    b.classList.toggle('active', id===active);
-    b.setAttribute('aria-pressed', id===active);
-  });
-}
+    if(koBtn){ koBtn.classList.toggle('active', lang === 'ko'); koBtn.setAttribute('aria-pressed', lang === 'ko' ? 'true' : 'false'); }
+    if(enBtn){ enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
+    if(hyBtn){ hyBtn.classList.toggle('active', lang === 'hy'); hyBtn.setAttribute('aria-pressed', lang === 'hy' ? 'true' : 'false'); }
 
-/* ============================================================
-   3) SECTION TABS (WORKS / POEM / REPORTS / BIO)
-============================================================ */
-const sections = {
-  works: $('#works'),
-  poem: $('#poem'),
-  reports: $('#reports')
-};
-
-$$('nav.primary button').forEach(btn=>{
-  btn.onclick = ()=>{
-    const t = btn.dataset.target;
-    if(t){
-      // show section
-      Object.keys(sections).forEach(k=>{
-        sections[k].style.display = (k===t ? 'block':'none');
-      });
-      // update active class
-      $$('nav.primary button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-
-      if(t==='reports') loadReports();
-    }
-    if(btn.id === 'tab-bio'){
-      openBio();
-    }
-  };
-});
-
-/* ============================================================
-   4) WORKS LOAD (32 images optimised)
-============================================================ */
-const panels = {
-  pray:   $('#panel-pray'),
-  human:  $('#panel-human'),
-  rebirth:$('#panel-rebirth'),
-  exist:  $('#panel-exist'),
-  cosmos: $('#panel-cosmos')
-};
-
-async function loadWorks(){
-  try{
-    const r = await fetch('/data/works.json');
-    const data = await r.json();
-    renderWorks(data);
-  } catch(e){}
-}
-loadWorks();
-
-function renderWorks(data){
-  Object.keys(panels).forEach(key=>{
-    const list = data[key] || [];
-    const html = list.map((w,i)=>`
-      <figure class="card" data-zoom="${w.zoom}" data-cap="${escapeHTML(w.caption)}">
-        <img 
-          src="${w.image}" 
-          alt="${escapeHTML(w.title_kr)}"
-          loading="${i<8?'eager':'lazy'}"
-          decoding="async"
-        >
-      </figure>
-    `).join('');
-    panels[key].innerHTML = `<div class="grid">${html}</div>`;
-  });
-  attachWorksEvents();
-}
-
-function escapeHTML(t){
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-}
-
-function attachWorksEvents(){
-  $$('.card').forEach(card=>{
-    card.onclick = ()=>{
-      openLightbox(card.dataset.zoom, card.dataset.cap);
-    };
-  });
-
-  // tabs for panels
-  $$('.tab').forEach(tab=>{
-    tab.onclick = ()=>{
-      $$('.tab').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      const p = tab.dataset.panel;
-      $$('.tabpanel').forEach(tp=>tp.classList.remove('active'));
-      $('#panel-'+p).classList.add('active');
-    };
-  });
-}
-
-/* ============================================================
-   5) LIGHTBOX (이전/다음 포함)
-============================================================ */
-const lb = $('#lightbox');
-const lbImg = $('#lbImg');
-const lbCap = $('#lbCap');
-let lbList = [];
-let lbIndex = 0;
-
-function openLightbox(src, cap){
-  const cards = $$('.card');
-  lbList = cards.map(c=>({src:c.dataset.zoom,cap:c.dataset.cap}));
-  lbIndex = lbList.findIndex(x=>x.src===src);
-  showLB(lbIndex);
-  lb.dataset.show='1';
-  lb.removeAttribute('hidden');
-  document.body.style.overflow='hidden';
-}
-
-function showLB(i){
-  const item = lbList[i];
-  lbImg.src = item.src;
-  lbCap.innerHTML = item.cap;
-}
-
-$('#lbClose').onclick = closeLB;
-function closeLB(){
-  lb.setAttribute('hidden','');
-  document.body.style.overflow='';
-}
-
-$('#lbPrev').onclick = ()=>{
-  lbIndex = (lbIndex -1 + lbList.length) % lbList.length;
-  showLB(lbIndex);
-};
-$('#lbNext').onclick = ()=>{
-  lbIndex = (lbIndex +1) % lbList.length;
-  showLB(lbIndex);
-};
-
-/* ============================================================
-   6) REPORTS AUTO LOADER
-============================================================ */
-let reportsLoaded=false;
-
-async function loadReports(){
-  if(reportsLoaded) return;
-  reportsLoaded = true;
-  try{
-    const r = await fetch('/reports/reports.json');
-    const list = await r.json();
-    renderReports(list);
-  }catch(e){}
-}
-
-function renderReports(list){
-  const grid = $('#reportGrid');
-  grid.innerHTML = list.map(rep=>`
-    <div class="r-card" data-file="${rep.file}">
-      <div class="r-title">${rep.title}</div>
-      <div class="r-tags">${rep.tags.join(', ')}</div>
-    </div>
-  `).join('');
-
-  $$('.r-card').forEach(card=>{
-    card.onclick = ()=> openReport(card.dataset.file);
-  });
-}
-
-async function openReport(file){
-  const viewer = $('#reportViewer');
-  viewer.innerHTML = '<p style="opacity:.7">Loading...</p>';
-  try{
-    const r = await fetch('/reports/'+file);
-    const t = await r.text();
-    viewer.innerHTML = mdToHTML(t);
-  }catch(e){
-    viewer.innerHTML='<p>Error loading report.</p>';
+    localStorage.setItem('dz_site_lang', lang);
+    document.dispatchEvent(new CustomEvent('dz-lang-change', { detail: lang }));
   }
-}
 
-function mdToHTML(md){
-  return md
-    .replace(/^# (.*$)/gim,'<h1>$1</h1>')
-    .replace(/^## (.*$)/gim,'<h2>$1</h2>')
-    .replace(/^### (.*$)/gim,'<h3>$1</h3>')
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/\n$/g,'<br>');
-}
+  if(koBtn) koBtn.addEventListener('click', () => setSiteLang('ko'));
+  if(enBtn) enBtn.addEventListener('click', () => setSiteLang('en'));
+  if(hyBtn) hyBtn.addEventListener('click', () => setSiteLang('hy'));
 
-/* ============================================================
-   7) ARTIST BIO MODAL
-============================================================ */
-const bioModal = $('#bio-modal');
-const expoSlide = $('#expoSlide');
-const expoToggle = $('#expoToggle');
-const bioLangBtns = $$('.bio-lang .lang');
+  const saved = localStorage.getItem('dz_site_lang') || 'ko';
+  setSiteLang(saved);
+})();
 
-function openBio(){
-  bioModal.hidden=false;
-  bioModal.classList.add('open');
-  document.body.style.overflow='hidden';
-}
+// =========================
+// Primary Navigation (Poem / Works / Reports)
+// =========================
+(function(){
+  const sections = ['poem','works','reports'];
 
-$('.bio-close').onclick = closeBio;
-$('.bio-backdrop').onclick = closeBio;
+  function showSection(id){
+    if(!sections.includes(id)) id = 'poem';
 
-function closeBio(){
-  bioModal.classList.remove('open');
-  bioModal.hidden=true;
-  document.body.style.overflow='';
-}
-
-expoToggle.onclick = ()=>{
-  const open = expoSlide.dataset.open==='true';
-  expoSlide.dataset.open = (!open)+'';  
-  expoToggle.setAttribute('aria-expanded',(!open)+'');
-};
-
-bioLangBtns.forEach(btn=>{
-  btn.onclick = ()=>{
-    bioLangBtns.forEach(b=>{
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed','false');
+    sections.forEach(secId => {
+      const el = document.getElementById(secId);
+      if(!el) return;
+      el.style.display = (secId === id) ? 'block' : 'none';
     });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed','true');
 
-    const lang = btn.dataset.bioLang;
-    $$('.bio-body.ko').forEach(el=>el.style.display = (lang==='kr'?'block':'none'));
-    $$('.bio-body.en').forEach(el=>el.style.display = (lang==='en'?'block':'none'));
-  };
-});
+    $$('nav.primary button[data-target]').forEach(btn => {
+      const active = btn.getAttribute('data-target') === id;
+      btn.classList.toggle('active', active);
+      if(active) btn.setAttribute('aria-current','page');
+      else btn.removeAttribute('aria-current');
+    });
 
-/* ============================================================
-   8) BACKGROUND WAVE ANIMATION
-============================================================ */
-const canvas = document.getElementById('waves');
-const ctx = canvas.getContext('2d');
-let W,H,t=0;
-
-function resize(){
-  W=canvas.width=window.innerWidth;
-  H=canvas.height=window.innerHeight;
-}
-resize();
-window.onresize=resize;
-
-function wave(){
-  t+=0.015;
-  ctx.clearRect(0,0,W,H);
-  for(let i=0;i<3;i++){
-    ctx.beginPath();
-    ctx.moveTo(0, H/2);
-    for(let x=0;x<W;x+=20){
-      const y = H/2 + Math.sin(x*0.01 + t + i)*30;
-      ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle=`rgba(230,199,119,${0.08+i*0.03})`;
-    ctx.lineWidth=1.2;
-    ctx.stroke();
+    document.dispatchEvent(new CustomEvent('dz-section-change', { detail: id }));
   }
-  requestAnimationFrame(wave);
-}
-wave();
 
-/* ============================================================
-   9) AMBIENT SOUND (COSMIC RESONANCE)
-============================================================ */
-let audio = new Audio('/sound/cosmic.mp3');
-audio.loop=true;
-
-$('#soundBtn').onclick = ()=>{
-  audio.play();
-  $('#soundBtn').disabled=true;
-  $('#soundStopBtn').disabled=false;
-};
-
-$('#soundStopBtn').onclick = ()=>{
-  audio.pause();
-  $('#soundBtn').disabled=false;
-  $('#soundStopBtn').disabled=true;
-};
-
-/* ============================================================
-   10) FOOTER INSTANT TOUCH LINKS
-============================================================ */
-$$('footer a').forEach(a=>{
-  a.addEventListener('touchstart', e=>{
-    e.preventDefault();
-    window.location.href = a.href;
+  $$('nav.primary button[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      if(target) {
+        history.replaceState(null, '', '#' + target);
+        showSection(target);
+      }
+    });
   });
-});
 
-/* ============================================================
-   11) TOUCH IMPROVEMENTS (instant tap)
-============================================================ */
-document.addEventListener('touchstart',()=>{}, {passive:true});
+  const hash = (location.hash || '').replace('#','');
+  const initial = ['poem','works','reports'].includes(hash) ? hash : 'poem';
+  showSection(initial);
 
-</script>
+  const bioTab = $('#tab-bio');
+  if(bioTab){
+    bioTab.addEventListener('click', () => {
+      if(window.DZ_BIO && typeof window.DZ_BIO.open === 'function'){
+        window.DZ_BIO.open();
+      }
+    });
+  }
+})();
+
+// =========================
+// Background Waves (경량 버전: 단일 캔버스 · 2개 웨이브 · 30fps)
+// =========================
+(function(){
+  const prefersReduced =
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const wavesCanvas = $('#waves');
+  if(prefersReduced || !wavesCanvas) return;
+
+  const ctx = wavesCanvas.getContext('2d', { alpha: true });
+  if(!ctx) return;
+
+  let DPR = 1;
+  let visible = true;
+  let lastTime = 0;
+  const FRAME_INTERVAL = 1000 / 30; // 30fps
+
+  function resize(){
+    DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
+    ctx.canvas.width  = Math.floor(window.innerWidth * DPR);
+    ctx.canvas.height = Math.floor(window.innerHeight * DPR);
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.scale(1 / DPR, 1 / DPR);
+  }
+
+  function waveY(x, bandIndex, t){
+    const f1 = 0.003 + bandIndex*0.0005;
+    const a1 = 18 + bandIndex*7;
+    const drift = t * (0.6 + bandIndex*0.12);
+    const base = window.innerHeight*0.32 + bandIndex*110 + Math.sin(t*0.35 + bandIndex)*8;
+    const u = x / window.innerWidth;
+    const curve = 0.9 + (u*u*(3-2*u))*0.16;
+    return base + Math.sin(x*f1 + drift)*a1*curve;
+  }
+
+  function frame(now){
+    if(!visible){
+      requestAnimationFrame(frame);
+    }else{
+      if(now - lastTime >= FRAME_INTERVAL){
+        lastTime = now;
+        const t = now * 0.001;
+
+        const cycle = (t % 24);
+        let hue;
+        if(cycle < 10){
+          hue = 205 + (255-205)*(cycle/10);
+        }else if(cycle < 17){
+          hue = 255 + (48-255)*((cycle-10)/7);
+        }else{
+          hue = 48 + (205-48)*((cycle-17)/7);
+        }
+
+        ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+        // 2개의 웨이브만 렌더링
+        for(let k=0; k<2; k++){
+          ctx.beginPath();
+          for(let x=0; x<=window.innerWidth; x+=18){
+            const y = waveY(x,k,t);
+            if(x === 0) ctx.moveTo(x,y);
+            else        ctx.lineTo(x,y);
+          }
+          const y0 = waveY(0,k,t);
+          const g = ctx.createLinearGradient(0,y0-110,0,y0+110);
+          g.addColorStop(0,`hsla(${(hue + k*10)%360},60%,70%,.10)`);
+          g.addColorStop(0.5,'hsla(45,70%,68%,.24)');
+          g.addColorStop(1,`hsla(${(hue + 40 + k*10)%360},60%,55%,.06)`);
+
+          ctx.strokeStyle = g;
+          ctx.lineWidth   = 1 + k*0.4;
+          ctx.globalAlpha = 0.85 - k*0.18;
+          ctx.shadowBlur  = 8;
+          ctx.shadowColor = 'rgba(160,200,255,.18)';
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur  = 0;
+      }
+      requestAnimationFrame(frame);
+    }
+  }
+
+  resize();
+  window.addEventListener('resize', resize, { passive:true });
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+  requestAnimationFrame(frame);
+})();
+
+// =========================
+// Artist Bio Modal (DZ_BIO)
+// =========================
+window.DZ_BIO = (function(){
+  const modal      = $('#bio-modal');
+  if(!modal) return { open(){}, close(){} };
+
+  const closeBtn   = $('.bio-close', modal);
+  const backdrop   = $('.bio-backdrop', modal);
+  const langBtns   = $$('.bio-lang .lang', modal);
+  const expoToggle = $('#expoToggle');
+  const expoSlide  = $('#expoSlide');
+  const headKo     = $('.bio-head .ko', modal);
+  const headEn     = $('.bio-head .en', modal);
+
+  const expoKoSpan = expoToggle ? $('.ko', expoToggle) : null;
+  const expoEnSpan = expoToggle ? $('.en', expoToggle) : null;
+
+  function setBioLang(code){ // 'kr' | 'en'
+    const isKR = (code === 'kr');
+
+    if(headKo) headKo.style.display = isKR ? 'block' : 'none';
+    if(headEn) headEn.style.display = isKR ? 'none'  : 'block';
+
+    $$('.bio-body.ko', modal).forEach(n => n.style.display = isKR ? 'block' : 'none');
+    $$('.bio-body.en', modal).forEach(n => n.style.display = isKR ? 'none'  : 'block');
+
+    if(expoKoSpan) expoKoSpan.style.display = isKR ? 'inline' : 'none';
+    if(expoEnSpan) expoEnSpan.style.display = isKR ? 'none'  : 'inline';
+
+    langBtns.forEach(btn => {
+      const active = btn.getAttribute('data-bio-lang') === code;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    localStorage.setItem('dz_bio_lang', code);
+  }
+
+  function setExpoOpen(open){
+    if(!expoSlide || !expoToggle) return;
+    expoSlide.setAttribute('data-open', open ? 'true' : 'false');
+    expoToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function open(){
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    let siteLang = 'kr';
+    if(document.body.classList.contains('english')) siteLang = 'en';
+
+    const saved = localStorage.getItem('dz_bio_lang') || (siteLang === 'en' ? 'en' : 'kr');
+    setBioLang(saved);
+    setExpoOpen(false);
+  }
+
+  function close(){
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  if(closeBtn) closeBtn.addEventListener('click', close);
+  if(backdrop) backdrop.addEventListener('click', close);
+
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.getAttribute('data-bio-lang');
+      if(code) setBioLang(code);
+    });
+  });
+
+  if(expoToggle){
+    expoToggle.addEventListener('click', () => {
+      const isOpen = expoToggle.getAttribute('aria-expanded') === 'true';
+      setExpoOpen(!isOpen);
+    });
+  }
+
+  window.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && !modal.hidden) close();
+  });
+
+  document.addEventListener('dz-lang-change', e => {
+    const pref = localStorage.getItem('dz_bio_lang');
+    if(!pref){
+      const site = e.detail === 'en' ? 'en' : 'kr';
+      setBioLang(site);
+    }
+  });
+
+  return { open, close, setBioLang, setExpoOpen };
+})();
+
+// =========================
+// Works Loader (JSON → Grid)
+// =========================
+(function(){
+  const SECTION_KEYS = {
+    pray   : 'Light & Memory',
+    human  : 'Human Being',
+    rebirth: 'Rebirth of Mind',
+    exist  : 'Restoration of Being',
+    cosmos : 'Metaconsciousness of Light'
+  };
+
+  const PANELS = {
+    pray   : $('#panel-pray'),
+    human  : $('#panel-human'),
+    rebirth: $('#panel-rebirth'),
+    exist  : $('#panel-exist'),
+    cosmos : $('#panel-cosmos')
+  };
+
+  let worksCache = null;
+  const renderState = {
+    pray:false, human:false, rebirth:false, exist:false, cosmos:false
+  };
+  let initialTriggered = false;
+
+  function fetchJSON(url){
+    return fetch(url).then(r => {
+      if(!r.ok) throw new Error('Fetch error');
+      return r.json();
+    });
+  }
+
+  async function getWorks(){
+    if(worksCache) return worksCache;
+    try {
+      const data = await fetchJSON('/data/works.json');
+      worksCache = data || {};
+    } catch(_){
+      worksCache = {};
+    }
+    return worksCache;
+  }
+
+  function isKR(){
+    return !document.body.classList.contains('english');
+  }
+
+  function normalisePath(raw, baseDir){
+    if(!raw) return '';
+    let v = String(raw).trim();
+    if(!v) return '';
+    if(v.startsWith('http://') || v.startsWith('https://')) return v;
+    if(v.includes('/')){
+      return v.startsWith('/') ? v : '/' + v.replace(/^\/+/, '');
+    }
+    return baseDir + v;
+  }
+
+  function resolveStandard(w){
+    const img = (w.image || '').trim();
+    if(!img) return '';
+    return normalisePath(img, '/images/standard/');
+  }
+
+  function resolveZoom(w, standard){
+    let z = (w.zoom || '').trim();
+    if(!z){
+      const img = (w.image || '').trim();
+      if(!img) return standard;
+      z = img;
+    }
+    const path = normalisePath(z, '/images/zoom/');
+    return path || standard;
+  }
+
+  function cardHTML(w){
+    const title = isKR()
+      ? (w.title_kr || w.title_en || '')
+      : (w.title_en || w.title_kr || '');
+    const meta = isKR()
+      ? (w.material_kr || '')
+      : (w.material_en || '');
+    const size = isKR()
+      ? (w.size_kr || '')
+      : (w.size_en || '');
+    const year  = w.year || '';
+
+    const standard = resolveStandard(w);
+    const zoom     = resolveZoom(w, standard);
+
+    const altParts = [title, meta, size, year].filter(Boolean);
+    const alt      = altParts.join(' · ');
+
+    return `
+      <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
+               data-title="${(title || '').replace(/"/g,'&quot;')}">
+        <img loading="lazy" decoding="async"
+             src="${standard.replace(/"/g,'&quot;')}"
+             alt="${alt.replace(/"/g,'&quot;')}">
+      </article>
+    `;
+  }
+
+  async function renderPanel(key, force){
+    const host = PANELS[key];
+    if(!host) return;
+
+    if(renderState[key] && !force) return;
+
+    const worksObj = await getWorks();
+    const sectionName = SECTION_KEYS[key];
+    const listRaw = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
+    const list = listRaw;
+
+    if(!list.length){
+      host.innerHTML = `<div class="grid"></div>`;
+      renderState[key] = true;
+      return;
+    }
+
+    const html = list.map(cardHTML).join('');
+    host.innerHTML = `<div class="grid">${html}</div>`;
+    renderState[key] = true;
+  }
+
+  document.addEventListener('dz-lang-change', () => {
+    if(!worksCache) return;
+    Object.keys(renderState).forEach(key => {
+      if(renderState[key]) renderPanel(key, true);
+    });
+  });
+
+  document.addEventListener('dz-section-change', e => {
+    if(e.detail === 'works' && !initialTriggered){
+      initialTriggered = true;
+      renderPanel('pray', false);
+    }
+  });
+
+  $$('.tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('.tabs .tab').forEach(x => x.classList.remove('active'));
+      tab.classList.add('active');
+
+      $$('.tabpanel').forEach(p => p.classList.remove('active'));
+      const panelKey = tab.getAttribute('data-panel');
+      const panelId  = 'panel-' + panelKey;
+      const panelEl  = document.getElementById(panelId);
+      if(panelEl) panelEl.classList.add('active');
+
+      if(panelKey && !renderState[panelKey]){
+        renderPanel(panelKey, false);
+      }
+    });
+  });
+})();
+
+// =========================
+// Lightbox (Artwork Zoom)
+// =========================
+(function(){
+  const lb   = $('#lightbox');
+  const img  = $('#lbImg');
+  const cap  = $('#lbCap');
+  const prev = $('#lbPrev');
+  const next = $('#lbNext');
+  const closeBtn = $('#lbClose');
+
+  if(!lb || !img) return;
+
+  let list = [];
+  let idx  = 0;
+  let zoom = 1;
+  let ox = 0, oy = 0;
+  let dragging = false;
+  let startX = 0, startY = 0;
+
+  function collectCards(){
+    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
+    if(!panel) { list = []; return; }
+    list = Array.from(panel.querySelectorAll('.card')).map(card => {
+      const zoomSrc = card.getAttribute('data-zoom');
+      const imgEl   = card.querySelector('img');
+      const alt     = imgEl ? imgEl.alt : (card.getAttribute('data-title') || '');
+      return { zoomSrc, alt, card };
+    }).filter(x => x.zoomSrc);
+  }
+
+  function openAt(i){
+    if(!list.length) return;
+    idx = (i + list.length) % list.length;
+
+    const item = list[idx];
+    img.src    = item.zoomSrc;
+    img.alt    = item.alt || '';
+    cap.textContent = item.alt || '';
+
+    zoom = 1; ox = 0; oy = 0;
+    applyTransform();
+
+    lb.classList.add('on');
+    lb.setAttribute('aria-hidden','false');
+  }
+
+  function applyTransform(){
+    img.style.transform = `translate(${ox}px,${oy}px) scale(${zoom})`;
+    img.style.cursor    = (zoom > 1 ? 'grab' : 'zoom-in');
+  }
+
+  function hide(){
+    lb.classList.remove('on');
+    lb.setAttribute('aria-hidden','true');
+  }
+
+  document.addEventListener('click', e => {
+    const card = e.target.closest('.card');
+    if(!card) return;
+
+    const panel = document.querySelector('.tabpanel.active') || $('#panel-pray');
+    const cards = panel ? Array.from(panel.querySelectorAll('.card')) : [];
+    collectCards();
+
+    const index = cards.indexOf(card);
+    openAt(index >= 0 ? index : 0);
+  });
+
+  if(prev) prev.addEventListener('click', () => openAt(idx - 1));
+  if(next) next.addEventListener('click', () => openAt(idx + 1));
+  if(closeBtn) closeBtn.addEventListener('click', hide);
+
+  lb.addEventListener('click', e => {
+    if(e.target === lb) hide();
+  });
+
+  lb.addEventListener('wheel', e => {
+    if(!lb.classList.contains('on')) return;
+    e.preventDefault();
+
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const prevZoom = zoom;
+
+    zoom = Math.min(5, Math.max(1, zoom * delta));
+
+    if(zoom === 1){
+      ox = 0; oy = 0;
+    }else{
+      const rect = img.getBoundingClientRect();
+      const cx = e.clientX - rect.left - rect.width/2 - ox;
+      const cy = e.clientY - rect.top  - rect.height/2 - oy;
+      ox -= cx*(zoom/prevZoom - 1);
+      oy -= cy*(zoom/prevZoom - 1);
+    }
+
+    applyTransform();
+  }, { passive:false });
+
+  img.addEventListener('mousedown', e => {
+    if(zoom === 1) return;
+    dragging = true;
+    startX = e.clientX - ox;
+    startY = e.clientY - oy;
+    img.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if(!dragging) return;
+    ox = e.clientX - startX;
+    oy = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if(!dragging) return;
+    dragging = false;
+    if(zoom > 1) img.style.cursor = 'grab';
+  });
+
+  window.addEventListener('keydown', e => {
+    if(!lb.classList.contains('on')) return;
+    if(e.key === 'Escape') hide();
+    else if(e.key === 'ArrowLeft')  openAt(idx - 1);
+    else if(e.key === 'ArrowRight') openAt(idx + 1);
+    else if(e.key === '+'){
+      zoom = Math.min(zoom*1.25, 5);
+      applyTransform();
+    } else if(e.key === '-'){
+      zoom = Math.max(zoom/1.25, 1);
+      if(zoom === 1){ ox = 0; oy = 0; }
+      applyTransform();
+    }
+  });
+})();
+
+// =========================
+// Reports (DCAR) — 섹션 진입 시점에만 reports.json 로드
+// =========================
+(function(){
+  const wrap   = $('.reports-omega');
+  const grid   = $('#reportGrid');
+  const toggle = $('#reportsToggle');
+  const viewer = $('#reportViewer');
+  if(!wrap || !grid || !toggle || !viewer) return;
+
+  let items = [];
+  let currentCat = 'all';
+  let reportsLoaded = false;
+
+  function escapeHtml(str){
+    return String(str || '').replace(/[&<>"']/g, ch => (
+      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch] || ch
+    ));
+  }
+
+  function normaliseItem(r){
+    const cat = (r.category || 'Theory').toLowerCase();
+    const rawPath = r.md_path || ('/reports/' + r.id + '.md');
+    const path = rawPath.startsWith('/') ? rawPath : '/' + rawPath;
+
+    return {
+      id: r.id,
+      title_ko: r.title_ko || r.title_en || '',
+      title_en: r.title_en || r.title_ko || '',
+      snippet_ko: r.summary_ko || '',
+      snippet_en: r.summary_en || '',
+      cat,
+      path
+    };
+  }
+
+  function findItem(id){
+    return items.find(x => x.id === id) || null;
+  }
+
+  async function loadData(){
+    if(reportsLoaded) return;
+    reportsLoaded = true;
+
+    try{
+      const res = await fetch('/reports/reports.json');
+      if(!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      const arr = Array.isArray(data.reports) ? data.reports : [];
+      items = arr.map(normaliseItem);
+    }catch(_){
+      items = [];
+    }
+    render(currentCat);
+  }
+
+  function render(cat){
+    currentCat = cat;
+    viewer.innerHTML = '';
+
+    const list = (cat === 'all')
+      ? items
+      : items.filter(x => x.cat === cat);
+
+    if(!list.length){
+      grid.innerHTML = '';
+      return;
+    }
+
+    grid.innerHTML = list.map(r => `
+      <article class="r-card">
+        <div class="r-in">
+          <div class="r-meta">
+            <span class="r-badge">${escapeHtml(r.id)}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">
+            <span class="ko">${escapeHtml(r.title_ko)}</span>
+            <span class="en">${escapeHtml(r.title_en)}</span>
+          </h3>
+          <p class="r-sub">${escapeHtml(r.path)}</p>
+          <div class="r-body">
+            <div class="ko">${escapeHtml(r.snippet_ko)}</div>
+            <hr class="sep" style="border:0;border-top:1px dashed #2a3a78;margin:10px 0">
+            <div class="en">${escapeHtml(r.snippet_en)}</div>
+          </div>
+          <div class="r-actions">
+            <a href="/reports/print-preview.html?file=${encodeURIComponent(r.id + '.md')}"
+               target="_blank" rel="noopener">
+              미리보기 / Print
+            </a>
+            <button type="button"
+                    data-open="${escapeHtml(r.id)}"
+                    data-path="${escapeHtml(r.path)}">
+              전체 보기 / Open
+            </button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function loadReport(id){
+    const meta = findItem(id);
+    if(!meta) return;
+
+    viewer.innerHTML = '';
+
+    const path = meta.path;
+
+    try{
+      const res = await fetch(path);
+      if(!res.ok) throw new Error('fetch failed');
+      const text = await res.text();
+
+      const header = `
+        <div class="r-viewer-header">
+          <div class="r-meta">
+            <span class="r-badge">${escapeHtml(meta.id)}</span>
+            <span class="r-badge pdf">PDF</span>
+          </div>
+          <h3 class="r-title">
+            <span class="ko">${escapeHtml(meta.title_ko)}</span>
+            <span class="en">${escapeHtml(meta.title_en)}</span>
+          </h3>
+          <p class="r-sub">${escapeHtml(path)}</p>
+        </div>
+      `;
+
+      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+    }catch(_){
+      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
+    }
+  }
+
+  $$('.r-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      $$('.r-tab').forEach(x => x.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      const cat = tab.getAttribute('data-r') || 'all';
+      render(cat);
+    });
+  });
+
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-open]');
+    if(!btn) return;
+    const id   = btn.getAttribute('data-open');
+    const path = btn.getAttribute('data-path');
+    if(path){
+      try{ window.open(path, '_blank'); }catch(_){}
+    }
+    if(id) loadReport(id);
+  });
+
+  toggle.addEventListener('click', () => {
+    const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior:'smooth' });
+  });
+
+  document.addEventListener('dz-section-change', e => {
+    if(e.detail === 'reports'){
+      loadData();
+    }
+  });
+
+  const initialHash = (location.hash || '').replace('#','');
+  if(initialHash === 'reports'){
+    loadData();
+  }
+})();
+
+// =========================
+// Ambient Sound (Web Audio Synth)
+// =========================
+(function(){
+  const playBtn = $('#soundBtn');
+  const stopBtn = $('#soundStopBtn');
+  const bar     = $('#fftBar span');
+  if(!playBtn || !stopBtn || !bar) return;
+
+  let ac        = null;
+  let on        = false;
+  let analyser  = null;
+  let rafId     = null;
+  let nodes     = null;
+
+  async function ensureAC(){
+    if(!ac){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      ac = new Ctx({ latencyHint:'interactive' });
+    }
+    if(ac.state === 'suspended'){
+      await ac.resume();
+    }
+    return ac;
+  }
+
+  function g(value){
+    const gain = ac.createGain();
+    gain.gain.value = value;
+    return gain;
+  }
+
+  function o(type, freq){
+    const osc = ac.createOscillator();
+    osc.type = type;
+    osc.frequency.value = freq;
+    return osc;
+  }
+
+  function impulse(len, decay){
+    const sr   = ac.sampleRate;
+    const n    = Math.floor(sr * len);
+    const buf  = ac.createBuffer(2,n,sr);
+    for(let ch=0; ch<2; ch++){
+      const data = buf.getChannelData(ch);
+      for(let i=0; i<n; i++){
+        data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/n, decay);
+      }
+    }
+    return buf;
+  }
+
+  function draw(){
+    if(!analyser){
+      rafId = requestAnimationFrame(draw);
+      return;
+    }
+    const arr = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteTimeDomainData(arr);
+    let avg = 0;
+    for(let i=0; i<arr.length; i++){
+      avg += Math.abs(arr[i] - 128);
+    }
+    avg /= arr.length;
+    const w = Math.min(180, Math.max(10, avg*2.2));
+    bar.style.width = w + 'px';
+    rafId = requestAnimationFrame(draw);
+  }
+
+  async function start(){
+    if(on) return;
+    await ensureAC();
+
+    const base = g(0.12);
+    const sub  = g(0.05);
+    const mid  = g(0.06);
+    const shim = g(0.012);
+    const pan  = ac.createStereoPanner();
+
+    const low   = o('sine', 62);
+    const low2  = o('sine', 124);
+    const floor = o('sine', 31);
+    const ch1   = o('sine', 432);
+    const ch2   = o('sine', 528);
+
+    const lfo1  = o('sine', 7.7);
+    const lfo2  = o('sine', 5.2);
+    const lpg   = g(0.08);
+    const lpg2  = g(0.06);
+
+    lfo1.connect(lpg).connect(base.gain);
+    lfo2.connect(lpg2).connect(base.gain);
+
+    const lp  = ac.createBiquadFilter();
+    lp.type   = 'lowpass';
+    lp.frequency.value = 880;
+    lp.Q.value = 0.8;
+
+    const bp  = ac.createBiquadFilter();
+    bp.type   = 'bandpass';
+    bp.frequency.value = 120;
+    bp.Q.value = 0.7;
+
+    const conv = ac.createConvolver();
+    conv.buffer = impulse(1.6, 2.6);
+
+    const wet = g(0.25);
+    const dry = g(0.85);
+
+    low.connect(base).connect(bp).connect(lp);
+    low2.connect(mid).connect(bp);
+    floor.connect(sub).connect(bp);
+    ch1.connect(shim).connect(lp);
+    ch2.connect(shim).connect(lp);
+
+    lp.connect(dry).connect(pan).connect(ac.destination);
+    lp.connect(wet).connect(conv).connect(pan).connect(ac.destination);
+    bp.connect(dry).connect(pan);
+    bp.connect(wet).connect(conv);
+
+    analyser = ac.createAnalyser();
+    analyser.fftSize = 512;
+    pan.connect(analyser);
+
+    [low,low2,floor,ch1,ch2].forEach(osc => osc.start());
+
+    [base.gain, sub.gain, mid.gain, shim.gain].forEach(gain => {
+      const t = gain.value;
+      try{
+        gain.setValueAtTime(Math.max(0.0001, t*0.001), ac.currentTime);
+        gain.exponentialRampToValueAtTime(t, ac.currentTime + 1.2);
+      }catch(_){}
+    });
+
+    function panLoop(){
+      if(!ac || !pan) return;
+      try{
+        pan.pan.value = Math.sin(performance.now() * 0.000012) * 0.35;
+      }catch(_){}
+      if(on) requestAnimationFrame(panLoop);
+    }
+
+    function breath(){
+      if(!ac || !lp) return;
+      try{
+        lp.frequency.setTargetAtTime(
+          720 + Math.sin(ac.currentTime*0.33)*240,
+          ac.currentTime,
+          0.28
+        );
+      }catch(_){}
+      if(on) setTimeout(breath, 160);
+    }
+
+    panLoop();
+    breath();
+
+    nodes = { low,low2,floor,ch1,ch2, base,sub,mid,shim, lp,bp,conv,wet,dry,pan };
+
+    on = true;
+    playBtn.disabled = true;
+    stopBtn.disabled = false;
+    draw();
+  }
+
+  function stop(){
+    if(!on || !nodes || !ac) return;
+
+    const t = ac.currentTime;
+    [nodes.base.gain, nodes.sub.gain, nodes.mid.gain, nodes.shim.gain].forEach(gain => {
+      try{
+        gain.cancelScheduledValues(0);
+        gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      }catch(_){}
+    });
+
+    setTimeout(() => {
+      [nodes.low,nodes.low2,nodes.floor,nodes.ch1,nodes.ch2].forEach(osc => {
+        try{ osc.stop(); }catch(_){}
+      });
+    }, 1700);
+
+    on = false;
+    playBtn.disabled = false;
+    stopBtn.disabled = true;
+    cancelAnimationFrame(rafId);
+    bar.style.width = '0px';
+  }
+
+  async function unlock(){
+    try{ await ensureAC(); }catch(_){}
+    window.removeEventListener('touchend', unlock);
+    window.removeEventListener('click', unlock);
+  }
+
+  window.addEventListener('touchend', unlock, { once:true });
+  window.addEventListener('click', unlock, { once:true });
+
+  playBtn.addEventListener('click', start);
+  stopBtn.addEventListener('click', stop);
+
+  document.addEventListener('visibilitychange', async () => {
+    if(!ac) return;
+    if(document.hidden){
+      try{ await ac.suspend(); }catch(_){}
+    }else if(on){
+      try{ await ac.resume(); }catch(_){}
+    }
+  });
+})();
+  </script>
+</body>
+</html>

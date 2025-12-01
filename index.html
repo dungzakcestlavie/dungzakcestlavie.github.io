@@ -928,7 +928,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves (경량 버전: 단일 캔버스 · 2개 웨이브 · 30fps)
+// Background Waves (경량 버전)
 // =========================
 (function(){
   const prefersReduced =
@@ -984,7 +984,6 @@ const $  = (q, root) => (root || document).querySelector(q);
 
         ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
 
-        // 2개의 웨이브만 렌더링
         for(let k=0; k<2; k++){
           ctx.beginPath();
           for(let x=0; x<=window.innerWidth; x+=18){
@@ -1408,19 +1407,19 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Reports (DCAR) — 섹션 진입·전체열기 시 첫 보고서 전체 보기
+// Reports (DCAR) — 카드에서 바로 새창 전체보기
 // =========================
 (function(){
   const wrap   = $('.reports-omega');
   const grid   = $('#reportGrid');
   const toggle = $('#reportsToggle');
-  const viewer = $('#reportViewer');
-  if(!wrap || !grid || !toggle || !viewer) return;
+  const viewer = $('#reportViewer'); // viewer는 비워둠
+  if(viewer) viewer.innerHTML = '';
+  if(!wrap || !grid || !toggle) return;
 
   let items = [];
   let currentCat = 'all';
   let reportsLoaded = false;
-  let viewerOpened = false; // 전체보기 상태
 
   function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, ch => (
@@ -1444,10 +1443,6 @@ window.DZ_BIO = (function(){
     };
   }
 
-  function findItem(id){
-    return items.find(x => x.id === id) || null;
-  }
-
   async function loadData(){
     if(reportsLoaded) return;
     reportsLoaded = true;
@@ -1462,16 +1457,10 @@ window.DZ_BIO = (function(){
       items = [];
     }
     render(currentCat);
-
-    // 섹션이 처음 준비될 때: 첫 보고서를 전체보기로 자동 오픈
-    if(items.length){
-      await loadReport(items[0].id);
-    }
   }
 
   function render(cat){
     currentCat = cat;
-    viewer.innerHTML = '';
 
     const list = (cat === 'all')
       ? items
@@ -1504,51 +1493,16 @@ window.DZ_BIO = (function(){
                target="_blank" rel="noopener">
               미리보기 / Print
             </a>
-            <button type="button"
-                    data-open="${escapeHtml(r.id)}"
-                    data-path="${escapeHtml(r.path)}">
-              전체 보기 / Open
-            </button>
+            <a href="${escapeHtml(r.path)}"
+               target="_blank"
+               rel="noopener"
+               class="r-open-link">
+               전체 보기 / Open
+            </a>
           </div>
         </div>
       </article>
     `).join('');
-  }
-
-  async function loadReport(id){
-    const meta = findItem(id);
-    if(!meta) return;
-
-    viewer.innerHTML = '';
-
-    const path = meta.path;
-
-    try{
-      const res = await fetch(path);
-      if(!res.ok) throw new Error('fetch failed');
-      const text = await res.text();
-
-      const header = `
-        <div class="r-viewer-header">
-          <div class="r-meta">
-            <span class="r-badge">${escapeHtml(meta.id)}</span>
-            <span class="r-badge pdf">PDF</span>
-          </div>
-          <h3 class="r-title">
-            <span class="ko">${escapeHtml(meta.title_ko)}</span>
-            <span class="en">${escapeHtml(meta.title_en)}</span>
-          </h3>
-          <p class="r-sub">${escapeHtml(path)}</p>
-        </div>
-      `;
-
-      // 여기서 실제 .md 텍스트 전체를 <pre>로 그대로 보여줌 = "전체 보기"
-      viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
-      viewerOpened = true;
-      toggle.setAttribute('aria-expanded', 'true');
-    }catch(_){
-      viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
-    }
   }
 
   $$('.r-tab').forEach(tab => {
@@ -1557,39 +1511,24 @@ window.DZ_BIO = (function(){
       tab.classList.add('is-active');
       const cat = tab.getAttribute('data-r') || 'all';
       render(cat);
-
-      // 탭을 바꾸면 해당 카테고리의 첫 보고서를 전체보기로 자동 오픈
-      const first = (cat === 'all' ? items[0] : items.find(x => x.cat === cat));
-      if(first) loadReport(first.id);
     });
   });
 
-  grid.addEventListener('click', e => {
-    const btn = e.target.closest('button[data-open]');
-    if(!btn) return;
-    const id   = btn.getAttribute('data-open');
-    if(id) loadReport(id); // 버튼 누르면 해당 보고서 전체 보기
-  });
-
-  // "Open Reports" 버튼: 보고서 섹션으로 스크롤 + 첫 보고서 전체 열기
+  // 상단 "Open Reports" 버튼: 섹션으로 스크롤 + 데이터 로드만
   toggle.addEventListener('click', async () => {
     await loadData();
-
-    if(items.length && !viewerOpened){
-      await loadReport(items[0].id);
-    }
-
     const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top, behavior:'smooth' });
   });
 
-  // 섹션으로 들어갈 때도 자동으로 reports 로드 + 첫 보고서 전체 열기
+  // Reports 섹션 진입 시 자동 로드
   document.addEventListener('dz-section-change', e => {
     if(e.detail === 'reports'){
       loadData();
     }
   });
 
+  // 처음부터 #reports 해시로 들어온 경우
   const initialHash = (location.hash || '').replace('#','');
   if(initialHash === 'reports'){
     loadData();

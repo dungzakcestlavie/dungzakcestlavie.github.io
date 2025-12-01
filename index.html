@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17</title>
 
   <!-- 기본 메타 -->
   <meta name="description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Gallery · Aesthetic Reports (DCAR)" />
@@ -14,15 +14,15 @@
   <meta name="googlebot" content="notranslate" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
   <meta property="og:description" content="빛 · 기억 · 존재 — Light · Memory · Being — 등작 燈酌 DUNGZAK CESTLAVIE · Official Site" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://dungzak.art" />
-  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.15" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE — Lightflow Ω.17" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.15" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Lightflow Ω.17" />
   <meta name="twitter:description" content="빛 · 기억 · 존재 — Light · Memory · Being — DUNGZAK CESTLAVIE" />
 
   <!-- Favicon (임시 이모지) -->
@@ -534,25 +534,45 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.15</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE · Lightflow Ω.17</div>
 
     <nav class="primary" aria-label="Primary">
-      <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
-      <button type="button" data-target="works">Works</button>
+      <button type="button" data-target="works" class="active" aria-current="page">Works</button>
+      <button type="button" data-target="poem">Poem</button>
       <button type="button" data-target="reports">Reports</button>
       <button type="button" id="tab-bio">Artist Bio</button>
     </nav>
 
     <div class="lang" aria-label="Language">
-      <button type="button" id="koBtn" class="active">KR</button>
-      <button type="button" id="enBtn">EN</button>
-      <button type="button" id="hyBtn">KR+EN</button>
+      <button type="button" id="koBtn" class="active" aria-pressed="true">KR</button>
+      <button type="button" id="enBtn" aria-pressed="false">EN</button>
+      <button type="button" id="hyBtn" aria-pressed="false">KR+EN</button>
     </div>
   </header>
 
   <main>
-    <!-- 1) POEM -->
-    <section id="poem" class="hero">
+    <!-- 1) WORKS – 최초 진입 시 바로 표시 -->
+    <section id="works" style="display:block">
+      <h2 class="ko">작품 아카이브</h2>
+      <h2 class="en">Artworks</h2>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
+        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
+        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
+        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
+        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
+      </div>
+
+      <div id="panel-pray" class="tabpanel active"></div>
+      <div id="panel-human" class="tabpanel"></div>
+      <div id="panel-rebirth" class="tabpanel"></div>
+      <div id="panel-exist" class="tabpanel"></div>
+      <div id="panel-cosmos" class="tabpanel"></div>
+    </section>
+
+    <!-- 2) POEM – 초기에는 숨김, 탭 클릭 시 표시 -->
+    <section id="poem" class="hero" style="display:none">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
 
@@ -605,27 +625,7 @@
       </div>
     </section>
 
-    <!-- 2) WORKS -->
-    <section id="works" style="display:none">
-      <h2 class="ko">작품 아카이브</h2>
-      <h2 class="en">Artworks</h2>
-
-      <div class="tabs" role="tablist">
-        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
-        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
-        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
-      </div>
-
-      <div id="panel-pray" class="tabpanel active"></div>
-      <div id="panel-human" class="tabpanel"></div>
-      <div id="panel-rebirth" class="tabpanel"></div>
-      <div id="panel-exist" class="tabpanel"></div>
-      <div id="panel-cosmos" class="tabpanel"></div>
-    </section>
-
-    <!-- 3) REPORTS -->
+    <!-- 3) REPORTS – 초기 숨김, 진입 시 데이터 로드 -->
     <section id="reports" style="display:none">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -840,13 +840,13 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Primary Navigation (Poem / Works / Reports)
+// Primary Navigation (Works / Poem / Reports)
 // =========================
 (function(){
-  const sections = ['poem','works','reports'];
+  const sections = ['works','poem','reports'];
 
   function showSection(id){
-    if(!sections.includes(id)) id = 'poem';
+    if(!sections.includes(id)) id = 'works';
 
     sections.forEach(secId => {
       const el = document.getElementById(secId);
@@ -875,7 +875,7 @@ const $  = (q, root) => (root || document).querySelector(q);
   });
 
   const hash = (location.hash || '').replace('#','');
-  const initial = ['poem','works','reports'].includes(hash) ? hash : 'poem';
+  const initial = ['works','poem','reports'].includes(hash) ? hash : 'works';
   showSection(initial);
 
   const bioTab = $('#tab-bio');
@@ -889,7 +889,7 @@ const $  = (q, root) => (root || document).querySelector(q);
 })();
 
 // =========================
-// Background Waves (경량 버전: 단일 캔버스 · 2개 웨이브)
+// Background Waves (경량 버전 + 0.6초 지연 시작)
 // =========================
 (function(){
   const prefersReduced =
@@ -905,10 +905,9 @@ const $  = (q, root) => (root || document).querySelector(q);
   let DPR = 1;
   let visible = true;
   let lastTime = 0;
-  const FRAME_INTERVAL = 1000 / 30; // 30fps로 더 강하게 제한
+  const FRAME_INTERVAL = 1000 / 30; // 30fps
 
   function resize(){
-    // 고해상도 기기에서도 과도한 해상도 방지 (성능 최적화)
     DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
     ctx.canvas.width  = Math.floor(window.innerWidth * DPR);
     ctx.canvas.height = Math.floor(window.innerHeight * DPR);
@@ -916,7 +915,6 @@ const $  = (q, root) => (root || document).querySelector(q);
     ctx.scale(1 / DPR, 1 / DPR);
   }
 
-  // 단순화된 웨이브
   function waveY(x, bandIndex, t){
     const f1 = 0.003 + bandIndex*0.0005;
     const a1 = 18 + bandIndex*7;
@@ -947,7 +945,6 @@ const $  = (q, root) => (root || document).querySelector(q);
 
         ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
 
-        // 2개의 웨이브만 렌더링
         for(let k=0; k<2; k++){
           ctx.beginPath();
           for(let x=0; x<=window.innerWidth; x+=18){
@@ -979,7 +976,10 @@ const $  = (q, root) => (root || document).querySelector(q);
   window.addEventListener('resize', resize, { passive:true });
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  requestAnimationFrame(frame);
+  // 초기 렌더링 방해 줄이기 위해 0.6초 후 시작
+  setTimeout(() => {
+    requestAnimationFrame(frame);
+  }, 600);
 })();
 
 // =========================
@@ -1077,7 +1077,7 @@ window.DZ_BIO = (function(){
 })();
 
 // =========================
-// Works Loader (JSON → Grid)
+// Works Loader (JSON → Grid) — 첫 8장은 fetchpriority=high
 // =========================
 (function(){
   const SECTION_KEYS = {
@@ -1152,7 +1152,7 @@ window.DZ_BIO = (function(){
     return path || standard;
   }
 
-  function cardHTML(w){
+  function cardHTML(w, index){
     const title = isKR()
       ? (w.title_kr || w.title_en || '')
       : (w.title_en || w.title_kr || '');
@@ -1170,10 +1170,14 @@ window.DZ_BIO = (function(){
     const altParts = [title, meta, size, year].filter(Boolean);
     const alt      = altParts.join(' · ');
 
+    const priorityAttrs = index < 8
+      ? 'loading="eager" fetchpriority="high"'
+      : 'loading="lazy" fetchpriority="auto"';
+
     return `
       <article class="card" data-zoom="${zoom.replace(/"/g,'&quot;')}"
                data-title="${(title || '').replace(/"/g,'&quot;')}">
-        <img loading="lazy" decoding="async"
+        <img ${priorityAttrs} decoding="async"
              src="${standard.replace(/"/g,'&quot;')}"
              alt="${alt.replace(/"/g,'&quot;')}">
       </article>
@@ -1189,7 +1193,7 @@ window.DZ_BIO = (function(){
     const worksObj = await getWorks();
     const sectionName = SECTION_KEYS[key];
     const listRaw = Array.isArray(worksObj[sectionName]) ? worksObj[sectionName] : [];
-    const list = listRaw; // 20~28점 모두
+    const list = listRaw;
 
     if(!list.length){
       host.innerHTML = `<div class="grid"></div>`;
@@ -1197,12 +1201,11 @@ window.DZ_BIO = (function(){
       return;
     }
 
-    const html = list.map(cardHTML).join('');
+    const html = list.map((w,i) => cardHTML(w,i)).join('');
     host.innerHTML = `<div class="grid">${html}</div>`;
     renderState[key] = true;
   }
 
-  // 언어 변경 시 이미 렌더된 섹션만 재렌더
   document.addEventListener('dz-lang-change', () => {
     if(!worksCache) return;
     Object.keys(renderState).forEach(key => {
@@ -1210,7 +1213,7 @@ window.DZ_BIO = (function(){
     });
   });
 
-  // Works 섹션으로 처음 진입할 때 pray 섹션 1회 로딩
+  // 사이트 진입 시 Works 섹션이 기본 → pray 섹션 바로 로딩
   document.addEventListener('dz-section-change', e => {
     if(e.detail === 'works' && !initialTriggered){
       initialTriggered = true;
@@ -1235,6 +1238,11 @@ window.DZ_BIO = (function(){
       }
     });
   });
+
+  // 해시로 #works로 직접 진입하는 경우도 대비
+  if((location.hash || '').replace('#','') === 'works'){
+    renderPanel('pray', false);
+  }
 })();
 
 // =========================

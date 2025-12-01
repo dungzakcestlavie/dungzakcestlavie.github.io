@@ -3,110 +3,142 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.31 — Works & DCAR Manager</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.32 — Lightflow ∮21 Manager</title>
 
   <meta name="color-scheme" content="dark light" />
-  <meta name="description" content="Admin Ω.31 — Works & Aesthetic Reports (DCAR) Manager for dungzak.art" />
+  <meta name="description" content="Admin Ω.32 — Works & Aesthetic Reports (DCAR) Manager for dungzak.art · Lightflow ∮21" />
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
 
   <style>
   :root{
-    --bg:#070c1a; --fg:#eaf0ff;
-    --panel:#0f1630; --border:#222b55;
-    --accent:#e6c777; --accent-soft:rgba(230,199,119,.16);
-    --muted:#9fb0e3; --error:#ff6b7b;
+    --bg:#070c1a;
+    --fg:#eaf0ff;
+    --gold:#e6c777;
+    --gold-soft:rgba(230,199,119,.18);
+    --muted:#9fb0e3;
+    --panel:#0f1630;
+    --line:#222b55;
     --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
   body{
-    background:radial-gradient(circle at top,#101633,#040712);
+    background:radial-gradient(circle at top,#101633 0,#050712 55%,#02030a 100%);
     color:var(--fg);
-    font:14px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+    font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
     letter-spacing:.01em;
     overflow-x:hidden;
   }
-  h1,h2,h3{font-weight:800;color:var(--accent)}
-  a{color:#b6c9ff}
-  a:hover{color:#fff}
 
+  /* HEADER */
   header{
     position:sticky;top:0;z-index:10;
-    background:linear-gradient(180deg,rgba(7,10,24,.96),rgba(7,10,24,.9));
+    padding:10px 14px 8px;
+    background:
+      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.86)),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.04) 0,
+        rgba(255,255,255,.04) 1px,
+        transparent 1px,
+        transparent 4px
+      );
     border-bottom:1px solid rgba(255,255,255,.08);
-    padding:10px 16px 12px;
     backdrop-filter:blur(12px);
   }
-  .brand{
-    max-width:var(--max);margin:0 auto;
-    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
-    justify-content:space-between;
+  .brand-wrap{
+    max-width:var(--max);
+    margin:0 auto;
   }
   .brand-title{
-    font-size:clamp(18px,4vw,22px);
-    font-weight:900;color:var(--accent);
-    letter-spacing:.08em;text-transform:uppercase;
+    font-weight:900;
+    color:var(--gold);
+    font-size:clamp(18px,4.4vw,22px);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    text-shadow:0 0 18px rgba(230,199,119,.55);
   }
   .brand-sub{
-    font-size:12px;color:var(--muted);
+    margin-top:2px;
+    font-size:11px;
+    color:#c4d2ff;
+    letter-spacing:.18em;
   }
   .nav-tabs{
-    display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;
+    display:flex;flex-wrap:wrap;
+    gap:8px;margin-top:10px;
   }
   .nav-tabs button{
     all:unset;cursor:pointer;
-    padding:6px 12px;border-radius:999px;
-    border:1px solid rgba(130,150,220,.5);
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid rgba(140,165,230,.35);
     font-size:12px;font-weight:700;
-    background:radial-gradient(circle at top,rgba(130,150,220,.18),rgba(7,10,24,0));
-    color:#cfd9ff;
+    color:#eaf0ff;
+    background:radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,0));
   }
   .nav-tabs button.active{
-    background:linear-gradient(180deg,var(--accent),#f2df9a);
-    color:#09102a;border-color:#f0de98;
+    background:linear-gradient(180deg,#f7e4a5,#e6c777);
+    color:#0a1230;
+    border-color:#f0de98;
     box-shadow:0 0 16px rgba(230,199,119,.5);
   }
 
+  /* LAYOUT */
   main{max-width:var(--max);margin:0 auto;padding:18px 12px 72px}
   section.admin-block{
-    margin-bottom:22px;
+    margin-bottom:20px;
     border-radius:16px;
-    background:radial-gradient(circle at top,rgba(230,199,119,.06),rgba(5,7,20,.9));
+    background:
+      radial-gradient(circle at top,rgba(230,199,119,.07),rgba(5,7,20,.9));
     border:1px solid rgba(46,62,120,.9);
-    box-shadow:0 10px 30px rgba(0,0,0,.4);
-    padding:16px 14px 18px;
+    box-shadow:0 8px 26px rgba(0,0,0,.45);
+    padding:14px 12px 18px;
   }
   section.admin-block.hidden{display:none}
 
   .block-head{
-    display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;
-    align-items:flex-end;margin-bottom:10px;
+    display:flex;flex-wrap:wrap;
+    justify-content:space-between;
+    gap:8px;align-items:flex-end;
+    margin-bottom:8px;
   }
-  .block-head h2{font-size:17px;margin:0}
+  .block-head h2{
+    margin:0;
+    font-size:17px;
+    font-weight:800;
+    color:var(--gold);
+  }
   .block-head small{
-    color:var(--muted);font-size:11px;
+    font-size:11px;color:var(--muted);
   }
 
   .hint{
     font-size:12px;color:var(--muted);
-    margin-bottom:10px;
+    margin-bottom:8px;
   }
   .hint strong{color:#ffdf99}
 
-  .flex-row{display:flex;flex-wrap:wrap;gap:16px}
-  .col-half{flex:1 1 320px;min-width:0}
+  .flex-row{display:flex;flex-wrap:wrap;gap:14px;}
+  .col-half{flex:1 1 320px;min-width:0;}
   .panel{
-    background:linear-gradient(180deg,#0b1026,#050716);
+    background:linear-gradient(180deg,#0f1630,#050716);
     border-radius:12px;
-    border:1px solid var(--border);
+    border:1px solid var(--line);
     padding:10px 10px 12px;
   }
   .panel-title{
     font-size:13px;font-weight:700;
-    margin-bottom:6px;color:#f4e8b3;
+    color:#f4e8b3;
+    margin-bottom:6px;
   }
 
   label{
-    display:block;font-size:12px;
-    margin:4px 0 2px;color:#c8d4ff;
+    display:block;
+    font-size:12px;
+    margin:4px 0 2px;
+    color:#c8d4ff;
   }
   input[type="text"],
   input[type="number"],
@@ -126,14 +158,17 @@
     white-space:pre-wrap;
   }
   input::placeholder,
-  textarea::placeholder{color:#6673a5;font-size:11px}
+  textarea::placeholder{
+    color:#6673a5;
+    font-size:11px;
+  }
 
-  .small-row{display:flex;gap:8px}
-  .small-row > div{flex:1}
+  .small-row{display:flex;gap:8px;}
+  .small-row > div{flex:1;}
 
   .btn-row{
-    display:flex;flex-wrap:wrap;gap:8px;
-    margin-top:8px;
+    display:flex;flex-wrap:wrap;
+    gap:8px;margin-top:8px;
   }
   button.btn{
     border-radius:999px;
@@ -145,8 +180,9 @@
     cursor:pointer;
   }
   button.btn.primary{
-    background:linear-gradient(180deg,var(--accent),#f2df9a);
-    color:#09102a;border-color:#f0de98;
+    background:linear-gradient(180deg,var(--gold),#f2df9a);
+    color:#09102a;
+    border-color:#f0de98;
     box-shadow:0 0 12px rgba(230,199,119,.5);
   }
   button.btn.danger{
@@ -158,7 +194,8 @@
   }
 
   table{
-    width:100%;border-collapse:collapse;
+    width:100%;
+    border-collapse:collapse;
     font-size:11px;
   }
   thead{background:#111738}
@@ -168,10 +205,10 @@
     text-align:left;
     vertical-align:top;
   }
-  th{color:#cfd7ff;font-weight:700;font-size:11px}
-  td{color:#d9e1ff}
-  tr:nth-child(even){background:rgba(8,14,40,.7)}
-  tr:hover{background:rgba(40,60,130,.55)}
+  th{color:#cfd7ff;font-weight:700;}
+  td{color:#d9e1ff;}
+  tr:nth-child(even){background:rgba(8,14,40,.7);}
+  tr:hover{background:rgba(40,60,130,.55);}
 
   .tag{
     display:inline-block;
@@ -182,12 +219,15 @@
     color:#cfe0ff;
     margin-right:4px;
   }
-  .tag-sec{border-color:rgba(230,199,119,.7);color:#f4e8b3}
+  .tag-sec{
+    border-color:rgba(230,199,119,.7);
+    color:#f4e8b3;
+  }
 
   .out-area{
     margin-top:10px;
   }
-  .out-area label{margin-bottom:4px}
+  .out-area label{margin-bottom:4px;}
   textarea.out{
     font-family:ui-monospace,Menlo,Consolas,monospace;
     font-size:11px;
@@ -196,20 +236,12 @@
   }
 
   .error-msg{
-    color:var(--error);font-size:11px;
+    color:#ff6b7b;
+    font-size:11px;
     margin-top:4px;
   }
 
-  footer{
-    border-top:1px solid rgba(255,255,255,.08);
-    text-align:center;
-    padding:18px 12px 28px;
-    font-size:11px;
-    color:#9fb0e3;
-    background:#050814;
-  }
-
-  /* 이미지 리사이저 결과 리스트 */
+  /* 이미지 리사이즈 결과 */
   .img-result-list{
     margin-top:8px;
     font-size:11px;
@@ -225,25 +257,36 @@
   }
   .img-result-item a{
     text-decoration:none;
+    color:#b6c9ff;
+  }
+  .img-result-item a:hover{
+    color:#fff;
+  }
+
+  footer{
+    border-top:1px solid rgba(255,255,255,.08);
+    text-align:center;
+    padding:18px 12px 28px;
+    font-size:11px;
+    color:var(--muted);
+    background:#050814;
   }
 
   @media(max-width:600px){
-    header{padding:8px 10px}
-    .brand-sub{flex-basis:100%}
+    header{padding:8px 10px;}
+    .block-head{flex-direction:column;align-items:flex-start;}
   }
   </style>
-</head>
-<body>
+</head> <body>
   <header>
-    <div class="brand">
-      <div>
-        <div class="brand-title">Admin Ω.31 · Works & DCAR Manager</div>
-        <div class="brand-sub">등작 燈酌 DUNGZAK CESTLAVIE — dungzak.art 관리 전용 (로컬 복사·붙여넣기)</div>
-      </div>
+    <div class="brand-wrap">
+      <div class="brand-title">Admin Ω.32 · Lightflow ∮21 Manager</div>
+      <div class="brand-sub">등작 燈酌 DUNGZAK CESTLAVIE — dungzak.art Works & DCAR (로컬 전용 Admin)</div>
+
       <div class="nav-tabs" role="tablist">
         <button type="button" class="active" data-tab="tab-intro">Intro</button>
-        <button type="button" data-tab="tab-works">Works Manager</button>
-        <button type="button" data-tab="tab-reports">DCAR Reports</button>
+        <button type="button" data-tab="tab-works">Works</button>
+        <button type="button" data-tab="tab-reports">DCAR</button>
       </div>
     </div>
   </header>
@@ -255,15 +298,19 @@
         <h2>안내 · Intro</h2>
       </div>
       <p class="hint">
-        이 Admin Ω.31은 <strong>GitHub에 자동으로 업로드하지 않고</strong>, 브라우저 안에서<br>
-        <strong>① Works → <code>data/works.json</code></strong> / <strong>② DCAR → <code>reports/reports.json</code> + 각 <code>DCAR-XX-2025.md</code></strong>를
-        <strong>생성·편집·삭제</strong>해서 <strong>복사·붙여넣기</strong> 하기 위한 도구입니다.
+        이 Admin Ω.32는 <strong>브라우저 안에서만 동작하는 오프라인 도구</strong>입니다.<br>
+        <strong>① Works → <code>data/works.json</code></strong> ·
+        <strong>② DCAR → <code>reports/reports.json</code> + 각 <code>DCAR-XX-2025.md</code></strong>를<br>
+        <strong>Lightflow ∮21 Index 구조에 정확히 맞춰</strong> 생성·편집 후 <strong>GitHub에 복사·붙여넣기</strong> 하는 용도입니다.
       </p>
       <ul class="hint" style="list-style:disc;margin-left:18px">
-        <li><strong>삭제 버튼</strong>은 이 페이지의 목록에서만 삭제합니다. GitHub의 파일은 오빠가 직접 삭제해야 합니다.</li>
-        <li><strong>브라우저 LocalStorage</strong>에 임시 저장되므로, 새로고침해도 목록이 남습니다(같은 브라우저/기기 기준).</li>
-        <li><strong>DCAR 본문</strong>은 ‘한·영 혼용 텍스트’를 그대로 <strong>무한 붙여넣기</strong>해서 쓸 수 있도록 큰 텍스트박스로 되어 있습니다.</li>
-        <li><strong>works.json / reports.json 붙여넣기 → “JSON → 목록 불러오기”</strong>로 기존 데이터도 바로 다시 불러올 수 있습니다.</li>
+        <li><strong>삭제 버튼</strong>은 이 Admin 목록에서만 지웁니다. GitHub 실제 파일 삭제는 오빠가 직접!</li>
+        <li><strong>브라우저 LocalStorage</strong>에 임시 저장되므로, 같은 기기/브라우저에서는 새로고침해도 목록이 유지됩니다.</li>
+        <li><strong>미학 보고서 본문</strong>은 ‘한·영 혼용 텍스트’를 그대로 큰 박스에 붙여넣고, 결과를 MD 파일에 복사하면 됩니다.</li>
+        <li>Index ∮21의 Works Loader / Reports 모듈은<br>
+          <code>works.json</code>의 <strong>5개 섹션 키</strong>와<br>
+          <code>reports.json</code>의 <strong>reports 배열 + md_path</strong>를 그대로 사용합니다.
+        </li>
       </ul>
     </section>
 
@@ -271,7 +318,7 @@
     <section id="tab-works" class="admin-block hidden">
       <div class="block-head">
         <h2>Works Manager — 작품 5섹션 관리</h2>
-        <small>섹션은 Index와 완전히 동일하게 고정: I~V (우리를 위해 기도해 주세요 / 인간 / 정신의 재탄생 / 존재의 회복 / 빛의 초의식)</small>
+        <small>섹션 키는 Index ∮21와 완전히 동일: Light & Memory / Human Being / Rebirth of Mind / Restoration of Being / Metaconsciousness of Light</small>
       </div>
 
       <div class="flex-row">
@@ -336,9 +383,10 @@
             </div>
 
             <p class="hint" style="margin-top:4px">
-              ※ <strong>이미지 파일명</strong>은 <code>/images/standard/</code>와 <code>/images/zoom/</code> 폴더에
-              <strong>같은 이름</strong>으로 올린다고 가정합니다. (예: <code>/images/standard/DZ-001.jpg</code>, <code>/images/zoom/DZ-001.jpg</code>)<br>
-              ▶ 이 아래 <strong>이미지 리사이즈 도구</strong>로 기존·신규 이미지를 먼저 가볍게 만든 뒤 업로드하면, Index 로딩 속도가 크게 빨라집니다.
+              ※ <strong>이미지 파일명</strong>은 <code>/images/standard</code>와 <code>/images/zoom</code> 폴더에<br>
+              <strong>같은 이름</strong>으로 올린다고 가정합니다.<br>
+              (예: <code>/images/standard/DZ-001.jpg</code>, <code>/images/zoom/DZ-001.jpg</code>)<br>
+              ▶ 아래 <strong>이미지 리사이즈 도구</strong>로 긴 변 4000px 이하로 줄여서 올리면 Index 로딩 속도가 훨씬 빨라집니다.
             </p>
 
             <div class="btn-row">
@@ -370,7 +418,7 @@
       </div>
 
       <div class="out-area">
-        <label for="wJsonOut">➜ <code>data/works.json</code>에 그대로 복사·붙여넣기 (섹션별 5개 키 구조)</label>
+        <label for="wJsonOut">➜ <code>data/works.json</code>에 그대로 복사·붙여넣기 (Index ∮21 호환 구조)</label>
         <textarea id="wJsonOut" class="out" spellcheck="false"></textarea>
         <div class="btn-row">
           <button type="button" class="btn" id="wImportBtn">JSON → 목록 불러오기</button>
@@ -378,14 +426,13 @@
         <div id="wJsonError" class="error-msg"></div>
       </div>
 
-      <!-- IMAGE OPTIMIZER: 기존/신규 모두 4000px 이하 자동 축소 -->
       <div class="panel" style="margin-top:16px">
-        <div class="panel-title">이미지 리사이즈 · 4000px 이하 자동 축소 (기존 + 신규 파일 모두)</div>
+        <div class="panel-title">이미지 리사이즈 · 긴 변 4000px 이하 자동 축소</div>
         <p class="hint">
-          • 카메라/폰에서 가져온 큰 원본, <strong>이미 사이트에 쓰고 있는 이미지</strong>까지 한 번에 재가공할 수 있습니다.<br>
-          • 긴 변이 <strong>4000px를 넘는 경우만</strong> 자동 축소하고, <strong>JPEG(품질 0.9)</strong>로 저장합니다.<br>
-          • 결과 이미지를 다운로드해서 <code>/images/standard</code>, <code>/images/zoom</code>에 다시 올리면<br>
-            32점, 100점까지도 로딩 속도가 훨씬 빨라집니다.
+          • 카메라/폰 원본과 이미 사이트에서 쓰고 있는 이미지 모두 다시 가볍게 만들 수 있습니다.<br>
+          • 긴 변이 <strong>4000px를 넘는 경우만</strong> 축소하고, <strong>JPEG(품질 0.9)</strong>로 저장합니다.<br>
+          • 변환된 이미지를 다운로드해 <code>/images/standard · /images/zoom</code>에 업로드하면<br>
+            Lightflow ∮21 Works 그리드가 훨씬 빠르게 뜹니다.
         </p>
         <label for="imgInput">이미지 선택 (여러 장 가능)</label>
         <input id="imgInput" type="file" accept="image/*" multiple>
@@ -404,8 +451,8 @@
     <!-- REPORTS / DCAR MANAGER -->
     <section id="tab-reports" class="admin-block hidden">
       <div class="block-head">
-        <h2>DCAR Reports Manager — 미학 보고서 관리</h2>
-        <small>제목·요약은 KR/EN 분리, 본문은 한·영 혼용 텍스트를 그대로 무한 붙여넣기</small>
+        <h2>DCAR Reports Manager — 미학 보고서 메타 관리</h2>
+        <small>Index ∮21 Reports 모듈과 동일한 <code>reports/reports.json</code> 구조 사용</small>
       </div>
 
       <div class="flex-row">
@@ -442,10 +489,10 @@
               </div>
             </div>
 
-            <label for="rSumKo">요약 (KR) — 짧게 3~4문장</label>
+            <label for="rSumKo">요약 (KR) — 3–4문장</label>
             <textarea id="rSumKo" placeholder="전쟁·플랫폼 자본주의·디지털 과잉 자극 속에서 정동이 파편화되는 시대..."></textarea>
 
-            <label for="rSumEn">Summary (EN) — short 3–4 sentences</label>
+            <label for="rSumEn">Summary (EN) — 3–4 sentences</label>
             <textarea id="rSumEn" placeholder="In an era of war, platform capitalism, and digital overstimulation..."></textarea>
 
             <div class="btn-row">
@@ -456,11 +503,12 @@
           </div>
 
           <div class="panel" style="margin-top:12px">
-            <div class="panel-title">본문 (KR+EN 혼용 무한 붙여넣기)</div>
+            <div class="panel-title">본문 (KR+EN 혼용 무한 붙여넣기 · MD용)</div>
             <label for="rBody">여기에 DCAR 전체 텍스트를 그대로 붙여넣기 (한/영 섞여 있어도 됨)</label>
             <textarea id="rBody" style="min-height:220px" placeholder="# DCAR-10 — 감응의 파동장: 다층적 존재의 형성학&#10;&#10;등작 燈酌 DUNGZAK CESTLAVIE&#10;Lumera / Aesthetic Theorist&#10;..."></textarea>
             <p class="hint" style="margin-top:4px">
-              ➜ 이 내용은 <code>/reports/DCAR-XX-2025.md</code> 파일 안에 그대로 복사·붙여넣기 하면 됩니다.
+              ➜ 이 내용은 <code>/reports/DCAR-XX-2025.md</code> 파일 안에 그대로 복사·붙여넣기 하면 됩니다.<br>
+              (Admin은 텍스트를 보관·편집하는 용도일 뿐, GitHub에 자동 업로드하지 않습니다.)
             </p>
           </div>
         </div>
@@ -484,14 +532,14 @@
           </div>
 
           <div class="panel" style="margin-top:12px">
-            <div class="panel-title">선택한 DCAR의 MD 본문 미리보기 (복사용)</div>
-            <textarea id="rMdOut" class="out" spellcheck="false" placeholder="DCAR를 선택하면 여기에 전체 MD 텍스트가 표시됩니다."></textarea>
+            <div class="panel-title">선택한 DCAR의 MD 전체 텍스트 (복사용)</div>
+            <textarea id="rMdOut" class="out" spellcheck="false" placeholder="DCAR를 선택 후 [MD] 버튼을 누르면 여기에 전체 MD 텍스트가 생성됩니다."></textarea>
           </div>
         </div>
       </div>
 
       <div class="out-area">
-        <label for="rJsonOut">➜ <code>reports/reports.json</code>에 그대로 복사·붙여넣기 (배열 구조)</label>
+        <label for="rJsonOut">➜ <code>reports/reports.json</code>에 그대로 복사·붙여넣기 (Index ∮21 호환 구조)</label>
         <textarea id="rJsonOut" class="out" spellcheck="false"></textarea>
         <div class="btn-row">
           <button type="button" class="btn" id="rImportBtn">reports.json → 목록 불러오기</button>
@@ -502,10 +550,8 @@
   </main>
 
   <footer>
-    © 2025 등작 燈酌 DUNGZAK CESTLAVIE
-  </footer>
-
-  <script>
+    © 2025 등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.32 — Lightflow ∮21
+  </footer>  <script>
   // ============================
   // Helpers
   // ============================
@@ -544,9 +590,9 @@
   // ============================
   // Image Optimizer (4000px cap)
   // ============================
-  const DZ_MAX_DIM = 4000;           // 긴 변 최대 4000px
+  const DZ_MAX_DIM = 4000;
   const DZ_UPLOAD_MIME = 'image/jpeg';
-  const DZ_UPLOAD_QUALITY = 0.9;     // 0~1 (0.9: 고화질 + 용량 절감)
+  const DZ_UPLOAD_QUALITY = 0.9;
 
   function dzLoadImageFromFile(file){
     return new Promise((resolve, reject) => {
@@ -563,14 +609,13 @@
   }
 
   async function dzDownscaleImageFile(file, maxDim = DZ_MAX_DIM){
-    if(!file.type.startsWith('image/')) return file; // 이미지가 아니면 그대로
+    if(!file.type.startsWith('image/')) return file;
 
     const img = await dzLoadImageFromFile(file);
     const w = img.naturalWidth  || img.width;
     const h = img.naturalHeight || img.height;
     const longest = Math.max(w, h);
 
-    // 이미 충분히 작은 경우: 원본 그대로
     if(longest <= maxDim){
       return file;
     }
@@ -597,16 +642,10 @@
     });
 
     const safeName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-    const resizedFile = new File([blob], safeName, {
+    return new File([blob], safeName, {
       type: DZ_UPLOAD_MIME,
       lastModified: Date.now()
     });
-
-    console.log(
-      `[DZ-RESIZE] "${file.name}" ${w}x${h} → "${safeName}" ${targetW}x${targetH}`
-    );
-
-    return resizedFile;
   }
 
   async function dzPrepareUploadFiles(fileList, maxDim = DZ_MAX_DIM){
@@ -640,7 +679,6 @@
     }
 
     function clearUrls(){
-      // 기존 링크 URL 정리 (메모리 누수 방지)
       const links = resultBox.querySelectorAll('a[data-url]');
       links.forEach(a => {
         const u = a.getAttribute('data-url');
@@ -662,7 +700,6 @@
 
       try{
         const processedList = await dzPrepareUploadFiles(files, DZ_MAX_DIM);
-
         if(!processedList.length){
           msg.textContent = '처리할 이미지가 없습니다.';
           resultBox.textContent = '처리 결과가 없습니다.';
@@ -670,11 +707,9 @@
         }
 
         const frag = document.createDocumentFragment();
-
         processedList.forEach(({ original, processed }) => {
           const url = URL.createObjectURL(processed);
           const changed = (processed !== original);
-
           const item = document.createElement('div');
           item.className = 'img-result-item';
           item.innerHTML = `
@@ -695,7 +730,7 @@
 
         resultBox.textContent = '';
         resultBox.appendChild(frag);
-        msg.textContent = '이미지 변환이 완료되었습니다. 링크를 눌러 파일을 저장한 뒤 /images/standard · /images/zoom에 업로드하세요.';
+        msg.textContent = '이미지 변환 완료. 파일을 저장한 뒤 /images/standard · /images/zoom에 업로드하세요.';
       }catch(err){
         console.error(err);
         msg.textContent = '이미지 처리 중 오류가 발생했습니다. 다시 시도해 주세요.';
@@ -707,11 +742,10 @@
   })();
 
   // ============================
-  // Works Manager
+  // Works Manager (Lightflow ∮21 호환 works.json)
   // ============================
-  const WORKS_STORAGE_KEY = 'dz_admin_works_v1';
+  const WORKS_STORAGE_KEY = 'dz_admin_works_v2';
 
-  // flat list: {id,section,title_kr,...}
   let works = loadLocal(WORKS_STORAGE_KEY, []);
 
   const wId      = $('#wId');
@@ -769,7 +803,7 @@
       </tr>
     `).join('');
 
-    // JSON 구조: { "Light & Memory":[...], "Human Being":[...], ... }
+    // works.json: { "Light & Memory":[...], "Human Being":[...], ... } (Index ∮21 그대로)
     const bySection = {
       "Light & Memory": [],
       "Human Being": [],
@@ -779,7 +813,6 @@
     };
     works.forEach(w=>{
       const key = WORK_SECTION_KEYS.includes(w.section) ? w.section : "Light & Memory";
-      if(!bySection[key]) bySection[key] = [];
       bySection[key].push({
         id: w.id || '',
         title_kr: w.title_kr || '',
@@ -790,6 +823,8 @@
         size_en: w.size_en || '',
         year: w.year || '',
         image: w.image || ''
+        // zoom 필드는 Index에서 optional로 처리하므로,
+        // 필요하면 JSON을 직접 편집해서 추가해도 동작함.
       });
     });
     wJsonOut.value = JSON.stringify(bySection, null, 2);
@@ -876,7 +911,7 @@
       works = list;
       saveLocal(WORKS_STORAGE_KEY, works);
       renderWorksTable();
-      wJsonError.textContent = 'JSON에서 작품 목록을 불러왔습니다.';
+      wJsonError.textContent = 'works.json에서 작품 목록을 불러왔습니다.';
     }catch(err){
       wJsonError.textContent = 'JSON 파싱에 실패했습니다. 형식을 다시 확인하세요.';
     }
@@ -892,7 +927,7 @@
     const editIdx = btn.getAttribute('data-w-edit');
     const delIdx  = btn.getAttribute('data-w-del');
 
-    if(editIdx !== null && editIdx !== undefined && editIdx !== ''){
+    if(editIdx !== null && editIdx !== ''){
       const i = Number(editIdx);
       const w = works[i];
       if(!w) return;
@@ -909,7 +944,7 @@
       wError.textContent = '선택한 작품 정보를 불러왔습니다. 수정 후 "추가 / 업데이트"를 누르면 덮어씁니다.';
     }
 
-    if(delIdx !== null && delIdx !== undefined && delIdx !== ''){
+    if(delIdx !== null && delIdx !== ''){
       const i = Number(delIdx);
       const w = works[i];
       if(!w) return;
@@ -924,23 +959,11 @@
   renderWorksTable();
 
   // ============================
-  // DCAR / Reports Manager
+  // DCAR / Reports Manager (reports.json 호환)
   // ============================
-  const REPORTS_STORAGE_KEY = 'dz_admin_reports_v1';
+  const REPORTS_STORAGE_KEY = 'dz_admin_reports_v2';
 
-  // 초기값: 로컬에 아무것도 없을 때만 DCAR-10 메타 하나 기본 세팅
-  let reports = loadLocal(REPORTS_STORAGE_KEY, [
-    {
-      id: 'DCAR-10-2025',
-      category: 'Theory',
-      md_filename: 'DCAR-10-2025.md',
-      title_ko: 'DCAR-10 — 감응의 파동장: 다층적 존재의 형성학',
-      title_en: 'Aesthetic Report No.10 — Wavefields of Affect: A Multilayered Formation of Being',
-      summary_ko: '전쟁·기아·플랫폼 자본주의·디지털 과잉 자극 속에서 정동은 파편화된 파동층으로 분열된다. DCAR-10은 등작의 회화를 “감응의 파동장”으로 읽으며, 기저 파동층·교차층·응축 핵·존재 축·상부 떨림층을 통해 존재가 관계적 파동으로 다시 서는 과정을 신경미학·철학·정신의학의 언어로 분석한다.',
-      summary_en: 'In an age of war, famine, platform capitalism, and digital overstimulation, affect fractures into layered waves. DCAR-10 reads DUNGZAK CESTLAVIE’s painting as an “affective wavefield,” tracing primary layers, cross-disruptions, affective cores, and an axis of presence through which being is rebuilt as relational vibration across aesthetic, neuropsychiatric, and philosophical frames.',
-      body: ''
-    }
-  ]);
+  let reports = loadLocal(REPORTS_STORAGE_KEY, []);
 
   const rId     = $('#rId');
   const rCat    = $('#rCat');
@@ -985,7 +1008,7 @@
       </tr>
     `).join('');
 
-    // reports.json용 출력
+    // reports.json 출력: { reports:[ { id,category,title_ko,title_en,summary_ko,summary_en,md_path } ] }
     const outList = reports.map(r=>({
       id: r.id || '',
       category: r.category || 'Theory',
@@ -1021,14 +1044,22 @@
     }
 
     const idx = reports.findIndex(x=>x.id === id);
-    const obj = { id, category:cat, md_filename:file, title_ko:tKo, title_en:tEn, summary_ko:sKo, summary_en:sEn, body };
+    const obj = {
+      id,
+      category:cat,
+      md_filename:file,
+      title_ko:tKo,
+      title_en:tEn,
+      summary_ko:sKo,
+      summary_en:sEn,
+      body
+    };
 
     if(idx >= 0){ reports[idx] = obj; }
     else{ reports.push(obj); }
 
     saveLocal(REPORTS_STORAGE_KEY, reports);
     renderReportsTable();
-
     rError.textContent = '저장되었습니다. (reports.json과 MD 내용은 아래 출력 영역에서 복사하세요.)';
   }
 
@@ -1073,7 +1104,7 @@
     const delIdx  = btn.getAttribute('data-r-del');
     const mdIdx   = btn.getAttribute('data-r-md');
 
-    if(editIdx !== null && editIdx !== undefined && editIdx !== ''){
+    if(editIdx !== null && editIdx !== ''){
       const i = Number(editIdx);
       const r = reports[i]; if(!r) return;
       rId.value     = r.id || '';
@@ -1087,19 +1118,19 @@
       rError.textContent = '선택한 DCAR 정보를 불러왔습니다. 수정 후 "추가 / 업데이트"를 누르면 덮어씁니다.';
     }
 
-    if(mdIdx !== null && mdIdx !== undefined && mdIdx !== ''){
+    if(mdIdx !== null && mdIdx !== ''){
       const i = Number(mdIdx);
       const r = reports[i]; if(!r) return;
       const headerLines = [];
-      if(r.title_ko) headerLines.push(`# ${r.title_ko}`);
-      if(r.title_en) headerLines.push(`# ${r.title_en}`);
+      if(r.title_ko) headerLines.push('# ' + r.title_ko);
+      if(r.title_en) headerLines.push('# ' + r.title_en);
       if(r.id) headerLines.push('');
-      const base = headerLines.join('\n');
+      const base = headerLines.join('\\n');
       const body = r.body || '';
-      rMdOut.value = body ? (base + '\n\n' + body) : (base + '\n\n(여기에 본문을 붙여넣으세요)');
+      rMdOut.value = body ? (base + '\\n\\n' + body) : (base + '\\n\\n(여기에 본문을 붙여넣으세요)');
     }
 
-    if(delIdx !== null && delIdx !== undefined && delIdx !== ''){
+    if(delIdx !== null && delIdx !== ''){
       const i = Number(delIdx);
       const r = reports[i]; if(!r) return;
       const ok = confirm('이 DCAR를 목록에서 삭제할까요?\nID: '+(r.id||'')+'\n※ GitHub의 실제 MD/JSON 파일은 직접 삭제해야 합니다.');

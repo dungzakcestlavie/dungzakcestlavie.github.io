@@ -2,7 +2,7 @@
 <html lang="ko" translate="no">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=cover,viewport-fit=cover" />
   <title>등작 燈酌 DUNGZAK CESTLAVIE ∮21 · Lightflow</title>
 
   <!-- 기본 메타 -->
@@ -169,32 +169,6 @@
       padding:14px;
     }
 
-    /* BIO MODAL */
-    #bio-modal[hidden]{display:none;}
-    #bio-modal{position:fixed;inset:0;z-index:9999;}
-    .bio-backdrop{
-      position:absolute;inset:0;background:rgba(8,12,26,.62);
-      backdrop-filter:blur(6px);
-    }
-    .bio-card{
-      position:relative;margin:4vh auto;width:min(960px,94vw);
-      max-height:90vh;overflow:auto;padding:16px 18px 24px;
-      background:linear-gradient(180deg,#0a1022,#0b132a);
-      color:#eaeef7;border-radius:14px;
-      border:1px solid rgba(255,215,120,.25);
-    }
-
-    /* LIGHTBOX */
-    #lightbox{
-      position:fixed;inset:0;z-index:9990;display:flex;
-      align-items:center;justify-content:center;
-      background:rgba(0,0,0,.88);opacity:0;pointer-events:none;
-      transition:.2s;
-    }
-    #lightbox.on{opacity:1;pointer-events:auto;}
-
-    #lbImg{max-width:95vw;max-height:90vh;cursor:zoom-in;}
-
     /* FOOTER */
     footer{padding:50px 14px 100px;text-align:center;}
     .links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
@@ -205,10 +179,9 @@
     .links a:hover{
       background:linear-gradient(180deg,#f3d88c,#e6c777);color:#0a1230;
     }
-  </style>
-</head> <body class="korean">
-  <!-- 레이아웃 보완 스타일 (waves·bio·reports·audio 등) -->
-  <style>
+
+    /* ===== 레이아웃 보완 (waves·bio·reports·audio 등) ===== */
+
     /* FULLSCREEN WAVES BACKGROUND */
     #waves{
       position:fixed;inset:0;
@@ -249,6 +222,7 @@
       margin:0 0 10px;
       font-size:12px;color:#6f82c2;
       font-family:ui-monospace,Menlo,Consolas,monospace;
+      word-break:break-all;
     }
     .r-meta{
       display:flex;gap:8px;align-items:center;
@@ -305,7 +279,20 @@
       white-space:pre-wrap;
     }
 
-    /* BIO MODAL 세부 */
+    /* BIO MODAL */
+    #bio-modal[hidden]{display:none;}
+    #bio-modal{position:fixed;inset:0;z-index:9999;}
+    .bio-backdrop{
+      position:absolute;inset:0;background:rgba(8,12,26,.62);
+      backdrop-filter:blur(6px);
+    }
+    .bio-card{
+      position:relative;margin:4vh auto;width:min(960px,94vw);
+      max-height:90vh;overflow:auto;padding:16px 18px 24px;
+      background:linear-gradient(180deg,#0a1022,#0b132a);
+      color:#eaeef7;border-radius:14px;
+      border:1px solid rgba(255,215,120,.25);
+    }
     .bio-head{
       position:sticky;top:0;
       display:flex;align-items:center;gap:10px;
@@ -442,7 +429,7 @@
       opacity:.9;
     }
   </style>
-
+</head> <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
 
@@ -466,7 +453,7 @@
   </header>
 
   <main>
-    <!-- 1) POEM -->
+    <!-- 1) POEM (텍스트 그대로 유지) -->
     <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
@@ -818,7 +805,7 @@ Numerous private collections worldwide.</p>
   })();
 
   // =========================
-  // Background Waves (경량 버전)
+  // Background Waves (경량 버전, 속도 개선)
   // =========================
   (function(){
     const prefersReduced =
@@ -834,10 +821,11 @@ Numerous private collections worldwide.</p>
     let DPR = 1;
     let visible = true;
     let lastTime = 0;
-    const FRAME_INTERVAL = 1000 / 30; // 30fps
+    const FRAME_INTERVAL = 1000 / 28; // <= 30fps로 줄여 CPU 부담 감소
 
     function resize(){
-      DPR = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
+      // 고해상도 기기에서 과도한 해상도 제한 (속도 개선)
+      DPR = Math.max(1, Math.min(1.25, window.devicePixelRatio || 1));
       ctx.canvas.width  = Math.floor(window.innerWidth * DPR);
       ctx.canvas.height = Math.floor(window.innerHeight * DPR);
       ctx.setTransform(1,0,0,1,0,0);
@@ -878,7 +866,8 @@ Numerous private collections worldwide.</p>
 
         for(let k=0; k<2; k++){
           ctx.beginPath();
-          for(let x=0; x<=window.innerWidth; x+=18){
+          // x step을 키워 연산량 감소 (18 → 24)
+          for(let x=0; x<=window.innerWidth; x+=24){
             const y = waveY(x,k,t);
             if(x === 0) ctx.moveTo(x,y);
             else        ctx.lineTo(x,y);
@@ -1196,9 +1185,6 @@ Numerous private collections worldwide.</p>
       renderState[key] = true;
     }
 
-    // 언어 전환 시 Works는 다시 렌더하지 않음 (속도 + 안정성)
-    // alt 언어는 최초 로딩 기준으로 유지됨.
-
     document.addEventListener('dz-section-change', e => {
       if(e.detail === 'works' && !initialTriggered){
         initialTriggered = true;
@@ -1369,6 +1355,7 @@ Numerous private collections worldwide.</p>
 
   // =========================
   // Reports (DCAR) — reports.json 로드
+  //  * 전체 보기(Open)에서 폴더 구조의 md 파일을 정확히 불러오도록 수정
   // =========================
   (function(){
     const wrap   = $('.reports-omega');
@@ -1387,10 +1374,22 @@ Numerous private collections worldwide.</p>
       ));
     }
 
+    // 폴더 구조(/reports/DCAR-XX-2025/DCAR-XX-2025.md)를 기본값으로 사용하는 경로 계산
+    function resolveMdPath(r){
+      let p = (r.md_path || '').trim();
+      if(p){
+        // reports.json 에 직접 넣은 경우: 그대로 사용 (구버전 호환)
+        return p.startsWith('/') ? p : '/' + p.replace(/^\/+/, '');
+      }
+      const id = (r.id || '').trim();
+      if(!id) return '';
+      // 기본 규칙: /reports/DCAR-01-2025/DCAR-01-2025.md
+      return '/reports/' + id + '/' + id + '.md';
+    }
+
     function normaliseItem(r){
       const cat = (r.category || 'Theory').toLowerCase();
-      const rawPath = r.md_path || ('/reports/' + r.id + '.md');
-      const path = rawPath.startsWith('/') ? rawPath : '/' + rawPath;
+      const path = resolveMdPath(r);
 
       return {
         id: r.id,
@@ -1424,6 +1423,7 @@ Numerous private collections worldwide.</p>
     }
 
     function render(cat){
+      if(cat === currentCat && grid.innerHTML) return;
       currentCat = cat;
       viewer.innerHTML = '';
 
@@ -1476,6 +1476,10 @@ Numerous private collections worldwide.</p>
       viewer.innerHTML = '';
 
       const path = meta.path;
+      if(!path){
+        viewer.innerHTML = '<p>보고서 경로가 설정되지 않았습니다.</p>';
+        return;
+      }
 
       try{
         const res = await fetch(path);
@@ -1496,7 +1500,7 @@ Numerous private collections worldwide.</p>
           </div>
         `;
 
-        viewer.innerHTML = header + `<pre>${escapeHtml(text)}</pre>`;
+        viewer.innerHTML = header + '<pre>' + escapeHtml(text) + '</pre>';
       }catch(_){
         viewer.innerHTML = '<p>보고서를 불러오는 중 오류가 발생했습니다.</p>';
       }
@@ -1521,6 +1525,8 @@ Numerous private collections worldwide.</p>
     toggle.addEventListener('click', () => {
       const top = wrap.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top, behavior:'smooth' });
+      // 혹시 아직 로드 안됐으면 여기서도 보장
+      loadData();
     });
 
     document.addEventListener('dz-section-change', e => {
@@ -1553,11 +1559,7 @@ Numerous private collections worldwide.</p>
     async function ensureAC(){
       if(!ac){
         const Ctx = window.AudioContext || window.webkitAudioContext;
-        try{
-          ac = new Ctx();
-        }catch(_){
-          ac = new Ctx();
-        }
+        ac = new Ctx();
       }
       if(ac.state === 'suspended'){
         await ac.resume();

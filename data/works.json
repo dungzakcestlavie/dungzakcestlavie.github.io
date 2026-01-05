@@ -496,7 +496,7 @@
       "zoom": "images/zoom/DZ-032.jpg"
     }
   ],
-"Rebirth of Mind": [
+  "Rebirth of Mind": [
   {
     "id": "DZ-033",
     "section_id": 3,
@@ -507,7 +507,8 @@
     "size_kr": "76 x 57 cm",
     "size_en": "76 x 57 cm",
     "year": 2006,
-    "image": "images/standard/DZ-033.jpg"
+    "image": "images/standard/DZ-033.jpg",
+    "zoom": "images/standard/DZ-033.jpg"
   }
 ],
 

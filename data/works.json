@@ -495,13 +495,14 @@
       "image": "images/standard/DZ-032.jpg",
       "zoom": "images/zoom/DZ-032.jpg"
     }
-  ],
-  "Rebirth of Mind": [
+  ],"Rebirth of Mind": [
   {
     "id": "DZ-033",
     "section_id": 3,
     "section_kr": "III 정신의 재탄생",
     "section_en": "Rebirth of Mind",
+    "title_kr": "숲의 안개",
+    "title_en": "Mist in the Forest",
     "material_kr": "종이에 연필",
     "material_en": "pencil on paper",
     "size_kr": "76 x 57 cm",

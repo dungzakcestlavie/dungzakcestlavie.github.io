@@ -496,8 +496,20 @@
       "zoom": "images/zoom/DZ-032.jpg"
     }
   ],
+"Rebirth of Mind": [
+  {
+    "id": "DZ-033",
+    "section_id": 3,
+    "section_kr": "III 정신의 재탄생",
+    "section_en": "Rebirth of Mind",
+    "material_kr": "종이에 연필",
+    "material_en": "pencil on paper",
+    "size_kr": "76 x 57 cm",
+    "size_en": "76 x 57 cm",
+    "year": 2006,
+    "image": "images/standard/DZ-033.jpg"
+  }
+],
 
-  "Rebirth of Mind": [],
-  "Restoration of Being": [],
-  "Metaconsciousness of Light": []
-}
+"Restoration of Being": [],
+"Metaconsciousness of Light": []

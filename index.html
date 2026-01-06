@@ -923,28 +923,23 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-<!-- ==========================================================
-Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
-③ SCRIPT
-========================================================== -->
 <script>
 (() => {
   "use strict";
 
-  /* -----------------------------
+  /* =========================================================
      utils
-  ----------------------------- */
+  ========================================================= */
   const $  = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const safeText = (v) => (v == null ? "" : String(v));
 
   const toAbs = (p) => {
     if (!p) return "";
     if (/^https?:\/\//i.test(p)) return p;
     return p.startsWith("/") ? p : ("/" + p);
   };
-
-  const safeText = (v) => (v == null ? "" : String(v));
 
   const prefersReduced = () =>
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -955,6 +950,15 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     if (bodyHas("english")) return "EN";
     if (bodyHas("hybrid")) return "KR+EN";
     return "KR";
+  };
+
+  const escapeHTML = (s) => {
+    return String(s ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   };
 
   const setLangMode = (mode) => {
@@ -972,7 +976,7 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     BIO.syncToGlobal();
     if (LIGHTBOX.isOpen()) LIGHTBOX.refreshCaption();
     REPORTS.refreshViewer();
-    WORKS.refreshTitles(); // ✅ 언어 바뀌면 카드 타이틀 다시
+    WORKS.refreshTitles(); // 언어 바뀌면 Works 타이틀 갱신
   };
 
   const restoreLang = () => {
@@ -982,9 +986,9 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     setLangMode(m);
   };
 
-  /* -----------------------------
+  /* =========================================================
      NAV
-  ----------------------------- */
+  ========================================================= */
   function bindPrimaryNav(){
     const buttons = $$("nav.primary button");
     const sections = $$("main > section");
@@ -1000,14 +1004,14 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         else b.removeAttribute("aria-current");
       });
 
-      // ✅ 진입 시 강제 로드/렌더
+      // 진입 시 강제 로드/렌더
       if (id === "works"){
         await WORKS.ensureLoaded();
         await WORKS.ensureRenderedCurrent();
       }
       if (id === "reports"){
         await REPORTS.ensureLoaded();
-        REPORTS.forceOpen();     // ✅ “Reports는 무조건 열림”
+        REPORTS.forceOpen(); // Reports는 무조건 열림
       }
     };
 
@@ -1019,7 +1023,7 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 
     $("#tab-bio")?.addEventListener("click", () => BIO.open());
 
-    // ✅ 최초 상태: Poem
+    // 최초 상태: Poem
     show("poem");
   }
 
@@ -1029,11 +1033,11 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     $("#hyBtn")?.addEventListener("click", () => setLangMode("KR+EN"));
   }
 
-  /* -----------------------------
+  /* =========================================================
      WORKS
-     - ✅ 카드/캡션에서 DZ ID 노출 제거
-     - ✅ 언어 전환 시 타이틀 갱신
-  ----------------------------- */
+     - 카드/캡션에서 DZ ID 노출 제거
+     - 언어 전환 시 타이틀 갱신
+  ========================================================= */
   const WORKS = {
     raw: [],
     byPanel: { pray:[], human:[], rebirth:[], exist:[], cosmos:[] },
@@ -1109,15 +1113,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     panelEl(panel){ return $("#panel-" + panel); },
     list(panel){ return this.byPanel[panel] || []; },
 
-    escapeHTML(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
-    },
-
     cardHTML(w, idx, panel){
       const mode = getLangMode();
 
@@ -1128,23 +1123,22 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       const subEN = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
 
       let titleBlock = "";
-      if (mode === "KR") titleBlock = this.escapeHTML(titleKR || titleEN);
-      else if (mode === "EN") titleBlock = this.escapeHTML(titleEN || titleKR);
+      if (mode === "KR") titleBlock = escapeHTML(titleKR || titleEN);
+      else if (mode === "EN") titleBlock = escapeHTML(titleEN || titleKR);
       else{
-        const a = titleKR ? `<div class="ko">${this.escapeHTML(titleKR)}</div>` : "";
-        const b = titleEN ? `<div class="en">${this.escapeHTML(titleEN)}</div>` : "";
-        titleBlock = `${a}${b}` || this.escapeHTML(titleKR || titleEN);
+        const a = titleKR ? `<div class="ko">${escapeHTML(titleKR)}</div>` : "";
+        const b = titleEN ? `<div class="en">${escapeHTML(titleEN)}</div>` : "";
+        titleBlock = `${a}${b}` || escapeHTML(titleKR || titleEN);
       }
 
       const sub = (mode === "EN") ? subEN : subKR;
-      const subLine = this.escapeHTML(sub || (mode === "EN" ? subKR : subEN) || "");
+      const subLine = escapeHTML(sub || (mode === "EN" ? subKR : subEN) || "");
 
       return `
         <article class="w-card" data-panel="${panel}" data-i="${idx}">
           <img class="w-thumb" loading="lazy" src="${w.image}" alt="">
           <div class="w-meta">
-            <!-- ✅ ID 노출 제거: w-id는 남겨도 CSS로 숨김 -->
-            <div class="w-id">${this.escapeHTML(w.id)}</div>
+            <div class="w-id" style="display:none">${escapeHTML(w.id)}</div>
             <div class="w-title">${titleBlock}</div>
             ${subLine ? `<div class="w-sub">${subLine}</div>` : ""}
           </div>
@@ -1188,14 +1182,13 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       if (!this.rendered.has(this.currentPanel)){
         await this.render(this.currentPanel);
       }else{
-        // 이미 렌더 되었더라도 언어 전환 이후라면 갱신 필요
         this.refreshTitles();
       }
     },
 
     refreshTitles(){
-      // 현재 패널이 렌더된 상태면, 패널을 다시 렌더해서 텍스트 동기화
       if (!this.rendered.has(this.currentPanel)) return;
+      // 재렌더로 언어 동기화
       this.render(this.currentPanel);
     },
 
@@ -1205,8 +1198,8 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         if (!box) return;
         box.innerHTML = `
           <div class="w-msg">
-            ${this.escapeHTML(msg)}
-            <small>${this.escapeHTML(path)}</small>
+            ${escapeHTML(msg)}
+            <small>${escapeHTML(path)}</small>
           </div>
         `;
       });
@@ -1228,11 +1221,11 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     activate("pray");
   }
 
-  /* -----------------------------
+  /* =========================================================
      LIGHTBOX
-     - ✅ 캡션에서 DZ ID 제거
-     - ✅ KR/EN 분리 표기
-  ----------------------------- */
+     - 캡션에서 DZ ID 제거
+     - KR/EN 분리 표기
+  ========================================================= */
   const LIGHTBOX = {
     panel: "pray",
     index: 0,
@@ -1314,7 +1307,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       const metaKR = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
       const metaEN = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
 
-      // ✅ ID는 어떤 모드에서도 노출하지 않음
       if (mode === "KR"){
         return [titleKR, metaKR].filter(Boolean).join("\n");
       }
@@ -1322,7 +1314,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         return [titleEN, metaEN].filter(Boolean).join("\n");
       }
 
-      // KR+EN: 블록 분리
       const lines = [];
       if (titleKR || metaKR){
         lines.push("KR:");
@@ -1348,9 +1339,9 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     });
   }
 
-  /* -----------------------------
+  /* =========================================================
      BIO
-  ----------------------------- */
+  ========================================================= */
   const BIO = {
     open(){
       const modal = $("#bio-modal");
@@ -1425,17 +1416,19 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     });
   }
 
-  /* -----------------------------
+  /* =========================================================
      REPORTS
-     - ✅ 진입 시 자동 로드 + 자동 Open
-     - ✅ 버튼/상태 동기화 강제
-  ----------------------------- */
+     - reports.json: { reports:[{id,slug,year,category,title_ko,title_en,summary_ko,summary_en,md_path}] }
+     - 카드에 title + summary 노출
+     - 클릭 시 viewer에서 title + summary + md본문(있으면) 로드
+  ========================================================= */
   const REPORTS = {
     raw: [],
     loaded: false,
     open: false,
     currentFilter: "all",
     currentItem: null,
+    mdCache: new Map(), // md_path -> text
 
     async ensureLoaded(){
       if (this.loaded) return;
@@ -1463,26 +1456,21 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 
     normalize(r){
       const id = safeText(r.id || r.code || r.report_id || r.dcar || "");
-      const title_kr = safeText(r.title_kr ?? r.titleKr ?? r.title ?? "");
-      const title_en = safeText(r.title_en ?? r.titleEn ?? "");
+      const slug = safeText(r.slug || r.id || "");
+      const year = safeText(r.year || r.date || "");
       const category = safeText(r.category || r.type || r.tag || "archive").toLowerCase();
-      const date = safeText(r.date || r.year || "");
-      const body_kr = safeText(r.body_kr ?? r.text_kr ?? r.bodyKr ?? r.text ?? "");
-      const body_en = safeText(r.body_en ?? r.text_en ?? r.bodyEn ?? "");
-      return { id, title_kr, title_en, category, date, body_kr, body_en };
-    },
 
-    escapeHTML(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
+      const title_ko = safeText(r.title_ko ?? r.title_kr ?? r.titleKr ?? r.title ?? "");
+      const title_en = safeText(r.title_en ?? r.titleEn ?? "");
+      const summary_ko = safeText(r.summary_ko ?? r.summaryKr ?? r.summary_kr ?? "");
+      const summary_en = safeText(r.summary_en ?? r.summaryEn ?? "");
+
+      const md_path = safeText(r.md_path ?? r.md ?? r.path ?? "");
+
+      return { id, slug, year, category, title_ko, title_en, summary_ko, summary_en, md_path };
     },
 
     forceOpen(){
-      // ✅ 무조건 보이게
       this.open = true;
       const grid = $("#reportGrid");
       const btn = $("#reportsToggle");
@@ -1491,7 +1479,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         btn.setAttribute("aria-expanded","true");
         btn.textContent = "Close Reports";
       }
-      // 로드가 아직이면 로드 후 다시 렌더
       this.renderGrid();
     },
 
@@ -1520,26 +1507,63 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 
     pickTitle(r){
       const mode = getLangMode();
-      if (mode === "EN") return (r.title_en || r.title_kr || r.id);
+      if (mode === "EN") return (r.title_en || r.title_ko || r.id);
       if (mode === "KR+EN"){
-        const a = r.title_kr || "";
+        const a = r.title_ko || "";
         const b = r.title_en || "";
         return [a,b].filter(Boolean).join(" / ") || r.id;
       }
-      return (r.title_kr || r.title_en || r.id);
+      return (r.title_ko || r.title_en || r.id);
+    },
+
+    pickSummary(r){
+      const mode = getLangMode();
+      if (mode === "EN") return (r.summary_en || r.summary_ko || "");
+      if (mode === "KR+EN"){
+        const a = (r.summary_ko || "").trim();
+        const b = (r.summary_en || "").trim();
+        return [a,b].filter(Boolean).join("\n\n");
+      }
+      return (r.summary_ko || r.summary_en || "");
     },
 
     metaLine(r){
       const c = (r.category || "").toUpperCase();
-      const d = r.date ? (" · " + r.date) : "";
-      return (r.id ? r.id : c) + d;
+      const y = r.year ? (" · " + r.year) : "";
+      // 메타는 ID + 연도(카테고리는 보조)
+      const head = r.id || c || "";
+      return head + y;
+    },
+
+    cardHTML(r, i){
+      const title = escapeHTML(this.pickTitle(r));
+      const meta  = escapeHTML(this.metaLine(r));
+      const mode = getLangMode();
+
+      let summary = "";
+      if (mode === "KR") summary = r.summary_ko || r.summary_en || "";
+      else if (mode === "EN") summary = r.summary_en || r.summary_ko || "";
+      else{
+        const a = r.summary_ko ? `KR: ${r.summary_ko}` : "";
+        const b = r.summary_en ? `EN: ${r.summary_en}` : "";
+        summary = [a,b].filter(Boolean).join("\n");
+      }
+      const summaryEsc = escapeHTML(summary);
+
+      return `
+        <div class="r-item" data-i="${i}">
+          <div class="t">${title}</div>
+          <div class="m">${meta}</div>
+          ${summaryEsc ? `<div class="s">${summaryEsc}</div>` : ""}
+        </div>
+      `;
     },
 
     renderGrid(){
       const grid = $("#reportGrid");
       if (!grid) return;
+
       if (!this.loaded){
-        // 로드 전인데 open 상태면 로딩 메시지
         if (this.open){
           grid.style.display = "grid";
           grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">Loading reports…</div>`;
@@ -1560,49 +1584,75 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       }
 
       grid.style.display = "grid";
-      grid.innerHTML = list.map((r, i) => `
-        <div class="r-item" data-i="${i}">
-          <div class="t">${this.escapeHTML(this.pickTitle(r))}</div>
-          <div class="m">${this.escapeHTML(this.metaLine(r))}</div>
-        </div>
-      `).join("");
+      grid.innerHTML = list.map((r, i) => this.cardHTML(r, i)).join("");
 
       $$(".r-item", grid).forEach(item => {
-        item.addEventListener("click", () => {
+        item.addEventListener("click", async () => {
           const i = Number(item.dataset.i);
           const r = this.filtered()[i];
-          if (r) this.openViewer(r);
+          if (r) await this.openViewer(r);
         });
       });
     },
 
-    openViewer(r){
+    async fetchMD(md_path){
+      const p = safeText(md_path).trim();
+      if (!p) return "";
+      const abs = toAbs(p);
+
+      if (this.mdCache.has(abs)) return this.mdCache.get(abs);
+
+      try{
+        const res = await fetch(abs + "?ts=" + Date.now(), { cache:"no-store" });
+        if (!res.ok) throw new Error("md fetch failed");
+        const txt = await res.text();
+        this.mdCache.set(abs, txt);
+        return txt;
+      }catch(e){
+        // md가 없는 경우도 허용(요약만 표시)
+        this.mdCache.set(abs, "");
+        return "";
+      }
+    },
+
+    async openViewer(r){
       this.currentItem = r;
+
       const viewer = $("#reportViewer");
       if (!viewer) return;
 
-      const mode = getLangMode();
       const title = this.pickTitle(r);
+      const meta = this.metaLine(r);
+
+      const summary = this.pickSummary(r);
+      const mdText = await this.fetchMD(r.md_path);
+
+      const mode = getLangMode();
 
       let body = "";
-      if (mode === "EN") body = (r.body_en || r.body_kr);
-      else if (mode === "KR+EN"){
-        const a = r.body_kr ? r.body_kr.trim() : "";
-        const b = r.body_en ? r.body_en.trim() : "";
-        body = [a,b].filter(Boolean).join("\n\n");
+      if (mdText && mdText.trim()){
+        // md 원문은 그대로(표시는 안전하게 text로)
+        body = mdText.trim();
       }else{
-        body = (r.body_kr || r.body_en);
+        // md가 없으면 요약만으로 충분히 보이도록
+        body = "";
       }
 
       viewer.style.display = "block";
+
+      // ✅ innerHTML은 구조만, 텍스트는 모두 escapeHTML로 처리
       viewer.innerHTML = `
-        <div class="rv-title">${this.escapeHTML(title)}</div>
-        <div class="rv-body">${this.escapeHTML(body)}</div>
+        <div class="rv-title">${escapeHTML(title)}</div>
+        <div class="rv-meta">${escapeHTML(meta)}</div>
+        ${summary ? `<pre class="rv-summary">${escapeHTML(summary)}</pre>` : ""}
+        ${body ? `<pre class="rv-body">${escapeHTML(body)}</pre>` : ""}
+        ${(!body && !summary) ? `<div class="rv-body">${escapeHTML("No content.")}</div>` : ""}
       `;
     },
 
     refreshViewer(){
       if (!this.currentItem) return;
+      // 언어 바뀌면 title/summary가 달라짐 → 다시 오픈
       this.openViewer(this.currentItem);
     },
 
@@ -1613,8 +1663,8 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         grid.style.display = "grid";
         grid.innerHTML = `
           <div class="w-msg" style="grid-column:1/-1">
-            ${this.escapeHTML(msg)}
-            <small>${this.escapeHTML(path)}</small>
+            ${escapeHTML(msg)}
+            <small>${escapeHTML(path)}</small>
           </div>
         `;
       }
@@ -1626,15 +1676,13 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     $("#reportsToggle")?.addEventListener("click", () => REPORTS.toggleOpen());
     $$(".r-tab").forEach(btn => btn.addEventListener("click", () => REPORTS.setFilter(btn.dataset.r || "all")));
 
-    // 기본은 닫힌 상태로 시작하지만,
-    // ✅ Reports 섹션에 들어가면 forceOpen()이 실행됨.
     const grid = $("#reportGrid");
     if (grid) grid.style.display = "none";
   }
 
-  /* -----------------------------
+  /* =========================================================
      SOUND (덜 튀게 + sound-on 클래스)
-  ----------------------------- */
+  ========================================================= */
   const SOUND = {
     ctx: null,
     master: null,
@@ -1791,9 +1839,9 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     $("#soundStopBtn")?.addEventListener("click", () => SOUND.stop());
   }
 
-  /* -----------------------------
+  /* =========================================================
      WAVES (여명 미세 + 부드럽고 낮은 대비)
-  ----------------------------- */
+  ========================================================= */
   const WAVES = {
     c: null, ctx: null, w:0, h:0, t:0, raf:0,
 
@@ -1828,7 +1876,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 
       g.clearRect(0,0,this.w,this.h);
 
-      // 아주 약한 상단 여명 haze
       const grd = g.createRadialGradient(
         this.w*0.5, this.h*0.05, 0,
         this.w*0.5, this.h*0.05, this.h*0.95
@@ -1852,7 +1899,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 
       g.clearRect(0,0,this.w,this.h);
 
-      // base haze
       const grd = g.createRadialGradient(
         this.w*0.5, this.h*0.06, 0,
         this.w*0.5, this.h*0.06, this.h*1.1
@@ -1863,7 +1909,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       g.fillStyle = grd;
       g.fillRect(0,0,this.w,this.h);
 
-      // waves: 낮은 대비, 얇게
       const layers = [
         { amp: 16, sp: 0.55, a: 0.055, lw: 2 },
         { amp: 24, sp: 0.38, a: 0.045, lw: 2 },
@@ -1890,7 +1935,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
         g.stroke();
       }
 
-      // star dust: 극저밀도
       g.fillStyle = "rgba(237,227,201,0.015)";
       for (let i=0;i<120;i++){
         const x = (Math.random()*this.w);
@@ -1900,9 +1944,9 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     }
   };
 
-  /* -----------------------------
+  /* =========================================================
      bind all
-  ----------------------------- */
+  ========================================================= */
   function bindAll(){
     restoreLang();
     bindLanguageButtons();
@@ -1920,7 +1964,7 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       if (modal && !modal.hidden) BIO.close();
     });
 
-    // ✅ 초기 preload (실전 안정성)
+    // 초기 preload (실전 안정성)
     WORKS.ensureLoaded().catch(()=>{});
     REPORTS.ensureLoaded().catch(()=>{});
 
@@ -1935,5 +1979,3 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
   }
 })();
 </script>
-</body>
-</html>

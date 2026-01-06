@@ -511,87 +511,87 @@
       "size_en": "76 x 57 cm",
       "year": 2006,
       "image": "images/standard/DZ-033.jpg",
-      "zoom": "images/standard/DZ-033.jpg"
-    }, 
+      "zoom": "images/zoom/DZ-033.jpg"
+    },
     {
-  "id": "DZ-036",
-  "section_id": 3,
-  "section_kr": "III 정신의 재탄생",
-  "section_en": "Rebirth of Mind",
-  "title_kr": "사랑",
-  "title_en": "LOVE",
-  "material_kr": "종이에 아크릴, 연필",
-  "material_en": "acrylic, pencil on paper",
-  "size_kr": "70.5 x 100 cm",
-  "size_en": "70.5 x 100 cm",
-  "year": 2024,
-  "image": "images/standard/DZ-036.jpg",
-  "zoom": "images/zoom/DZ-036.jpg"
-},
-{
-  "id": "DZ-037",
-  "section_id": 3,
-  "section_kr": "III 정신의 재탄생",
-  "section_en": "Rebirth of Mind",
-  "title_kr": "예술, 인생, 여기",
-  "title_en": "Art, Life, Here",
-  "material_kr": "종이에 수채, 연필",
-  "material_en": "watercolour, pencil on paper",
-  "size_kr": "70.5 x 100 cm",
-  "size_en": "70.5 x 100 cm",
-  "year": 2019,
-  "image": "images/standard/DZ-037.jpg",
-  "zoom": "images/zoom/DZ-037.jpg"
-}
-
+      "id": "DZ-035",
+      "section_id": 3,
+      "section_kr": "III 정신의 재탄생",
+      "section_en": "Rebirth of Mind",
+      "title_kr": "사랑에 빠진 눈",
+      "title_en": "Eyes in Love",
+      "material_kr": "종이에 아크릴, 오일 파스텔",
+      "material_en": "acrylic, oil pastel on paper",
+      "size_kr": "100 x 70.5 cm",
+      "size_en": "100 x 70.5 cm",
+      "year": 2023,
+      "image": "images/standard/DZ-035.jpg",
+      "zoom": "images/zoom/DZ-035.jpg"
+    },
+    {
+      "id": "DZ-036",
+      "section_id": 3,
+      "section_kr": "III 정신의 재탄생",
+      "section_en": "Rebirth of Mind",
+      "title_kr": "사랑",
+      "title_en": "LOVE",
+      "material_kr": "종이에 아크릴, 연필",
+      "material_en": "acrylic, pencil on paper",
+      "size_kr": "70.5 x 100 cm",
+      "size_en": "70.5 x 100 cm",
+      "year": 2024,
+      "image": "images/standard/DZ-036.jpg",
+      "zoom": "images/zoom/DZ-036.jpg"
+    },
+    {
+      "id": "DZ-037",
+      "section_id": 3,
+      "section_kr": "III 정신의 재탄생",
+      "section_en": "Rebirth of Mind",
+      "title_kr": "예술, 인생, 여기",
+      "title_en": "Art, Life, Here",
+      "material_kr": "종이에 수채, 연필",
+      "material_en": "watercolour, pencil on paper",
+      "size_kr": "70.5 x 100 cm",
+      "size_en": "70.5 x 100 cm",
+      "year": 2019,
+      "image": "images/standard/DZ-037.jpg",
+      "zoom": "images/zoom/DZ-037.jpg"
+    }
   ],
 
- "Restoration of Being": [
-  {
-    "id": "DZ-038",
-    "section_id": 4,
-    "section_kr": "IV 존재의 회복",
-    "section_en": "Restoration of Being",
-    "title_kr": "당신으로부터",
-    "title_en": "From You",
-    "material_kr": "캔버스에 한지, 유채",
-    "material_en": "oil, hanji paper on canvas",
-    "size_kr": "60.6 x 72.7 cm",
-    "size_en": "60.6 x 72.7 cm",
-    "year": 1999,
-    "image": "images/standard/DZ-038.jpg"
-  },
-  {
-    "id": "DZ-034",
-    "section_id": 4,
-    "section_kr": "IV 존재의 회복",
-    "section_en": "Restoration of Being",
-    "title_kr": "사랑",
-    "title_en": "Love",
-    "material_kr": "종이에 아크릴, 연필",
-    "material_en": "acrylic, pencil on paper",
-    "size_kr": "100 x 70.5 cm",
-    "size_en": "100 x 70.5 cm",
-    "year": 2024,
-    "image": "images/standard/DZ-034.jpg",
-    "zoom": "images/zoom/DZ-034.jpg"
-  }
-],
-{
-  "id": "DZ-035",
-  "section_id": 4,
-  "section_kr": "IV 존재의 회복",
-  "section_en": "Restoration of Being",
-  "title_kr": "사랑에 빠진 눈",
-  "title_en": "Eyes in Love",
-  "material_kr": "종이에 아크릴, 오일 파스텔",
-  "material_en": "acrylic, oil pastel on paper",
-  "size_kr": "100 x 70.5 cm",
-  "size_en": "100 x 70.5 cm",
-  "year": 2023,
-  "image": "images/standard/DZ-035.jpg",
-  "zoom": "images/zoom/DZ-035.jpg"
-}
-]
+  "Restoration of Being": [
+    {
+      "id": "DZ-038",
+      "section_id": 4,
+      "section_kr": "IV 존재의 회복",
+      "section_en": "Restoration of Being",
+      "title_kr": "당신으로부터",
+      "title_en": "From You",
+      "material_kr": "캔버스에 한지, 유채",
+      "material_en": "oil, hanji paper on canvas",
+      "size_kr": "60.6 x 72.7 cm",
+      "size_en": "60.6 x 72.7 cm",
+      "year": 1999,
+      "image": "images/standard/DZ-038.jpg",
+      "zoom": "images/zoom/DZ-038.jpg"
+    },
+    {
+      "id": "DZ-034",
+      "section_id": 4,
+      "section_kr": "IV 존재의 회복",
+      "section_en": "Restoration of Being",
+      "title_kr": "사랑",
+      "title_en": "Love",
+      "material_kr": "종이에 아크릴, 연필",
+      "material_en": "acrylic, pencil on paper",
+      "size_kr": "100 x 70.5 cm",
+      "size_en": "100 x 70.5 cm",
+      "year": 2024,
+      "image": "images/standard/DZ-034.jpg",
+      "zoom": "images/zoom/DZ-034.jpg"
+    }
+  ],
+
   "Metaconsciousness of Light": []
 }

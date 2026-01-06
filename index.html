@@ -1013,289 +1013,272 @@ Numerous private collections worldwide.</p>
   "use strict";
 
   /* =========================================================
-     BASIC HELPERS
+     Helpers
   ========================================================= */
-  function queryOne(selector, root) {
-    return (root || document).querySelector(selector);
-  }
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function queryAll(selector, root) {
-    return Array.from((root || document).querySelectorAll(selector));
-  }
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const s = (v) => (v == null ? "" : String(v));
+  const isReducedMotion = () =>
+    !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  function clampNumber(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
-  function safeString(value) {
-    return value == null ? "" : String(value);
-  }
-
-  function isReducedMotionPreferred() {
-    return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }
-
-  function toAbsolutePath(path) {
-    const p = safeString(path).trim();
+  const toAbs = (path) => {
+    const p = s(path).trim();
     if (!p) return "";
     if (/^https?:\/\//i.test(p)) return p;
-    return p.startsWith("/") ? p : ("/" + p);
-  }
+    return p.startsWith("/") ? p : "/" + p;
+  };
 
-  function escapeHtml(text) {
-    return String(text ?? "")
+  const escapeHtml = (t) =>
+    String(t ?? "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
-  }
 
-  function getLanguageMode() {
+  const idle = (fn) => {
+    if ("requestIdleCallback" in window) return requestIdleCallback(fn, { timeout: 1200 });
+    return setTimeout(fn, 1);
+  };
+
+  /* =========================================================
+     Global UI State
+  ========================================================= */
+  const STATE = {
+    section: "poem", // poem | works | reports
+    lang: "KR"       // KR | EN | KR+EN
+  };
+
+  function getLang() {
     if (document.body.classList.contains("english")) return "EN";
     if (document.body.classList.contains("hybrid")) return "KR+EN";
     return "KR";
   }
 
-  function setLanguageMode(mode) {
+  function setLang(mode) {
     document.body.classList.remove("korean", "english", "hybrid");
+    if (mode === "EN") document.body.classList.add("english");
+    else if (mode === "KR+EN") document.body.classList.add("hybrid");
+    else document.body.classList.add("korean");
 
-    if (mode === "EN") {
-      document.body.classList.add("english");
-    } else if (mode === "KR+EN") {
-      document.body.classList.add("hybrid");
-    } else {
-      document.body.classList.add("korean");
-      mode = "KR";
-    }
+    STATE.lang = mode === "EN" ? "EN" : mode === "KR+EN" ? "KR+EN" : "KR";
 
-    const koreanButton = queryOne("#koBtn");
-    const englishButton = queryOne("#enBtn");
-    const hybridButton = queryOne("#hyBtn");
+    const koBtn = $("#koBtn");
+    const enBtn = $("#enBtn");
+    const hyBtn = $("#hyBtn");
+    if (koBtn) koBtn.classList.toggle("active", STATE.lang === "KR");
+    if (enBtn) enBtn.classList.toggle("active", STATE.lang === "EN");
+    if (hyBtn) hyBtn.classList.toggle("active", STATE.lang === "KR+EN");
 
-    if (koreanButton) koreanButton.classList.toggle("active", mode === "KR");
-    if (englishButton) englishButton.classList.toggle("active", mode === "EN");
-    if (hybridButton) hybridButton.classList.toggle("active", mode === "KR+EN");
-
-    try {
-      localStorage.setItem("LF_LANG", mode);
-    } catch (error) {}
+    try { localStorage.setItem("LF_LANG", STATE.lang); } catch(e){}
 
     BIO.syncToGlobal();
-    if (LIGHTBOX.isOpen()) {
-      LIGHTBOX.refreshCaption();
-    }
-    REPORTS.refreshSummaryTextOnly();     // 카드 summary 반응
-    WORKS.refreshCurrentPanelRender();    // Works 타이틀/서브라인 반응
+    if (LIGHTBOX.isOpen()) LIGHTBOX.refreshCaption();
+
+    // 중요한 UX: 언어 버튼 누르면 "지금 화면에 보이는 것"은 즉시 반응
+    if (STATE.section === "works") WORKS.refreshCurrentPanel();
+    if (STATE.section === "reports") REPORTS.refreshGridTextOnly();
   }
 
-  function restoreLanguageMode() {
+  function restoreLang() {
     let stored = "KR";
-    try {
-      stored = localStorage.getItem("LF_LANG") || "KR";
-    } catch (error) {}
-
+    try { stored = localStorage.getItem("LF_LANG") || "KR"; } catch(e){}
     if (!["KR", "EN", "KR+EN"].includes(stored)) stored = "KR";
-    setLanguageMode(stored);
+    setLang(stored);
   }
 
   /* =========================================================
-     PRIMARY NAVIGATION (Poem / Works / Reports / Bio)
+     Section Switch (Works가 안 열리던 핵심을 여기서 확실히 해결)
+     - inline style="display:none" 가 있어도 강제로 덮어씀
   ========================================================= */
-  function bindPrimaryNavigation() {
-    const navButtons = queryAll("nav.primary button");
-    const mainSections = queryAll("main > section");
-
-    async function showSection(sectionId) {
-      mainSections.forEach((section) => {
-        section.style.display = section.id === sectionId ? "" : "none";
-      });
-
-      navButtons.forEach((button) => {
-        const target = button.dataset.target;
-        const isActive = target === sectionId;
-
-        button.classList.toggle("active", isActive);
-        if (isActive) {
-          button.setAttribute("aria-current", "page");
-        } else {
-          button.removeAttribute("aria-current");
-        }
-      });
-
-      if (sectionId === "works") {
-        await WORKS.ensureLoaded();
-        await WORKS.ensureRenderedCurrentPanel();
-      }
-
-      if (sectionId === "reports") {
-        await REPORTS.ensureLoaded();
-        REPORTS.forceOpen();
-      }
-    }
-
-    navButtons.forEach((button) => {
-      const target = button.dataset.target;
-      if (!target) return;
-      button.addEventListener("click", () => showSection(target));
+  function showSection(id) {
+    const sections = $$("main > section");
+    sections.forEach(sec => {
+      // iOS Safari에서 "" 로는 inline display:none 제거가 안 되는 경우가 있어 "block" 명시
+      sec.style.display = (sec.id === id) ? "block" : "none";
     });
 
-    const bioTabButton = queryOne("#tab-bio");
-    if (bioTabButton) {
-      bioTabButton.addEventListener("click", () => BIO.open());
-    }
+    const navBtns = $$("nav.primary button[data-target]");
+    navBtns.forEach(btn => {
+      const t = btn.dataset.target;
+      const active = t === id;
+      btn.classList.toggle("active", active);
+      if (active) btn.setAttribute("aria-current", "page");
+      else btn.removeAttribute("aria-current");
+    });
 
+    STATE.section = id;
+
+    if (id === "works") {
+      WORKS.ensureLoaded().then(() => WORKS.ensureRendered()).catch(() => {});
+    } else if (id === "reports") {
+      REPORTS.ensureLoaded().then(() => {
+        // reports는 "보이면 바로 open"이 UX가 좋음
+        REPORTS.forceOpen();
+      }).catch(() => {});
+    }
+  }
+
+  /* =========================================================
+     Primary Navigation Bind
+  ========================================================= */
+  function bindPrimaryNav() {
+    $$("nav.primary button[data-target]").forEach(btn => {
+      btn.addEventListener("click", () => showSection(btn.dataset.target));
+    });
+
+    const bioBtn = $("#tab-bio");
+    if (bioBtn) bioBtn.addEventListener("click", () => BIO.open());
+
+    // 초기 진입: poem
     showSection("poem");
   }
 
-  function bindLanguageButtons() {
-    const koreanButton = queryOne("#koBtn");
-    const englishButton = queryOne("#enBtn");
-    const hybridButton = queryOne("#hyBtn");
-
-    if (koreanButton) koreanButton.addEventListener("click", () => setLanguageMode("KR"));
-    if (englishButton) englishButton.addEventListener("click", () => setLanguageMode("EN"));
-    if (hybridButton) hybridButton.addEventListener("click", () => setLanguageMode("KR+EN"));
+  function bindLangButtons() {
+    const koBtn = $("#koBtn");
+    const enBtn = $("#enBtn");
+    const hyBtn = $("#hyBtn");
+    if (koBtn) koBtn.addEventListener("click", () => setLang("KR"));
+    if (enBtn) enBtn.addEventListener("click", () => setLang("EN"));
+    if (hyBtn) hyBtn.addEventListener("click", () => setLang("KR+EN"));
   }
 
   /* =========================================================
-     WORKS (JSON -> CARDS -> LIGHTBOX)
-     - DZ ID 화면 노출 제거
-     - 언어 전환 반응
+     WORKS (speed + 안정)
+     - works.json: 기본은 캐시 사용(빠름)
+       필요할 때만 no-store
+     - 렌더는 "현재 탭만"
   ========================================================= */
   const WORKS = {
     loaded: false,
-    worksArray: [],
+    works: [],
     panels: { pray: [], human: [], rebirth: [], exist: [], cosmos: [] },
-    renderedPanels: new Set(),
     currentPanel: "pray",
+    renderedOnce: new Set(),
+    _loadingPromise: null,
 
     async ensureLoaded() {
       if (this.loaded) return;
+      if (this._loadingPromise) return this._loadingPromise;
 
-      const url = "/data/works.json?ts=" + Date.now();
-      let json;
+      this._loadingPromise = (async () => {
+        const urlFast = "/data/works.json"; // 캐시 허용 (속도)
+        const urlBust = "/data/works.json?ts=" + Date.now(); // 실패 시 fallback
 
-      try {
-        const response = await fetch(url, { cache: "no-store" });
-        if (!response.ok) throw new Error("works.json fetch failed");
-        json = await response.json();
-      } catch (error) {
+        let json = null;
+
+        try {
+          const r = await fetch(urlFast, { cache: "force-cache" });
+          if (!r.ok) throw new Error("fast fetch failed");
+          json = await r.json();
+        } catch (e1) {
+          try {
+            const r2 = await fetch(urlBust, { cache: "no-store" });
+            if (!r2.ok) throw new Error("bust fetch failed");
+            json = await r2.json();
+          } catch (e2) {
+            this.loaded = true;
+            this.showErrorAll("Works data not found.", urlFast);
+            return;
+          }
+        }
+
+        const arr = Array.isArray(json) ? json
+          : Array.isArray(json.works) ? json.works
+          : (json && typeof json === "object" && json.sections)
+              ? Object.values(json.sections).flatMap(v => Array.isArray(v) ? v : [])
+              : [];
+
+        this.works = arr.map(this.normalize);
+        this.split();
         this.loaded = true;
-        this.showErrorAllPanels("Works data not found.", url);
-        return;
-      }
+      })();
 
-      let array = [];
-      if (Array.isArray(json)) array = json;
-      else if (Array.isArray(json.works)) array = json.works;
-      else if (json && typeof json === "object" && json.sections) {
-        Object.values(json.sections).forEach((value) => {
-          if (Array.isArray(value)) array.push(...value);
-        });
-      }
-
-      this.worksArray = array.map(this.normalizeWorkObject);
-      this.splitByPanel();
-      this.loaded = true;
+      return this._loadingPromise;
     },
 
-    normalizeWorkObject(work) {
-      const id = safeString(work.id || work.ID || work.code || work.work_id || "");
-      const sectionId = Number(work.section_id ?? work.sectionId ?? work.section ?? work.section_no ?? 0);
-
-      const titleKorean = safeString(work.title_kr ?? work.titleKr ?? work.title_kor ?? work.titleKR ?? "");
-      const titleEnglish = safeString(work.title_en ?? work.titleEn ?? work.title_eng ?? work.titleEN ?? "");
-
-      const materialKorean = safeString(work.material_kr ?? work.materialKr ?? "");
-      const materialEnglish = safeString(work.material_en ?? work.materialEn ?? "");
-      const sizeKorean = safeString(work.size_kr ?? work.sizeKr ?? "");
-      const sizeEnglish = safeString(work.size_en ?? work.sizeEn ?? "");
-      const year = safeString(work.year ?? work.date ?? "");
-
-      const image = toAbsolutePath(work.image || work.img || work.standard || work.src || "");
-      const zoom = toAbsolutePath(work.zoom || work.zoom_image || work.hires || work.large || work.image_zoom || "");
+    normalize(w) {
+      const sectionId = Number(w.section_id ?? w.sectionId ?? w.section ?? w.section_no ?? 0);
 
       return {
-        id: id,
+        id: s(w.id || w.ID || w.code || ""),
         section_id: sectionId,
-        title_kr: titleKorean,
-        title_en: titleEnglish,
-        material_kr: materialKorean,
-        material_en: materialEnglish,
-        size_kr: sizeKorean,
-        size_en: sizeEnglish,
-        year: year,
-        image: image,
-        zoom: zoom || image
+        title_kr: s(w.title_kr ?? w.titleKr ?? w.title_kor ?? w.titleKR ?? ""),
+        title_en: s(w.title_en ?? w.titleEn ?? w.title_eng ?? w.titleEN ?? ""),
+        material_kr: s(w.material_kr ?? w.materialKr ?? ""),
+        material_en: s(w.material_en ?? w.materialEn ?? ""),
+        size_kr: s(w.size_kr ?? w.sizeKr ?? ""),
+        size_en: s(w.size_en ?? w.sizeEn ?? ""),
+        year: s(w.year ?? w.date ?? ""),
+        image: toAbs(w.image || w.img || w.standard || w.src || ""),
+        zoom: toAbs(w.zoom || w.zoom_image || w.hires || w.large || w.image_zoom || "")
       };
     },
 
-    splitByPanel() {
+    split() {
       this.panels = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-
-      this.worksArray.forEach((work) => {
-        if (work.section_id === 1) this.panels.pray.push(work);
-        else if (work.section_id === 2) this.panels.human.push(work);
-        else if (work.section_id === 3) this.panels.rebirth.push(work);
-        else if (work.section_id === 4) this.panels.exist.push(work);
-        else if (work.section_id === 5) this.panels.cosmos.push(work);
-      });
+      for (const w of this.works) {
+        if (w.section_id === 1) this.panels.pray.push(w);
+        else if (w.section_id === 2) this.panels.human.push(w);
+        else if (w.section_id === 3) this.panels.rebirth.push(w);
+        else if (w.section_id === 4) this.panels.exist.push(w);
+        else if (w.section_id === 5) this.panels.cosmos.push(w);
+      }
     },
 
-    getPanelElement(panelKey) {
-      return queryOne("#panel-" + panelKey);
-    },
-
-    getList(panelKey) {
+    list(panelKey) {
       return this.panels[panelKey] || [];
     },
 
-    createCardHtml(work, index, panelKey) {
-      const mode = getLanguageMode();
+    panelEl(panelKey) {
+      return $("#panel-" + panelKey);
+    },
 
-      const titleKorean = work.title_kr || "";
-      const titleEnglish = work.title_en || "";
+    cardHTML(w, idx, panelKey) {
+      const mode = getLang();
 
-      const subKorean = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(" · ");
-      const subEnglish = [work.material_en, work.size_en, work.year].filter(Boolean).join(" · ");
+      const tK = w.title_kr || "";
+      const tE = w.title_en || "";
+      const subK = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
+      const subE = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
 
       let titleBlock = "";
-      if (mode === "KR") {
-        titleBlock = escapeHtml(titleKorean || titleEnglish);
-      } else if (mode === "EN") {
-        titleBlock = escapeHtml(titleEnglish || titleKorean);
-      } else {
-        const partKorean = titleKorean ? `<div class="ko">${escapeHtml(titleKorean)}</div>` : "";
-        const partEnglish = titleEnglish ? `<div class="en">${escapeHtml(titleEnglish)}</div>` : "";
-        titleBlock = `${partKorean}${partEnglish}` || escapeHtml(titleKorean || titleEnglish);
+      if (mode === "KR") titleBlock = escapeHtml(tK || tE);
+      else if (mode === "EN") titleBlock = escapeHtml(tE || tK);
+      else {
+        const a = tK ? `<div class="ko">${escapeHtml(tK)}</div>` : "";
+        const b = tE ? `<div class="en">${escapeHtml(tE)}</div>` : "";
+        titleBlock = (a + b) || escapeHtml(tK || tE);
       }
 
-      const subLineRaw = mode === "EN" ? (subEnglish || subKorean) : (subKorean || subEnglish);
-      const subLine = escapeHtml(subLineRaw || "");
+      const subLine = (mode === "EN" ? (subE || subK) : (subK || subE)).trim();
+
+      const thumb = w.image || w.zoom || "";
+      const zoom = w.zoom || w.image || "";
 
       return `
-        <article class="w-card" data-panel="${panelKey}" data-i="${index}">
-          <img class="w-thumb" loading="lazy" src="${work.image}" alt="">
+        <article class="w-card" data-panel="${panelKey}" data-i="${idx}">
+          <img class="w-thumb" loading="lazy" decoding="async" src="${escapeHtml(thumb)}" alt="">
           <div class="w-meta">
-            <div class="w-id" style="display:none">${escapeHtml(work.id)}</div>
             <div class="w-title">${titleBlock}</div>
-            ${subLine ? `<div class="w-sub">${subLine}</div>` : ""}
+            ${subLine ? `<div class="w-sub">${escapeHtml(subLine)}</div>` : ""}
           </div>
+          <span style="display:none" data-zoom="${escapeHtml(zoom)}"></span>
         </article>
       `;
     },
 
-    async renderPanel(panelKey) {
+    async render(panelKey) {
       await this.ensureLoaded();
 
-      const panelElement = this.getPanelElement(panelKey);
-      if (!panelElement) return;
+      const el = this.panelEl(panelKey);
+      if (!el) return;
 
-      const list = this.getList(panelKey);
-
+      const list = this.list(panelKey);
       if (!list.length) {
-        panelElement.innerHTML = `
+        el.innerHTML = `
           <div class="w-msg">
             Works are empty.
             <small>Expected: /data/works.json</small>
@@ -1304,41 +1287,43 @@ Numerous private collections worldwide.</p>
         return;
       }
 
-      panelElement.innerHTML = `
+      // 현재 패널만 렌더: 빠름
+      el.innerHTML = `
         <div class="w-grid">
-          ${list.map((work, index) => this.createCardHtml(work, index, panelKey)).join("")}
+          ${list.map((w, i) => this.cardHTML(w, i, panelKey)).join("")}
         </div>
       `;
 
-      queryAll(".w-card", panelElement).forEach((card) => {
+      $$(".w-card", el).forEach(card => {
         card.addEventListener("click", () => {
-          const index = Number(card.dataset.i);
-          LIGHTBOX.open(panelKey, index);
-        });
+          const i = Number(card.dataset.i);
+          LIGHTBOX.open(panelKey, i);
+        }, { passive: true });
       });
 
-      this.renderedPanels.add(panelKey);
+      this.renderedOnce.add(panelKey);
     },
 
-    async ensureRenderedCurrentPanel() {
-      if (!this.renderedPanels.has(this.currentPanel)) {
-        await this.renderPanel(this.currentPanel);
+    async ensureRendered() {
+      if (!this.renderedOnce.has(this.currentPanel)) {
+        await this.render(this.currentPanel);
       } else {
-        await this.renderPanel(this.currentPanel);
+        // 언어 변경 시 즉시 반응 위해 재렌더 허용
+        await this.render(this.currentPanel);
       }
     },
 
-    refreshCurrentPanelRender() {
-      if (!this.renderedPanels.has(this.currentPanel)) return;
-      this.renderPanel(this.currentPanel);
+    refreshCurrentPanel() {
+      if (STATE.section !== "works") return;
+      // 언어 전환 즉시 반응
+      this.render(this.currentPanel).catch(() => {});
     },
 
-    showErrorAllPanels(message, path) {
-      ["pray", "human", "rebirth", "exist", "cosmos"].forEach((panelKey) => {
-        const panelElement = this.getPanelElement(panelKey);
-        if (!panelElement) return;
-
-        panelElement.innerHTML = `
+    showErrorAll(message, path) {
+      ["pray", "human", "rebirth", "exist", "cosmos"].forEach(k => {
+        const el = this.panelEl(k);
+        if (!el) return;
+        el.innerHTML = `
           <div class="w-msg">
             ${escapeHtml(message)}
             <small>${escapeHtml(path)}</small>
@@ -1349,40 +1334,36 @@ Numerous private collections worldwide.</p>
   };
 
   function bindWorksTabs() {
-    const tabs = queryAll(".tabs .tab");
-    const tabPanels = queryAll(".tabpanel");
+    const tabs = $$(".tabs .tab");
+    const panels = $$(".tabpanel");
 
-    async function activate(panelKey) {
-      tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.panel === panelKey));
-      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === ("panel-" + panelKey)));
+    const activate = async (panelKey) => {
+      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel === panelKey));
+      panels.forEach(p => p.classList.toggle("active", p.id === "panel-" + panelKey));
 
       WORKS.currentPanel = panelKey;
-      await WORKS.ensureRenderedCurrentPanel();
-    }
+      if (STATE.section === "works") await WORKS.ensureRendered();
+    };
 
-    tabs.forEach((tab) => tab.addEventListener("click", () => activate(tab.dataset.panel)));
+    tabs.forEach(t => t.addEventListener("click", () => activate(t.dataset.panel)));
     activate("pray");
   }
 
   /* =========================================================
      LIGHTBOX
-     - DZ ID 캡션 제거
-     - KR/EN 분리 표기
   ========================================================= */
   const LIGHTBOX = {
     panelKey: "pray",
     index: 0,
     openState: false,
 
-    isOpen() {
-      return this.openState;
-    },
+    isOpen() { return this.openState; },
 
     open(panelKey, index) {
       this.panelKey = panelKey;
       this.index = index;
 
-      const box = queryOne("#lightbox");
+      const box = $("#lightbox");
       if (!box) return;
 
       box.classList.add("is-open");
@@ -1394,7 +1375,7 @@ Numerous private collections worldwide.</p>
     },
 
     close() {
-      const box = queryOne("#lightbox");
+      const box = $("#lightbox");
       if (!box) return;
 
       box.classList.remove("is-open");
@@ -1404,333 +1385,280 @@ Numerous private collections worldwide.</p>
       document.removeEventListener("keydown", this.onKeyDown);
     },
 
-    onKeyDown(event) {
+    onKeyDown(e) {
       if (!LIGHTBOX.openState) return;
 
-      if (event.key === "Escape") {
-        event.preventDefault();
-        LIGHTBOX.close();
-      } else if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        LIGHTBOX.step(-1);
-      } else if (event.key === "ArrowRight") {
-        event.preventDefault();
-        LIGHTBOX.step(+1);
-      }
+      if (e.key === "Escape") { e.preventDefault(); LIGHTBOX.close(); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); LIGHTBOX.step(-1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); LIGHTBOX.step(+1); }
     },
 
-    step(direction) {
-      const list = WORKS.getList(this.panelKey);
+    step(dir) {
+      const list = WORKS.list(this.panelKey);
       if (!list.length) return;
-
-      this.index = (this.index + direction + list.length) % list.length;
+      this.index = (this.index + dir + list.length) % list.length;
       this.render();
     },
 
     render() {
-      const work = WORKS.getList(this.panelKey)[this.index];
-      if (!work) return;
+      const w = WORKS.list(this.panelKey)[this.index];
+      if (!w) return;
 
-      const image = queryOne("#lbImg");
-      const caption = queryOne("#lbCap");
+      const img = $("#lbImg");
+      const cap = $("#lbCap");
 
-      if (image) image.src = work.zoom || work.image;
-      if (caption) caption.textContent = this.composeCaption(work);
+      if (img) img.src = w.zoom || w.image || "";
+      if (cap) cap.textContent = this.composeCaption(w);
     },
 
     refreshCaption() {
-      const work = WORKS.getList(this.panelKey)[this.index];
-      if (!work) return;
-
-      const caption = queryOne("#lbCap");
-      if (caption) caption.textContent = this.composeCaption(work);
+      const w = WORKS.list(this.panelKey)[this.index];
+      if (!w) return;
+      const cap = $("#lbCap");
+      if (cap) cap.textContent = this.composeCaption(w);
     },
 
-    composeCaption(work) {
-      const mode = getLanguageMode();
+    composeCaption(w) {
+      const mode = getLang();
+      const tK = w.title_kr || w.title_en || "";
+      const tE = w.title_en || w.title_kr || "";
+      const mK = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
+      const mE = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
 
-      const titleKorean = work.title_kr || work.title_en || "";
-      const titleEnglish = work.title_en || work.title_kr || "";
-
-      const metaKorean = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(" · ");
-      const metaEnglish = [work.material_en, work.size_en, work.year].filter(Boolean).join(" · ");
-
-      if (mode === "KR") {
-        return [titleKorean, metaKorean].filter(Boolean).join("\n");
-      }
-
-      if (mode === "EN") {
-        return [titleEnglish, metaEnglish].filter(Boolean).join("\n");
-      }
+      if (mode === "KR") return [tK, mK].filter(Boolean).join("\n");
+      if (mode === "EN") return [tE, mE].filter(Boolean).join("\n");
 
       const lines = [];
-      if (titleKorean || metaKorean) {
-        lines.push("KR:");
-        if (titleKorean) lines.push(titleKorean);
-        if (metaKorean) lines.push(metaKorean);
-      }
-      if (titleEnglish || metaEnglish) {
-        if (lines.length) lines.push("");
-        lines.push("EN:");
-        if (titleEnglish) lines.push(titleEnglish);
-        if (metaEnglish) lines.push(metaEnglish);
-      }
+      if (tK || mK) { lines.push("KR:"); if (tK) lines.push(tK); if (mK) lines.push(mK); }
+      if (tE || mE) { if (lines.length) lines.push(""); lines.push("EN:"); if (tE) lines.push(tE); if (mE) lines.push(mE); }
       return lines.join("\n").trim();
     }
   };
 
   function bindLightbox() {
-    const closeButton = queryOne("#lbClose");
-    if (closeButton) closeButton.addEventListener("click", () => LIGHTBOX.close());
+    const closeBtn = $("#lbClose");
+    if (closeBtn) closeBtn.addEventListener("click", () => LIGHTBOX.close());
 
-    const box = queryOne("#lightbox");
+    const box = $("#lightbox");
     if (box) {
-      box.addEventListener("click", (event) => {
-        const stage = queryOne(".lb-stage");
-        if (stage && stage.contains(event.target)) return;
+      box.addEventListener("click", (e) => {
+        const stage = $(".lb-stage");
+        if (stage && stage.contains(e.target)) return;
         LIGHTBOX.close();
-      });
+      }, { passive: true });
     }
   }
 
   /* =========================================================
-     BIO MODAL
+     BIO MODAL (global lang sync + expo slide)
   ========================================================= */
   const BIO = {
     open() {
-      const modal = queryOne("#bio-modal");
+      const modal = $("#bio-modal");
       if (!modal) return;
       modal.hidden = false;
       this.syncToGlobal();
     },
 
     close() {
-      const modal = queryOne("#bio-modal");
+      const modal = $("#bio-modal");
       if (!modal) return;
       modal.hidden = true;
     },
 
-    setModalLanguage(mode) {
-      const modal = queryOne("#bio-modal");
+    setModalLang(mode) {
+      const modal = $("#bio-modal");
       if (!modal) return;
 
-      const koreanBodies = queryAll(".bio-body.ko", modal);
-      const englishBodies = queryAll(".bio-body.en", modal);
+      const ks = $$(".bio-body.ko", modal);
+      const es = $$(".bio-body.en", modal);
 
       if (mode === "en") {
-        koreanBodies.forEach((element) => (element.style.display = "none"));
-        englishBodies.forEach((element) => (element.style.display = "block"));
+        ks.forEach(x => x.style.display = "none");
+        es.forEach(x => x.style.display = "block");
       } else if (mode === "both") {
-        koreanBodies.forEach((element) => (element.style.display = "block"));
-        englishBodies.forEach((element) => (element.style.display = "block"));
+        ks.forEach(x => x.style.display = "block");
+        es.forEach(x => x.style.display = "block");
       } else {
-        koreanBodies.forEach((element) => (element.style.display = "block"));
-        englishBodies.forEach((element) => (element.style.display = "none"));
+        ks.forEach(x => x.style.display = "block");
+        es.forEach(x => x.style.display = "none");
       }
 
-      const buttonKorean = queryOne('.bio-lang .lang[data-bio-lang="kr"]', modal);
-      const buttonEnglish = queryOne('.bio-lang .lang[data-bio-lang="en"]', modal);
-
-      if (buttonKorean && buttonEnglish) {
-        buttonKorean.classList.toggle("active", mode !== "en");
-        buttonEnglish.classList.toggle("active", mode === "en");
-        buttonKorean.setAttribute("aria-pressed", String(mode !== "en"));
-        buttonEnglish.setAttribute("aria-pressed", String(mode === "en"));
+      const bK = $('.bio-lang .lang[data-bio-lang="kr"]', modal);
+      const bE = $('.bio-lang .lang[data-bio-lang="en"]', modal);
+      if (bK && bE) {
+        bK.classList.toggle("active", mode !== "en");
+        bE.classList.toggle("active", mode === "en");
+        bK.setAttribute("aria-pressed", String(mode !== "en"));
+        bE.setAttribute("aria-pressed", String(mode === "en"));
       }
     },
 
     syncToGlobal() {
-      const global = getLanguageMode();
-      if (global === "EN") this.setModalLanguage("en");
-      else if (global === "KR+EN") this.setModalLanguage("both");
-      else this.setModalLanguage("kr");
+      const g = getLang();
+      if (g === "EN") this.setModalLang("en");
+      else if (g === "KR+EN") this.setModalLang("both");
+      else this.setModalLang("kr");
     }
   };
 
   function bindBio() {
-    const closeButton = queryOne(".bio-close");
-    const backdrop = queryOne(".bio-backdrop");
-
-    if (closeButton) closeButton.addEventListener("click", () => BIO.close());
+    const close = $(".bio-close");
+    const backdrop = $(".bio-backdrop");
+    if (close) close.addEventListener("click", () => BIO.close());
     if (backdrop) backdrop.addEventListener("click", () => BIO.close());
 
-    const modal = queryOne("#bio-modal");
+    const modal = $("#bio-modal");
     if (modal) {
-      const languageButtons = queryAll(".bio-lang .lang", modal);
-      languageButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          const selected = button.dataset.bioLang;
-          if (selected === "en") BIO.setModalLanguage("en");
-          else BIO.setModalLanguage("kr");
+      $$(".bio-lang .lang", modal).forEach(btn => {
+        btn.addEventListener("click", () => {
+          const sel = btn.dataset.bioLang;
+          if (sel === "en") BIO.setModalLang("en");
+          else BIO.setModalLang("kr");
         });
       });
     }
 
-    const expoToggleButton = queryOne("#expoToggle");
-    if (expoToggleButton) {
-      expoToggleButton.addEventListener("click", () => {
-        const slide = queryOne("#expoSlide");
-        const button = queryOne("#expoToggle");
-        if (!slide || !button) return;
-
+    const expoBtn = $("#expoToggle");
+    if (expoBtn) {
+      expoBtn.addEventListener("click", () => {
+        const slide = $("#expoSlide");
+        if (!slide) return;
         const open = slide.dataset.open === "true";
         slide.dataset.open = open ? "false" : "true";
-        button.setAttribute("aria-expanded", open ? "false" : "true");
+        expoBtn.setAttribute("aria-expanded", open ? "false" : "true");
       });
     }
   }
 
   /* =========================================================
-     REPORTS
-     - 카드 summary는 KR/EN/KR+EN에 즉시 반응
-     - 클릭 시: 새 창/새 탭으로 "전체보기" 문서를 열고,
-       하단에 작은 download 링크를 제공
+     REPORTS (speed + 안정)
+     - reports.json은 캐시 우선
+     - 새 창 오픈은 유지
   ========================================================= */
   const REPORTS = {
     loaded: false,
     open: false,
-    currentFilter: "all",
+    filter: "all",
     raw: [],
-    mdCache: new Map(),      // absolute md path -> text
-    lastOpened: null,        // 마지막으로 열린 report (언어 바뀌면 summary 카드만 갱신)
+    mdCache: new Map(),
+    _loadingPromise: null,
 
     async ensureLoaded() {
       if (this.loaded) return;
+      if (this._loadingPromise) return this._loadingPromise;
 
-      const url = "/data/reports.json?ts=" + Date.now();
-      let json;
+      this._loadingPromise = (async () => {
+        const urlFast = "/data/reports.json";
+        const urlBust = "/data/reports.json?ts=" + Date.now();
 
-      try {
-        const response = await fetch(url, { cache: "no-store" });
-        if (!response.ok) throw new Error("reports.json fetch failed");
-        json = await response.json();
-      } catch (error) {
+        let json = null;
+
+        try {
+          const r = await fetch(urlFast, { cache: "force-cache" });
+          if (!r.ok) throw new Error("fast fetch failed");
+          json = await r.json();
+        } catch (e1) {
+          try {
+            const r2 = await fetch(urlBust, { cache: "no-store" });
+            if (!r2.ok) throw new Error("bust fetch failed");
+            json = await r2.json();
+          } catch (e2) {
+            this.loaded = true;
+            this.showError("Reports data not found.", urlFast);
+            return;
+          }
+        }
+
+        const arr = Array.isArray(json) ? json
+          : Array.isArray(json.reports) ? json.reports
+          : [];
+
+        this.raw = arr.map(this.normalize);
         this.loaded = true;
-        this.showError("Reports data not found.", url);
-        return;
-      }
+        this.renderGrid();
+      })();
 
-      let array = [];
-      if (Array.isArray(json)) array = json;
-      else if (Array.isArray(json.reports)) array = json.reports;
-
-      this.raw = array.map(this.normalizeReportObject);
-      this.loaded = true;
-      this.renderGrid();
+      return this._loadingPromise;
     },
 
-    normalizeReportObject(item) {
-      const id = safeString(item.id || item.code || item.report_id || item.dcar || "");
-      const slug = safeString(item.slug || item.id || "");
-      const year = safeString(item.year || item.date || "");
-      const category = safeString(item.category || item.type || item.tag || "archive").toLowerCase();
-
-      const titleKorean = safeString(item.title_ko ?? item.title_kr ?? item.titleKr ?? item.title ?? "");
-      const titleEnglish = safeString(item.title_en ?? item.titleEn ?? "");
-
-      const summaryKorean = safeString(item.summary_ko ?? item.summaryKr ?? item.summary_kr ?? "");
-      const summaryEnglish = safeString(item.summary_en ?? item.summaryEn ?? "");
-
-      const mdPath = safeString(item.md_path ?? item.md ?? item.path ?? "");
-
+    normalize(x) {
       return {
-        id: id,
-        slug: slug,
-        year: year,
-        category: category,
-        title_ko: titleKorean,
-        title_en: titleEnglish,
-        summary_ko: summaryKorean,
-        summary_en: summaryEnglish,
-        md_path: mdPath
+        id: s(x.id || x.code || x.report_id || x.dcar || ""),
+        slug: s(x.slug || x.id || ""),
+        year: s(x.year || x.date || ""),
+        category: s(x.category || x.type || x.tag || "archive").toLowerCase(),
+        title_ko: s(x.title_ko ?? x.title_kr ?? x.titleKr ?? x.title ?? ""),
+        title_en: s(x.title_en ?? x.titleEn ?? ""),
+        summary_ko: s(x.summary_ko ?? x.summaryKr ?? x.summary_kr ?? ""),
+        summary_en: s(x.summary_en ?? x.summaryEn ?? ""),
+        md_path: s(x.md_path ?? x.md ?? x.path ?? "")
       };
     },
 
     forceOpen() {
       this.open = true;
-
-      const grid = queryOne("#reportGrid");
-      const toggleButton = queryOne("#reportsToggle");
-
+      const grid = $("#reportGrid");
+      const btn = $("#reportsToggle");
       if (grid) grid.style.display = "grid";
-      if (toggleButton) {
-        toggleButton.setAttribute("aria-expanded", "true");
-        toggleButton.textContent = "Close Reports";
-      }
-
+      if (btn) { btn.setAttribute("aria-expanded", "true"); btn.textContent = "Close Reports"; }
       this.renderGrid();
     },
 
     toggleOpen() {
       this.open = !this.open;
-
-      const grid = queryOne("#reportGrid");
-      const toggleButton = queryOne("#reportsToggle");
-
+      const grid = $("#reportGrid");
+      const btn = $("#reportsToggle");
       if (grid) grid.style.display = this.open ? "grid" : "none";
-      if (toggleButton) {
-        toggleButton.setAttribute("aria-expanded", this.open ? "true" : "false");
-        toggleButton.textContent = this.open ? "Close Reports" : "Open Reports";
+      if (btn) {
+        btn.setAttribute("aria-expanded", this.open ? "true" : "false");
+        btn.textContent = this.open ? "Close Reports" : "Open Reports";
       }
+      if (this.open) this.renderGrid();
     },
 
-    setFilter(filter) {
-      this.currentFilter = filter || "all";
-      queryAll(".r-tab").forEach((button) => {
-        button.classList.toggle("is-active", button.dataset.r === this.currentFilter);
-      });
+    setFilter(f) {
+      this.filter = f || "all";
+      $$(".r-tab").forEach(b => b.classList.toggle("is-active", b.dataset.r === this.filter));
       this.renderGrid();
     },
 
-    getFilteredList() {
-      const filter = this.currentFilter;
-      if (filter === "all") return this.raw;
-      return this.raw.filter((report) => safeString(report.category).includes(filter));
+    list() {
+      if (this.filter === "all") return this.raw;
+      return this.raw.filter(r => s(r.category).includes(this.filter));
     },
 
-    pickTitle(report) {
-      const mode = getLanguageMode();
-
-      if (mode === "EN") return report.title_en || report.title_ko || report.id;
-      if (mode === "KR+EN") {
-        const korean = (report.title_ko || "").trim();
-        const english = (report.title_en || "").trim();
-        return [korean, english].filter(Boolean).join(" / ") || report.id;
-      }
-      return report.title_ko || report.title_en || report.id;
+    pickTitle(r) {
+      const mode = getLang();
+      if (mode === "EN") return r.title_en || r.title_ko || r.id;
+      if (mode === "KR+EN") return [s(r.title_ko).trim(), s(r.title_en).trim()].filter(Boolean).join(" / ") || r.id;
+      return r.title_ko || r.title_en || r.id;
     },
 
-    pickSummary(report) {
-      const mode = getLanguageMode();
-
-      if (mode === "EN") return report.summary_en || report.summary_ko || "";
-      if (mode === "KR+EN") {
-        const korean = (report.summary_ko || "").trim();
-        const english = (report.summary_en || "").trim();
-        return [korean, english].filter(Boolean).join("\n\n");
-      }
-      return report.summary_ko || report.summary_en || "";
+    pickSummary(r) {
+      const mode = getLang();
+      if (mode === "EN") return r.summary_en || r.summary_ko || "";
+      if (mode === "KR+EN") return [s(r.summary_ko).trim(), s(r.summary_en).trim()].filter(Boolean).join("\n\n");
+      return r.summary_ko || r.summary_en || "";
     },
 
-    metaLine(report) {
-      const yearText = report.year ? (" · " + report.year) : "";
-      const head = report.id || "";
-      return head + yearText;
+    metaLine(r) {
+      const y = r.year ? (" · " + r.year) : "";
+      return (r.id || "") + y;
     },
 
-    cardHtml(report, index) {
-      const title = escapeHtml(this.pickTitle(report));
-      const meta = escapeHtml(this.metaLine(report));
+    cardHTML(r, index) {
+      const title = escapeHtml(this.pickTitle(r));
+      const meta = escapeHtml(this.metaLine(r));
 
-      const mode = getLanguageMode();
+      const mode = getLang();
       let summaryText = "";
-
-      if (mode === "KR") summaryText = report.summary_ko || report.summary_en || "";
-      else if (mode === "EN") summaryText = report.summary_en || report.summary_ko || "";
+      if (mode === "KR") summaryText = r.summary_ko || r.summary_en || "";
+      else if (mode === "EN") summaryText = r.summary_en || r.summary_ko || "";
       else {
-        const korean = report.summary_ko ? `KR: ${report.summary_ko}` : "";
-        const english = report.summary_en ? `EN: ${report.summary_en}` : "";
-        summaryText = [korean, english].filter(Boolean).join("\n");
+        const k = r.summary_ko ? `KR: ${r.summary_ko}` : "";
+        const e = r.summary_en ? `EN: ${r.summary_en}` : "";
+        summaryText = [k, e].filter(Boolean).join("\n");
       }
 
       const summary = escapeHtml(summaryText);
@@ -1745,7 +1673,7 @@ Numerous private collections worldwide.</p>
     },
 
     renderGrid() {
-      const grid = queryOne("#reportGrid");
+      const grid = $("#reportGrid");
       if (!grid) return;
 
       if (!this.loaded) {
@@ -1756,12 +1684,9 @@ Numerous private collections worldwide.</p>
         return;
       }
 
-      if (!this.open) {
-        grid.style.display = "none";
-        return;
-      }
+      if (!this.open) { grid.style.display = "none"; return; }
 
-      const list = this.getFilteredList();
+      const list = this.list();
       if (!list.length) {
         grid.style.display = "grid";
         grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">No reports.</div>`;
@@ -1769,599 +1694,451 @@ Numerous private collections worldwide.</p>
       }
 
       grid.style.display = "grid";
-      grid.innerHTML = list.map((report, index) => this.cardHtml(report, index)).join("");
+      grid.innerHTML = list.map((r, i) => this.cardHTML(r, i)).join("");
 
-      queryAll(".r-item", grid).forEach((itemElement) => {
-        itemElement.addEventListener("click", async () => {
-          const index = Number(itemElement.dataset.i);
-          const report = this.getFilteredList()[index];
-          if (report) {
-            this.lastOpened = report;
-            await this.openInNewWindow(report);
-          }
+      $$(".r-item", grid).forEach(el => {
+        el.addEventListener("click", async () => {
+          const idx = Number(el.dataset.i);
+          const report = this.list()[idx];
+          if (report) await this.openInNewWindow(report);
         });
       });
     },
 
-    refreshSummaryTextOnly() {
-      // 언어 변경 시: 카드의 title/summary가 즉시 바뀌도록 그리드만 갱신
+    refreshGridTextOnly() {
       if (!this.loaded) return;
       if (!this.open) return;
       this.renderGrid();
     },
 
-    async fetchMarkdownText(mdPath) {
-      const clean = safeString(mdPath).trim();
+    async fetchMd(mdPath) {
+      const clean = s(mdPath).trim();
       if (!clean) return "";
+      const abs = toAbs(clean);
+      if (!abs) return "";
 
-      const absolute = toAbsolutePath(clean);
-      if (!absolute) return "";
+      if (this.mdCache.has(abs)) return this.mdCache.get(abs);
 
-      if (this.mdCache.has(absolute)) return this.mdCache.get(absolute);
-
+      // 본문은 최신이 중요하므로 no-store 우선
       try {
-        const response = await fetch(absolute + "?ts=" + Date.now(), { cache: "no-store" });
-        if (!response.ok) throw new Error("markdown fetch failed");
-        const text = await response.text();
-        this.mdCache.set(absolute, text);
-        return text;
-      } catch (error) {
-        this.mdCache.set(absolute, "");
+        const r = await fetch(abs + "?ts=" + Date.now(), { cache: "no-store" });
+        if (!r.ok) throw new Error("md fetch failed");
+        const txt = await r.text();
+        this.mdCache.set(abs, txt);
+        return txt;
+      } catch(e) {
+        this.mdCache.set(abs, "");
         return "";
       }
     },
 
-    makeDownloadFileName(report) {
-      const base = report.id || report.slug || "DCAR";
+    downloadName(r) {
+      const base = r.id || r.slug || "DCAR";
       return base.replaceAll(" ", "_") + ".txt";
     },
 
-    buildReportWindowHtml(report, summary, markdownText) {
-      const title = this.pickTitle(report);
-      const meta = this.metaLine(report);
+    buildWindowHtml(r, summary, body) {
+      const title = this.pickTitle(r);
+      const meta = this.metaLine(r);
 
       const safeTitle = escapeHtml(title);
       const safeMeta = escapeHtml(meta);
-
       const safeSummary = summary ? escapeHtml(summary) : "";
-      const safeBody = markdownText ? escapeHtml(markdownText.trim()) : "";
+      const safeBody = body ? escapeHtml(body.trim()) : "";
 
-      const fileName = this.makeDownloadFileName(report);
-      const fileNameSafe = escapeHtml(fileName);
+      const fileName = this.downloadName(r);
+      const rawPath = s(r.md_path).trim();
+      const absPath = rawPath ? toAbs(rawPath) : "";
 
-      // download: 원문 md_path가 있으면 링크 제공, 없으면 텍스트 다운로드 제공(Blob)
-      const rawMdPath = safeString(report.md_path).trim();
-      const absoluteMdPath = rawMdPath ? toAbsolutePath(rawMdPath) : "";
-
-      // 새 창 문서: 심플 + 다크 + 작은 download 링크(하단)
-      return `
-<!doctype html>
+      return `<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="color-scheme" content="dark light">
-  <title>${safeTitle}</title>
-  <style>
-    :root{
-      --bg:#070A14;
-      --fg:#EDE3C9;
-      --muted:rgba(237,227,201,.72);
-      --gold:rgba(215,184,106,.95);
-      --line:rgba(215,184,106,.22);
-      --card:rgba(255,255,255,.04);
-      --shadow: 0 10px 40px rgba(0,0,0,.55);
-    }
-    html,body{height:100%}
-    body{
-      margin:0;
-      background: radial-gradient(1100px 700px at 50% 0%, rgba(215,184,106,.08), transparent 60%),
-                  radial-gradient(1200px 900px at 30% 40%, rgba(121,167,255,.06), transparent 60%),
-                  var(--bg);
-      color:var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
-      line-height:1.55;
-      letter-spacing:.2px;
-    }
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 28px 18px 40px;
-    }
-    .title{
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--gold);
-      letter-spacing:.4px;
-    }
-    .meta{
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .block{
-      margin-top: 18px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px 14px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-    pre{
-      margin:0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 13px;
-      color: rgba(237,227,201,.92);
-    }
-    .download{
-      margin-top: 18px;
-      font-size: 12px;
-      color: var(--muted);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .download a{
-      color: var(--gold);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(215,184,106,.35);
-      padding-bottom: 2px;
-    }
-    .download a:hover{ border-bottom-color: rgba(215,184,106,.7) }
-    .note{
-      font-size: 12px;
-      color: rgba(237,227,201,.68);
-      margin-top: 8px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>${safeTitle}</title>
+<style>
+:root{--bg:#070A14;--fg:#EDE3C9;--muted:rgba(237,227,201,.72);--gold:rgba(215,184,106,.95);--line:rgba(215,184,106,.22);--card:rgba(255,255,255,.04);--shadow:0 10px 40px rgba(0,0,0,.55)}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(1100px 700px at 50% 0%, rgba(215,184,106,.08), transparent 60%),
+radial-gradient(1200px 900px at 30% 40%, rgba(121,167,255,.06), transparent 60%), var(--bg);
+color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif;line-height:1.55;letter-spacing:.2px}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 40px}
+.title{font-size:22px;font-weight:800;color:var(--gold);letter-spacing:.4px}
+.meta{margin-top:6px;font-size:13px;color:var(--muted)}
+.block{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:13px;color:rgba(237,227,201,.92)}
+.download{margin-top:18px;font-size:12px;color:var(--muted);display:flex;gap:10px;align-items:center;justify-content:flex-end}
+.download a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(215,184,106,.35);padding-bottom:2px}
+.download a:hover{border-bottom-color:rgba(215,184,106,.7)}
+.note{font-size:12px;color:rgba(237,227,201,.68);margin-top:8px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="title">${safeTitle}</div>
-    <div class="meta">${safeMeta}</div>
+<div class="wrap">
+  <div class="title">${safeTitle}</div>
+  <div class="meta">${safeMeta}</div>
 
-    ${safeSummary ? `
-    <div class="block">
-      <pre>${safeSummary}</pre>
-    </div>` : ""}
+  ${safeSummary ? `<div class="block"><pre>${safeSummary}</pre></div>` : ""}
 
-    ${safeBody ? `
-    <div class="block">
-      <pre>${safeBody}</pre>
-    </div>` : `
-    <div class="note">No full text was found. (If you use md_path in reports.json, the original text will appear here.)</div>
-    `}
+  ${safeBody ? `<div class="block"><pre>${safeBody}</pre></div>` :
+    `<div class="note">No full text was found. (If you use md_path in reports.json, the original text will appear here.)</div>`}
 
-    <div class="download">
-      <span>download:</span>
-      ${absoluteMdPath
-        ? `<a href="${escapeHtml(absoluteMdPath)}" download>original file</a>`
-        : `<a href="#" id="downloadText">${fileNameSafe}</a>`
-      }
-    </div>
+  <div class="download">
+    <span>download:</span>
+    ${absPath ? `<a href="${escapeHtml(absPath)}" download>original file</a>` : `<a href="#" id="downloadText">${escapeHtml(fileName)}</a>`}
   </div>
+</div>
 
-  ${absoluteMdPath ? "" : `
-  <script>
-    (function(){
-      var button = document.getElementById("downloadText");
-      if (!button) return;
-
-      var content = ${JSON.stringify(markdownText || summary || "")};
-      var fileName = ${JSON.stringify(fileName)};
-
-      button.addEventListener("click", function(ev){
-        ev.preventDefault();
-        try{
-          var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-          var url = URL.createObjectURL(blob);
-
-          var a = document.createElement("a");
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-
-          setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
-        }catch(e){}
-      });
-    })();
-  </script>`}
-</body>
-</html>
-      `;
+${absPath ? "" : `<script>
+(function(){
+  var a=document.getElementById("downloadText");
+  if(!a) return;
+  var content=${JSON.stringify(body || summary || "")};
+  var name=${JSON.stringify(fileName)};
+  a.addEventListener("click", function(ev){
+    ev.preventDefault();
+    try{
+      var blob=new Blob([content], {type:"text/plain;charset=utf-8"});
+      var url=URL.createObjectURL(blob);
+      var link=document.createElement("a");
+      link.href=url; link.download=name;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(function(){URL.revokeObjectURL(url)}, 1500);
+    }catch(e){}
+  });
+})();
+</script>`}
+</body></html>`;
     },
 
-    async openInNewWindow(report) {
-      const summary = this.pickSummary(report);
-      const markdownText = await this.fetchMarkdownText(report.md_path);
+    async openInNewWindow(r) {
+      const summary = this.pickSummary(r);
+      const body = await this.fetchMd(r.md_path);
+      const html = this.buildWindowHtml(r, summary, body);
 
-      const html = this.buildReportWindowHtml(report, summary, markdownText);
-
-      // 새 창/새 탭
-      const newWindow = window.open("", "_blank", "noopener");
-      if (!newWindow) {
-        // 팝업 차단 시: 사용자에게 보이는 UI를 깨지 않으면서 fallback
-        alert("Popup blocked. Please allow popups to open the report in a new tab.");
-        return;
-      }
-
-      newWindow.document.open();
-      newWindow.document.write(html);
-      newWindow.document.close();
+      const w = window.open("", "_blank", "noopener");
+      if (!w) { alert("Popup blocked. Please allow popups to open the report in a new tab."); return; }
+      w.document.open(); w.document.write(html); w.document.close();
     },
 
-    showError(message, path) {
-      const grid = queryOne("#reportGrid");
-      const viewer = queryOne("#reportViewer");
-
+    showError(msg, path) {
+      const grid = $("#reportGrid");
       if (grid) {
         grid.style.display = "grid";
-        grid.innerHTML = `
-          <div class="w-msg" style="grid-column:1/-1">
-            ${escapeHtml(message)}
-            <small>${escapeHtml(path)}</small>
-          </div>
-        `;
+        grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">${escapeHtml(msg)}<small>${escapeHtml(path)}</small></div>`;
       }
-
-      // BODY에는 viewer가 존재하지만, 최종 동작은 새 창이므로 viewer는 숨김 처리 유지
+      const viewer = $("#reportViewer");
       if (viewer) viewer.style.display = "none";
     }
   };
 
   function bindReports() {
-    const toggleButton = queryOne("#reportsToggle");
-    if (toggleButton) toggleButton.addEventListener("click", () => REPORTS.toggleOpen());
+    const toggle = $("#reportsToggle");
+    if (toggle) toggle.addEventListener("click", () => REPORTS.toggleOpen());
 
-    queryAll(".r-tab").forEach((button) => {
-      button.addEventListener("click", () => REPORTS.setFilter(button.dataset.r || "all"));
-    });
+    $$(".r-tab").forEach(b => b.addEventListener("click", () => REPORTS.setFilter(b.dataset.r || "all")));
 
-    const grid = queryOne("#reportGrid");
+    const grid = $("#reportGrid");
     if (grid) grid.style.display = "none";
 
-    const viewer = queryOne("#reportViewer");
+    const viewer = $("#reportViewer");
     if (viewer) viewer.style.display = "none";
   }
 
   /* =========================================================
-     SOUND
+     SOUND (유지 + FFT)
   ========================================================= */
   const SOUND = {
     audioContext: null,
     masterGain: null,
-    analyserNode: null,
-    animationId: 0,
+    analyser: null,
+    raf: 0,
     started: false,
 
     start() {
       if (this.started) return;
       this.started = true;
 
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) {
-        this.started = false;
-        return;
-      }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { this.started = false; return; }
 
-      const audioContext = new AudioContextClass();
-      this.audioContext = audioContext;
+      const ctx = new AC();
+      this.audioContext = ctx;
 
-      const masterGain = audioContext.createGain();
-      masterGain.gain.value = 0.0;
+      const master = ctx.createGain();
+      master.gain.value = 0.0;
 
-      const lowpass = audioContext.createBiquadFilter();
+      const lowpass = ctx.createBiquadFilter();
       lowpass.type = "lowpass";
       lowpass.frequency.value = 900;
       lowpass.Q.value = 0.7;
 
-      const oscillatorOne = audioContext.createOscillator();
-      const oscillatorTwo = audioContext.createOscillator();
-      oscillatorOne.type = "sine";
-      oscillatorTwo.type = "sine";
-      oscillatorOne.frequency.value = 132;
-      oscillatorTwo.frequency.value = 198;
+      const o1 = ctx.createOscillator();
+      const o2 = ctx.createOscillator();
+      o1.type = "sine"; o2.type = "sine";
+      o1.frequency.value = 132;
+      o2.frequency.value = 198;
 
-      const gainOne = audioContext.createGain();
-      const gainTwo = audioContext.createGain();
-      gainOne.gain.value = 0.18;
-      gainTwo.gain.value = 0.14;
+      const g1 = ctx.createGain();
+      const g2 = ctx.createGain();
+      g1.gain.value = 0.18;
+      g2.gain.value = 0.14;
 
-      const lfo = audioContext.createOscillator();
+      const lfo = ctx.createOscillator();
       lfo.type = "sine";
       lfo.frequency.value = 0.08;
 
-      const lfoGain = audioContext.createGain();
+      const lfoGain = ctx.createGain();
       lfoGain.gain.value = 0.08;
 
       lfo.connect(lfoGain);
-      lfoGain.connect(gainOne.gain);
+      lfoGain.connect(g1.gain);
 
-      oscillatorOne.connect(gainOne);
-      oscillatorTwo.connect(gainTwo);
+      o1.connect(g1);
+      o2.connect(g2);
+      g1.connect(lowpass);
+      g2.connect(lowpass);
 
-      gainOne.connect(lowpass);
-      gainTwo.connect(lowpass);
-
-      const delay = audioContext.createDelay();
+      const delay = ctx.createDelay();
       delay.delayTime.value = 0.26;
 
-      const feedback = audioContext.createGain();
+      const feedback = ctx.createGain();
       feedback.gain.value = 0.18;
 
       delay.connect(feedback);
       feedback.connect(delay);
 
       lowpass.connect(delay);
-      delay.connect(masterGain);
+      delay.connect(master);
 
-      const direct = audioContext.createGain();
+      const direct = ctx.createGain();
       direct.gain.value = 0.35;
       lowpass.connect(direct);
-      direct.connect(masterGain);
+      direct.connect(master);
 
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 1024;
+      const an = ctx.createAnalyser();
+      an.fftSize = 1024;
 
-      masterGain.connect(analyser);
-      analyser.connect(audioContext.destination);
+      master.connect(an);
+      an.connect(ctx.destination);
 
-      this.masterGain = masterGain;
-      this.analyserNode = analyser;
+      this.masterGain = master;
+      this.analyser = an;
 
-      oscillatorOne.start();
-      oscillatorTwo.start();
-      lfo.start();
+      o1.start(); o2.start(); lfo.start();
 
-      const now = audioContext.currentTime;
-      masterGain.gain.cancelScheduledValues(now);
-      masterGain.gain.setValueAtTime(0.0, now);
-      masterGain.gain.linearRampToValueAtTime(0.55, now + 1.2);
+      const now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(0.0, now);
+      master.gain.linearRampToValueAtTime(0.55, now + 1.2);
 
       document.body.classList.add("sound-on");
 
-      const soundButton = queryOne("#soundBtn");
-      const stopButton = queryOne("#soundStopBtn");
-      if (soundButton) soundButton.setAttribute("disabled", "disabled");
-      if (stopButton) stopButton.removeAttribute("disabled");
+      const startBtn = $("#soundBtn");
+      const stopBtn = $("#soundStopBtn");
+      if (startBtn) startBtn.setAttribute("disabled", "disabled");
+      if (stopBtn) stopBtn.removeAttribute("disabled");
 
-      this.loopFft();
+      this.loopFFT();
     },
 
     stop() {
       if (!this.started) return;
       this.started = false;
 
-      const audioContext = this.audioContext;
-      if (audioContext && this.masterGain) {
-        const now = audioContext.currentTime;
+      const ctx = this.audioContext;
+      if (ctx && this.masterGain) {
+        const now = ctx.currentTime;
         this.masterGain.gain.cancelScheduledValues(now);
         this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
         this.masterGain.gain.linearRampToValueAtTime(0.0, now + 0.6);
       }
 
-      window.cancelAnimationFrame(this.animationId);
-      this.animationId = 0;
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
 
       setTimeout(() => {
-        try {
-          if (this.audioContext) this.audioContext.close();
-        } catch (error) {}
-
+        try { if (this.audioContext) this.audioContext.close(); } catch(e){}
         this.audioContext = null;
         this.masterGain = null;
-        this.analyserNode = null;
+        this.analyser = null;
 
-        const bar = queryOne("#fftBar span");
+        const bar = $("#fftBar span");
         if (bar) bar.style.width = "0%";
 
         document.body.classList.remove("sound-on");
 
-        const soundButton = queryOne("#soundBtn");
-        const stopButton = queryOne("#soundStopBtn");
-        if (soundButton) soundButton.removeAttribute("disabled");
-        if (stopButton) stopButton.setAttribute("disabled", "disabled");
+        const startBtn = $("#soundBtn");
+        const stopBtn = $("#soundStopBtn");
+        if (startBtn) startBtn.removeAttribute("disabled");
+        if (stopBtn) stopBtn.setAttribute("disabled", "disabled");
       }, 700);
     },
 
-    loopFft() {
-      const bar = queryOne("#fftBar span");
-      if (!bar || !this.analyserNode) {
-        this.animationId = requestAnimationFrame(() => this.loopFft());
+    loopFFT() {
+      const bar = $("#fftBar span");
+      if (!bar || !this.analyser) {
+        this.raf = requestAnimationFrame(() => this.loopFFT());
         return;
       }
 
-      const analyser = this.analyserNode;
-      const data = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(data);
+      const data = new Uint8Array(this.analyser.frequencyBinCount);
+      this.analyser.getByteFrequencyData(data);
 
       let sum = 0;
-      for (let i = 0; i < data.length; i++) {
-        sum += data[i] * data[i];
-      }
+      for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
       const rms = Math.sqrt(sum / data.length) / 255;
-      const width = clampNumber(Math.round(rms * 100), 0, 100);
+      bar.style.width = clamp(Math.round(rms * 100), 0, 100) + "%";
 
-      bar.style.width = width + "%";
-      this.animationId = requestAnimationFrame(() => this.loopFft());
+      this.raf = requestAnimationFrame(() => this.loopFFT());
     }
   };
 
   function bindSound() {
-    const startButton = queryOne("#soundBtn");
-    const stopButton = queryOne("#soundStopBtn");
+    const startBtn = $("#soundBtn");
+    const stopBtn = $("#soundStopBtn");
 
-    if (startButton) {
-      startButton.addEventListener("click", async () => {
-        SOUND.start();
-        try {
-          if (SOUND.audioContext && SOUND.audioContext.state === "suspended") {
-            await SOUND.audioContext.resume();
-          }
-        } catch (error) {}
-      });
-    }
+    if (startBtn) startBtn.addEventListener("click", async () => {
+      SOUND.start();
+      try {
+        if (SOUND.audioContext && SOUND.audioContext.state === "suspended") {
+          await SOUND.audioContext.resume();
+        }
+      } catch(e){}
+    });
 
-    if (stopButton) {
-      stopButton.addEventListener("click", () => SOUND.stop());
-    }
+    if (stopBtn) stopBtn.addEventListener("click", () => SOUND.stop());
   }
 
   /* =========================================================
-     WAVES BACKGROUND
+     WAVES (속도 최적화: reduced-motion이면 static)
   ========================================================= */
   const WAVES = {
     canvas: null,
-    context: null,
-    width: 0,
-    height: 0,
-    time: 0,
-    animationId: 0,
+    ctx: null,
+    w: 0,
+    h: 0,
+    t: 0,
+    raf: 0,
 
     init() {
-      this.canvas = queryOne("#waves");
+      this.canvas = $("#waves");
       if (!this.canvas) return;
 
-      this.context = this.canvas.getContext("2d", { alpha: true });
+      this.ctx = this.canvas.getContext("2d", { alpha: true });
       this.resize();
 
       window.addEventListener("resize", () => this.resize(), { passive: true });
 
-      if (isReducedMotionPreferred()) {
+      if (isReducedMotion()) {
         this.drawStatic();
         return;
       }
-
       this.loop();
     },
 
     resize() {
       if (!this.canvas) return;
-
       const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      this.width = Math.floor(window.innerWidth * dpr);
-      this.height = Math.floor(window.innerHeight * dpr);
-
-      this.canvas.width = this.width;
-      this.canvas.height = this.height;
-
+      this.w = Math.floor(window.innerWidth * dpr);
+      this.h = Math.floor(window.innerHeight * dpr);
+      this.canvas.width = this.w;
+      this.canvas.height = this.h;
       this.canvas.style.width = "100%";
       this.canvas.style.height = "100%";
     },
 
     drawStatic() {
-      const context = this.context;
-      if (!context) return;
-
-      context.clearRect(0, 0, this.width, this.height);
-
-      const gradient = context.createRadialGradient(
-        this.width * 0.5, this.height * 0.05, 0,
-        this.width * 0.5, this.height * 0.05, this.height * 0.95
-      );
-
-      gradient.addColorStop(0, "rgba(215,184,106,0.06)");
-      gradient.addColorStop(0.35, "rgba(121,167,255,0.04)");
-      gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, this.width, this.height);
+      const c = this.ctx;
+      if (!c) return;
+      c.clearRect(0,0,this.w,this.h);
+      const g = c.createRadialGradient(this.w*0.5, this.h*0.05, 0, this.w*0.5, this.h*0.05, this.h*0.95);
+      g.addColorStop(0, "rgba(215,184,106,0.06)");
+      g.addColorStop(0.35, "rgba(121,167,255,0.04)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      c.fillStyle = g;
+      c.fillRect(0,0,this.w,this.h);
     },
 
     loop() {
-      this.time += 0.008;
+      this.t += 0.008;
       this.render();
-      this.animationId = requestAnimationFrame(() => this.loop());
+      this.raf = requestAnimationFrame(() => this.loop());
     },
 
     render() {
-      const context = this.context;
-      if (!context) return;
+      const c = this.ctx;
+      if (!c) return;
 
-      context.clearRect(0, 0, this.width, this.height);
+      c.clearRect(0,0,this.w,this.h);
 
-      const gradient = context.createRadialGradient(
-        this.width * 0.5, this.height * 0.06, 0,
-        this.width * 0.5, this.height * 0.06, this.height * 1.1
-      );
-
-      gradient.addColorStop(0, "rgba(215,184,106,0.055)");
-      gradient.addColorStop(0.38, "rgba(121,167,255,0.045)");
-      gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, this.width, this.height);
+      const g = c.createRadialGradient(this.w*0.5, this.h*0.06, 0, this.w*0.5, this.h*0.06, this.h*1.1);
+      g.addColorStop(0, "rgba(215,184,106,0.055)");
+      g.addColorStop(0.38, "rgba(121,167,255,0.045)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      c.fillStyle = g;
+      c.fillRect(0,0,this.w,this.h);
 
       const layers = [
-        { amplitude: 16, speed: 0.55, alpha: 0.055, lineWidth: 2 },
-        { amplitude: 24, speed: 0.38, alpha: 0.045, lineWidth: 2 },
-        { amplitude: 34, speed: 0.22, alpha: 0.038, lineWidth: 2 }
+        { amp:16, sp:0.55, a:0.055, lw:2 },
+        { amp:24, sp:0.38, a:0.045, lw:2 },
+        { amp:34, sp:0.22, a:0.038, lw:2 }
       ];
 
-      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
-        const layer = layers[layerIndex];
-        const amplitude = layer.amplitude;
-        const speed = layer.speed;
-        const alpha = layer.alpha;
-        const lineWidth = layer.lineWidth;
-
-        context.beginPath();
-
-        const baseY = this.height * (0.24 + layerIndex * 0.12);
-        for (let x = 0; x <= this.width; x += 18) {
-          const normalizedX = x / this.width;
-          const y =
-            baseY +
-            Math.sin(normalizedX * 10 + this.time * speed * 3.2 + layerIndex) * amplitude +
-            Math.sin(normalizedX * 4 + this.time * speed * 2.1 + layerIndex * 2) * (amplitude * 0.45);
-
-          if (x === 0) context.moveTo(x, y);
-          else context.lineTo(x, y);
+      for (let li=0; li<layers.length; li++) {
+        const L = layers[li];
+        c.beginPath();
+        const baseY = this.h * (0.24 + li * 0.12);
+        for (let x=0; x<=this.w; x+=18) {
+          const nx = x / this.w;
+          const y = baseY
+            + Math.sin(nx*10 + this.t*L.sp*3.2 + li) * L.amp
+            + Math.sin(nx*4  + this.t*L.sp*2.1 + li*2) * (L.amp*0.45);
+          if (x===0) c.moveTo(x,y); else c.lineTo(x,y);
         }
-
-        context.strokeStyle = `rgba(215,184,106,${alpha})`;
-        context.lineWidth = lineWidth;
-        context.stroke();
+        c.strokeStyle = `rgba(215,184,106,${L.a})`;
+        c.lineWidth = L.lw;
+        c.stroke();
       }
 
-      context.fillStyle = "rgba(237,227,201,0.015)";
-      for (let i = 0; i < 120; i++) {
-        const x = Math.random() * this.width;
-        const y = Math.random() * this.height;
-        context.fillRect(x, y, 1, 1);
+      // 별먼지: 프레임마다 랜덤은 비용이 큼 -> 밀도 낮추고 최소화
+      c.fillStyle = "rgba(237,227,201,0.012)";
+      for (let i=0; i<55; i++) {
+        const x = (Math.random() * this.w) | 0;
+        const y = (Math.random() * this.h) | 0;
+        c.fillRect(x, y, 1, 1);
       }
     }
   };
 
   /* =========================================================
-     GLOBAL BIND
+     Global Escape
   ========================================================= */
-  function bindGlobalEscape() {
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
+  function bindEsc() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
 
-      const modal = queryOne("#bio-modal");
-      if (modal && modal.hidden === false) {
-        BIO.close();
-      }
+      const modal = $("#bio-modal");
+      if (modal && modal.hidden === false) BIO.close();
+
+      if (LIGHTBOX.isOpen()) LIGHTBOX.close();
     });
   }
 
-  function preloadForStability() {
-    WORKS.ensureLoaded().catch(() => {});
-    REPORTS.ensureLoaded().catch(() => {});
+  /* =========================================================
+     Boot
+     - 속도: idle에서 works/reports JSON prefetch
+  ========================================================= */
+  function prefetch() {
+    idle(() => { WORKS.ensureLoaded().catch(()=>{}); });
+    idle(() => { REPORTS.ensureLoaded().catch(()=>{}); });
   }
 
   function bindAll() {
-    restoreLanguageMode();
-    bindLanguageButtons();
-    bindPrimaryNavigation();
+    restoreLang();
+    bindLangButtons();
+    bindPrimaryNav();
 
     bindWorksTabs();
     bindLightbox();
@@ -2370,11 +2147,12 @@ Numerous private collections worldwide.</p>
     bindSound();
 
     WAVES.init();
-    bindGlobalEscape();
+    bindEsc();
 
-    preloadForStability();
-
+    // Reports 필터 기본
     REPORTS.setFilter("all");
+
+    prefetch();
   }
 
   if (document.readyState === "loading") {

@@ -1,6 +1,6 @@
 <!-- ==========================================================
 Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
-① HEAD / STYLE
+① HEAD / STYLE  (안정/가독/무광 골드/배경/그리드/모달/라이트박스)
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -9,644 +9,729 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
-  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE — LIGHTFLOW · Light · Memory · Being" />
-  <link rel="canonical" href="https://dungzak.art" />
+  <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
+  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
+
+  <link rel="canonical" href="https://dungzak.art/" />
+
+  <!-- OG / Twitter -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
-  <meta property="og:description" content="LIGHTFLOW · Light · Memory · Being" />
-  <meta property="og:url" content="https://dungzak.art" />
+  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
+  <meta property="og:url" content="https://dungzak.art/" />
+  <!-- 필요 시 대표 이미지 지정: /images/og.jpg 같은 파일이 있을 때만 사용 -->
+  <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
   <meta name="twitter:card" content="summary_large_image" />
 
-  <title>Lightflow ∮27 — 등작 燈酌 DUNGZAK CESTLAVIE</title>
-
+  <!-- Google Translate bar 차단 -->
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
   <style>
+    /* =========================================================
+       Base / Reset
+    ========================================================= */
     :root{
-      --bg0:#060814;
+      --bg0:#050812;
       --bg1:#070A14;
+      --bg2:#0A1022;
 
-      /* ✅ 흰색 금지: 여명 아이보리 */
-      --ink:#EDE3C9;
-      --muted:rgba(237,227,201,.82);
-      --dim:rgba(237,227,201,.58);
-
-      /* ✅ gold (no bloom) */
       --gold:#D7B86A;
-      --gold2:#B89A4E;
+      --gold2:#E9D59B;
       --blue:#79A7FF;
 
-      --line:rgba(215,184,106,.20);
-      --card:rgba(12,14,26,.74);
-      --card2:rgba(10,12,22,.56);
+      --ink:#EDE3C9;
+      --muted:rgba(237,227,201,.72);
+      --muted2:rgba(237,227,201,.55);
 
-      --radius:16px;
-      --radius2:22px;
+      --card:rgba(255,255,255,.035);
+      --card2:rgba(255,255,255,.055);
+      --line:rgba(215,184,106,.22);
+      --line2:rgba(121,167,255,.18);
 
-      --shadow: 0 12px 40px rgba(0,0,0,.45);
-      --shadow2: 0 10px 26px rgba(0,0,0,.35);
+      --shadow: 0 16px 40px rgba(0,0,0,.45);
+      --r:18px;
 
-      --safe-top: env(safe-area-inset-top);
-      --safe-bot: env(safe-area-inset-bottom);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
 
-      --font: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Arial, sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --maxw: 1120px;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family:var(--font);
-      color:var(--ink);
-
-      /* ✅ 이전 톤 유지 + 여명은 “아주 미세한 방향성” */
       background:
-        radial-gradient(1100px 650px at 50% -18%, rgba(215,184,106,.065), transparent 62%),
-        radial-gradient(900px 700px at 78% 6%, rgba(121,167,255,.055), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-
+        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing:.2px;
       overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
+      padding-left: calc(var(--safe-left));
+      padding-right: calc(var(--safe-right));
     }
 
-    /* background canvas */
+    a{ color:var(--gold2); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    img{ max-width:100%; display:block; }
+
+    /* =========================================================
+       Language visibility
+    ========================================================= */
+    .ko,.en{ display:block; }
+    body.korean .en{ display:none !important; }
+    body.english .ko{ display:none !important; }
+    body.hybrid .ko,
+    body.hybrid .en{ display:block !important; }
+
+    /* =========================================================
+       Waves canvas
+    ========================================================= */
     #waves{
       position:fixed;
       inset:0;
       width:100%;
       height:100%;
-      z-index:-1;
-      opacity:.92;
+      z-index:-2;
       pointer-events:none;
+      opacity:1;
     }
 
-    /* header */
+    /* =========================================================
+       Header / Nav
+    ========================================================= */
     header{
       position:sticky;
       top:0;
-      z-index:50;
-      padding: calc(12px + var(--safe-top)) 16px 12px;
-      background: linear-gradient(180deg, rgba(6,8,20,.94), rgba(6,8,20,.58));
+      z-index:20;
+      padding-top: calc(14px + var(--safe-top));
+      padding-bottom: 12px;
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line);
-      text-align:center; /* ✅ 왼쪽 몰림 방지 */
+      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(5,8,18,.86), rgba(5,8,18,.58));
+      border-bottom:1px solid rgba(215,184,106,.16);
     }
 
-    .brand{
-      font-weight:900;
-      letter-spacing:.2px;
-      font-size: 18px;
-      line-height:1.25;
-      color: var(--ink);
-      text-shadow: 0 1px 0 rgba(0,0,0,.35);
+    header .brand,
+    header .brand-sub{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 18px;
     }
-    .brand::after{
-      content:"";
-      display:block;
-      margin:10px auto 0;
-      height:1px;
-      width:min(720px, 86%);
-      background: linear-gradient(90deg, transparent, rgba(215,184,106,.42), transparent);
-      opacity:.9;
+
+    header .brand{
+      font-weight:800;
+      color:var(--gold2);
+      letter-spacing:.7px;
+      text-shadow:none; /* 빛번짐 방지 */
+      font-size: 15px;
+      line-height: 1.25;
     }
-    .brand-sub{
-      margin-top:8px;
+
+    header .brand-sub{
+      margin-top:6px;
       font-size:12px;
-      letter-spacing:.22em;
-      color: var(--dim);
-      text-transform:uppercase;
+      letter-spacing:.35px;
+      color:rgba(237,227,201,.68);
     }
 
     nav.primary{
+      max-width: var(--maxw);
+      margin: 12px auto 0;
+      padding: 0 18px;
       display:flex;
-      justify-content:center;
       gap:10px;
-      margin-top:12px;
       flex-wrap:wrap;
     }
     nav.primary button{
       appearance:none;
-      border:1px solid rgba(215,184,106,.18);
-      background: rgba(12,14,26,.35);
-      color: var(--muted);
+      border:1px solid rgba(215,184,106,.28);
+      background: rgba(255,255,255,.03);
+      color:var(--gold2);
       padding:10px 12px;
       border-radius: 999px;
+      font-weight:700;
+      font-size:13px;
       cursor:pointer;
-      font-weight:800;
-      letter-spacing:.02em;
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
-      white-space:nowrap;
+      transition: transform .06s ease, background .18s ease, border-color .18s ease;
+      min-height: 40px; /* 터치영역 */
     }
-    nav.primary button:hover{ transform: translateY(-1px); border-color: rgba(215,184,106,.30); }
+    nav.primary button:hover{
+      background: rgba(215,184,106,.08);
+      border-color: rgba(215,184,106,.42);
+    }
     nav.primary button.active{
-      background: rgba(215,184,106,.10);
-      border-color: rgba(215,184,106,.45);
-      color: var(--ink);
-      box-shadow: 0 0 0 1px rgba(215,184,106,.08) inset;
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.55);
+    }
+    nav.primary button:active{ transform: translateY(1px); }
+    nav.primary button:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
 
     .lang{
-      margin-top:10px;
+      max-width: var(--maxw);
+      margin: 10px auto 0;
+      padding: 0 18px;
       display:flex;
-      justify-content:center;
-      gap:10px;
+      gap:8px;
+      flex-wrap:wrap;
     }
     .lang button{
       appearance:none;
-      border:1px solid rgba(215,184,106,.22);
-      background: rgba(12,14,26,.30);
-      color: var(--muted);
-      padding:9px 12px;
-      border-radius: 12px;
-      font-weight:900;
+      border:1px solid rgba(121,167,255,.22);
+      background: rgba(255,255,255,.03);
+      color:rgba(237,227,201,.9);
+      padding:8px 12px;
+      border-radius: 999px;
+      font-weight:800;
+      font-size:12px;
       cursor:pointer;
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
-      min-width:72px;
+      min-height: 38px;
     }
-    .lang button:hover{ transform: translateY(-1px); border-color: rgba(215,184,106,.34); }
     .lang button.active{
-      border-color: rgba(215,184,106,.50);
+      border-color: rgba(215,184,106,.55);
       background: rgba(215,184,106,.10);
-      color: var(--ink);
-      box-shadow: 0 0 0 1px rgba(215,184,106,.08) inset;
+      color: var(--gold2);
+    }
+    .lang button:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
 
+    /* =========================================================
+       Main layout
+    ========================================================= */
     main{
-      padding: 18px 16px calc(26px + var(--safe-bot));
-      max-width: 980px;
-      margin:0 auto;
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 18px 18px calc(26px + var(--safe-bot));
     }
 
-    /* language visibility */
-    .ko,.en{ display:none; }
-    body.korean .ko{ display:block; }
-    body.english .en{ display:block; }
-    body.hybrid .ko, body.hybrid .en{ display:block; }
-
-    /* hero / poem */
-    section.hero{
-      background: linear-gradient(180deg, rgba(12,14,26,.62), rgba(10,12,22,.35));
-      border:1px solid rgba(215,184,106,.16);
-      border-radius: var(--radius2);
-      box-shadow: var(--shadow2);
-      padding: 18px 16px;
-      text-align:center;
+    section{
+      background: rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.04);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    section.hero h1{
-      margin: 8px 0 0;
-      font-size: 26px;
-      letter-spacing:.02em;
+
+    /* =========================================================
+       POEM
+    ========================================================= */
+    .hero{
+      padding: 18px 18px 20px;
+      position:relative;
+    }
+    .hero h1{
+      margin:0;
+      font-size: 20px;
+      letter-spacing:.4px;
+      color: var(--gold2);
+      text-shadow:none;
     }
     .poemwrap{
       margin-top:14px;
-      padding-top:14px;
-      border-top: 1px solid rgba(215,184,106,.12);
-      max-width:780px;
-      margin-left:auto;
-      margin-right:auto;
-      text-align:left;
+      padding: 14px 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border: 1px solid rgba(215,184,106,.12);
     }
-    .poem{
-      margin-top:14px;
-      color: var(--muted);
-      line-height:1.75;
-      font-size: 15px;
-    }
+    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.86); }
 
-    /* Works */
-    #works h2, #reports h2{ margin: 10px 0 14px; text-align:center; }
-
+    /* =========================================================
+       WORKS
+    ========================================================= */
+    #works{ padding: 18px; }
+    #works h2{ margin:0; color:var(--gold2); text-shadow:none; }
     .tabs{
+      margin-top:14px;
       display:flex;
-      justify-content:center;
+      gap:8px;
       flex-wrap:wrap;
-      gap:10px;
-      margin-bottom:14px;
     }
-    .tab{
+    .tabs .tab{
       appearance:none;
-      border:1px solid rgba(215,184,106,.18);
-      background: rgba(12,14,26,.30);
-      color: var(--muted);
-      padding:10px 12px;
+      border:1px solid rgba(215,184,106,.20);
+      background: rgba(255,255,255,.02);
+      color:rgba(237,227,201,.88);
       border-radius: 999px;
-      font-weight:900;
+      padding:9px 12px;
+      font-weight:800;
+      font-size:12px;
       cursor:pointer;
-      white-space:nowrap;
+      min-height: 38px;
     }
-    .tab.active{
-      border-color: rgba(215,184,106,.45);
+    .tabs .tab.active{
+      border-color: rgba(215,184,106,.55);
       background: rgba(215,184,106,.10);
-      color: var(--ink);
+      color: var(--gold2);
     }
-    .tabpanel{
-      display:none;
-      border:1px solid rgba(215,184,106,.14);
-      background: rgba(12,14,26,.26);
-      border-radius: var(--radius2);
-      padding:14px;
-      min-height: unset;
+    .tabs .tab:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
+
+    .tabpanel{ display:none; margin-top:16px; }
     .tabpanel.active{ display:block; }
 
     .w-grid{
       display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap:12px;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
     }
-    @media (min-width: 860px){
-      .w-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+    @media (max-width: 980px){
+      .w-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
     }
+    @media (max-width: 680px){
+      .w-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
     .w-card{
-      border:1px solid rgba(215,184,106,.14);
-      background: rgba(10,12,22,.35);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.05);
       border-radius: 16px;
       overflow:hidden;
       cursor:pointer;
-      transition: transform .12s ease, border-color .12s ease;
-      box-shadow: 0 8px 22px rgba(0,0,0,.22);
+      transition: transform .10s ease, border-color .16s ease, background .16s ease;
     }
-    .w-card:hover{ transform: translateY(-1px); border-color: rgba(215,184,106,.28); }
-
+    .w-card:hover{
+      transform: translateY(-1px);
+      border-color: rgba(215,184,106,.26);
+      background: rgba(215,184,106,.05);
+    }
     .w-thumb{
       width:100%;
       aspect-ratio: 4/5;
-      background: rgba(0,0,0,.22);
-      display:block;
       object-fit: cover;
+      background: rgba(0,0,0,.18);
     }
     .w-meta{
-      padding:10px 10px 12px;
-      border-top:1px solid rgba(215,184,106,.10);
+      padding: 10px 10px 12px;
+      border-top:1px solid rgba(255,255,255,.045);
     }
-    /* ✅ ID 노출 제거(요구사항) */
-    .w-id{ display:none !important; }
-
     .w-title{
-      margin-top:2px;
       font-weight:900;
-      font-size: 13px;
+      color:rgba(237,227,201,.92);
       line-height:1.35;
-      color: var(--ink);
+      font-size: 13px;
     }
+    .w-title .ko,
+    .w-title .en{ margin:0; }
     .w-sub{
       margin-top:6px;
       font-size: 12px;
+      color: rgba(237,227,201,.68);
       line-height:1.45;
-      color: var(--dim);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      white-space: pre-line;
     }
-
     .w-msg{
-      color: var(--ink);
-      background: rgba(12,14,26,.38);
-      border:1px solid rgba(215,184,106,.18);
-      padding: 12px 12px;
+      padding: 16px;
       border-radius: 14px;
-      line-height:1.55;
-      font-weight:900;
-      text-align:left;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.05);
+      color: rgba(237,227,201,.85);
     }
-    .w-msg small{
-      display:block;
-      margin-top:8px;
-      color: var(--dim);
-      font-weight:800;
-      font-family: var(--mono);
-      font-size: 11px;
-      white-space:pre-wrap;
-    }
+    .w-msg small{ display:block; margin-top:6px; color: rgba(237,227,201,.58); }
 
-    /* Reports */
-    .reports-omega{
-      border:1px solid rgba(215,184,106,.14);
-      background: rgba(12,14,26,.28);
-      border-radius: var(--radius2);
-      padding:14px;
-    }
+    /* =========================================================
+       REPORTS
+    ========================================================= */
+    #reports{ padding:18px; }
+    #reports h2{ margin:0; color:var(--gold2); text-shadow:none; }
+    .reports-omega{ margin-top:14px; }
+
     .r-head{
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
       flex-wrap:wrap;
+      padding: 10px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.05);
     }
-    .r-tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    .r-tabs{ display:flex; gap:8px; flex-wrap:wrap; }
     .r-tab{
       appearance:none;
-      border:1px solid rgba(215,184,106,.18);
-      background: rgba(12,14,26,.26);
-      color: var(--muted);
-      padding:10px 12px;
+      border:1px solid rgba(121,167,255,.18);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.85);
       border-radius: 999px;
-      font-weight:900;
+      padding:8px 12px;
+      font-weight:800;
+      font-size:12px;
       cursor:pointer;
-      white-space:nowrap;
+      min-height: 38px;
     }
     .r-tab.is-active{
-      border-color: rgba(215,184,106,.45);
+      border-color: rgba(215,184,106,.55);
       background: rgba(215,184,106,.10);
-      color: var(--ink);
+      color: var(--gold2);
     }
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(215,184,106,.25);
-      background: rgba(12,14,26,.35);
-      color: var(--ink);
-      padding:10px 12px;
-      border-radius: 12px;
-      font-weight:950;
+      border:1px solid rgba(215,184,106,.28);
+      background: rgba(215,184,106,.08);
+      color: var(--gold2);
+      border-radius: 999px;
+      padding:8px 12px;
+      font-weight:900;
       cursor:pointer;
-      white-space:nowrap;
+      min-height: 38px;
     }
+
     .r-grid{
-      margin-top:14px;
+      margin-top: 12px;
       display:none;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap:12px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
     }
-    @media (min-width: 860px){
-      .r-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+    @media (max-width: 980px){
+      .r-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
+    @media (max-width: 680px){
+      .r-grid{ grid-template-columns: 1fr; }
+    }
+
     .r-item{
-      border:1px solid rgba(215,184,106,.14);
-      background: rgba(10,12,22,.35);
-      border-radius: 14px;
-      padding:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.05);
+      border-radius: 16px;
+      padding: 12px 12px;
       cursor:pointer;
-      transition: transform .12s ease, border-color .12s ease;
-      min-height: 74px;
+      transition: transform .10s ease, border-color .16s ease, background .16s ease;
+      white-space: pre-line;
     }
-    .r-item:hover{ transform: translateY(-1px); border-color: rgba(215,184,106,.28); }
-    .r-item .t{ font-weight:950; color: var(--ink); }
-    .r-item .m{ margin-top:6px; color: var(--dim); font-size: 12px; }
+    .r-item:hover{
+      transform: translateY(-1px);
+      border-color: rgba(215,184,106,.26);
+      background: rgba(215,184,106,.05);
+    }
+    .r-item .t{
+      font-weight:900;
+      color: rgba(237,227,201,.92);
+      line-height:1.35;
+    }
+    .r-item .m{
+      margin-top:6px;
+      font-size:12px;
+      color: rgba(237,227,201,.60);
+    }
+    .r-item .s{
+      margin-top:10px;
+      font-size:12px;
+      color: rgba(237,227,201,.74);
+      line-height:1.55;
+      white-space: pre-line;
+    }
 
     .r-viewer{
-      margin-top:14px;
-      border-top: 1px solid rgba(215,184,106,.12);
-      padding-top:14px;
       display:none;
+      margin-top: 14px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.05);
+      box-shadow: var(--shadow);
     }
-    .r-viewer .rv-title{
-      font-weight:950;
-      letter-spacing:.02em;
-      margin-bottom:10px;
-      color: var(--ink);
+    .rv-title{
+      font-weight:900;
+      color: var(--gold2);
+      font-size: 15px;
+      line-height:1.35;
     }
-    .r-viewer .rv-body{
-      color: var(--muted);
-      line-height:1.75;
-      white-space:pre-wrap;
+    .rv-meta{
+      margin-top:6px;
+      font-size:12px;
+      color: rgba(237,227,201,.62);
+    }
+    .rv-summary,
+    .rv-body{
+      margin-top:12px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.85);
+      line-height:1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow:auto;
+      max-height: 60vh;
     }
 
-    /* Bio modal (원문 유지 + 색만 정합) */
-    #bio-modal[hidden]{ display:none; }
-    .bio-backdrop{
-      position:fixed;
+    /* =========================================================
+       BIO MODAL
+    ========================================================= */
+    #bio-modal[hidden]{ display:none !important; }
+    #bio-modal{
+      position: fixed;
       inset:0;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(6px);
-      z-index:80;
+      z-index: 50;
+    }
+    .bio-backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .bio-card{
-      position:fixed;
-      left:50%;
-      top: calc(10px + var(--safe-top));
-      transform: translateX(-50%);
-      width: min(920px, calc(100vw - 18px));
-      max-height: calc(100vh - 20px - var(--safe-top) - var(--safe-bot));
-      overflow:auto;
-      background: rgba(10,12,22,.92);
-      border:1px solid rgba(215,184,106,.20);
-      border-radius: var(--radius2);
+      position:relative;
+      max-width: 980px;
+      width: calc(100% - 28px);
+      margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
+      background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
+      border:1px solid rgba(215,184,106,.18);
+      border-radius: 18px;
       box-shadow: var(--shadow);
-      z-index:81;
+      overflow:hidden;
     }
     .bio-head{
-      position:sticky;
-      top:0;
-      padding:14px 14px 10px;
-      background: linear-gradient(180deg, rgba(10,12,22,.98), rgba(10,12,22,.86));
-      border-bottom: 1px solid rgba(215,184,106,.14);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+      gap:10px;
+      padding: 14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .bio-head h2{ margin:0; font-size: 18px; color: var(--ink); }
-    .bio-lang{ display:flex; gap:10px; }
+    .bio-head h2{
+      margin:0;
+      color: var(--gold2);
+      text-shadow:none;
+      font-size: 15px;
+    }
+    .bio-lang{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
     .bio-lang .lang{
       appearance:none;
-      border:1px solid rgba(215,184,106,.22);
-      background: rgba(12,14,26,.30);
-      color: var(--muted);
-      padding:9px 12px;
-      border-radius: 12px;
-      font-weight:950;
+      border:1px solid rgba(121,167,255,.18);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.85);
+      border-radius: 999px;
+      padding:8px 12px;
+      font-weight:900;
+      font-size:12px;
       cursor:pointer;
+      min-height: 36px;
     }
     .bio-lang .lang.active{
-      border-color: rgba(215,184,106,.50);
+      border-color: rgba(215,184,106,.55);
       background: rgba(215,184,106,.10);
-      color: var(--ink);
+      color: var(--gold2);
     }
     .bio-close{
       appearance:none;
-      border:1px solid rgba(215,184,106,.22);
-      background: rgba(12,14,26,.35);
-      color: var(--ink);
+      border:1px solid rgba(215,184,106,.28);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
-      padding:9px 12px;
-      font-weight:950;
       cursor:pointer;
+      font-size: 18px;
+      font-weight:900;
     }
 
     .expo-kicker{
       width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:12px 14px;
-      border:0;
-      border-top:1px solid rgba(215,184,106,.12);
-      border-bottom:1px solid rgba(215,184,106,.12);
-      background: rgba(215,184,106,.08);
-      color: var(--ink);
-      font-weight:950;
-      cursor:pointer;
       text-align:left;
+      appearance:none;
+      border:0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.9);
+      padding: 12px 14px;
+      font-weight:900;
+      cursor:pointer;
     }
+
     .slide-wrap{
-      padding: 12px 14px 2px;
-      border-bottom:1px solid rgba(215,184,106,.12);
-      display:none;
+      max-height: 0px;
+      overflow:hidden;
+      transition: max-height .35s ease;
+      border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{ display:block; }
-
+    .slide-wrap[data-open="true"]{
+      max-height: 1400px; /* 충분히 크게 */
+    }
     .bio-body{
-      padding: 12px 14px 18px;
-      color: var(--muted);
-      line-height:1.75;
-      font-size: 15px;
+      padding: 14px 14px;
+      color: rgba(237,227,201,.86);
+      line-height: 1.7;
     }
-    .bio-body strong{ color: var(--ink); }
+    .bio-body p{ margin: 10px 0; }
+    .bio-body strong{ color: var(--gold2); }
 
-    /* Lightbox */
+    /* =========================================================
+       LIGHTBOX
+    ========================================================= */
     #lightbox{
-      position:fixed;
+      position: fixed;
       inset:0;
+      z-index: 60;
       display:none;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    #lightbox.is-open{ display:block; }
+    .lb-stage{
+      position:absolute;
+      inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
+      display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
-      background: rgba(0,0,0,.72);
-      z-index:90;
-      padding: 12px;
+      gap: 12px;
+      padding-top: calc(var(--safe-top));
     }
-    #lightbox.is-open{ display:flex; }
-    .lb-stage{
-      width: min(980px, 100%);
-      background: rgba(10,12,22,.92);
-      border:1px solid rgba(215,184,106,.18);
-      border-radius: var(--radius2);
+    #lbImg{
+      max-width: min(980px, 96vw);
+      max-height: min(72vh, 760px);
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .lb-stage img{
-      display:block;
-      width:100%;
-      height:auto;
-      max-height: 72vh;
+      background: rgba(0,0,0,.25);
       object-fit: contain;
-      background: rgba(0,0,0,.35);
     }
     .lb-caption{
-      padding: 12px 14px 14px;
-      border-top:1px solid rgba(215,184,106,.12);
-      color: var(--muted);
-      line-height:1.6;
-      font-size: 14px;
-      white-space:pre-wrap;
+      width: min(980px, 96vw);
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(5,8,18,.62);
+      color: rgba(237,227,201,.86);
+      white-space: pre-wrap;
+      line-height:1.65;
     }
     .lb-close{
-      position:fixed;
-      right: 14px;
+      position:absolute;
       top: calc(14px + var(--safe-top));
-      z-index:91;
+      right: calc(14px + var(--safe-right));
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       appearance:none;
-      border:1px solid rgba(215,184,106,.22);
-      background: rgba(10,12,22,.56);
-      color: var(--ink);
-      border-radius: 12px;
-      padding:10px 12px;
-      font-weight:950;
+      border:1px solid rgba(215,184,106,.28);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      font-size: 18px;
+      font-weight: 900;
       cursor:pointer;
-      backdrop-filter: blur(8px);
-      opacity:.72;
     }
 
-    /* SOUND (덜 눈에 띄게) */
+    /* =========================================================
+       FFT + Controls
+    ========================================================= */
     #fftBar{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom: calc(52px + var(--safe-bot));
-      height:3px;
-      opacity:.0;           /* ✅ 시작 전 숨김 */
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: calc(0px + var(--safe-bot));
+      height: 3px;
+      z-index: 70;
+      background: rgba(255,255,255,.06);
       pointer-events:none;
-      z-index:60;
-      transition: opacity .18s ease;
     }
-    body.sound-on #fftBar{ opacity:.65; }
     #fftBar span{
       display:block;
-      width:0%;
       height:100%;
-      background: linear-gradient(90deg, rgba(121,167,255,.18), rgba(215,184,106,.42), rgba(121,167,255,.18));
-      transition: width .12s linear;
+      width:0%;
+      background: rgba(215,184,106,.55);
+      transition: width .08s linear;
     }
+
     #ctrl{
-      position:fixed;
-      right: 12px;
-      bottom: calc(12px + var(--safe-bot));
+      position: fixed;
+      right: calc(14px + var(--safe-right));
+      bottom: calc(14px + var(--safe-bot) + 6px);
+      z-index: 71;
       display:flex;
       gap:10px;
-      z-index:70;
-      opacity:.30;          /* ✅ 기본 낮게 */
-      transform: scale(.94);
-      transition: opacity .18s ease, transform .18s ease;
-    }
-    #ctrl:hover, #ctrl:focus-within{
-      opacity:.78;
-      transform: scale(1);
     }
     .ctrlbtn{
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
       appearance:none;
-      border:1px solid rgba(215,184,106,.18);
-      background: rgba(10,12,22,.52);
-      color: var(--ink);
-      border-radius: 14px;
-      padding:10px 12px;
-      font-weight:950;
+      border: 1px solid rgba(215,184,106,.26);
+      background: rgba(5,8,18,.55);
+      color: var(--gold2);
+      font-size: 18px;
       cursor:pointer;
-      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 28px rgba(0,0,0,.35);
     }
-    .ctrlbtn:disabled{
-      opacity:.35;
+    .ctrlbtn[disabled]{
+      opacity:.5;
       cursor:not-allowed;
     }
 
-    /* Footer */
+    /* =========================================================
+       Footer (링크 버튼급)
+    ========================================================= */
     footer{
-      margin-top: 18px;
-      padding: 16px 12px calc(18px + var(--safe-bot));
+      max-width: var(--maxw);
+      margin: 18px auto 0;
+      padding: 14px 18px calc(16px + var(--safe-bot));
       border-top:1px solid rgba(215,184,106,.14);
-      color: var(--dim);
-      text-align:center;
+      background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
+      border-radius: 18px;
     }
     footer .links{
       display:flex;
       flex-wrap:wrap;
-      justify-content:center;
-      gap:14px;
-      margin-bottom: 10px;
+      gap:10px;
+      align-items:center;
     }
     footer .links a{
-      color: var(--ink);
-      text-decoration:none;
-      font-weight:950;
-      letter-spacing:.02em;
-      padding:10px 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 44px;
+      padding: 0 14px;
       border-radius: 999px;
-      border:1px solid rgba(215,184,106,.18);
-      background: rgba(12,14,26,.26);
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
-      white-space:nowrap;
+      border:1px solid rgba(215,184,106,.28);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      font-weight: 900;
+      letter-spacing:.2px;
+      text-decoration:none;
     }
     footer .links a:hover{
-      transform: translateY(-1px);
-      border-color: rgba(215,184,106,.32);
       background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.55);
+      text-decoration:none;
+    }
+    footer .links a:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
 
-    :focus-visible{
-      outline: 2px solid rgba(215,184,106,.60);
-      outline-offset: 2px;
-      border-radius: 12px;
+    footer small{
+      display:block;
+      margin-top: 10px;
+      color: rgba(237,227,201,.62);
+      letter-spacing:.2px;
     }
 
-    /* reduced motion */
+    /* =========================================================
+       Reduced motion
+    ========================================================= */
     @media (prefers-reduced-motion: reduce){
-      *{ transition:none !important; animation:none !important; scroll-behavior:auto !important; }
-      #waves{ opacity:.70; }
+      *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
+      #fftBar span{ transition:none !important; }
     }
   </style>
 </head>
@@ -928,217 +1013,272 @@ Numerous private collections worldwide.</p>
   "use strict";
 
   /* =========================================================
-     utils
+     BASIC HELPERS
   ========================================================= */
-  const $  = (s, r=document) => r.querySelector(s);
-  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const safeText = (v) => (v == null ? "" : String(v));
+  function queryOne(selector, root) {
+    return (root || document).querySelector(selector);
+  }
 
-  const toAbs = (p) => {
+  function queryAll(selector, root) {
+    return Array.from((root || document).querySelectorAll(selector));
+  }
+
+  function clampNumber(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function safeString(value) {
+    return value == null ? "" : String(value);
+  }
+
+  function isReducedMotionPreferred() {
+    return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  function toAbsolutePath(path) {
+    const p = safeString(path).trim();
     if (!p) return "";
     if (/^https?:\/\//i.test(p)) return p;
     return p.startsWith("/") ? p : ("/" + p);
-  };
+  }
 
-  const prefersReduced = () =>
-    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function escapeHtml(text) {
+    return String(text ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
 
-  const bodyHas = (c) => document.body.classList.contains(c);
-
-  const getLangMode = () => {
-    if (bodyHas("english")) return "EN";
-    if (bodyHas("hybrid")) return "KR+EN";
+  function getLanguageMode() {
+    if (document.body.classList.contains("english")) return "EN";
+    if (document.body.classList.contains("hybrid")) return "KR+EN";
     return "KR";
-  };
+  }
 
-  const escapeHTML = (s) => {
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
-  };
+  function setLanguageMode(mode) {
+    document.body.classList.remove("korean", "english", "hybrid");
 
-  const setLangMode = (mode) => {
-    document.body.classList.remove("korean","english","hybrid");
-    if (mode === "EN") document.body.classList.add("english");
-    else if (mode === "KR+EN") document.body.classList.add("hybrid");
-    else document.body.classList.add("korean");
+    if (mode === "EN") {
+      document.body.classList.add("english");
+    } else if (mode === "KR+EN") {
+      document.body.classList.add("hybrid");
+    } else {
+      document.body.classList.add("korean");
+      mode = "KR";
+    }
 
-    $("#koBtn")?.classList.toggle("active", mode === "KR");
-    $("#enBtn")?.classList.toggle("active", mode === "EN");
-    $("#hyBtn")?.classList.toggle("active", mode === "KR+EN");
+    const koreanButton = queryOne("#koBtn");
+    const englishButton = queryOne("#enBtn");
+    const hybridButton = queryOne("#hyBtn");
 
-    try { localStorage.setItem("LF_LANG", mode); } catch(e) {}
+    if (koreanButton) koreanButton.classList.toggle("active", mode === "KR");
+    if (englishButton) englishButton.classList.toggle("active", mode === "EN");
+    if (hybridButton) hybridButton.classList.toggle("active", mode === "KR+EN");
+
+    try {
+      localStorage.setItem("LF_LANG", mode);
+    } catch (error) {}
 
     BIO.syncToGlobal();
-    if (LIGHTBOX.isOpen()) LIGHTBOX.refreshCaption();
-    REPORTS.refreshViewer();
-    WORKS.refreshTitles(); // 언어 바뀌면 Works 타이틀 갱신
-  };
+    if (LIGHTBOX.isOpen()) {
+      LIGHTBOX.refreshCaption();
+    }
+    REPORTS.refreshSummaryTextOnly();     // 카드 summary 반응
+    WORKS.refreshCurrentPanelRender();    // Works 타이틀/서브라인 반응
+  }
 
-  const restoreLang = () => {
-    let m = "KR";
-    try { m = localStorage.getItem("LF_LANG") || "KR"; } catch(e) {}
-    if (!["KR","EN","KR+EN"].includes(m)) m = "KR";
-    setLangMode(m);
-  };
+  function restoreLanguageMode() {
+    let stored = "KR";
+    try {
+      stored = localStorage.getItem("LF_LANG") || "KR";
+    } catch (error) {}
+
+    if (!["KR", "EN", "KR+EN"].includes(stored)) stored = "KR";
+    setLanguageMode(stored);
+  }
 
   /* =========================================================
-     NAV
+     PRIMARY NAVIGATION (Poem / Works / Reports / Bio)
   ========================================================= */
-  function bindPrimaryNav(){
-    const buttons = $$("nav.primary button");
-    const sections = $$("main > section");
+  function bindPrimaryNavigation() {
+    const navButtons = queryAll("nav.primary button");
+    const mainSections = queryAll("main > section");
 
-    const show = async (id) => {
-      sections.forEach(sec => {
-        sec.style.display = (sec.id === id) ? "" : "none";
+    async function showSection(sectionId) {
+      mainSections.forEach((section) => {
+        section.style.display = section.id === sectionId ? "" : "none";
       });
 
-      buttons.forEach(b => {
-        b.classList.toggle("active", b.dataset.target === id);
-        if (b.dataset.target === id) b.setAttribute("aria-current","page");
-        else b.removeAttribute("aria-current");
+      navButtons.forEach((button) => {
+        const target = button.dataset.target;
+        const isActive = target === sectionId;
+
+        button.classList.toggle("active", isActive);
+        if (isActive) {
+          button.setAttribute("aria-current", "page");
+        } else {
+          button.removeAttribute("aria-current");
+        }
       });
 
-      // 진입 시 강제 로드/렌더
-      if (id === "works"){
+      if (sectionId === "works") {
         await WORKS.ensureLoaded();
-        await WORKS.ensureRenderedCurrent();
+        await WORKS.ensureRenderedCurrentPanel();
       }
-      if (id === "reports"){
-        await REPORTS.ensureLoaded();
-        REPORTS.forceOpen(); // Reports는 무조건 열림
-      }
-    };
 
-    buttons.forEach(btn => {
-      const target = btn.dataset.target;
+      if (sectionId === "reports") {
+        await REPORTS.ensureLoaded();
+        REPORTS.forceOpen();
+      }
+    }
+
+    navButtons.forEach((button) => {
+      const target = button.dataset.target;
       if (!target) return;
-      btn.addEventListener("click", () => show(target));
+      button.addEventListener("click", () => showSection(target));
     });
 
-    $("#tab-bio")?.addEventListener("click", () => BIO.open());
+    const bioTabButton = queryOne("#tab-bio");
+    if (bioTabButton) {
+      bioTabButton.addEventListener("click", () => BIO.open());
+    }
 
-    // 최초 상태: Poem
-    show("poem");
+    showSection("poem");
   }
 
-  function bindLanguageButtons(){
-    $("#koBtn")?.addEventListener("click", () => setLangMode("KR"));
-    $("#enBtn")?.addEventListener("click", () => setLangMode("EN"));
-    $("#hyBtn")?.addEventListener("click", () => setLangMode("KR+EN"));
+  function bindLanguageButtons() {
+    const koreanButton = queryOne("#koBtn");
+    const englishButton = queryOne("#enBtn");
+    const hybridButton = queryOne("#hyBtn");
+
+    if (koreanButton) koreanButton.addEventListener("click", () => setLanguageMode("KR"));
+    if (englishButton) englishButton.addEventListener("click", () => setLanguageMode("EN"));
+    if (hybridButton) hybridButton.addEventListener("click", () => setLanguageMode("KR+EN"));
   }
 
   /* =========================================================
-     WORKS
-     - 카드/캡션에서 DZ ID 노출 제거
-     - 언어 전환 시 타이틀 갱신
+     WORKS (JSON -> CARDS -> LIGHTBOX)
+     - DZ ID 화면 노출 제거
+     - 언어 전환 반응
   ========================================================= */
   const WORKS = {
-    raw: [],
-    byPanel: { pray:[], human:[], rebirth:[], exist:[], cosmos:[] },
     loaded: false,
-    rendered: new Set(),
+    worksArray: [],
+    panels: { pray: [], human: [], rebirth: [], exist: [], cosmos: [] },
+    renderedPanels: new Set(),
     currentPanel: "pray",
 
-    async ensureLoaded(){
+    async ensureLoaded() {
       if (this.loaded) return;
-      const url = "/data/works.json?ts=" + Date.now();
 
+      const url = "/data/works.json?ts=" + Date.now();
       let json;
-      try{
-        const res = await fetch(url, { cache:"no-store" });
-        if (!res.ok) throw new Error("works.json fetch failed");
-        json = await res.json();
-      }catch(err){
+
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error("works.json fetch failed");
+        json = await response.json();
+      } catch (error) {
         this.loaded = true;
-        this.showErrorAll("Works data not found.", url);
+        this.showErrorAllPanels("Works data not found.", url);
         return;
       }
 
-      let arr = [];
-      if (Array.isArray(json)) arr = json;
-      else if (Array.isArray(json.works)) arr = json.works;
-      else if (json && typeof json === "object" && json.sections){
-        Object.values(json.sections).forEach(v => Array.isArray(v) && arr.push(...v));
+      let array = [];
+      if (Array.isArray(json)) array = json;
+      else if (Array.isArray(json.works)) array = json.works;
+      else if (json && typeof json === "object" && json.sections) {
+        Object.values(json.sections).forEach((value) => {
+          if (Array.isArray(value)) array.push(...value);
+        });
       }
 
-      this.raw = arr.map(this.normalizeWork);
-      this.split();
+      this.worksArray = array.map(this.normalizeWorkObject);
+      this.splitByPanel();
       this.loaded = true;
     },
 
-    normalizeWork(w){
-      const id = safeText(w.id || w.ID || w.code || w.work_id || "");
-      const section_id = Number(w.section_id ?? w.sectionId ?? w.section ?? w.section_no ?? 0);
+    normalizeWorkObject(work) {
+      const id = safeString(work.id || work.ID || work.code || work.work_id || "");
+      const sectionId = Number(work.section_id ?? work.sectionId ?? work.section ?? work.section_no ?? 0);
 
-      const title_kr = safeText(w.title_kr ?? w.titleKr ?? w.title_kor ?? w.titleKR ?? "");
-      const title_en = safeText(w.title_en ?? w.titleEn ?? w.title_eng ?? w.titleEN ?? "");
+      const titleKorean = safeString(work.title_kr ?? work.titleKr ?? work.title_kor ?? work.titleKR ?? "");
+      const titleEnglish = safeString(work.title_en ?? work.titleEn ?? work.title_eng ?? work.titleEN ?? "");
 
-      const material_kr = safeText(w.material_kr ?? w.materialKr ?? "");
-      const material_en = safeText(w.material_en ?? w.materialEn ?? "");
-      const size_kr = safeText(w.size_kr ?? w.sizeKr ?? "");
-      const size_en = safeText(w.size_en ?? w.sizeEn ?? "");
-      const year = safeText(w.year ?? w.date ?? "");
+      const materialKorean = safeString(work.material_kr ?? work.materialKr ?? "");
+      const materialEnglish = safeString(work.material_en ?? work.materialEn ?? "");
+      const sizeKorean = safeString(work.size_kr ?? work.sizeKr ?? "");
+      const sizeEnglish = safeString(work.size_en ?? work.sizeEn ?? "");
+      const year = safeString(work.year ?? work.date ?? "");
 
-      const image = toAbs(w.image || w.img || w.standard || w.src || "");
-      const zoom  = toAbs(w.zoom || w.zoom_image || w.hires || w.large || w.image_zoom || "");
+      const image = toAbsolutePath(work.image || work.img || work.standard || work.src || "");
+      const zoom = toAbsolutePath(work.zoom || work.zoom_image || work.hires || work.large || work.image_zoom || "");
 
       return {
-        id, section_id,
-        title_kr, title_en,
-        material_kr, material_en,
-        size_kr, size_en,
-        year,
-        image,
+        id: id,
+        section_id: sectionId,
+        title_kr: titleKorean,
+        title_en: titleEnglish,
+        material_kr: materialKorean,
+        material_en: materialEnglish,
+        size_kr: sizeKorean,
+        size_en: sizeEnglish,
+        year: year,
+        image: image,
         zoom: zoom || image
       };
     },
 
-    split(){
-      this.byPanel = { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
-      this.raw.forEach(w => {
-        if (w.section_id === 1) this.byPanel.pray.push(w);
-        else if (w.section_id === 2) this.byPanel.human.push(w);
-        else if (w.section_id === 3) this.byPanel.rebirth.push(w);
-        else if (w.section_id === 4) this.byPanel.exist.push(w);
-        else if (w.section_id === 5) this.byPanel.cosmos.push(w);
+    splitByPanel() {
+      this.panels = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
+
+      this.worksArray.forEach((work) => {
+        if (work.section_id === 1) this.panels.pray.push(work);
+        else if (work.section_id === 2) this.panels.human.push(work);
+        else if (work.section_id === 3) this.panels.rebirth.push(work);
+        else if (work.section_id === 4) this.panels.exist.push(work);
+        else if (work.section_id === 5) this.panels.cosmos.push(work);
       });
     },
 
-    panelEl(panel){ return $("#panel-" + panel); },
-    list(panel){ return this.byPanel[panel] || []; },
+    getPanelElement(panelKey) {
+      return queryOne("#panel-" + panelKey);
+    },
 
-    cardHTML(w, idx, panel){
-      const mode = getLangMode();
+    getList(panelKey) {
+      return this.panels[panelKey] || [];
+    },
 
-      const titleKR = w.title_kr || "";
-      const titleEN = w.title_en || "";
+    createCardHtml(work, index, panelKey) {
+      const mode = getLanguageMode();
 
-      const subKR = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
-      const subEN = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
+      const titleKorean = work.title_kr || "";
+      const titleEnglish = work.title_en || "";
+
+      const subKorean = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(" · ");
+      const subEnglish = [work.material_en, work.size_en, work.year].filter(Boolean).join(" · ");
 
       let titleBlock = "";
-      if (mode === "KR") titleBlock = escapeHTML(titleKR || titleEN);
-      else if (mode === "EN") titleBlock = escapeHTML(titleEN || titleKR);
-      else{
-        const a = titleKR ? `<div class="ko">${escapeHTML(titleKR)}</div>` : "";
-        const b = titleEN ? `<div class="en">${escapeHTML(titleEN)}</div>` : "";
-        titleBlock = `${a}${b}` || escapeHTML(titleKR || titleEN);
+      if (mode === "KR") {
+        titleBlock = escapeHtml(titleKorean || titleEnglish);
+      } else if (mode === "EN") {
+        titleBlock = escapeHtml(titleEnglish || titleKorean);
+      } else {
+        const partKorean = titleKorean ? `<div class="ko">${escapeHtml(titleKorean)}</div>` : "";
+        const partEnglish = titleEnglish ? `<div class="en">${escapeHtml(titleEnglish)}</div>` : "";
+        titleBlock = `${partKorean}${partEnglish}` || escapeHtml(titleKorean || titleEnglish);
       }
 
-      const sub = (mode === "EN") ? subEN : subKR;
-      const subLine = escapeHTML(sub || (mode === "EN" ? subKR : subEN) || "");
+      const subLineRaw = mode === "EN" ? (subEnglish || subKorean) : (subKorean || subEnglish);
+      const subLine = escapeHtml(subLineRaw || "");
 
       return `
-        <article class="w-card" data-panel="${panel}" data-i="${idx}">
-          <img class="w-thumb" loading="lazy" src="${w.image}" alt="">
+        <article class="w-card" data-panel="${panelKey}" data-i="${index}">
+          <img class="w-thumb" loading="lazy" src="${work.image}" alt="">
           <div class="w-meta">
-            <div class="w-id" style="display:none">${escapeHTML(w.id)}</div>
+            <div class="w-id" style="display:none">${escapeHtml(work.id)}</div>
             <div class="w-title">${titleBlock}</div>
             ${subLine ? `<div class="w-sub">${subLine}</div>` : ""}
           </div>
@@ -1146,14 +1286,16 @@ Numerous private collections worldwide.</p>
       `;
     },
 
-    async render(panel){
+    async renderPanel(panelKey) {
       await this.ensureLoaded();
-      const box = this.panelEl(panel);
-      if (!box) return;
 
-      const list = this.list(panel);
-      if (!list.length){
-        box.innerHTML = `
+      const panelElement = this.getPanelElement(panelKey);
+      if (!panelElement) return;
+
+      const list = this.getList(panelKey);
+
+      if (!list.length) {
+        panelElement.innerHTML = `
           <div class="w-msg">
             Works are empty.
             <small>Expected: /data/works.json</small>
@@ -1162,819 +1304,1082 @@ Numerous private collections worldwide.</p>
         return;
       }
 
-      box.innerHTML = `
+      panelElement.innerHTML = `
         <div class="w-grid">
-          ${list.map((w, idx) => this.cardHTML(w, idx, panel)).join("")}
+          ${list.map((work, index) => this.createCardHtml(work, index, panelKey)).join("")}
         </div>
       `;
 
-      $$(".w-card", box).forEach(card => {
+      queryAll(".w-card", panelElement).forEach((card) => {
         card.addEventListener("click", () => {
-          const i = Number(card.dataset.i);
-          LIGHTBOX.open(panel, i);
+          const index = Number(card.dataset.i);
+          LIGHTBOX.open(panelKey, index);
         });
       });
 
-      this.rendered.add(panel);
+      this.renderedPanels.add(panelKey);
     },
 
-    async ensureRenderedCurrent(){
-      if (!this.rendered.has(this.currentPanel)){
-        await this.render(this.currentPanel);
-      }else{
-        this.refreshTitles();
+    async ensureRenderedCurrentPanel() {
+      if (!this.renderedPanels.has(this.currentPanel)) {
+        await this.renderPanel(this.currentPanel);
+      } else {
+        await this.renderPanel(this.currentPanel);
       }
     },
 
-    refreshTitles(){
-      if (!this.rendered.has(this.currentPanel)) return;
-      // 재렌더로 언어 동기화
-      this.render(this.currentPanel);
+    refreshCurrentPanelRender() {
+      if (!this.renderedPanels.has(this.currentPanel)) return;
+      this.renderPanel(this.currentPanel);
     },
 
-    showErrorAll(msg, path){
-      ["pray","human","rebirth","exist","cosmos"].forEach(panel=>{
-        const box = this.panelEl(panel);
-        if (!box) return;
-        box.innerHTML = `
+    showErrorAllPanels(message, path) {
+      ["pray", "human", "rebirth", "exist", "cosmos"].forEach((panelKey) => {
+        const panelElement = this.getPanelElement(panelKey);
+        if (!panelElement) return;
+
+        panelElement.innerHTML = `
           <div class="w-msg">
-            ${escapeHTML(msg)}
-            <small>${escapeHTML(path)}</small>
+            ${escapeHtml(message)}
+            <small>${escapeHtml(path)}</small>
           </div>
         `;
       });
     }
   };
 
-  function bindWorksTabs(){
-    const tabs = $$(".tabs .tab");
-    const panels = $$(".tabpanel");
+  function bindWorksTabs() {
+    const tabs = queryAll(".tabs .tab");
+    const tabPanels = queryAll(".tabpanel");
 
-    const activate = async (panel) => {
-      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel === panel));
-      panels.forEach(p => p.classList.toggle("active", p.id === ("panel-" + panel)));
-      WORKS.currentPanel = panel;
-      await WORKS.ensureRenderedCurrent();
-    };
+    async function activate(panelKey) {
+      tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.panel === panelKey));
+      tabPanels.forEach((panel) => panel.classList.toggle("active", panel.id === ("panel-" + panelKey)));
 
-    tabs.forEach(t => t.addEventListener("click", () => activate(t.dataset.panel)));
+      WORKS.currentPanel = panelKey;
+      await WORKS.ensureRenderedCurrentPanel();
+    }
+
+    tabs.forEach((tab) => tab.addEventListener("click", () => activate(tab.dataset.panel)));
     activate("pray");
   }
 
   /* =========================================================
      LIGHTBOX
-     - 캡션에서 DZ ID 제거
+     - DZ ID 캡션 제거
      - KR/EN 분리 표기
   ========================================================= */
   const LIGHTBOX = {
-    panel: "pray",
+    panelKey: "pray",
     index: 0,
     openState: false,
 
-    isOpen(){ return this.openState; },
+    isOpen() {
+      return this.openState;
+    },
 
-    open(panel, idx){
-      this.panel = panel;
-      this.index = idx;
+    open(panelKey, index) {
+      this.panelKey = panelKey;
+      this.index = index;
 
-      const box = $("#lightbox");
+      const box = queryOne("#lightbox");
       if (!box) return;
 
       box.classList.add("is-open");
-      box.setAttribute("aria-hidden","false");
+      box.setAttribute("aria-hidden", "false");
       this.openState = true;
 
       this.render();
-      document.addEventListener("keydown", this.onKey, { passive:false });
+      document.addEventListener("keydown", this.onKeyDown, { passive: false });
     },
 
-    close(){
-      const box = $("#lightbox");
+    close() {
+      const box = queryOne("#lightbox");
       if (!box) return;
 
       box.classList.remove("is-open");
-      box.setAttribute("aria-hidden","true");
+      box.setAttribute("aria-hidden", "true");
       this.openState = false;
 
-      document.removeEventListener("keydown", this.onKey);
+      document.removeEventListener("keydown", this.onKeyDown);
     },
 
-    onKey: (e) => {
+    onKeyDown(event) {
       if (!LIGHTBOX.openState) return;
 
-      if (e.key === "Escape"){
-        e.preventDefault();
+      if (event.key === "Escape") {
+        event.preventDefault();
         LIGHTBOX.close();
-      }else if (e.key === "ArrowLeft"){
-        e.preventDefault();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
         LIGHTBOX.step(-1);
-      }else if (e.key === "ArrowRight"){
-        e.preventDefault();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
         LIGHTBOX.step(+1);
       }
     },
 
-    step(dir){
-      const list = WORKS.list(this.panel);
+    step(direction) {
+      const list = WORKS.getList(this.panelKey);
       if (!list.length) return;
-      this.index = (this.index + dir + list.length) % list.length;
+
+      this.index = (this.index + direction + list.length) % list.length;
       this.render();
     },
 
-    render(){
-      const w = WORKS.list(this.panel)[this.index];
-      if (!w) return;
+    render() {
+      const work = WORKS.getList(this.panelKey)[this.index];
+      if (!work) return;
 
-      const img = $("#lbImg");
-      const cap = $("#lbCap");
-      if (img) img.src = w.zoom || w.image;
-      if (cap) cap.textContent = this.composeCaption(w);
+      const image = queryOne("#lbImg");
+      const caption = queryOne("#lbCap");
+
+      if (image) image.src = work.zoom || work.image;
+      if (caption) caption.textContent = this.composeCaption(work);
     },
 
-    refreshCaption(){
-      const w = WORKS.list(this.panel)[this.index];
-      if (!w) return;
-      const cap = $("#lbCap");
-      if (cap) cap.textContent = this.composeCaption(w);
+    refreshCaption() {
+      const work = WORKS.getList(this.panelKey)[this.index];
+      if (!work) return;
+
+      const caption = queryOne("#lbCap");
+      if (caption) caption.textContent = this.composeCaption(work);
     },
 
-    composeCaption(w){
-      const mode = getLangMode();
+    composeCaption(work) {
+      const mode = getLanguageMode();
 
-      const titleKR = w.title_kr || w.title_en || "";
-      const titleEN = w.title_en || w.title_kr || "";
+      const titleKorean = work.title_kr || work.title_en || "";
+      const titleEnglish = work.title_en || work.title_kr || "";
 
-      const metaKR = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
-      const metaEN = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
+      const metaKorean = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(" · ");
+      const metaEnglish = [work.material_en, work.size_en, work.year].filter(Boolean).join(" · ");
 
-      if (mode === "KR"){
-        return [titleKR, metaKR].filter(Boolean).join("\n");
+      if (mode === "KR") {
+        return [titleKorean, metaKorean].filter(Boolean).join("\n");
       }
-      if (mode === "EN"){
-        return [titleEN, metaEN].filter(Boolean).join("\n");
+
+      if (mode === "EN") {
+        return [titleEnglish, metaEnglish].filter(Boolean).join("\n");
       }
 
       const lines = [];
-      if (titleKR || metaKR){
+      if (titleKorean || metaKorean) {
         lines.push("KR:");
-        if (titleKR) lines.push(titleKR);
-        if (metaKR) lines.push(metaKR);
+        if (titleKorean) lines.push(titleKorean);
+        if (metaKorean) lines.push(metaKorean);
       }
-      if (titleEN || metaEN){
+      if (titleEnglish || metaEnglish) {
         if (lines.length) lines.push("");
         lines.push("EN:");
-        if (titleEN) lines.push(titleEN);
-        if (metaEN) lines.push(metaEN);
+        if (titleEnglish) lines.push(titleEnglish);
+        if (metaEnglish) lines.push(metaEnglish);
       }
       return lines.join("\n").trim();
     }
   };
 
-  function bindLightbox(){
-    $("#lbClose")?.addEventListener("click", () => LIGHTBOX.close());
-    $("#lightbox")?.addEventListener("click", (e) => {
-      const stage = $(".lb-stage");
-      if (stage && stage.contains(e.target)) return;
-      LIGHTBOX.close();
-    });
+  function bindLightbox() {
+    const closeButton = queryOne("#lbClose");
+    if (closeButton) closeButton.addEventListener("click", () => LIGHTBOX.close());
+
+    const box = queryOne("#lightbox");
+    if (box) {
+      box.addEventListener("click", (event) => {
+        const stage = queryOne(".lb-stage");
+        if (stage && stage.contains(event.target)) return;
+        LIGHTBOX.close();
+      });
+    }
   }
 
   /* =========================================================
-     BIO
+     BIO MODAL
   ========================================================= */
   const BIO = {
-    open(){
-      const modal = $("#bio-modal");
+    open() {
+      const modal = queryOne("#bio-modal");
       if (!modal) return;
       modal.hidden = false;
       this.syncToGlobal();
     },
-    close(){
-      const modal = $("#bio-modal");
+
+    close() {
+      const modal = queryOne("#bio-modal");
       if (!modal) return;
       modal.hidden = true;
     },
-    setModalLang(mode){
-      const modal = $("#bio-modal");
+
+    setModalLanguage(mode) {
+      const modal = queryOne("#bio-modal");
       if (!modal) return;
 
-      const koBodies = $$(".bio-body.ko", modal);
-      const enBodies = $$(".bio-body.en", modal);
+      const koreanBodies = queryAll(".bio-body.ko", modal);
+      const englishBodies = queryAll(".bio-body.en", modal);
 
-      if (mode === "en"){
-        koBodies.forEach(el => el.style.display = "none");
-        enBodies.forEach(el => el.style.display = "block");
-      }else if (mode === "both"){
-        koBodies.forEach(el => el.style.display = "block");
-        enBodies.forEach(el => el.style.display = "block");
-      }else{
-        koBodies.forEach(el => el.style.display = "block");
-        enBodies.forEach(el => el.style.display = "none");
+      if (mode === "en") {
+        koreanBodies.forEach((element) => (element.style.display = "none"));
+        englishBodies.forEach((element) => (element.style.display = "block"));
+      } else if (mode === "both") {
+        koreanBodies.forEach((element) => (element.style.display = "block"));
+        englishBodies.forEach((element) => (element.style.display = "block"));
+      } else {
+        koreanBodies.forEach((element) => (element.style.display = "block"));
+        englishBodies.forEach((element) => (element.style.display = "none"));
       }
 
-      const btnKR = $('.bio-lang .lang[data-bio-lang="kr"]', modal);
-      const btnEN = $('.bio-lang .lang[data-bio-lang="en"]', modal);
+      const buttonKorean = queryOne('.bio-lang .lang[data-bio-lang="kr"]', modal);
+      const buttonEnglish = queryOne('.bio-lang .lang[data-bio-lang="en"]', modal);
 
-      if (btnKR && btnEN){
-        btnKR.classList.toggle("active", mode !== "en");
-        btnEN.classList.toggle("active", mode === "en");
-        btnKR.setAttribute("aria-pressed", String(mode !== "en"));
-        btnEN.setAttribute("aria-pressed", String(mode === "en"));
+      if (buttonKorean && buttonEnglish) {
+        buttonKorean.classList.toggle("active", mode !== "en");
+        buttonEnglish.classList.toggle("active", mode === "en");
+        buttonKorean.setAttribute("aria-pressed", String(mode !== "en"));
+        buttonEnglish.setAttribute("aria-pressed", String(mode === "en"));
       }
     },
-    syncToGlobal(){
-      const g = getLangMode();
-      if (g === "EN") this.setModalLang("en");
-      else if (g === "KR+EN") this.setModalLang("both");
-      else this.setModalLang("kr");
+
+    syncToGlobal() {
+      const global = getLanguageMode();
+      if (global === "EN") this.setModalLanguage("en");
+      else if (global === "KR+EN") this.setModalLanguage("both");
+      else this.setModalLanguage("kr");
     }
   };
 
-  function bindBio(){
-    $(".bio-close")?.addEventListener("click", () => BIO.close());
-    $(".bio-backdrop")?.addEventListener("click", () => BIO.close());
+  function bindBio() {
+    const closeButton = queryOne(".bio-close");
+    const backdrop = queryOne(".bio-backdrop");
 
-    const modal = $("#bio-modal");
-    if (modal){
-      $$('.bio-lang .lang', modal).forEach(btn => {
-        btn.addEventListener("click", () => {
-          const m = btn.dataset.bioLang;
-          if (m === "en") BIO.setModalLang("en");
-          else BIO.setModalLang("kr");
+    if (closeButton) closeButton.addEventListener("click", () => BIO.close());
+    if (backdrop) backdrop.addEventListener("click", () => BIO.close());
+
+    const modal = queryOne("#bio-modal");
+    if (modal) {
+      const languageButtons = queryAll(".bio-lang .lang", modal);
+      languageButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const selected = button.dataset.bioLang;
+          if (selected === "en") BIO.setModalLanguage("en");
+          else BIO.setModalLanguage("kr");
         });
       });
     }
 
-    $("#expoToggle")?.addEventListener("click", () => {
-      const slide = $("#expoSlide");
-      const btn = $("#expoToggle");
-      if (!slide || !btn) return;
+    const expoToggleButton = queryOne("#expoToggle");
+    if (expoToggleButton) {
+      expoToggleButton.addEventListener("click", () => {
+        const slide = queryOne("#expoSlide");
+        const button = queryOne("#expoToggle");
+        if (!slide || !button) return;
 
-      const open = slide.dataset.open === "true";
-      slide.dataset.open = open ? "false" : "true";
-      btn.setAttribute("aria-expanded", open ? "false" : "true");
-    });
+        const open = slide.dataset.open === "true";
+        slide.dataset.open = open ? "false" : "true";
+        button.setAttribute("aria-expanded", open ? "false" : "true");
+      });
+    }
   }
 
   /* =========================================================
      REPORTS
-     - reports.json: { reports:[{id,slug,year,category,title_ko,title_en,summary_ko,summary_en,md_path}] }
-     - 카드에 title + summary 노출
-     - 클릭 시 viewer에서 title + summary + md본문(있으면) 로드
+     - 카드 summary는 KR/EN/KR+EN에 즉시 반응
+     - 클릭 시: 새 창/새 탭으로 "전체보기" 문서를 열고,
+       하단에 작은 download 링크를 제공
   ========================================================= */
   const REPORTS = {
-    raw: [],
     loaded: false,
     open: false,
     currentFilter: "all",
-    currentItem: null,
-    mdCache: new Map(), // md_path -> text
+    raw: [],
+    mdCache: new Map(),      // absolute md path -> text
+    lastOpened: null,        // 마지막으로 열린 report (언어 바뀌면 summary 카드만 갱신)
 
-    async ensureLoaded(){
+    async ensureLoaded() {
       if (this.loaded) return;
 
       const url = "/data/reports.json?ts=" + Date.now();
       let json;
-      try{
-        const res = await fetch(url, { cache:"no-store" });
-        if (!res.ok) throw new Error("reports.json fetch failed");
-        json = await res.json();
-      }catch(err){
+
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error("reports.json fetch failed");
+        json = await response.json();
+      } catch (error) {
         this.loaded = true;
         this.showError("Reports data not found.", url);
         return;
       }
 
-      let arr = [];
-      if (Array.isArray(json)) arr = json;
-      else if (Array.isArray(json.reports)) arr = json.reports;
+      let array = [];
+      if (Array.isArray(json)) array = json;
+      else if (Array.isArray(json.reports)) array = json.reports;
 
-      this.raw = arr.map(this.normalize);
+      this.raw = array.map(this.normalizeReportObject);
       this.loaded = true;
       this.renderGrid();
     },
 
-    normalize(r){
-      const id = safeText(r.id || r.code || r.report_id || r.dcar || "");
-      const slug = safeText(r.slug || r.id || "");
-      const year = safeText(r.year || r.date || "");
-      const category = safeText(r.category || r.type || r.tag || "archive").toLowerCase();
+    normalizeReportObject(item) {
+      const id = safeString(item.id || item.code || item.report_id || item.dcar || "");
+      const slug = safeString(item.slug || item.id || "");
+      const year = safeString(item.year || item.date || "");
+      const category = safeString(item.category || item.type || item.tag || "archive").toLowerCase();
 
-      const title_ko = safeText(r.title_ko ?? r.title_kr ?? r.titleKr ?? r.title ?? "");
-      const title_en = safeText(r.title_en ?? r.titleEn ?? "");
-      const summary_ko = safeText(r.summary_ko ?? r.summaryKr ?? r.summary_kr ?? "");
-      const summary_en = safeText(r.summary_en ?? r.summaryEn ?? "");
+      const titleKorean = safeString(item.title_ko ?? item.title_kr ?? item.titleKr ?? item.title ?? "");
+      const titleEnglish = safeString(item.title_en ?? item.titleEn ?? "");
 
-      const md_path = safeText(r.md_path ?? r.md ?? r.path ?? "");
+      const summaryKorean = safeString(item.summary_ko ?? item.summaryKr ?? item.summary_kr ?? "");
+      const summaryEnglish = safeString(item.summary_en ?? item.summaryEn ?? "");
 
-      return { id, slug, year, category, title_ko, title_en, summary_ko, summary_en, md_path };
+      const mdPath = safeString(item.md_path ?? item.md ?? item.path ?? "");
+
+      return {
+        id: id,
+        slug: slug,
+        year: year,
+        category: category,
+        title_ko: titleKorean,
+        title_en: titleEnglish,
+        summary_ko: summaryKorean,
+        summary_en: summaryEnglish,
+        md_path: mdPath
+      };
     },
 
-    forceOpen(){
+    forceOpen() {
       this.open = true;
-      const grid = $("#reportGrid");
-      const btn = $("#reportsToggle");
+
+      const grid = queryOne("#reportGrid");
+      const toggleButton = queryOne("#reportsToggle");
+
       if (grid) grid.style.display = "grid";
-      if (btn){
-        btn.setAttribute("aria-expanded","true");
-        btn.textContent = "Close Reports";
+      if (toggleButton) {
+        toggleButton.setAttribute("aria-expanded", "true");
+        toggleButton.textContent = "Close Reports";
       }
+
       this.renderGrid();
     },
 
-    toggleOpen(){
+    toggleOpen() {
       this.open = !this.open;
-      const grid = $("#reportGrid");
-      const btn = $("#reportsToggle");
+
+      const grid = queryOne("#reportGrid");
+      const toggleButton = queryOne("#reportsToggle");
+
       if (grid) grid.style.display = this.open ? "grid" : "none";
-      if (btn){
-        btn.setAttribute("aria-expanded", this.open ? "true" : "false");
-        btn.textContent = this.open ? "Close Reports" : "Open Reports";
+      if (toggleButton) {
+        toggleButton.setAttribute("aria-expanded", this.open ? "true" : "false");
+        toggleButton.textContent = this.open ? "Close Reports" : "Open Reports";
       }
     },
 
-    setFilter(f){
-      this.currentFilter = f;
-      $$(".r-tab").forEach(b => b.classList.toggle("is-active", b.dataset.r === f));
+    setFilter(filter) {
+      this.currentFilter = filter || "all";
+      queryAll(".r-tab").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.r === this.currentFilter);
+      });
       this.renderGrid();
     },
 
-    filtered(){
-      const f = this.currentFilter;
-      if (f === "all") return this.raw;
-      return this.raw.filter(r => (r.category || "").includes(f));
+    getFilteredList() {
+      const filter = this.currentFilter;
+      if (filter === "all") return this.raw;
+      return this.raw.filter((report) => safeString(report.category).includes(filter));
     },
 
-    pickTitle(r){
-      const mode = getLangMode();
-      if (mode === "EN") return (r.title_en || r.title_ko || r.id);
-      if (mode === "KR+EN"){
-        const a = r.title_ko || "";
-        const b = r.title_en || "";
-        return [a,b].filter(Boolean).join(" / ") || r.id;
+    pickTitle(report) {
+      const mode = getLanguageMode();
+
+      if (mode === "EN") return report.title_en || report.title_ko || report.id;
+      if (mode === "KR+EN") {
+        const korean = (report.title_ko || "").trim();
+        const english = (report.title_en || "").trim();
+        return [korean, english].filter(Boolean).join(" / ") || report.id;
       }
-      return (r.title_ko || r.title_en || r.id);
+      return report.title_ko || report.title_en || report.id;
     },
 
-    pickSummary(r){
-      const mode = getLangMode();
-      if (mode === "EN") return (r.summary_en || r.summary_ko || "");
-      if (mode === "KR+EN"){
-        const a = (r.summary_ko || "").trim();
-        const b = (r.summary_en || "").trim();
-        return [a,b].filter(Boolean).join("\n\n");
+    pickSummary(report) {
+      const mode = getLanguageMode();
+
+      if (mode === "EN") return report.summary_en || report.summary_ko || "";
+      if (mode === "KR+EN") {
+        const korean = (report.summary_ko || "").trim();
+        const english = (report.summary_en || "").trim();
+        return [korean, english].filter(Boolean).join("\n\n");
       }
-      return (r.summary_ko || r.summary_en || "");
+      return report.summary_ko || report.summary_en || "";
     },
 
-    metaLine(r){
-      const c = (r.category || "").toUpperCase();
-      const y = r.year ? (" · " + r.year) : "";
-      // 메타는 ID + 연도(카테고리는 보조)
-      const head = r.id || c || "";
-      return head + y;
+    metaLine(report) {
+      const yearText = report.year ? (" · " + report.year) : "";
+      const head = report.id || "";
+      return head + yearText;
     },
 
-    cardHTML(r, i){
-      const title = escapeHTML(this.pickTitle(r));
-      const meta  = escapeHTML(this.metaLine(r));
-      const mode = getLangMode();
+    cardHtml(report, index) {
+      const title = escapeHtml(this.pickTitle(report));
+      const meta = escapeHtml(this.metaLine(report));
 
-      let summary = "";
-      if (mode === "KR") summary = r.summary_ko || r.summary_en || "";
-      else if (mode === "EN") summary = r.summary_en || r.summary_ko || "";
-      else{
-        const a = r.summary_ko ? `KR: ${r.summary_ko}` : "";
-        const b = r.summary_en ? `EN: ${r.summary_en}` : "";
-        summary = [a,b].filter(Boolean).join("\n");
+      const mode = getLanguageMode();
+      let summaryText = "";
+
+      if (mode === "KR") summaryText = report.summary_ko || report.summary_en || "";
+      else if (mode === "EN") summaryText = report.summary_en || report.summary_ko || "";
+      else {
+        const korean = report.summary_ko ? `KR: ${report.summary_ko}` : "";
+        const english = report.summary_en ? `EN: ${report.summary_en}` : "";
+        summaryText = [korean, english].filter(Boolean).join("\n");
       }
-      const summaryEsc = escapeHTML(summary);
+
+      const summary = escapeHtml(summaryText);
 
       return `
-        <div class="r-item" data-i="${i}">
+        <div class="r-item" data-i="${index}">
           <div class="t">${title}</div>
           <div class="m">${meta}</div>
-          ${summaryEsc ? `<div class="s">${summaryEsc}</div>` : ""}
+          ${summary ? `<div class="s">${summary}</div>` : ""}
         </div>
       `;
     },
 
-    renderGrid(){
-      const grid = $("#reportGrid");
+    renderGrid() {
+      const grid = queryOne("#reportGrid");
       if (!grid) return;
 
-      if (!this.loaded){
-        if (this.open){
+      if (!this.loaded) {
+        if (this.open) {
           grid.style.display = "grid";
           grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">Loading reports…</div>`;
         }
         return;
       }
 
-      if (!this.open){
+      if (!this.open) {
         grid.style.display = "none";
         return;
       }
 
-      const list = this.filtered();
-      if (!list.length){
+      const list = this.getFilteredList();
+      if (!list.length) {
         grid.style.display = "grid";
         grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">No reports.</div>`;
         return;
       }
 
       grid.style.display = "grid";
-      grid.innerHTML = list.map((r, i) => this.cardHTML(r, i)).join("");
+      grid.innerHTML = list.map((report, index) => this.cardHtml(report, index)).join("");
 
-      $$(".r-item", grid).forEach(item => {
-        item.addEventListener("click", async () => {
-          const i = Number(item.dataset.i);
-          const r = this.filtered()[i];
-          if (r) await this.openViewer(r);
+      queryAll(".r-item", grid).forEach((itemElement) => {
+        itemElement.addEventListener("click", async () => {
+          const index = Number(itemElement.dataset.i);
+          const report = this.getFilteredList()[index];
+          if (report) {
+            this.lastOpened = report;
+            await this.openInNewWindow(report);
+          }
         });
       });
     },
 
-    async fetchMD(md_path){
-      const p = safeText(md_path).trim();
-      if (!p) return "";
-      const abs = toAbs(p);
+    refreshSummaryTextOnly() {
+      // 언어 변경 시: 카드의 title/summary가 즉시 바뀌도록 그리드만 갱신
+      if (!this.loaded) return;
+      if (!this.open) return;
+      this.renderGrid();
+    },
 
-      if (this.mdCache.has(abs)) return this.mdCache.get(abs);
+    async fetchMarkdownText(mdPath) {
+      const clean = safeString(mdPath).trim();
+      if (!clean) return "";
 
-      try{
-        const res = await fetch(abs + "?ts=" + Date.now(), { cache:"no-store" });
-        if (!res.ok) throw new Error("md fetch failed");
-        const txt = await res.text();
-        this.mdCache.set(abs, txt);
-        return txt;
-      }catch(e){
-        // md가 없는 경우도 허용(요약만 표시)
-        this.mdCache.set(abs, "");
+      const absolute = toAbsolutePath(clean);
+      if (!absolute) return "";
+
+      if (this.mdCache.has(absolute)) return this.mdCache.get(absolute);
+
+      try {
+        const response = await fetch(absolute + "?ts=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("markdown fetch failed");
+        const text = await response.text();
+        this.mdCache.set(absolute, text);
+        return text;
+      } catch (error) {
+        this.mdCache.set(absolute, "");
         return "";
       }
     },
 
-    async openViewer(r){
-      this.currentItem = r;
+    makeDownloadFileName(report) {
+      const base = report.id || report.slug || "DCAR";
+      return base.replaceAll(" ", "_") + ".txt";
+    },
 
-      const viewer = $("#reportViewer");
-      if (!viewer) return;
+    buildReportWindowHtml(report, summary, markdownText) {
+      const title = this.pickTitle(report);
+      const meta = this.metaLine(report);
 
-      const title = this.pickTitle(r);
-      const meta = this.metaLine(r);
+      const safeTitle = escapeHtml(title);
+      const safeMeta = escapeHtml(meta);
 
-      const summary = this.pickSummary(r);
-      const mdText = await this.fetchMD(r.md_path);
+      const safeSummary = summary ? escapeHtml(summary) : "";
+      const safeBody = markdownText ? escapeHtml(markdownText.trim()) : "";
 
-      const mode = getLangMode();
+      const fileName = this.makeDownloadFileName(report);
+      const fileNameSafe = escapeHtml(fileName);
 
-      let body = "";
-      if (mdText && mdText.trim()){
-        // md 원문은 그대로(표시는 안전하게 text로)
-        body = mdText.trim();
-      }else{
-        // md가 없으면 요약만으로 충분히 보이도록
-        body = "";
+      // download: 원문 md_path가 있으면 링크 제공, 없으면 텍스트 다운로드 제공(Blob)
+      const rawMdPath = safeString(report.md_path).trim();
+      const absoluteMdPath = rawMdPath ? toAbsolutePath(rawMdPath) : "";
+
+      // 새 창 문서: 심플 + 다크 + 작은 download 링크(하단)
+      return `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>${safeTitle}</title>
+  <style>
+    :root{
+      --bg:#070A14;
+      --fg:#EDE3C9;
+      --muted:rgba(237,227,201,.72);
+      --gold:rgba(215,184,106,.95);
+      --line:rgba(215,184,106,.22);
+      --card:rgba(255,255,255,.04);
+      --shadow: 0 10px 40px rgba(0,0,0,.55);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1100px 700px at 50% 0%, rgba(215,184,106,.08), transparent 60%),
+                  radial-gradient(1200px 900px at 30% 40%, rgba(121,167,255,.06), transparent 60%),
+                  var(--bg);
+      color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      line-height:1.55;
+      letter-spacing:.2px;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+    .title{
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing:.4px;
+    }
+    .meta{
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .block{
+      margin-top: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    pre{
+      margin:0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      color: rgba(237,227,201,.92);
+    }
+    .download{
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .download a{
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(215,184,106,.35);
+      padding-bottom: 2px;
+    }
+    .download a:hover{ border-bottom-color: rgba(215,184,106,.7) }
+    .note{
+      font-size: 12px;
+      color: rgba(237,227,201,.68);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">${safeTitle}</div>
+    <div class="meta">${safeMeta}</div>
+
+    ${safeSummary ? `
+    <div class="block">
+      <pre>${safeSummary}</pre>
+    </div>` : ""}
+
+    ${safeBody ? `
+    <div class="block">
+      <pre>${safeBody}</pre>
+    </div>` : `
+    <div class="note">No full text was found. (If you use md_path in reports.json, the original text will appear here.)</div>
+    `}
+
+    <div class="download">
+      <span>download:</span>
+      ${absoluteMdPath
+        ? `<a href="${escapeHtml(absoluteMdPath)}" download>original file</a>`
+        : `<a href="#" id="downloadText">${fileNameSafe}</a>`
       }
+    </div>
+  </div>
 
-      viewer.style.display = "block";
+  ${absoluteMdPath ? "" : `
+  <script>
+    (function(){
+      var button = document.getElementById("downloadText");
+      if (!button) return;
 
-      // ✅ innerHTML은 구조만, 텍스트는 모두 escapeHTML로 처리
-      viewer.innerHTML = `
-        <div class="rv-title">${escapeHTML(title)}</div>
-        <div class="rv-meta">${escapeHTML(meta)}</div>
-        ${summary ? `<pre class="rv-summary">${escapeHTML(summary)}</pre>` : ""}
-        ${body ? `<pre class="rv-body">${escapeHTML(body)}</pre>` : ""}
-        ${(!body && !summary) ? `<div class="rv-body">${escapeHTML("No content.")}</div>` : ""}
+      var content = ${JSON.stringify(markdownText || summary || "")};
+      var fileName = ${JSON.stringify(fileName)};
+
+      button.addEventListener("click", function(ev){
+        ev.preventDefault();
+        try{
+          var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+
+          setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+        }catch(e){}
+      });
+    })();
+  </script>`}
+</body>
+</html>
       `;
     },
 
-    refreshViewer(){
-      if (!this.currentItem) return;
-      // 언어 바뀌면 title/summary가 달라짐 → 다시 오픈
-      this.openViewer(this.currentItem);
+    async openInNewWindow(report) {
+      const summary = this.pickSummary(report);
+      const markdownText = await this.fetchMarkdownText(report.md_path);
+
+      const html = this.buildReportWindowHtml(report, summary, markdownText);
+
+      // 새 창/새 탭
+      const newWindow = window.open("", "_blank", "noopener");
+      if (!newWindow) {
+        // 팝업 차단 시: 사용자에게 보이는 UI를 깨지 않으면서 fallback
+        alert("Popup blocked. Please allow popups to open the report in a new tab.");
+        return;
+      }
+
+      newWindow.document.open();
+      newWindow.document.write(html);
+      newWindow.document.close();
     },
 
-    showError(msg, path){
-      const grid = $("#reportGrid");
-      const viewer = $("#reportViewer");
-      if (grid){
+    showError(message, path) {
+      const grid = queryOne("#reportGrid");
+      const viewer = queryOne("#reportViewer");
+
+      if (grid) {
         grid.style.display = "grid";
         grid.innerHTML = `
           <div class="w-msg" style="grid-column:1/-1">
-            ${escapeHTML(msg)}
-            <small>${escapeHTML(path)}</small>
+            ${escapeHtml(message)}
+            <small>${escapeHtml(path)}</small>
           </div>
         `;
       }
+
+      // BODY에는 viewer가 존재하지만, 최종 동작은 새 창이므로 viewer는 숨김 처리 유지
       if (viewer) viewer.style.display = "none";
     }
   };
 
-  function bindReports(){
-    $("#reportsToggle")?.addEventListener("click", () => REPORTS.toggleOpen());
-    $$(".r-tab").forEach(btn => btn.addEventListener("click", () => REPORTS.setFilter(btn.dataset.r || "all")));
+  function bindReports() {
+    const toggleButton = queryOne("#reportsToggle");
+    if (toggleButton) toggleButton.addEventListener("click", () => REPORTS.toggleOpen());
 
-    const grid = $("#reportGrid");
+    queryAll(".r-tab").forEach((button) => {
+      button.addEventListener("click", () => REPORTS.setFilter(button.dataset.r || "all"));
+    });
+
+    const grid = queryOne("#reportGrid");
     if (grid) grid.style.display = "none";
+
+    const viewer = queryOne("#reportViewer");
+    if (viewer) viewer.style.display = "none";
   }
 
   /* =========================================================
-     SOUND (덜 튀게 + sound-on 클래스)
+     SOUND
   ========================================================= */
   const SOUND = {
-    ctx: null,
-    master: null,
-    analyser: null,
-    raf: 0,
+    audioContext: null,
+    masterGain: null,
+    analyserNode: null,
+    animationId: 0,
     started: false,
 
-    start(){
+    start() {
       if (this.started) return;
       this.started = true;
 
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx){
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
         this.started = false;
         return;
       }
 
-      const ctx = new AudioCtx();
-      this.ctx = ctx;
+      const audioContext = new AudioContextClass();
+      this.audioContext = audioContext;
 
-      const master = ctx.createGain();
-      master.gain.value = 0.0;
+      const masterGain = audioContext.createGain();
+      masterGain.gain.value = 0.0;
 
-      const lp = ctx.createBiquadFilter();
-      lp.type = "lowpass";
-      lp.frequency.value = 900;
-      lp.Q.value = 0.7;
+      const lowpass = audioContext.createBiquadFilter();
+      lowpass.type = "lowpass";
+      lowpass.frequency.value = 900;
+      lowpass.Q.value = 0.7;
 
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      osc1.type = "sine";
-      osc2.type = "sine";
-      osc1.frequency.value = 132;
-      osc2.frequency.value = 198;
+      const oscillatorOne = audioContext.createOscillator();
+      const oscillatorTwo = audioContext.createOscillator();
+      oscillatorOne.type = "sine";
+      oscillatorTwo.type = "sine";
+      oscillatorOne.frequency.value = 132;
+      oscillatorTwo.frequency.value = 198;
 
-      const g1 = ctx.createGain();
-      const g2 = ctx.createGain();
-      g1.gain.value = 0.18;
-      g2.gain.value = 0.14;
+      const gainOne = audioContext.createGain();
+      const gainTwo = audioContext.createGain();
+      gainOne.gain.value = 0.18;
+      gainTwo.gain.value = 0.14;
 
-      const lfo = ctx.createOscillator();
+      const lfo = audioContext.createOscillator();
       lfo.type = "sine";
       lfo.frequency.value = 0.08;
 
-      const lfoGain = ctx.createGain();
+      const lfoGain = audioContext.createGain();
       lfoGain.gain.value = 0.08;
 
       lfo.connect(lfoGain);
-      lfoGain.connect(g1.gain);
+      lfoGain.connect(gainOne.gain);
 
-      osc1.connect(g1);
-      osc2.connect(g2);
-      g1.connect(lp);
-      g2.connect(lp);
+      oscillatorOne.connect(gainOne);
+      oscillatorTwo.connect(gainTwo);
 
-      const delay = ctx.createDelay();
+      gainOne.connect(lowpass);
+      gainTwo.connect(lowpass);
+
+      const delay = audioContext.createDelay();
       delay.delayTime.value = 0.26;
-      const fb = ctx.createGain();
-      fb.gain.value = 0.18;
-      delay.connect(fb);
-      fb.connect(delay);
 
-      lp.connect(delay);
-      delay.connect(master);
+      const feedback = audioContext.createGain();
+      feedback.gain.value = 0.18;
 
-      const direct = ctx.createGain();
+      delay.connect(feedback);
+      feedback.connect(delay);
+
+      lowpass.connect(delay);
+      delay.connect(masterGain);
+
+      const direct = audioContext.createGain();
       direct.gain.value = 0.35;
-      lp.connect(direct);
-      direct.connect(master);
+      lowpass.connect(direct);
+      direct.connect(masterGain);
 
-      const analyser = ctx.createAnalyser();
+      const analyser = audioContext.createAnalyser();
       analyser.fftSize = 1024;
-      master.connect(analyser);
-      analyser.connect(ctx.destination);
 
-      this.master = master;
-      this.analyser = analyser;
+      masterGain.connect(analyser);
+      analyser.connect(audioContext.destination);
 
-      osc1.start();
-      osc2.start();
+      this.masterGain = masterGain;
+      this.analyserNode = analyser;
+
+      oscillatorOne.start();
+      oscillatorTwo.start();
       lfo.start();
 
-      const now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setValueAtTime(0.0, now);
-      master.gain.linearRampToValueAtTime(0.55, now + 1.2);
+      const now = audioContext.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(0.0, now);
+      masterGain.gain.linearRampToValueAtTime(0.55, now + 1.2);
 
       document.body.classList.add("sound-on");
 
-      $("#soundBtn")?.setAttribute("disabled","disabled");
-      $("#soundStopBtn")?.removeAttribute("disabled");
+      const soundButton = queryOne("#soundBtn");
+      const stopButton = queryOne("#soundStopBtn");
+      if (soundButton) soundButton.setAttribute("disabled", "disabled");
+      if (stopButton) stopButton.removeAttribute("disabled");
 
-      this.loopFFT();
+      this.loopFft();
     },
 
-    stop(){
+    stop() {
       if (!this.started) return;
       this.started = false;
 
-      const ctx = this.ctx;
-      if (ctx && this.master){
-        const now = ctx.currentTime;
-        this.master.gain.cancelScheduledValues(now);
-        this.master.gain.setValueAtTime(this.master.gain.value, now);
-        this.master.gain.linearRampToValueAtTime(0.0, now + 0.6);
+      const audioContext = this.audioContext;
+      if (audioContext && this.masterGain) {
+        const now = audioContext.currentTime;
+        this.masterGain.gain.cancelScheduledValues(now);
+        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+        this.masterGain.gain.linearRampToValueAtTime(0.0, now + 0.6);
       }
 
-      window.cancelAnimationFrame(this.raf);
-      this.raf = 0;
+      window.cancelAnimationFrame(this.animationId);
+      this.animationId = 0;
 
       setTimeout(() => {
-        try{ this.ctx && this.ctx.close(); } catch(e){}
-        this.ctx = null;
-        this.master = null;
-        this.analyser = null;
+        try {
+          if (this.audioContext) this.audioContext.close();
+        } catch (error) {}
 
-        const bar = $("#fftBar span");
+        this.audioContext = null;
+        this.masterGain = null;
+        this.analyserNode = null;
+
+        const bar = queryOne("#fftBar span");
         if (bar) bar.style.width = "0%";
 
         document.body.classList.remove("sound-on");
 
-        $("#soundBtn")?.removeAttribute("disabled");
-        $("#soundStopBtn")?.setAttribute("disabled","disabled");
+        const soundButton = queryOne("#soundBtn");
+        const stopButton = queryOne("#soundStopBtn");
+        if (soundButton) soundButton.removeAttribute("disabled");
+        if (stopButton) stopButton.setAttribute("disabled", "disabled");
       }, 700);
     },
 
-    loopFFT(){
-      const bar = $("#fftBar span");
-      if (!bar || !this.analyser){
-        this.raf = requestAnimationFrame(() => this.loopFFT());
+    loopFft() {
+      const bar = queryOne("#fftBar span");
+      if (!bar || !this.analyserNode) {
+        this.animationId = requestAnimationFrame(() => this.loopFft());
         return;
       }
 
-      const a = this.analyser;
-      const data = new Uint8Array(a.frequencyBinCount);
-      a.getByteFrequencyData(data);
+      const analyser = this.analyserNode;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(data);
 
       let sum = 0;
-      for (let i=0;i<data.length;i++) sum += data[i]*data[i];
+      for (let i = 0; i < data.length; i++) {
+        sum += data[i] * data[i];
+      }
       const rms = Math.sqrt(sum / data.length) / 255;
+      const width = clampNumber(Math.round(rms * 100), 0, 100);
 
-      const w = clamp(Math.round(rms * 100), 0, 100);
-      bar.style.width = w + "%";
-
-      this.raf = requestAnimationFrame(() => this.loopFFT());
+      bar.style.width = width + "%";
+      this.animationId = requestAnimationFrame(() => this.loopFft());
     }
   };
 
-  function bindSound(){
-    $("#soundBtn")?.addEventListener("click", async () => {
-      SOUND.start();
-      try{ if (SOUND.ctx && SOUND.ctx.state === "suspended") await SOUND.ctx.resume(); } catch(e){}
-    });
-    $("#soundStopBtn")?.addEventListener("click", () => SOUND.stop());
+  function bindSound() {
+    const startButton = queryOne("#soundBtn");
+    const stopButton = queryOne("#soundStopBtn");
+
+    if (startButton) {
+      startButton.addEventListener("click", async () => {
+        SOUND.start();
+        try {
+          if (SOUND.audioContext && SOUND.audioContext.state === "suspended") {
+            await SOUND.audioContext.resume();
+          }
+        } catch (error) {}
+      });
+    }
+
+    if (stopButton) {
+      stopButton.addEventListener("click", () => SOUND.stop());
+    }
   }
 
   /* =========================================================
-     WAVES (여명 미세 + 부드럽고 낮은 대비)
+     WAVES BACKGROUND
   ========================================================= */
   const WAVES = {
-    c: null, ctx: null, w:0, h:0, t:0, raf:0,
+    canvas: null,
+    context: null,
+    width: 0,
+    height: 0,
+    time: 0,
+    animationId: 0,
 
-    init(){
-      this.c = $("#waves");
-      if (!this.c) return;
-      this.ctx = this.c.getContext("2d", { alpha:true });
+    init() {
+      this.canvas = queryOne("#waves");
+      if (!this.canvas) return;
+
+      this.context = this.canvas.getContext("2d", { alpha: true });
       this.resize();
-      window.addEventListener("resize", () => this.resize(), { passive:true });
 
-      if (prefersReduced()){
+      window.addEventListener("resize", () => this.resize(), { passive: true });
+
+      if (isReducedMotionPreferred()) {
         this.drawStatic();
         return;
       }
+
       this.loop();
     },
 
-    resize(){
-      if (!this.c) return;
+    resize() {
+      if (!this.canvas) return;
+
       const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      this.w = Math.floor(window.innerWidth * dpr);
-      this.h = Math.floor(window.innerHeight * dpr);
-      this.c.width = this.w;
-      this.c.height = this.h;
-      this.c.style.width = "100%";
-      this.c.style.height = "100%";
+      this.width = Math.floor(window.innerWidth * dpr);
+      this.height = Math.floor(window.innerHeight * dpr);
+
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+
+      this.canvas.style.width = "100%";
+      this.canvas.style.height = "100%";
     },
 
-    drawStatic(){
-      const g = this.ctx;
-      if (!g) return;
+    drawStatic() {
+      const context = this.context;
+      if (!context) return;
 
-      g.clearRect(0,0,this.w,this.h);
+      context.clearRect(0, 0, this.width, this.height);
 
-      const grd = g.createRadialGradient(
-        this.w*0.5, this.h*0.05, 0,
-        this.w*0.5, this.h*0.05, this.h*0.95
+      const gradient = context.createRadialGradient(
+        this.width * 0.5, this.height * 0.05, 0,
+        this.width * 0.5, this.height * 0.05, this.height * 0.95
       );
-      grd.addColorStop(0, "rgba(215,184,106,0.06)");
-      grd.addColorStop(0.35, "rgba(121,167,255,0.04)");
-      grd.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = grd;
-      g.fillRect(0,0,this.w,this.h);
+
+      gradient.addColorStop(0, "rgba(215,184,106,0.06)");
+      gradient.addColorStop(0.35, "rgba(121,167,255,0.04)");
+      gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, this.width, this.height);
     },
 
-    loop(){
-      this.t += 0.008;
+    loop() {
+      this.time += 0.008;
       this.render();
-      this.raf = requestAnimationFrame(() => this.loop());
+      this.animationId = requestAnimationFrame(() => this.loop());
     },
 
-    render(){
-      const g = this.ctx;
-      if (!g) return;
+    render() {
+      const context = this.context;
+      if (!context) return;
 
-      g.clearRect(0,0,this.w,this.h);
+      context.clearRect(0, 0, this.width, this.height);
 
-      const grd = g.createRadialGradient(
-        this.w*0.5, this.h*0.06, 0,
-        this.w*0.5, this.h*0.06, this.h*1.1
+      const gradient = context.createRadialGradient(
+        this.width * 0.5, this.height * 0.06, 0,
+        this.width * 0.5, this.height * 0.06, this.height * 1.1
       );
-      grd.addColorStop(0, "rgba(215,184,106,0.055)");
-      grd.addColorStop(0.38, "rgba(121,167,255,0.045)");
-      grd.addColorStop(1, "rgba(0,0,0,0)");
-      g.fillStyle = grd;
-      g.fillRect(0,0,this.w,this.h);
+
+      gradient.addColorStop(0, "rgba(215,184,106,0.055)");
+      gradient.addColorStop(0.38, "rgba(121,167,255,0.045)");
+      gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, this.width, this.height);
 
       const layers = [
-        { amp: 16, sp: 0.55, a: 0.055, lw: 2 },
-        { amp: 24, sp: 0.38, a: 0.045, lw: 2 },
-        { amp: 34, sp: 0.22, a: 0.038, lw: 2 }
+        { amplitude: 16, speed: 0.55, alpha: 0.055, lineWidth: 2 },
+        { amplitude: 24, speed: 0.38, alpha: 0.045, lineWidth: 2 },
+        { amplitude: 34, speed: 0.22, alpha: 0.038, lineWidth: 2 }
       ];
 
-      for (let L=0; L<layers.length; L++){
-        const {amp, sp, a, lw} = layers[L];
-        g.beginPath();
+      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+        const layer = layers[layerIndex];
+        const amplitude = layer.amplitude;
+        const speed = layer.speed;
+        const alpha = layer.alpha;
+        const lineWidth = layer.lineWidth;
 
-        const y0 = this.h*(0.24 + L*0.12);
-        for (let x=0; x<=this.w; x+= 18){
-          const nx = x / this.w;
+        context.beginPath();
+
+        const baseY = this.height * (0.24 + layerIndex * 0.12);
+        for (let x = 0; x <= this.width; x += 18) {
+          const normalizedX = x / this.width;
           const y =
-            y0 +
-            Math.sin(nx*10 + this.t*sp*3.2 + L) * amp +
-            Math.sin(nx*4  + this.t*sp*2.1 + L*2) * (amp*0.45);
-          if (x === 0) g.moveTo(x, y);
-          else g.lineTo(x, y);
+            baseY +
+            Math.sin(normalizedX * 10 + this.time * speed * 3.2 + layerIndex) * amplitude +
+            Math.sin(normalizedX * 4 + this.time * speed * 2.1 + layerIndex * 2) * (amplitude * 0.45);
+
+          if (x === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
         }
 
-        g.strokeStyle = `rgba(215,184,106,${a})`;
-        g.lineWidth = lw;
-        g.stroke();
+        context.strokeStyle = `rgba(215,184,106,${alpha})`;
+        context.lineWidth = lineWidth;
+        context.stroke();
       }
 
-      g.fillStyle = "rgba(237,227,201,0.015)";
-      for (let i=0;i<120;i++){
-        const x = (Math.random()*this.w);
-        const y = (Math.random()*this.h);
-        g.fillRect(x, y, 1, 1);
+      context.fillStyle = "rgba(237,227,201,0.015)";
+      for (let i = 0; i < 120; i++) {
+        const x = Math.random() * this.width;
+        const y = Math.random() * this.height;
+        context.fillRect(x, y, 1, 1);
       }
     }
   };
 
   /* =========================================================
-     bind all
+     GLOBAL BIND
   ========================================================= */
-  function bindAll(){
-    restoreLang();
+  function bindGlobalEscape() {
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+
+      const modal = queryOne("#bio-modal");
+      if (modal && modal.hidden === false) {
+        BIO.close();
+      }
+    });
+  }
+
+  function preloadForStability() {
+    WORKS.ensureLoaded().catch(() => {});
+    REPORTS.ensureLoaded().catch(() => {});
+  }
+
+  function bindAll() {
+    restoreLanguageMode();
     bindLanguageButtons();
-    bindPrimaryNav();
+    bindPrimaryNavigation();
+
     bindWorksTabs();
     bindLightbox();
     bindBio();
     bindReports();
     bindSound();
+
     WAVES.init();
+    bindGlobalEscape();
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      const modal = $("#bio-modal");
-      if (modal && !modal.hidden) BIO.close();
-    });
+    preloadForStability();
 
-    // 초기 preload (실전 안정성)
-    WORKS.ensureLoaded().catch(()=>{});
-    REPORTS.ensureLoaded().catch(()=>{});
-
-    // 기본 필터
     REPORTS.setFilter("all");
   }
 
-  if (document.readyState === "loading"){
+  if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bindAll);
-  }else{
+  } else {
     bindAll();
   }
 })();

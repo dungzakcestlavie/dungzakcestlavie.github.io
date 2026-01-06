@@ -1,5 +1,5 @@
 {
-  "Light & Memory": [
+  "works": [
     {
       "id": "DZ-001",
       "section_id": 1,
@@ -299,10 +299,8 @@
       "year": 2025,
       "image": "images/standard/DZ-020.jpg",
       "zoom": "images/zoom/DZ-020.jpg"
-    }
-  ],
+    },
 
-  "Human Being": [
     {
       "id": "DZ-021",
       "section_id": 2,
@@ -494,10 +492,8 @@
       "year": 2006,
       "image": "images/standard/DZ-032.jpg",
       "zoom": "images/zoom/DZ-032.jpg"
-    }
-  ],
+    },
 
-  "Rebirth of Mind": [
     {
       "id": "DZ-033",
       "section_id": 3,
@@ -557,25 +553,8 @@
       "year": 2019,
       "image": "images/standard/DZ-037.jpg",
       "zoom": "images/zoom/DZ-037.jpg"
-    }
-  ],
-
-  "Restoration of Being": [
-    {
-      "id": "DZ-038",
-      "section_id": 4,
-      "section_kr": "IV 존재의 회복",
-      "section_en": "Restoration of Being",
-      "title_kr": "당신으로부터",
-      "title_en": "From You",
-      "material_kr": "캔버스에 한지, 유채",
-      "material_en": "oil, hanji paper on canvas",
-      "size_kr": "60.6 x 72.7 cm",
-      "size_en": "60.6 x 72.7 cm",
-      "year": 1999,
-      "image": "images/standard/DZ-038.jpg",
-      "zoom": "images/zoom/DZ-038.jpg"
     },
+
     {
       "id": "DZ-034",
       "section_id": 4,
@@ -590,8 +569,21 @@
       "year": 2024,
       "image": "images/standard/DZ-034.jpg",
       "zoom": "images/zoom/DZ-034.jpg"
+    },
+    {
+      "id": "DZ-038",
+      "section_id": 4,
+      "section_kr": "IV 존재의 회복",
+      "section_en": "Restoration of Being",
+      "title_kr": "당신으로부터",
+      "title_en": "From You",
+      "material_kr": "캔버스에 한지, 유채",
+      "material_en": "oil, hanji paper on canvas",
+      "size_kr": "60.6 x 72.7 cm",
+      "size_en": "60.6 x 72.7 cm",
+      "year": 1999,
+      "image": "images/standard/DZ-038.jpg",
+      "zoom": "images/zoom/DZ-038.jpg"
     }
-  ],
-
-  "Metaconsciousness of Light": []
+  ]
 }

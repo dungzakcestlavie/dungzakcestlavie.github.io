@@ -1,18 +1,10 @@
 <!-- ==========================================================
-Lightflow ∮27 (FULL INDEX)
+Lightflow ∮27 (STABLE FIX)
 ① HEAD / STYLE
-② BODY / HTML
-③ SCRIPTS
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
 <head>
-  <!-- =========================
-  ① HEAD / STYLE (Lightflow ∮27)
-  - 목표: 금빛은 "선명하지만 번지지 않게"
-  - iOS/모바일 안전영역 + 포커스 + 접근성 + reduced-motion
-  - Works: grid + card + caption 스타일 추가
-  ========================= -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
@@ -20,7 +12,6 @@ Lightflow ∮27 (FULL INDEX)
   <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE — LIGHTFLOW · Light · Memory · Being" />
   <link rel="canonical" href="https://dungzak.art" />
 
-  <!-- OG / Twitter (필요 시 내용 유지/수정) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
   <meta property="og:description" content="LIGHTFLOW · Light · Memory · Being" />
@@ -65,9 +56,10 @@ Lightflow ∮27 (FULL INDEX)
       margin:0;
       font-family:var(--font);
       color:var(--ink);
-      background: radial-gradient(1200px 800px at 50% -20%, rgba(121,167,255,.10), transparent 55%),
-                  radial-gradient(900px 700px at 80% 10%, rgba(215,184,106,.10), transparent 56%),
-                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      background:
+        radial-gradient(1200px 800px at 50% -20%, rgba(121,167,255,.10), transparent 55%),
+        radial-gradient(900px 700px at 80% 10%, rgba(215,184,106,.10), transparent 56%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
@@ -100,11 +92,8 @@ Lightflow ∮27 (FULL INDEX)
       letter-spacing:.2px;
       font-size: 18px;
       line-height:1.25;
-      /* controlled gold: no heavy glow */
       color: rgba(233,236,255,.95);
-      text-shadow:
-        0 0 0 rgba(0,0,0,0),
-        0 1px 0 rgba(0,0,0,.35);
+      text-shadow: 0 1px 0 rgba(0,0,0,.35);
     }
     .brand::after{
       content:"";
@@ -240,11 +229,12 @@ Lightflow ∮27 (FULL INDEX)
       background: rgba(12,14,26,.30);
       border-radius: var(--radius2);
       padding:14px;
-      min-height: 180px;
+      /* ✅ 빈 박스 과장 제거 */
+      min-height: unset;
     }
     .tabpanel.active{ display:block; }
 
-    /* Works grid + cards (NEW) */
+    /* Works grid + cards */
     .w-grid{
       display:grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -263,10 +253,11 @@ Lightflow ∮27 (FULL INDEX)
       box-shadow: 0 8px 22px rgba(0,0,0,.22);
     }
     .w-card:hover{ transform: translateY(-1px); border-color: rgba(215,184,106,.30); }
+
     .w-thumb{
       width:100%;
       aspect-ratio: 4/5;
-      background: rgba(0,0,0,.25);
+      background: rgba(0,0,0,.22);
       display:block;
       object-fit: cover;
     }
@@ -296,21 +287,24 @@ Lightflow ∮27 (FULL INDEX)
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .w-empty{
+
+    .w-msg{
+      color: rgba(233,236,255,.92);
+      background: rgba(12,14,26,.38);
+      border:1px solid rgba(215,184,106,.18);
+      padding: 12px 12px;
+      border-radius: 14px;
+      line-height:1.55;
+      font-weight:800;
+    }
+    .w-msg small{
+      display:block;
+      margin-top:8px;
       color: var(--dim);
       font-weight:800;
-      padding: 10px 4px;
-      text-align:center;
-    }
-    .w-error{
-      color: rgba(233,236,255,.92);
-      background: rgba(215,184,106,.08);
-      border:1px solid rgba(215,184,106,.18);
-      padding: 10px 12px;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      line-height:1.5;
-      font-weight:800;
+      font-family: var(--mono);
+      font-size: 11px;
+      white-space:pre-wrap;
     }
 
     /* reports */
@@ -475,7 +469,6 @@ Lightflow ∮27 (FULL INDEX)
       cursor:pointer;
       text-align:left;
     }
-
     .slide-wrap{
       padding: 12px 14px 2px;
       border-bottom:1px solid rgba(215,184,106,.12);
@@ -624,23 +617,22 @@ Lightflow ∮27 (FULL INDEX)
       border-radius: 12px;
     }
 
-    /* reduced motion */
+    /* reduced motion: ✅ 파동을 "삭제"하지 않고 정적 배경으로 전환 */
     @media (prefers-reduced-motion: reduce){
       *{ transition:none !important; animation:none !important; scroll-behavior:auto !important; }
-      #waves{ display:none !important; }
+      #waves{ opacity:.65; }
     }
   </style>
 </head>
 
-<!-- =========================
-② BODY / HTML (Lightflow ∮27)
-- (사용자 제공 원문 그대로)
-========================= -->
+<!-- ==========================================================
+Lightflow ∮27 (STABLE FIX)
+② BODY / HTML
+- (사용자 원문 유지)
+========================================================== -->
 <body class="korean">
-  <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
 
-  <!-- HEADER -->
   <header>
     <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮27</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
@@ -758,7 +750,7 @@ Lightflow ∮27 (FULL INDEX)
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL (텍스트 유지 + 요청 수정 반영) -->
+  <!-- ARTIST BIO MODAL (원문 유지) -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -775,15 +767,12 @@ Lightflow ∮27 (FULL INDEX)
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
-      <!-- one-line summary -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- slide list -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
-        <!-- (한국어 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 인천, 대한민국</p>
@@ -823,7 +812,6 @@ Lightflow ∮27 (FULL INDEX)
           <p>《예술, 그 끝없는 사랑》(2024)</p>
         </div>
 
-        <!-- (영문 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
@@ -867,7 +855,6 @@ Numerous private collections worldwide.</p>
         </div>
       </div>
 
-      <!-- Bio main -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -884,7 +871,6 @@ Numerous private collections worldwide.</p>
     </div>
   </div>
 
-  <!-- LIGHTBOX (◀ ▶ 화살표 제거 버전) -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
@@ -893,14 +879,12 @@ Numerous private collections worldwide.</p>
     <button id="lbClose" class="lb-close">✕</button>
   </div>
 
-  <!-- SOUND PLAYER -->
   <div id="fftBar"><span></span></div>
   <div id="ctrl">
     <button id="soundBtn" class="ctrlbtn">✨</button>
     <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <div class="links">
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
@@ -914,617 +898,736 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-  <!-- =========================
-  ③ SCRIPTS (Lightflow ∮27)
-  - 탭 네비게이션
-  - 언어 KR/EN/KR+EN 동기화 (Bio 포함)
-  - Bio 모달 + 슬라이드 토글
-  - Reports: 카테고리 필터 + 오픈/뷰어
-  - Works: /data/works.json 로딩 + 5섹션 렌더 + lightbox 연결 (NEW)
-  - Waves canvas (가벼운 버전)
-  - Sound: (로컬 파일 연결용) 기본 비활성 안전 처리
-  ========================= -->
-  <script>
-    /* ---------- helpers ---------- */
-    const $ = (sel, el=document) => el.querySelector(sel);
-    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
-    const BODY = document.body;
+<!-- ==========================================================
+Lightflow ∮27 (STABLE FIX)
+③ SCRIPTS
+- Works: "모든 작품 다 나오게" 데이터 흡수 강화 + 경로 안정화 + 캐시버스트
+- iOS reduced-motion에서도 배경 정적 유지
+========================================================== -->
+<script>
+  /* ---------- helpers ---------- */
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const BODY = document.body;
 
-    const SECTION_KEYS = ['pray','human','rebirth','exist','cosmos'];
+  const SECTION_KEYS = ['pray','human','rebirth','exist','cosmos'];
 
-    function setLang(mode){
-      BODY.classList.remove('korean','english','hybrid');
-      if(mode==='ko') BODY.classList.add('korean');
-      if(mode==='en') BODY.classList.add('english');
-      if(mode==='hy') BODY.classList.add('hybrid');
+  function escapeHTML(s){
+    return String(s ?? '')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;');
+  }
 
-      $('#koBtn')?.classList.toggle('active', mode==='ko');
-      $('#enBtn')?.classList.toggle('active', mode==='en');
-      $('#hyBtn')?.classList.toggle('active', mode==='hy');
+  function setLang(mode){
+    BODY.classList.remove('korean','english','hybrid');
+    if(mode==='ko') BODY.classList.add('korean');
+    if(mode==='en') BODY.classList.add('english');
+    if(mode==='hy') BODY.classList.add('hybrid');
 
-      // Works: 언어 변경 시 캡션/제목이 즉시 반영되도록 리렌더
-      if(window.__WORKS_DATA__){ renderAllWorks(window.__WORKS_DATA__); }
+    $('#koBtn')?.classList.toggle('active', mode==='ko');
+    $('#enBtn')?.classList.toggle('active', mode==='en');
+    $('#hyBtn')?.classList.toggle('active', mode==='hy');
+
+    if(window.__WORKS_PACKS__){ renderAllWorks(window.__WORKS_PACKS__); }
+  }
+
+  function nowLangMode(){
+    if(BODY.classList.contains('english')) return 'en';
+    if(BODY.classList.contains('hybrid')) return 'hy';
+    return 'ko';
+  }
+
+  /* ---------- primary nav ---------- */
+  const sections = ['poem','works','reports'];
+  function showSection(id){
+    sections.forEach(s=>{
+      const el = document.getElementById(s);
+      if(!el) return;
+      el.style.display = (s===id) ? '' : 'none';
+    });
+    $$('.primary button[data-target]').forEach(b=>{
+      const on = b.dataset.target === id;
+      b.classList.toggle('active', on);
+      if(on) b.setAttribute('aria-current','page');
+      else b.removeAttribute('aria-current');
+    });
+    if(id!=='reports'){
+      const rv = $('#reportViewer');
+      if(rv){ rv.style.display='none'; rv.innerHTML=''; }
     }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  $$('.primary button[data-target]').forEach(btn=>{
+    btn.addEventListener('click', ()=> showSection(btn.dataset.target));
+  });
 
-    function nowLangMode(){
-      if(BODY.classList.contains('english')) return 'en';
-      if(BODY.classList.contains('hybrid')) return 'hy';
-      return 'ko';
-    }
+  /* ---------- works sub tabs ---------- */
+  $$('.tabs .tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $$('.tabs .tab').forEach(b=> b.classList.remove('active'));
+      btn.classList.add('active');
 
-    /* ---------- primary nav (Poem/Works/Reports + Bio modal) ---------- */
-    const sections = ['poem','works','reports'];
-    function showSection(id){
-      sections.forEach(s=>{
-        const el = document.getElementById(s);
-        if(!el) return;
-        el.style.display = (s===id) ? '' : 'none';
-      });
-      $$('.primary button[data-target]').forEach(b=>{
-        const on = b.dataset.target === id;
-        b.classList.toggle('active', on);
-        if(on) b.setAttribute('aria-current','page');
-        else b.removeAttribute('aria-current');
-      });
-      if(id!=='reports'){
-        const rv = $('#reportViewer');
-        if(rv){ rv.style.display='none'; rv.innerHTML=''; }
-      }
+      const panelKey = btn.dataset.panel;
+      $$('.tabpanel').forEach(p=> p.classList.remove('active'));
+      const panel = document.getElementById('panel-' + panelKey);
+      if(panel) panel.classList.add('active');
+
       window.scrollTo({top:0, behavior:'smooth'});
-    }
-    $$('.primary button[data-target]').forEach(btn=>{
-      btn.addEventListener('click', ()=> showSection(btn.dataset.target));
+    });
+  });
+
+  /* ---------- bio modal ---------- */
+  const bioModal = $('#bio-modal');
+  const bioBackdrop = $('.bio-backdrop');
+  const bioClose = $('.bio-close');
+  const bioTab = $('#tab-bio');
+
+  function setBioLang(which){
+    $$('.bio-lang .lang').forEach(b=>{
+      const on = b.dataset.bioLang === which;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true':'false');
     });
 
-    /* ---------- works sub tabs ---------- */
-    $$('.tabs .tab').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        $$('.tabs .tab').forEach(b=> b.classList.remove('active'));
-        btn.classList.add('active');
+    const isKR = which==='kr';
+    $$('#bio-modal .bio-body.ko').forEach(el=> el.style.display = isKR ? '' : 'none');
+    $$('#bio-modal .bio-body.en').forEach(el=> el.style.display = isKR ? 'none' : '');
 
-        const panelKey = btn.dataset.panel;
-        $$('.tabpanel').forEach(p=> p.classList.remove('active'));
-        const panel = document.getElementById('panel-' + panelKey);
-        if(panel) panel.classList.add('active');
+    const showKO = BODY.classList.contains('korean') || BODY.classList.contains('hybrid');
+    const showEN = BODY.classList.contains('english') || BODY.classList.contains('hybrid');
+    $$('#expoToggle .ko').forEach(el=> el.style.display = showKO ? '' : 'none');
+    $$('#expoToggle .en').forEach(el=> el.style.display = showEN ? '' : 'none');
+  }
 
-        window.scrollTo({top:0, behavior:'smooth'});
-      });
+  function openBio(){
+    if(!bioModal) return;
+    bioModal.hidden = false;
+    bioModal.setAttribute('aria-hidden','false');
+    BODY.style.overflow = 'hidden';
+    const start = BODY.classList.contains('english') ? 'en' : 'kr';
+    setBioLang(start);
+  }
+  function closeBio(){
+    if(!bioModal) return;
+    bioModal.hidden = true;
+    bioModal.setAttribute('aria-hidden','true');
+    BODY.style.overflow = '';
+    const slide = $('#expoSlide');
+    const tgl = $('#expoToggle');
+    if(slide){ slide.dataset.open='false'; slide.style.display='none'; }
+    if(tgl){ tgl.setAttribute('aria-expanded','false'); }
+  }
+
+  bioTab?.addEventListener('click', openBio);
+  bioBackdrop?.addEventListener('click', closeBio);
+  bioClose?.addEventListener('click', closeBio);
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Escape' && bioModal && !bioModal.hidden) closeBio();
+  });
+
+  $$('.bio-lang .lang').forEach(btn=>{
+    btn.addEventListener('click', ()=> setBioLang(btn.dataset.bioLang));
+  });
+
+  const expoToggle = $('#expoToggle');
+  const expoSlide = $('#expoSlide');
+  if(expoToggle && expoSlide){
+    expoToggle.addEventListener('click', ()=>{
+      const open = expoSlide.dataset.open === 'true';
+      expoSlide.dataset.open = open ? 'false' : 'true';
+      expoSlide.style.display = open ? 'none' : 'block';
+      expoToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
     });
+    expoSlide.dataset.open='false';
+    expoSlide.style.display='none';
+    expoToggle.setAttribute('aria-expanded','false');
+  }
 
-    /* ---------- bio modal ---------- */
-    const bioModal = $('#bio-modal');
-    const bioBackdrop = $('.bio-backdrop');
-    const bioClose = $('.bio-close');
-    const bioTab = $('#tab-bio');
+  /* ---------- site language buttons ---------- */
+  $('#koBtn')?.addEventListener('click', ()=>{ setLang('ko'); setBioLang('kr'); });
+  $('#enBtn')?.addEventListener('click', ()=>{ setLang('en'); setBioLang('en'); });
+  $('#hyBtn')?.addEventListener('click', ()=>{ setLang('hy'); });
 
-    function openBio(){
-      if(!bioModal) return;
-      bioModal.hidden = false;
-      bioModal.setAttribute('aria-hidden','false');
-      BODY.style.overflow = 'hidden';
+  /* =========================================================
+     WORKS (STABLE)
+  ========================================================= */
+  const KEY_ALIASES = {
+    pray:   ['pray','prayer','i','section1','section_1','pray_for_us','prayforus','prayerforus'],
+    human:  ['human','ii','section2','section_2'],
+    rebirth:['rebirth','iii','section3','section_3'],
+    exist:  ['exist','existence','iv','section4','section_4','restoration','restoration_of_being'],
+    cosmos: ['cosmos','v','section5','section_5','metaconsciousness','metaconsciousness_of_light']
+  };
 
-      // 현재 사이트 언어에 맞춰 Bio 시작
-      const start = BODY.classList.contains('english') ? 'en' : 'kr';
-      setBioLang(start);
+  function pickSectionKey(rawKey){
+    if(!rawKey) return null;
+    const k = String(rawKey).toLowerCase().trim()
+      .replace(/\s+/g,'')
+      .replace(/-/g,'_')
+      .replace(/[·•]/g,'');
+    for(const target of SECTION_KEYS){
+      if(target === k) return target;
+      if((KEY_ALIASES[target]||[]).includes(k)) return target;
     }
-    function closeBio(){
-      if(!bioModal) return;
-      bioModal.hidden = true;
-      bioModal.setAttribute('aria-hidden','true');
-      BODY.style.overflow = '';
-      const slide = $('#expoSlide');
-      const tgl = $('#expoToggle');
-      if(slide){ slide.dataset.open='false'; slide.style.display='none'; }
-      if(tgl){ tgl.setAttribute('aria-expanded','false'); }
+    return null;
+  }
+
+  function resolvePath(src){
+    if(!src) return '';
+    let s = String(src).trim();
+    if(!s) return '';
+    if(/^https?:\/\//i.test(s)) return s;
+    if(s.startsWith('/')) return s;
+    if(s.startsWith('./')) return s.replace(/^\.\//,'/');
+    return '/' + s;
+  }
+
+  function normalizeWork(item){
+    const w = item || {};
+    const id = w.id || w.code || w.work_id || w.workId || w.name || '';
+
+    const title_kr = w.title_kr || w.titleKo || w.titleKR || w.title_kor || w.title || w.titleKr || '';
+    const title_en = w.title_en || w.titleEn || w.titleEN || w.title_eng || w.titleEnUs || w.titleEnUK || '';
+
+    const material_kr = w.material_kr || w.materialKo || w.materialKR || w.materialKr || '';
+    const material_en = (w.material_en || w.materialEn || w.materialEN || w.materialEnLower || w.materialEn || '') || '';
+
+    const size_kr = w.size_kr || w.sizeKo || w.sizeKR || w.sizeKr || '';
+    const size_en = w.size_en || w.sizeEn || w.sizeEN || w.sizeEnInch || w.sizeEn || '';
+
+    const year = w.year || w.date || w.created || '';
+
+    const image = resolvePath(w.image || w.img || w.standard || w.src || w.path || '');
+    const zoom  = resolvePath(w.zoom  || w.zoomImage || w.hd || w.large || w.zoom_src || w.zoomPath || '');
+
+    return { id, title_kr, title_en, material_kr, material_en, size_kr, size_en, year, image, zoom };
+  }
+
+  function buildCaption(work){
+    const mode = nowLangMode();
+    const a = [];
+    const id = work.id ? String(work.id) : '';
+    const yr = work.year ? String(work.year) : '';
+
+    const koTitle = work.title_kr ? String(work.title_kr) : '';
+    const enTitle = work.title_en ? String(work.title_en) : '';
+
+    const koMat = work.material_kr ? String(work.material_kr) : '';
+    const enMat = work.material_en ? String(work.material_en) : '';
+
+    const koSize = work.size_kr ? String(work.size_kr) : '';
+    const enSize = work.size_en ? String(work.size_en) : '';
+
+    if(mode==='ko'){
+      if(id || koTitle) a.push([id, koTitle].filter(Boolean).join(' · '));
+      const line2 = [koMat, koSize, yr].filter(Boolean).join(' · ');
+      if(line2) a.push(line2);
+    }else if(mode==='en'){
+      if(id || enTitle) a.push([id, enTitle].filter(Boolean).join(' · '));
+      const line2 = [enMat, enSize, yr].filter(Boolean).join(' · ');
+      if(line2) a.push(line2);
+    }else{
+      if(id || koTitle) a.push([id, koTitle].filter(Boolean).join(' · '));
+      const k2 = [koMat, koSize, yr].filter(Boolean).join(' · ');
+      if(k2) a.push(k2);
+      if(enTitle) a.push([id, enTitle].filter(Boolean).join(' · '));
+      const e2 = [enMat, enSize, yr].filter(Boolean).join(' · ');
+      if(e2) a.push(e2);
     }
-    bioTab?.addEventListener('click', openBio);
-    bioBackdrop?.addEventListener('click', closeBio);
-    bioClose?.addEventListener('click', closeBio);
-    document.addEventListener('keydown', (e)=>{
-      if(e.key==='Escape' && bioModal && !bioModal.hidden) closeBio();
-    });
+    return a.join('\n');
+  }
 
-    /* ---------- bio language (inside modal) ---------- */
-    function setBioLang(which){
-      $$('.bio-lang .lang').forEach(b=>{
-        const on = b.dataset.bioLang === which;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-pressed', on ? 'true':'false');
-      });
+  function renderPanel(panelId, list){
+    const panel = document.getElementById(panelId);
+    if(!panel) return;
 
-      const isKR = which==='kr';
-      $$('#bio-modal .bio-body.ko').forEach(el=> el.style.display = isKR ? '' : 'none');
-      $$('#bio-modal .bio-body.en').forEach(el=> el.style.display = isKR ? 'none' : '');
+    panel.innerHTML = '';
 
-      const showKO = BODY.classList.contains('korean') || BODY.classList.contains('hybrid');
-      const showEN = BODY.classList.contains('english') || BODY.classList.contains('hybrid');
-      $$('#expoToggle .ko').forEach(el=> el.style.display = showKO ? '' : 'none');
-      $$('#expoToggle .en').forEach(el=> el.style.display = showEN ? '' : 'none');
-    }
-    $$('.bio-lang .lang').forEach(btn=>{
-      btn.addEventListener('click', ()=> setBioLang(btn.dataset.bioLang));
-    });
-
-    /* ---------- expo slide toggle ---------- */
-    const expoToggle = $('#expoToggle');
-    const expoSlide = $('#expoSlide');
-    if(expoToggle && expoSlide){
-      expoToggle.addEventListener('click', ()=>{
-        const open = expoSlide.dataset.open === 'true';
-        expoSlide.dataset.open = open ? 'false' : 'true';
-        expoSlide.style.display = open ? 'none' : 'block';
-        expoToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-      });
-      expoSlide.dataset.open='false';
-      expoSlide.style.display='none';
-      expoToggle.setAttribute('aria-expanded','false');
-    }
-
-    /* ---------- site language (KR/EN/KR+EN) ---------- */
-    $('#koBtn')?.addEventListener('click', ()=>{ setLang('ko'); setBioLang('kr'); });
-    $('#enBtn')?.addEventListener('click', ()=>{ setLang('en'); setBioLang('en'); });
-    $('#hyBtn')?.addEventListener('click', ()=>{ setLang('hy'); });
-
-    /* =========================================================
-       WORKS (NEW)
-       - /data/works.json 로딩
-       - 섹션별 그리드 렌더
-       - 클릭 시 lightbox (zoom 우선)
-    ========================================================= */
-
-    // 섹션 키 매핑: works.json 구조가 달라도 최대한 흡수
-    const KEY_ALIASES = {
-      pray:   ['pray','prayer','i','section1','section_1','pray_for_us'],
-      human:  ['human','ii','section2','section_2'],
-      rebirth:['rebirth','iii','section3','section_3'],
-      exist:  ['exist','existence','iv','section4','section_4','restoration'],
-      cosmos: ['cosmos','v','section5','section_5','metaconsciousness']
-    };
-
-    function pickSectionKey(rawKey){
-      if(!rawKey) return null;
-      const k = String(rawKey).toLowerCase().replace(/\s+/g,'').replace(/-/g,'_');
-      for(const target of SECTION_KEYS){
-        if(target === k) return target;
-        if((KEY_ALIASES[target]||[]).includes(k)) return target;
-      }
-      return null;
-    }
-
-    function normalizeWork(item){
-      // 다양한 필드명을 흡수해서 표준 형태로 통일
-      const w = item || {};
-      const id = w.id || w.code || w.work_id || w.name || '';
-      const title_kr = w.title_kr || w.titleKo || w.titleKR || w.title_kor || w.title || '';
-      const title_en = w.title_en || w.titleEn || w.titleEN || w.title_eng || w.title_en_us || '';
-      const material_kr = w.material_kr || w.materialKo || w.materialKR || '';
-      const material_en = w.material_en || w.materialEn || w.materialEN || '';
-      const size_kr = w.size_kr || w.sizeKo || w.sizeKR || '';
-      const size_en = w.size_en || w.sizeEn || w.sizeEN || '';
-      const year = w.year || w.date || '';
-
-      const image = w.image || w.img || w.standard || w.src || '';
-      const zoom  = w.zoom  || w.zoomImage || w.hd || w.large || w.zoom_src || '';
-
-      return { id, title_kr, title_en, material_kr, material_en, size_kr, size_en, year, image, zoom };
+    if(!list || !list.length){
+      panel.innerHTML = `<div class="w-msg">작품 데이터가 비어 있습니다.</div>`;
+      return;
     }
 
-    function buildCaption(work){
+    const grid = document.createElement('div');
+    grid.className = 'w-grid';
+
+    list.forEach(raw=>{
+      const work = normalizeWork(raw);
+      const thumbSrc = work.image || work.zoom;         // thumb는 standard 우선
+      const zoomSrc  = work.zoom  || work.image;        // lightbox는 zoom 우선
+      if(!thumbSrc || !zoomSrc) return;
+
+      const card = document.createElement('div');
+      card.className = 'w-card';
+      card.setAttribute('role','button');
+      card.setAttribute('tabindex','0');
+
+      const thumb = document.createElement('img');
+      thumb.className = 'w-thumb';
+      thumb.loading = 'lazy';
+      thumb.alt = work.title_kr || work.title_en || work.id || '';
+      thumb.src = thumbSrc;
+
+      const meta = document.createElement('div');
+      meta.className = 'w-meta';
+
+      const id = document.createElement('div');
+      id.className = 'w-id';
+      id.textContent = work.id || '';
+
+      const title = document.createElement('div');
+      title.className = 'w-title';
       const mode = nowLangMode();
-      const a = [];
-      const id = work.id ? String(work.id) : '';
-      const yr = work.year ? String(work.year) : '';
-      const koTitle = work.title_kr ? String(work.title_kr) : '';
-      const enTitle = work.title_en ? String(work.title_en) : '';
-      const koMat = work.material_kr ? String(work.material_kr) : '';
-      const enMat = work.material_en ? String(work.material_en) : '';
-      const koSize = work.size_kr ? String(work.size_kr) : '';
-      const enSize = work.size_en ? String(work.size_en) : '';
-
       if(mode==='ko'){
-        if(id || koTitle) a.push([id, koTitle].filter(Boolean).join(' · '));
-        const line2 = [koMat, koSize, yr].filter(Boolean).join(' · ');
-        if(line2) a.push(line2);
+        title.textContent = work.title_kr || work.title_en || '';
       }else if(mode==='en'){
-        if(id || enTitle) a.push([id, enTitle].filter(Boolean).join(' · '));
-        const line2 = [enMat, enSize, yr].filter(Boolean).join(' · ');
-        if(line2) a.push(line2);
+        title.textContent = work.title_en || work.title_kr || '';
       }else{
-        // hybrid: KR 1줄 + EN 1줄
-        if(id || koTitle) a.push([id, koTitle].filter(Boolean).join(' · '));
-        const k2 = [koMat, koSize, yr].filter(Boolean).join(' · ');
-        if(k2) a.push(k2);
-        if(enTitle) a.push([id, enTitle].filter(Boolean).join(' · '));
-        const e2 = [enMat, enSize, yr].filter(Boolean).join(' · ');
-        if(e2) a.push(e2);
-      }
-      return a.join('\n');
-    }
-
-    function safeImg(src){
-      if(!src) return '';
-      // 사용자가 '/images/standard/DZ-001.jpg' 형태로 넣는 경우 그대로 사용
-      return String(src).trim();
-    }
-
-    function renderPanel(panelId, list){
-      const panel = document.getElementById(panelId);
-      if(!panel) return;
-
-      panel.innerHTML = '';
-      if(!list || !list.length){
-        panel.innerHTML = `<div class="w-empty">No works loaded.</div>`;
-        return;
+        title.textContent = [work.title_kr, work.title_en].filter(Boolean).join(' / ');
       }
 
-      const grid = document.createElement('div');
-      grid.className = 'w-grid';
+      const sub = document.createElement('div');
+      sub.className = 'w-sub';
+      if(mode==='ko'){
+        sub.textContent = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(' · ');
+      }else if(mode==='en'){
+        sub.textContent = [work.material_en, work.size_en, work.year].filter(Boolean).join(' · ');
+      }else{
+        const s1 = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(' · ');
+        const s2 = [work.material_en, work.size_en, work.year].filter(Boolean).join(' · ');
+        sub.textContent = [s1, s2].filter(Boolean).join(' / ');
+      }
 
-      list.forEach(raw=>{
-        const work = normalizeWork(raw);
-        const imgSrc = safeImg(work.image) || safeImg(work.zoom);
-        if(!imgSrc) return;
+      meta.appendChild(id);
+      meta.appendChild(title);
+      meta.appendChild(sub);
 
-        const card = document.createElement('div');
-        card.className = 'w-card';
-        card.setAttribute('role','button');
-        card.setAttribute('tabindex','0');
+      card.appendChild(thumb);
+      card.appendChild(meta);
 
-        const thumb = document.createElement('img');
-        thumb.className = 'w-thumb';
-        thumb.loading = 'lazy';
-        thumb.alt = work.title_kr || work.title_en || work.id || '';
-        thumb.src = imgSrc;
-
-        const meta = document.createElement('div');
-        meta.className = 'w-meta';
-
-        const id = document.createElement('div');
-        id.className = 'w-id';
-        id.textContent = work.id || '';
-
-        const title = document.createElement('div');
-        title.className = 'w-title';
-
-        const mode = nowLangMode();
-        if(mode==='ko'){
-          title.textContent = work.title_kr || work.title_en || '';
-        }else if(mode==='en'){
-          title.textContent = work.title_en || work.title_kr || '';
-        }else{
-          const t1 = work.title_kr || '';
-          const t2 = work.title_en || '';
-          title.textContent = [t1, t2].filter(Boolean).join(' / ');
-        }
-
-        const sub = document.createElement('div');
-        sub.className = 'w-sub';
-        if(mode==='ko'){
-          sub.textContent = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(' · ');
-        }else if(mode==='en'){
-          sub.textContent = [work.material_en, work.size_en, work.year].filter(Boolean).join(' · ');
-        }else{
-          const s1 = [work.material_kr, work.size_kr, work.year].filter(Boolean).join(' · ');
-          const s2 = [work.material_en, work.size_en, work.year].filter(Boolean).join(' · ');
-          sub.textContent = [s1, s2].filter(Boolean).join(' / ');
-        }
-
-        meta.appendChild(id);
-        meta.appendChild(title);
-        meta.appendChild(sub);
-
-        card.appendChild(thumb);
-        card.appendChild(meta);
-
-        const open = ()=>{
-          const zoom = safeImg(work.zoom);
-          const standard = safeImg(work.image);
-          const src = zoom || standard;
-          openLightbox(src, buildCaption(work));
-        };
-        card.addEventListener('click', open);
-        card.addEventListener('keydown', (e)=>{
-          if(e.key==='Enter' || e.key===' ') { e.preventDefault(); open(); }
-        });
-
-        grid.appendChild(card);
+      const open = ()=> openLightbox(zoomSrc, buildCaption(work));
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter' || e.key===' ') { e.preventDefault(); open(); }
       });
 
-      if(!grid.children.length){
-        panel.innerHTML = `<div class="w-empty">No valid images found.</div>`;
-        return;
-      }
+      grid.appendChild(card);
+    });
 
-      panel.appendChild(grid);
+    if(!grid.children.length){
+      panel.innerHTML = `<div class="w-msg">작품은 있는데 이미지 경로가 모두 실패했습니다.<small>works.json의 image/zoom 경로가 실제 폴더와 일치하는지 확인하세요.</small></div>`;
+      return;
     }
 
-    function renderAllWorks(data){
-      // data 구조가 다양할 수 있어 방어적으로 처리
-      // 기대 1) { pray:[], human:[], ... }
-      // 기대 2) { sections: { pray:[], ... } }
-      // 기대 3) { works:[{section:'pray', ...}, ...] }
-      const packs = { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+    panel.appendChild(grid);
+  }
 
-      if(Array.isArray(data)){
-        // 배열이면 section 필드로 분배
+  function makeEmptyPacks(){
+    return { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  }
+
+  function pushToPack(packs, key, items){
+    if(!key || !packs[key]) return;
+    if(Array.isArray(items)) packs[key].push(...items);
+  }
+
+  function extractPacks(data){
+    const packs = makeEmptyPacks();
+    if(!data) return packs;
+
+    // CASE A) 최상단 키가 바로 pray/human...
+    if(typeof data === 'object' && !Array.isArray(data)){
+      SECTION_KEYS.forEach(k=>{
+        if(Array.isArray(data[k])) packs[k] = data[k];
+      });
+    }
+
+    // CASE B) { sections: { ... } }
+    if(typeof data === 'object' && data.sections && typeof data.sections === 'object'){
+      SECTION_KEYS.forEach(k=>{
+        const cand = data.sections[k];
+        if(Array.isArray(cand)) packs[k] = cand;
+      });
+
+      // sections가 배열(섹션 객체형)인 경우도 흡수
+      if(Array.isArray(data.sections)){
+        data.sections.forEach(sec=>{
+          const k = pickSectionKey(sec.key || sec.id || sec.section || sec.name || sec.title);
+          const items = sec.items || sec.works || sec.list || sec.data || sec.children;
+          pushToPack(packs, k, items);
+        });
+      }
+    }
+
+    // CASE C) { works: [...] } (작품 배열에 section 필드)
+    if(typeof data === 'object' && Array.isArray(data.works)){
+      data.works.forEach(it=>{
+        const k = pickSectionKey(it.section || it.sectionKey || it.group || it.category);
+        if(k) packs[k].push(it);
+      });
+    }
+
+    // CASE D) data 자체가 작품 배열
+    if(Array.isArray(data)){
+      // D-1) 섹션 객체 배열일 수도 있음
+      const looksLikeSections = data.some(x => x && typeof x === 'object' && (x.items || x.works || x.list));
+      if(looksLikeSections){
+        data.forEach(sec=>{
+          const k = pickSectionKey(sec.key || sec.id || sec.section || sec.name || sec.title);
+          const items = sec.items || sec.works || sec.list || sec.data || sec.children;
+          pushToPack(packs, k, items);
+        });
+      }else{
+        // D-2) 그냥 작품 배열
         data.forEach(it=>{
           const k = pickSectionKey(it.section || it.sectionKey || it.group || it.category);
           if(k) packs[k].push(it);
         });
-      }else if(data && typeof data === 'object'){
-        if(data.sections && typeof data.sections === 'object'){
-          SECTION_KEYS.forEach(k=>{
-            const src = data.sections[k] || data.sections[pickSectionKey(k)] || [];
-            if(Array.isArray(src)) packs[k] = src;
-          });
-        }
-        if(data.works && Array.isArray(data.works)){
-          data.works.forEach(it=>{
-            const k = pickSectionKey(it.section || it.sectionKey || it.group || it.category);
-            if(k) packs[k].push(it);
-          });
-        }
-        // 최상단 키로 바로 오는 경우
-        SECTION_KEYS.forEach(k=>{
-          if(Array.isArray(data[k])) packs[k] = data[k];
-        });
       }
-
-      renderPanel('panel-pray', packs.pray);
-      renderPanel('panel-human', packs.human);
-      renderPanel('panel-rebirth', packs.rebirth);
-      renderPanel('panel-exist', packs.exist);
-      renderPanel('panel-cosmos', packs.cosmos);
     }
 
-    async function loadWorks(){
-      // 패널에 로딩/오류 메시지
-      const firstPanel = $('#panel-pray');
-      if(firstPanel){
-        firstPanel.innerHTML = `<div class="w-empty">Loading works…</div>`;
-      }
+    // CASE E) 섹션 키가 숫자/로마자 등으로 들어오는 경우(알리아스)
+    if(typeof data === 'object' && !Array.isArray(data)){
+      Object.keys(data).forEach(rawKey=>{
+        const k = pickSectionKey(rawKey);
+        if(!k) return;
+        const v = data[rawKey];
+        if(Array.isArray(v)) packs[k] = v;
+      });
+    }
 
+    // 중복 제거(동일 id 기준)
+    SECTION_KEYS.forEach(k=>{
+      const seen = new Set();
+      packs[k] = (packs[k]||[]).filter(it=>{
+        const id = (it && (it.id || it.code || it.work_id || it.name)) ? String(it.id || it.code || it.work_id || it.name) : '';
+        if(!id) return true;
+        if(seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+    });
+
+    return packs;
+  }
+
+  function renderAllWorks(packs){
+    renderPanel('panel-pray', packs.pray);
+    renderPanel('panel-human', packs.human);
+    renderPanel('panel-rebirth', packs.rebirth);
+    renderPanel('panel-exist', packs.exist);
+    renderPanel('panel-cosmos', packs.cosmos);
+  }
+
+  function setWorksMessageAll(html){
+    SECTION_KEYS.forEach(k=>{
+      const p = document.getElementById('panel-'+k);
+      if(p) p.innerHTML = html;
+    });
+  }
+
+  async function fetchJSONCandidates(urls){
+    let lastErr = null;
+    for(const u of urls){
       try{
-        const res = await fetch('/data/works.json', { cache:'no-store' });
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        window.__WORKS_DATA__ = data;
-        renderAllWorks(data);
-      }catch(err){
-        // 안전 샘플(작동 확인용): works.json이 아직 없거나 경로가 다를 때도 UI는 살아있게
-        const warning = `
-          <div class="w-error">
-            Works 데이터를 불러오지 못했습니다. (/data/works.json)<br>
-            이 상태에서도 UI는 정상 동작합니다. (샘플 데이터로 표시)<br>
-            원인: ${escapeHTML(err?.message || String(err))}
-          </div>
-        `;
-        SECTION_KEYS.forEach(k=>{
-          const panel = document.getElementById('panel-'+k);
-          if(panel) panel.innerHTML = warning;
-        });
-
-        const SAMPLE = {
-          rebirth: [
-            {
-              id:'DZ-037',
-              title_kr:'예술, 인생, 여기',
-              title_en:'Art, Life, Here',
-              material_kr:'수채, 연필, 종이',
-              material_en:'watercolour, pencil on paper',
-              size_kr:'70.5 x 100 cm',
-              size_en:'70.5 x 100 cm',
-              year:'2019',
-              image:'/images/standard/DZ-037.jpg',
-              zoom:'/images/zoom/DZ-037.jpg'
-            }
-          ],
-          pray:[],
-          human:[],
-          exist:[],
-          cosmos:[]
-        };
-        window.__WORKS_DATA__ = SAMPLE;
-        renderAllWorks(SAMPLE);
+        const res = await fetch(u, { cache:'no-store' });
+        if(!res.ok) throw new Error(u + ' → HTTP ' + res.status);
+        return await res.json();
+      }catch(e){
+        lastErr = e;
       }
     }
+    throw lastErr || new Error('fetch failed');
+  }
 
-    /* ---------- reports data (placeholder) ---------- */
-    const REPORTS = [
-      { id:'DCAR-01', title:'DCAR 01', cat:'theory', body:'(Report content placeholder)' },
-      { id:'DCAR-02', title:'DCAR 02', cat:'archive', body:'(Report content placeholder)' },
-      { id:'DCAR-03', title:'DCAR 03', cat:'practice', body:'(Report content placeholder)' },
-      { id:'DCAR-04', title:'DCAR 04', cat:'theory', body:'(Report content placeholder)' },
-      { id:'DCAR-05', title:'DCAR 05', cat:'archive', body:'(Report content placeholder)' },
-      { id:'DCAR-06', title:'DCAR 06', cat:'practice', body:'(Report content placeholder)' },
-      { id:'DCAR-07', title:'DCAR 07', cat:'theory', body:'(Report content placeholder)' },
-      { id:'DCAR-08', title:'DCAR 08', cat:'archive', body:'(Report content placeholder)' }
+  async function loadWorks(){
+    // 1) 로딩 메시지
+    setWorksMessageAll(`<div class="w-msg">작품을 불러오는 중…</div>`);
+
+    // 2) 후보 URL (GitHub Pages/루트/상대 모두 대응)
+    const cb = 'cb=' + Date.now();
+    const candidates = [
+      './data/works.json?' + cb,
+      '/data/works.json?' + cb,
+      'data/works.json?' + cb
     ];
-    let currentReportFilter = 'all';
-    const grid = $('#reportGrid');
-    const viewer = $('#reportViewer');
-    const reportsToggle = $('#reportsToggle');
 
-    function renderReports(){
-      if(!grid) return;
-      grid.innerHTML = '';
-      const items = REPORTS.filter(r => currentReportFilter==='all' ? true : r.cat===currentReportFilter);
-      items.forEach(r=>{
-        const card = document.createElement('div');
-        card.className = 'r-item';
-        card.dataset.id = r.id;
-        card.innerHTML = `<div class="t">${r.id}</div><div class="m">${r.cat.toUpperCase()}</div>`;
-        card.addEventListener('click', ()=> openReport(r.id));
-        grid.appendChild(card);
-      });
-    }
+    try{
+      const data = await fetchJSONCandidates(candidates);
+      const packs = extractPacks(data);
+      window.__WORKS_PACKS__ = packs;
 
-    function openReport(id){
-      const r = REPORTS.find(x=>x.id===id);
-      if(!r || !viewer) return;
-      viewer.style.display = 'block';
-      viewer.innerHTML = `
-        <div class="rv-title">${r.id} · ${r.title}</div>
-        <div class="rv-body">${escapeHTML(r.body)}</div>
-      `;
-      viewer.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-
-    function escapeHTML(s){
-      return String(s)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;');
-    }
-
-    $$('.r-tab').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        $$('.r-tab').forEach(b=> b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        currentReportFilter = btn.dataset.r;
-        renderReports();
-      });
-    });
-
-    if(reportsToggle && grid){
-      reportsToggle.addEventListener('click', ()=>{
-        const isOpen = grid.style.display === 'grid';
-        grid.style.display = isOpen ? 'none' : 'grid';
-        reportsToggle.textContent = isOpen ? 'Open Reports' : 'Close Reports';
-        reportsToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-        if(!isOpen) renderReports();
-      });
-      reportsToggle.setAttribute('aria-expanded','false');
-      grid.style.display = 'none';
-    }
-
-    /* ---------- lightbox ---------- */
-    const lightbox = $('#lightbox');
-    const lbImg = $('#lbImg');
-    const lbCap = $('#lbCap');
-    const lbClose = $('#lbClose');
-
-    function openLightbox(src, caption=''){
-      if(!lightbox || !lbImg || !lbCap) return;
-      lbImg.src = src;
-      lbCap.textContent = caption;
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden','false');
-    }
-    function closeLightbox(){
-      if(!lightbox || !lbImg) return;
-      lightbox.classList.remove('is-open');
-      lightbox.setAttribute('aria-hidden','true');
-      lbImg.src = '';
-    }
-    lbClose?.addEventListener('click', closeLightbox);
-    lightbox?.addEventListener('click', (e)=>{
-      if(e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e)=>{
-      if(e.key==='Escape' && lightbox?.classList.contains('is-open')) closeLightbox();
-    });
-
-    /* ---------- sound (safe stub) ---------- */
-    const soundBtn = $('#soundBtn');
-    const soundStopBtn = $('#soundStopBtn');
-    const fftSpan = $('#fftBar span');
-    let audio = null;
-    let fftTimer = null;
-
-    function startSound(){
-      if(!audio){
-        audio = new Audio();
-        audio.loop = true;
-        audio.volume = 0.35;
-        // audio.src = '/audio/cosmic-resonance.mp3';
-      }
-      if(!audio.src){
-        pulseFFT(false);
+      const total = SECTION_KEYS.reduce((sum,k)=> sum + (packs[k]?.length||0), 0);
+      if(total <= 0){
+        setWorksMessageAll(
+          `<div class="w-msg">works.json은 읽혔지만, 섹션/작품을 찾지 못했습니다.
+            <small>필요 조건: works.json에 섹션 구분(예: section:"rebirth" 또는 sections:{rebirth:[...]})이 있어야 합니다.</small>
+          </div>`
+        );
         return;
       }
-      audio.play().then(()=>{
-        soundStopBtn.disabled = false;
-        pulseFFT(true);
-      }).catch(()=>{ pulseFFT(false); });
+
+      renderAllWorks(packs);
+    }catch(err){
+      // 실패 시: 원인 표시 + 최소 샘플로 UI 생존
+      const msg =
+        `<div class="w-msg">Works 데이터를 불러오지 못했습니다.
+          <small>${escapeHTML(err?.message || String(err))}</small>
+        </div>`;
+      setWorksMessageAll(msg);
+
+      // 샘플(작동 확인용)
+      const SAMPLE = makeEmptyPacks();
+      SAMPLE.rebirth = [{
+        id:'DZ-037',
+        title_kr:'예술, 인생, 여기',
+        title_en:'Art, Life, Here',
+        material_kr:'수채, 연필, 종이',
+        material_en:'watercolour, pencil on paper',
+        size_kr:'70.5 x 100 cm',
+        size_en:'70.5 x 100 cm',
+        year:'2019',
+        image:'/images/standard/DZ-037.jpg',
+        zoom:'/images/zoom/DZ-037.jpg'
+      }];
+      window.__WORKS_PACKS__ = SAMPLE;
+      renderAllWorks(SAMPLE);
     }
-    function stopSound(){
-      if(audio){
-        audio.pause();
-        audio.currentTime = 0;
-      }
-      soundStopBtn.disabled = true;
+  }
+
+  /* ---------- reports (placeholder 유지) ---------- */
+  const REPORTS = [
+    { id:'DCAR-01', title:'DCAR 01', cat:'theory', body:'(Report content placeholder)' },
+    { id:'DCAR-02', title:'DCAR 02', cat:'archive', body:'(Report content placeholder)' },
+    { id:'DCAR-03', title:'DCAR 03', cat:'practice', body:'(Report content placeholder)' },
+    { id:'DCAR-04', title:'DCAR 04', cat:'theory', body:'(Report content placeholder)' },
+    { id:'DCAR-05', title:'DCAR 05', cat:'archive', body:'(Report content placeholder)' },
+    { id:'DCAR-06', title:'DCAR 06', cat:'practice', body:'(Report content placeholder)' },
+    { id:'DCAR-07', title:'DCAR 07', cat:'theory', body:'(Report content placeholder)' },
+    { id:'DCAR-08', title:'DCAR 08', cat:'archive', body:'(Report content placeholder)' }
+  ];
+  let currentReportFilter = 'all';
+  const grid = $('#reportGrid');
+  const viewer = $('#reportViewer');
+  const reportsToggle = $('#reportsToggle');
+
+  function renderReports(){
+    if(!grid) return;
+    grid.innerHTML = '';
+    const items = REPORTS.filter(r => currentReportFilter==='all' ? true : r.cat===currentReportFilter);
+    items.forEach(r=>{
+      const card = document.createElement('div');
+      card.className = 'r-item';
+      card.dataset.id = r.id;
+      card.innerHTML = `<div class="t">${escapeHTML(r.id)}</div><div class="m">${escapeHTML(String(r.cat).toUpperCase())}</div>`;
+      card.addEventListener('click', ()=> openReport(r.id));
+      grid.appendChild(card);
+    });
+  }
+
+  function openReport(id){
+    const r = REPORTS.find(x=>x.id===id);
+    if(!r || !viewer) return;
+    viewer.style.display = 'block';
+    viewer.innerHTML = `
+      <div class="rv-title">${escapeHTML(r.id)} · ${escapeHTML(r.title)}</div>
+      <div class="rv-body">${escapeHTML(r.body)}</div>
+    `;
+    viewer.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  $$('.r-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $$('.r-tab').forEach(b=> b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      currentReportFilter = btn.dataset.r;
+      renderReports();
+    });
+  });
+
+  if(reportsToggle && grid){
+    reportsToggle.addEventListener('click', ()=>{
+      const isOpen = grid.style.display === 'grid';
+      grid.style.display = isOpen ? 'none' : 'grid';
+      reportsToggle.textContent = isOpen ? 'Open Reports' : 'Close Reports';
+      reportsToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      if(!isOpen) renderReports();
+    });
+    reportsToggle.setAttribute('aria-expanded','false');
+    grid.style.display = 'none';
+  }
+
+  /* ---------- lightbox ---------- */
+  const lightbox = $('#lightbox');
+  const lbImg = $('#lbImg');
+  const lbCap = $('#lbCap');
+  const lbClose = $('#lbClose');
+
+  function openLightbox(src, caption=''){
+    if(!lightbox || !lbImg || !lbCap) return;
+    lbImg.src = src;
+    lbCap.textContent = caption;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden','false');
+  }
+  function closeLightbox(){
+    if(!lightbox || !lbImg) return;
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden','true');
+    lbImg.src = '';
+  }
+  lbClose?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e)=>{
+    if(e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Escape' && lightbox?.classList.contains('is-open')) closeLightbox();
+  });
+
+  /* ---------- sound (safe stub) ---------- */
+  const soundBtn = $('#soundBtn');
+  const soundStopBtn = $('#soundStopBtn');
+  const fftSpan = $('#fftBar span');
+  let audio = null;
+  let fftTimer = null;
+
+  function startSound(){
+    if(!audio){
+      audio = new Audio();
+      audio.loop = true;
+      audio.volume = 0.35;
+      // audio.src = '/audio/cosmic-resonance.mp3';
+    }
+    if(!audio.src){
       pulseFFT(false);
+      return;
     }
-    function pulseFFT(on){
-      if(!fftSpan) return;
-      if(fftTimer){ clearInterval(fftTimer); fftTimer = null; }
-      if(!on){ fftSpan.style.width = '0%'; return; }
-      fftTimer = setInterval(()=>{
-        const w = 12 + Math.floor(Math.random()*76);
-        fftSpan.style.width = w + '%';
-      }, 120);
+    audio.play().then(()=>{
+      soundStopBtn.disabled = false;
+      pulseFFT(true);
+    }).catch(()=>{ pulseFFT(false); });
+  }
+  function stopSound(){
+    if(audio){
+      audio.pause();
+      audio.currentTime = 0;
     }
-    soundBtn?.addEventListener('click', startSound);
-    soundStopBtn?.addEventListener('click', stopSound);
+    soundStopBtn.disabled = true;
+    pulseFFT(false);
+  }
+  function pulseFFT(on){
+    if(!fftSpan) return;
+    if(fftTimer){ clearInterval(fftTimer); fftTimer = null; }
+    if(!on){ fftSpan.style.width = '0%'; return; }
+    fftTimer = setInterval(()=>{
+      const w = 12 + Math.floor(Math.random()*76);
+      fftSpan.style.width = w + '%';
+    }, 120);
+  }
+  soundBtn?.addEventListener('click', startSound);
+  soundStopBtn?.addEventListener('click', stopSound);
 
-    /* ---------- waves canvas (lightweight) ---------- */
-    const canvas = document.getElementById('waves');
-    const ctx = canvas?.getContext('2d');
-    let t = 0;
+  /* ---------- waves canvas (stable + reduced-motion safe) ---------- */
+  const canvas = document.getElementById('waves');
+  const ctx = canvas?.getContext('2d', { alpha:true });
+  let t = 0;
 
-    function resizeCanvas(){
-      if(!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      if(ctx) ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
+  function prefersReduceMotion(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
-    function drawWaves(){
-      if(!canvas || !ctx) return;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+  function resizeCanvas(){
+    if(!canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    if(ctx) ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
 
-      ctx.clearRect(0,0,w,h);
+  function drawStatic(){
+    if(!canvas || !ctx) return;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    ctx.clearRect(0,0,w,h);
 
-      const g = ctx.createLinearGradient(0,0,0,h);
-      g.addColorStop(0, 'rgba(121,167,255,0.05)');
-      g.addColorStop(0.45, 'rgba(215,184,106,0.04)');
-      g.addColorStop(1, 'rgba(121,167,255,0.03)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,w,h);
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0, 'rgba(121,167,255,0.06)');
+    g.addColorStop(0.45, 'rgba(215,184,106,0.05)');
+    g.addColorStop(1, 'rgba(121,167,255,0.04)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
 
-      for(let i=0;i<4;i++){
-        const y0 = h*(0.22 + i*0.18);
-        ctx.beginPath();
-        for(let x=0;x<=w;x+=10){
-          const a = 10 + i*6;
-          const f = 0.006 + i*0.001;
-          const y = y0 + Math.sin(x*f + t*0.015 + i)*a;
-          if(x===0) ctx.moveTo(x,y);
-          else ctx.lineTo(x,y);
-        }
-        ctx.strokeStyle = (i%2===0) ? 'rgba(215,184,106,0.10)' : 'rgba(121,167,255,0.10)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+    for(let i=0;i<3;i++){
+      const y0 = h*(0.26 + i*0.20);
+      ctx.beginPath();
+      for(let x=0;x<=w;x+=12){
+        const a = 10 + i*6;
+        const f = 0.006 + i*0.001;
+        const y = y0 + Math.sin(x*f + i)*a;
+        if(x===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
       }
+      ctx.strokeStyle = (i%2===0) ? 'rgba(215,184,106,0.10)' : 'rgba(121,167,255,0.10)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
 
-      t++;
-      requestAnimationFrame(drawWaves);
+  function drawWaves(){
+    if(!canvas || !ctx) return;
+
+    // reduced-motion이면 애니메이션 없이 정적만
+    if(prefersReduceMotion()){
+      drawStatic();
+      return;
     }
 
-    window.addEventListener('resize', resizeCanvas, {passive:true});
-    resizeCanvas();
-    drawWaves();
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    ctx.clearRect(0,0,w,h);
 
-    /* ---------- init ---------- */
-    setLang('ko');
-    showSection('poem');
-    renderReports();
-    loadWorks();
-  </script>
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0, 'rgba(121,167,255,0.05)');
+    g.addColorStop(0.45, 'rgba(215,184,106,0.04)');
+    g.addColorStop(1, 'rgba(121,167,255,0.03)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+
+    for(let i=0;i<4;i++){
+      const y0 = h*(0.22 + i*0.18);
+      ctx.beginPath();
+      for(let x=0;x<=w;x+=10){
+        const a = 10 + i*6;
+        const f = 0.006 + i*0.001;
+        const y = y0 + Math.sin(x*f + t*0.015 + i)*a;
+        if(x===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = (i%2===0) ? 'rgba(215,184,106,0.10)' : 'rgba(121,167,255,0.10)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    t++;
+    requestAnimationFrame(drawWaves);
+  }
+
+  window.addEventListener('resize', ()=>{
+    resizeCanvas();
+    // reduced-motion에서도 리사이즈 시 정적 재렌더
+    if(prefersReduceMotion()) drawStatic();
+  }, {passive:true});
+
+  /* ---------- init ---------- */
+  setLang('ko');
+  showSection('poem');
+  renderReports();
+  resizeCanvas();
+  drawWaves();
+  loadWorks();
+</script>
 </body>
 </html>

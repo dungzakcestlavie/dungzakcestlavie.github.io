@@ -1064,755 +1064,833 @@ Numerous private collections worldwide.</p>
   </footer>
 
 <!-- ==========================================================
-③ SCRIPTS  (GENERATED — NO BODY EDIT)
-- Nav: Poem/Works/Reports scroll + active
-- Global language: KR / EN / KR+EN
-- Bio modal: open/close + local KR/EN + slide toggle
-- Works: load /data/works.json → render 5 panels (all artworks)
-- Lightbox: open/close + ESC
-- Reports: load /data/reports.json → filter + open in new tab viewer + download link
-- Waves: elegant flowing background (canvas)
-- Sound: ambient (optional) + FFT bar
+③ SCRIPTS  (REGENERATED — FIX: md_path + stronger works mapping)
+- HEAD/BODY는 수정하지 않음
+- works.json / reports.json: 다중 경로 + 캐시버스트 + 실패 시 UI 메시지
 ========================================================== -->
 <script>
-/* =========================
-   Small helpers
-========================= */
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+(() => {
+  "use strict";
 
-function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-function escHTML(str=""){
-  return String(str).replace(/[&<>"']/g, s => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[s]));
-}
+  /* ----------------------------------------------------------
+    Utils
+  ---------------------------------------------------------- */
+  const qs = (sel, el=document) => el.querySelector(sel);
+  const qsa = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const escapeHTML = (s) => String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
-/* =========================
-   0) Initial mode defaults
-========================= */
-(function initModes(){
-  // default global language: Korean
-  if(!document.body.classList.contains("korean") &&
-     !document.body.classList.contains("english") &&
-     !document.body.classList.contains("hybrid")){
-    document.body.classList.add("korean");
-  }
-  // default bio local language
-  const bio = $("#bio-modal");
-  if(bio && !bio.dataset.bio) bio.dataset.bio = "kr";
-})();
+  const cacheBust = () => `cb=${Date.now().toString(36)}${Math.random().toString(36).slice(2,8)}`;
 
-/* =========================
-   1) Nav (scroll + active)
-========================= */
-(function navInit(){
-  const navButtons = $$("nav.primary button[data-target]");
-  const sections = navButtons
-    .map(b => $("#"+b.dataset.target))
-    .filter(Boolean);
+  async function fetchJSONMulti(paths, timeoutMs=9000){
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
 
-  function setActive(targetId){
-    navButtons.forEach(b=>{
-      const on = b.dataset.target === targetId;
-      b.classList.toggle("active", on);
-      if(on) b.setAttribute("aria-current","page");
-      else b.removeAttribute("aria-current");
-    });
-  }
-
-  navButtons.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const id = btn.dataset.target;
-      const el = $("#"+id);
-      if(!el) return;
-      el.scrollIntoView({behavior:"smooth", block:"start"});
-      setActive(id);
-    });
-  });
-
-  // scroll spy
-  const obs = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        setActive(e.target.id);
+    const errors = [];
+    try{
+      for (const raw of paths){
+        const url = raw.includes("?") ? `${raw}&${cacheBust()}` : `${raw}?${cacheBust()}`;
+        try{
+          const res = await fetch(url, {
+            cache: "no-store",
+            signal: controller.signal,
+            headers: { "Accept": "application/json" }
+          });
+          if(!res.ok){
+            errors.push(`${res.status} ${res.statusText} @ ${url}`);
+            continue;
+          }
+          const text = await res.text();
+          let data;
+          try{
+            data = JSON.parse(text);
+          }catch(e){
+            errors.push(`JSON parse error @ ${url}`);
+            continue;
+          }
+          clearTimeout(t);
+          return { ok:true, url, data, errors };
+        }catch(e){
+          errors.push(`${e?.name || "FetchError"} @ ${url}`);
+        }
       }
-    });
-  }, { root:null, threshold:0.35 });
-
-  sections.forEach(s=>obs.observe(s));
-})();
-
-/* =========================
-   2) Global Language (KR/EN/KR+EN)
-========================= */
-(function langInit(){
-  const koBtn = $("#koBtn");
-  const enBtn = $("#enBtn");
-  const hyBtn = $("#hyBtn");
-  if(!koBtn || !enBtn || !hyBtn) return;
-
-  function setLang(mode){
-    document.body.classList.remove("korean","english","hybrid");
-    document.body.classList.add(mode);
-
-    koBtn.classList.toggle("active", mode==="korean");
-    enBtn.classList.toggle("active", mode==="english");
-    hyBtn.classList.toggle("active", mode==="hybrid");
+      clearTimeout(t);
+      return { ok:false, url:null, data:null, errors };
+    }finally{
+      clearTimeout(t);
+    }
   }
 
-  koBtn.addEventListener("click", ()=>setLang("korean"));
-  enBtn.addEventListener("click", ()=>setLang("english"));
-  hyBtn.addEventListener("click", ()=>setLang("hybrid"));
-})();
-
-/* =========================
-   3) Bio Modal (open/close + local KR/EN + slide)
-========================= */
-(function bioInit(){
-  const openBtn = $("#tab-bio");
-  const modal = $("#bio-modal");
-  if(!openBtn || !modal) return;
-
-  const backdrop = $(".bio-backdrop", modal);
-  const closeBtn = $(".bio-close", modal);
-  const langBtns = $$(".bio-lang .lang", modal);
-  const expoToggle = $("#expoToggle");
-  const expoSlide  = $("#expoSlide");
-
-  function open(){
-    modal.hidden = false;
-    modal.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-    // focus close for accessibility
-    requestAnimationFrame(()=> closeBtn && closeBtn.focus());
-  }
-  function close(){
-    modal.hidden = true;
-    modal.setAttribute("aria-hidden","true");
-    document.body.style.overflow = "";
-  }
-
-  openBtn.addEventListener("click", open);
-  backdrop && backdrop.addEventListener("click", close);
-  closeBtn && closeBtn.addEventListener("click", close);
-
-  // ESC close
-  document.addEventListener("keydown", (e)=>{
-    if(e.key === "Escape" && !modal.hidden) close();
-  });
-
-  // local language
-  function setBioLang(lang){
-    modal.dataset.bio = lang; // "kr" | "en"
-    langBtns.forEach(b=>{
-      const on = b.dataset.bioLang === lang;
-      b.classList.toggle("active", on);
-      b.setAttribute("aria-pressed", on ? "true" : "false");
-    });
-  }
-  langBtns.forEach(b=>{
-    b.addEventListener("click", ()=> setBioLang(b.dataset.bioLang));
-  });
-
-  // slide
-  if(expoToggle && expoSlide){
-    expoToggle.addEventListener("click", ()=>{
-      const isOpen = expoSlide.dataset.open === "true";
-      expoSlide.dataset.open = isOpen ? "false" : "true";
-      expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
-    });
-  }
-})();
-
-/* =========================
-   4) Works Tabs + Render from works.json
-========================= */
-(function worksInit(){
-  const tabBtns = $$(".tabs .tab");
-  const panels = {
-    pray: $("#panel-pray"),
-    human: $("#panel-human"),
-    rebirth: $("#panel-rebirth"),
-    exist: $("#panel-exist"),
-    cosmos: $("#panel-cosmos"),
-  };
-
-  // tab switch
-  tabBtns.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const key = btn.dataset.panel;
-      tabBtns.forEach(b=>b.classList.toggle("active", b===btn));
-      Object.entries(panels).forEach(([k,el])=>{
-        if(!el) return;
-        el.classList.toggle("active", k===key);
-      });
-    });
-  });
-
-  // render helpers
-  function cardHTML(w){
-    const titleKo = escHTML(w.title_kr || w.title_ko || "");
-    const titleEn = escHTML(w.title_en || "");
-    const year = escHTML(String(w.year ?? ""));
-    const matKo = escHTML(w.material_kr || w.material_ko || "");
-    const matEn = escHTML(w.material_en || "");
-    const sizeKo = escHTML(w.size_kr || w.size_ko || "");
-    const sizeEn = escHTML(w.size_en || "");
-    const img = escHTML(w.image || "");
-    const zoom = escHTML(w.zoom || w.zoom_image || w.image || "");
-
-    const caption = [
-      (w.id ? w.id : ""),
-      (w.title_kr||w.title_ko||""),
-      (w.title_en||""),
-      (w.material_kr||w.material_ko||""),
-      (w.material_en||""),
-      (w.size_kr||w.size_ko||""),
-      (w.size_en||""),
-      (w.year ?? "")
-    ].filter(Boolean).join(" / ");
-
-    const capSafe = escHTML(caption);
-
-    return `
-      <article class="w-card" role="button" tabindex="0"
-        data-zoom="${zoom}" data-cap="${capSafe}">
-        <img class="w-thumb" loading="lazy" decoding="async" src="${img}" alt="${titleEn || titleKo}">
-        <div class="w-meta">
-          <div class="w-title">
-            <div class="ko">${titleKo}</div>
-            <div class="en">${titleEn}</div>
-          </div>
-          <div class="w-sub">
-            <span class="ko">${matKo}${matKo && sizeKo ? " · " : ""}${sizeKo}${year ? " · " + year : ""}</span>
-            <span class="en">${matEn}${matEn && sizeEn ? " · " : ""}${sizeEn}${year ? " · " + year : ""}</span>
-          </div>
-        </div>
-      </article>
+  function showPanelMessage(panelEl, titleKo, titleEn, details){
+    if(!panelEl) return;
+    panelEl.innerHTML = `
+      <div class="w-msg">
+        <div class="ko" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleKo)}</div>
+        <div class="en" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleEn)}</div>
+        <div style="opacity:.9;line-height:1.6;white-space:pre-wrap">${escapeHTML(details || "")}</div>
+        <small class="ko">관리: works.json / reports.json 경로 또는 GitHub Pages 배포 상태를 확인하세요.</small>
+        <small class="en">Check works.json / reports.json path or GitHub Pages deploy status.</small>
+      </div>
     `;
   }
 
-  function mountGrid(el, items){
-    if(!el) return;
-    if(!items || !items.length){
-      el.innerHTML = `<div class="w-msg">No works found.<small>Check /data/works.json</small></div>`;
-      return;
-    }
-    el.innerHTML = `<div class="w-grid">${items.map(cardHTML).join("")}</div>`;
+  function resolvePath(p){
+    if(!p) return "";
+    if(/^https?:\/\//i.test(p)) return p;
+    if(p.startsWith("/")) return p;
+    return "/" + p;
   }
 
-  // load works.json
-  (async function(){
-    // If your repo uses /data/works.json, keep this path.
-    // If it uses works.json elsewhere, adjust only here (BODY untouched).
-    const url = "/data/works.json?cb=" + Date.now();
-    let data;
-    try{
-      const res = await fetch(url, {cache:"no-store"});
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      data = await res.json();
-    }catch(err){
-      // graceful message in all panels
-      Object.values(panels).forEach(p=>{
-        if(p) p.innerHTML = `<div class="w-msg">works.json load failed.<small>${escHTML(String(err))}</small></div>`;
-      });
-      return;
-    }
-
-    // Accept both formats:
-    // A) { pray:[...], human:[...], ... }
-    // B) { sections:[{key:'pray', works:[...]}, ...] }
-    // C) { works:[...] } with "section" field
-    let pray=[], human=[], rebirth=[], exist=[], cosmos=[];
-
-    if(Array.isArray(data?.pray) || Array.isArray(data?.human)){
-      pray = data.pray || [];
-      human = data.human || [];
-      rebirth = data.rebirth || [];
-      exist = data.exist || [];
-      cosmos = data.cosmos || [];
-    }else if(Array.isArray(data?.sections)){
-      const byKey = {};
-      data.sections.forEach(s=>{
-        if(!s) return;
-        const k = s.key || s.id || s.name;
-        const arr = s.works || s.items || s.data || [];
-        if(k) byKey[k] = arr;
-      });
-      pray = byKey.pray || [];
-      human = byKey.human || [];
-      rebirth = byKey.rebirth || [];
-      exist = byKey.exist || [];
-      cosmos = byKey.cosmos || [];
-    }else{
-      const all = data?.works || data?.items || data || [];
-      if(Array.isArray(all)){
-        all.forEach(w=>{
-          const k = w.section || w.panel || w.category;
-          if(k === "pray") pray.push(w);
-          else if(k === "human") human.push(w);
-          else if(k === "rebirth") rebirth.push(w);
-          else if(k === "exist") exist.push(w);
-          else if(k === "cosmos") cosmos.push(w);
-        });
-      }
-    }
-
-    mountGrid(panels.pray, pray);
-    mountGrid(panels.human, human);
-    mountGrid(panels.rebirth, rebirth);
-    mountGrid(panels.exist, exist);
-    mountGrid(panels.cosmos, cosmos);
-
-    // Lightbox binding for cards
-    bindLightboxCards();
-  })();
-})();
-
-/* =========================
-   5) Lightbox (open/close + ESC)
-========================= */
-function bindLightboxCards(){
-  const lb = $("#lightbox");
-  const img = $("#lbImg");
-  const cap = $("#lbCap");
-  const closeBtn = $("#lbClose");
-
-  if(!lb || !img || !cap || !closeBtn) return;
-
-  function open(zoomSrc, caption){
-    img.src = zoomSrc || "";
-    cap.textContent = caption || "";
-    lb.classList.add("is-open");
-    lb.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-  }
-  function close(){
-    lb.classList.remove("is-open");
-    lb.setAttribute("aria-hidden","true");
-    document.body.style.overflow = "";
-    img.removeAttribute("src");
+  function currentLangMode(){
+    return document.body.classList.contains("english") ? "english" :
+           document.body.classList.contains("hybrid")  ? "hybrid"  : "korean";
   }
 
-  // open from cards
-  $$(".w-card").forEach(card=>{
-    const handler = ()=>{
-      open(card.dataset.zoom, card.dataset.cap);
+  /* ----------------------------------------------------------
+    Global: nav + language
+  ---------------------------------------------------------- */
+  function initNav(){
+    const buttons = qsa('nav.primary button[data-target]');
+    const sections = {
+      poem: qs("#poem"),
+      works: qs("#works"),
+      reports: qs("#reports")
     };
-    card.addEventListener("click", handler);
-    card.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        handler();
-      }
-    });
-  });
 
-  // close interactions
-  closeBtn.addEventListener("click", close);
-  lb.addEventListener("click", (e)=>{
-    if(e.target === lb) close();
-  });
-  document.addEventListener("keydown", (e)=>{
-    if(e.key === "Escape" && lb.classList.contains("is-open")) close();
-  });
-}
-
-/* =========================
-   6) Reports (reports.json render + filter + open new tab)
-========================= */
-(function reportsInit(){
-  const grid = $("#reportGrid");
-  const toggle = $("#reportsToggle");
-  const tabs = $$(".r-tab");
-  if(!grid || !toggle) return;
-
-  let open = false;
-  let allReports = [];
-  let currentFilter = "all";
-
-  function globalMode(){
-    if(document.body.classList.contains("english")) return "en";
-    if(document.body.classList.contains("hybrid")) return "hy";
-    return "ko";
-  }
-
-  function filterList(){
-    if(currentFilter === "all") return allReports;
-    return allReports.filter(r => (r.category || r.type || "all") === currentFilter);
-  }
-
-  function render(){
-    const list = filterList();
-
-    if(!list.length){
-      grid.innerHTML = `<div class="w-msg">No reports found.<small>Check /data/reports.json</small></div>`;
-      return;
+    function setActive(target){
+      buttons.forEach(b => {
+        const on = b.dataset.target === target;
+        b.classList.toggle("active", on);
+        if(on) b.setAttribute("aria-current","page");
+        else b.removeAttribute("aria-current");
+      });
     }
 
-    const mode = globalMode();
-
-    grid.innerHTML = list.map(r=>{
-      const id = escHTML(r.id || r.code || "");
-      const cat = escHTML(r.category || r.type || "all");
-      const md = r.md || r.path || r.url || r.file || "";
-      const mdSafe = escHTML(md);
-
-      const tKo = escHTML(r.title_ko || r.title_kr || r.title || id);
-      const tEn = escHTML(r.title_en || r.titleEN || "");
-      const sKo = escHTML(r.summary_ko || r.summary_kr || r.summary || "");
-      const sEn = escHTML(r.summary_en || r.summaryEN || "");
-
-      let titleBlock = "";
-      let summaryBlock = "";
-
-      if(mode === "ko"){
-        titleBlock = `<div class="t ko">${tKo}</div>`;
-        summaryBlock = `<div class="s ko">${sKo}</div>`;
-      }else if(mode === "en"){
-        titleBlock = `<div class="t en">${tEn || tKo}</div>`;
-        summaryBlock = `<div class="s en">${sEn || ""}</div>`;
-      }else{
-        titleBlock = `<div class="t"><div class="ko">${tKo}</div><div class="en">${tEn || ""}</div></div>`;
-        summaryBlock = `<div class="s"><div class="ko">${sKo}</div><div class="en">${sEn}</div></div>`;
-      }
-
-      return `
-        <article class="r-item" role="button" tabindex="0"
-          data-md="${mdSafe}">
-          ${titleBlock}
-          <div class="m">${id}${id && cat ? " · " : ""}${cat}</div>
-          ${summaryBlock}
-        </article>
-      `;
-    }).join("");
-
-    // click binding
-    $$(".r-item", grid).forEach(item=>{
-      const openReport = ()=>{
-        const md = item.dataset.md || "";
-        if(!md) return;
-
-        // open viewer page in new tab
-        // if md already absolute, use it; else make it site-relative
-        const url = md.startsWith("http") ? md : (md.startsWith("/") ? md : ("/" + md));
-        window.open(url, "_blank", "noopener");
-      };
-      item.addEventListener("click", openReport);
-      item.addEventListener("keydown", (e)=>{
-        if(e.key==="Enter" || e.key===" "){
-          e.preventDefault();
-          openReport();
-        }
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const t = btn.dataset.target;
+        const el = sections[t];
+        if(!el) return;
+        setActive(t);
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
   }
 
-  // toggle open/close
-  toggle.addEventListener("click", ()=>{
-    open = !open;
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    toggle.textContent = open ? "Close Reports" : "Open Reports";
-    grid.style.display = open ? "grid" : "none";
-  });
+  function initLanguage(){
+    const koBtn = qs("#koBtn");
+    const enBtn = qs("#enBtn");
+    const hyBtn = qs("#hyBtn");
 
-  // filter tabs
-  tabs.forEach(t=>{
-    t.addEventListener("click", ()=>{
-      tabs.forEach(x=>x.classList.remove("is-active"));
-      t.classList.add("is-active");
-      currentFilter = t.dataset.r || "all";
-      render();
+    const set = (mode) => {
+      document.body.classList.remove("korean","english","hybrid");
+      document.body.classList.add(mode);
+      [koBtn,enBtn,hyBtn].forEach(b => b && b.classList.remove("active"));
+      if(mode==="korean" && koBtn) koBtn.classList.add("active");
+      if(mode==="english" && enBtn) enBtn.classList.add("active");
+      if(mode==="hybrid" && hyBtn) hyBtn.classList.add("active");
+      refreshReportsSummaryVisibility(mode);
+      syncReportsToggleLabel();
+    };
+
+    koBtn?.addEventListener("click", () => set("korean"));
+    enBtn?.addEventListener("click", () => set("english"));
+    hyBtn?.addEventListener("click", () => set("hybrid"));
+
+    const cls = document.body.classList;
+    if(!cls.contains("korean") && !cls.contains("english") && !cls.contains("hybrid")){
+      set("korean");
+    }else{
+      syncReportsToggleLabel();
+    }
+  }
+
+  /* ----------------------------------------------------------
+    Bio modal
+  ---------------------------------------------------------- */
+  function initBio(){
+    const modal = qs("#bio-modal");
+    const openBtn = qs("#tab-bio");
+    const closeBtn = qs(".bio-close", modal || document);
+    const backdrop = qs(".bio-backdrop", modal || document);
+    const expoToggle = qs("#expoToggle");
+    const expoSlide = qs("#expoSlide");
+
+    const bioLangBtns = qsa('#bio-modal .bio-lang .lang');
+    function setBioLang(lang){
+      if(!modal) return;
+      modal.setAttribute("data-bio", lang);
+      bioLangBtns.forEach(b=>{
+        const on = b.dataset.bioLang === lang;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function open(){
+      if(!modal) return;
+      modal.hidden = false;
+      modal.setAttribute("data-bio", modal.getAttribute("data-bio") || "kr");
+      document.body.style.overflow = "hidden";
+    }
+    function close(){
+      if(!modal) return;
+      modal.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    openBtn?.addEventListener("click", open);
+    closeBtn?.addEventListener("click", close);
+    backdrop?.addEventListener("click", close);
+    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && modal && !modal.hidden) close(); });
+
+    bioLangBtns.forEach(b=>{
+      b.addEventListener("click", () => setBioLang(b.dataset.bioLang || "kr"));
     });
-  });
 
-  // rerender on language change (buttons already change body class)
-  ["click"].forEach(ev=>{
-    $("#koBtn")?.addEventListener(ev, render);
-    $("#enBtn")?.addEventListener(ev, render);
-    $("#hyBtn")?.addEventListener(ev, render);
-  });
+    expoToggle?.addEventListener("click", ()=>{
+      const isOpen = expoSlide?.getAttribute("data-open")==="true";
+      expoSlide?.setAttribute("data-open", isOpen ? "false" : "true");
+      expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+    });
 
-  // load reports.json
-  (async function(){
-    const url = "/data/reports.json?cb=" + Date.now();
-    try{
-      const res = await fetch(url, {cache:"no-store"});
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-
-      // Accept formats:
-      // A) { reports:[...] }
-      // B) [...]
-      allReports = Array.isArray(data?.reports) ? data.reports : (Array.isArray(data) ? data : []);
-      render();
-    }catch(err){
-      grid.innerHTML = `<div class="w-msg">reports.json load failed.<small>${escHTML(String(err))}</small></div>`;
-      grid.style.display = "block";
-      open = true;
-      toggle.textContent = "Close Reports";
-      toggle.setAttribute("aria-expanded","true");
-    }
-  })();
-})();
-
-/* =========================
-   7) Waves canvas (elegant flow)
-========================= */
-(function wavesInit(){
-  const canvas = $("#waves");
-  if(!canvas) return;
-  const ctx = canvas.getContext("2d", { alpha:true });
-
-  let w=0,h=0, dpr=1;
-  const t0 = performance.now();
-  let mx = 0.5, my = 0.35;
-
-  function resize(){
-    dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    w = canvas.clientWidth;
-    h = canvas.clientHeight;
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(modal && !modal.getAttribute("data-bio")) modal.setAttribute("data-bio","kr");
   }
-  resize();
-  window.addEventListener("resize", resize, {passive:true});
 
-  window.addEventListener("pointermove", (e)=>{
-    mx = e.clientX / Math.max(1,w);
-    my = e.clientY / Math.max(1,h);
-  }, {passive:true});
+  /* ----------------------------------------------------------
+    Waves background canvas (stable)
+  ---------------------------------------------------------- */
+  function initWaves(){
+    const canvas = qs("#waves");
+    if(!canvas) return;
 
-  function draw(now){
-    const t = (now - t0) * 0.001;
-    ctx.clearRect(0,0,w,h);
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if(!ctx) return;
 
-    // subtle vignette
-    const g = ctx.createRadialGradient(w*0.5, h*0.15, 0, w*0.5, h*0.15, Math.max(w,h)*0.9);
-    g.addColorStop(0, "rgba(215,184,106,0.10)");
-    g.addColorStop(0.35, "rgba(121,167,255,0.06)");
-    g.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,w,h);
+    let w=0,h=0,dpr=1, t=0;
+    const prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // flowing lines
-    const lines = 7;
-    for(let i=0;i<lines;i++){
-      const phase = i/lines;
-      const amp = 18 + i*5;
-      const y0 = h*(0.22 + phase*0.11) + (my-0.5)*24;
-      ctx.beginPath();
-      for(let x=0;x<=w;x+=10){
-        const nx = x/w;
-        const s = Math.sin((nx*6.2) + t*0.85 + phase*6.0 + (mx-0.5)*1.4);
-        const c = Math.cos((nx*3.6) - t*0.55 + phase*4.0);
-        const y = y0 + s*amp + c*(amp*0.35);
-        if(x===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
+    function resize(){
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      w = Math.floor(window.innerWidth);
+      h = Math.floor(window.innerHeight);
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener("resize", resize, { passive:true });
+    resize();
+
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+
+      const g = ctx.createRadialGradient(w*0.5, h*0.15, 0, w*0.5, h*0.15, Math.max(w,h)*0.8);
+      g.addColorStop(0, "rgba(215,184,106,0.08)");
+      g.addColorStop(0.35, "rgba(121,167,255,0.05)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,w,h);
+
+      const lines = 6;
+      for(let i=0;i<lines;i++){
+        const yBase = h*(0.18 + i*0.12);
+        const amp = h*(0.012 + i*0.002);
+        const freq = 0.010 + i*0.0012;
+
+        ctx.beginPath();
+        for(let x=0;x<=w;x+=10){
+          const y = yBase
+            + Math.sin((x*freq) + t*(0.9 + i*0.12)) * amp
+            + Math.sin((x*freq*0.6) - t*(0.7 + i*0.08)) * amp*0.55;
+          if(x===0) ctx.moveTo(x,y);
+          else ctx.lineTo(x,y);
+        }
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = i%2===0 ? "rgba(215,184,106,0.09)" : "rgba(121,167,255,0.07)";
+        ctx.stroke();
       }
-      const a = 0.06 + i*0.008;
-      ctx.strokeStyle = `rgba(215,184,106,${a})`;
-      ctx.lineWidth = 1.15;
-      ctx.stroke();
     }
 
-    // blue whisper lines
-    for(let i=0;i<4;i++){
-      const phase = i/4;
-      const amp = 10 + i*4;
-      const y0 = h*(0.62 + phase*0.08) + (my-0.5)*18;
-      ctx.beginPath();
-      for(let x=0;x<=w;x+=12){
-        const nx = x/w;
-        const s = Math.sin((nx*7.4) - t*0.7 + phase*7.0 + (mx-0.5)*1.0);
-        const y = y0 + s*amp;
-        if(x===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
+    function loop(){
+      if(!prefersReduce) t += 0.012;
+      draw();
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* ----------------------------------------------------------
+    Works loader + tabs + lightbox
+  ---------------------------------------------------------- */
+  const WORKS_PATHS = [
+    "/data/works.json",
+    "data/works.json",
+    "/works.json",
+    "works.json"
+  ];
+
+  function initWorksTabs(){
+    const tabs = qsa("#works .tabs .tab");
+    const panels = {
+      pray: qs("#panel-pray"),
+      human: qs("#panel-human"),
+      rebirth: qs("#panel-rebirth"),
+      exist: qs("#panel-exist"),
+      cosmos: qs("#panel-cosmos")
+    };
+
+    function activate(key){
+      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel===key));
+      Object.entries(panels).forEach(([k,el]) => { if(el) el.classList.toggle("active", k===key); });
+    }
+
+    tabs.forEach(t=>{
+      t.addEventListener("click", ()=>activate(t.dataset.panel));
+    });
+
+    activate("pray");
+  }
+
+  function lightboxSetup(){
+    const lb = qs("#lightbox");
+    const lbImg = qs("#lbImg");
+    const lbCap = qs("#lbCap");
+    const lbClose = qs("#lbClose");
+
+    function open(src, caption){
+      if(!lb || !lbImg || !lbCap) return;
+      lbImg.src = src || "";
+      lbImg.alt = "";
+      lbCap.textContent = caption || "";
+      lb.classList.add("is-open");
+      lb.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    }
+    function close(){
+      if(!lb || !lbImg) return;
+      lb.classList.remove("is-open");
+      lb.setAttribute("aria-hidden","true");
+      lbImg.src = "";
+      document.body.style.overflow = "";
+    }
+
+    lbClose?.addEventListener("click", close);
+    lb?.addEventListener("click", (e)=>{ if(e.target === lb) close(); });
+    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && lb?.classList.contains("is-open")) close(); });
+
+    return { open, close };
+  }
+
+  function mapSectionToKey(v){
+    const s = String(v ?? "").toLowerCase();
+
+    // direct keys
+    if(["pray","human","rebirth","exist","cosmos"].includes(s)) return s;
+
+    // roman numerals / numbers
+    if(s.includes("ⅰ") || s.includes("i ") || s.startsWith("i") || s.includes("pr<") || s.includes("pray")) return "pray";
+    if(s.includes("ⅱ") || s.startsWith("ii") || s.includes("human") || s.includes("인간")) return "human";
+    if(s.includes("ⅲ") || s.startsWith("iii") || s.includes("rebirth") || s.includes("재탄생")) return "rebirth";
+    if(s.includes("ⅳ") || s.startsWith("iv") || s.includes("exist") || s.includes("존재")) return "exist";
+    if(s.includes("ⅴ") || s.startsWith("v") || s.includes("meta") || s.includes("cosmos") || s.includes("초의식")) return "cosmos";
+
+    return "";
+  }
+
+  function normalizeWorksData(raw){
+    const empty = { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+    if(!raw) return empty;
+
+    // A) { sections: { pray:[], ... } }
+    if(raw.sections && !Array.isArray(raw.sections) && typeof raw.sections === "object"){
+      return {
+        pray: raw.sections.pray || [],
+        human: raw.sections.human || [],
+        rebirth: raw.sections.rebirth || [],
+        exist: raw.sections.exist || [],
+        cosmos: raw.sections.cosmos || []
+      };
+    }
+
+    // B) { pray:[], human:[] ... } (top-level)
+    if(raw.pray || raw.human || raw.rebirth || raw.exist || raw.cosmos){
+      return {
+        pray: raw.pray || [],
+        human: raw.human || [],
+        rebirth: raw.rebirth || [],
+        exist: raw.exist || [],
+        cosmos: raw.cosmos || []
+      };
+    }
+
+    // C) { sections:[ {key/title/name, works/items/list} ... ] }
+    if(Array.isArray(raw.sections)){
+      for(const sec of raw.sections){
+        const k = mapSectionToKey(sec.key || sec.id || sec.slug || sec.title || sec.name || sec.title_ko || sec.title_en);
+        const arr = sec.works || sec.items || sec.list || sec.data || [];
+        if(k && Array.isArray(arr)) empty[k].push(...arr);
       }
-      ctx.strokeStyle = `rgba(121,167,255,${0.05 + i*0.01})`;
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
+      return empty;
     }
 
-    requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-})();
-
-/* =========================
-   8) Sound (ambient) + FFT bar
-========================= */
-(function soundInit(){
-  const playBtn = $("#soundBtn");
-  const stopBtn = $("#soundStopBtn");
-  const bar = $("#fftBar span");
-  if(!playBtn || !stopBtn || !bar) return;
-
-  let ctx, analyser, gain, src, raf;
-  let started = false;
-
-  function setBar(v){
-    bar.style.width = clamp(v, 0, 100).toFixed(1) + "%";
-  }
-
-  function makeAmbientNode(audioCtx){
-    // gentle “cosmic resonance”: 2 sines + filtered noise
-    const g = audioCtx.createGain();
-    g.gain.value = 0.0;
-
-    const o1 = audioCtx.createOscillator();
-    const o2 = audioCtx.createOscillator();
-    o1.type = "sine";
-    o2.type = "sine";
-    o1.frequency.value = 110; // A2
-    o2.frequency.value = 164.81; // E3-ish
-
-    const lfo = audioCtx.createOscillator();
-    lfo.type = "sine";
-    lfo.frequency.value = 0.07;
-
-    const lfoGain = audioCtx.createGain();
-    lfoGain.gain.value = 12; // subtle drift
-
-    lfo.connect(lfoGain);
-    lfoGain.connect(o2.frequency);
-
-    const mix = audioCtx.createGain();
-    mix.gain.value = 0.35;
-
-    o1.connect(mix);
-    o2.connect(mix);
-
-    // noise
-    const bufferSize = 2 * audioCtx.sampleRate;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const out = noiseBuffer.getChannelData(0);
-    for(let i=0;i<bufferSize;i++){
-      out[i] = (Math.random()*2-1) * 0.12;
+    // D) { works:[...] } or { items:[...] } etc.
+    const maybe = raw.works || raw.items || raw.list || raw.data;
+    if(Array.isArray(maybe)){
+      for(const w of maybe){
+        const k = mapSectionToKey(w.section || w.section_key || w.sectionKey || w.panel || w.category || w.section_ko || w.section_en || w.sectionTitle);
+        if(k) empty[k].push(w);
+      }
+      return empty;
     }
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    noise.loop = true;
 
-    const lp = audioCtx.createBiquadFilter();
-    lp.type = "lowpass";
-    lp.frequency.value = 520;
-    lp.Q.value = 0.7;
+    // E) [...allWorks]
+    if(Array.isArray(raw)){
+      for(const w of raw){
+        const k = mapSectionToKey(w.section || w.section_key || w.sectionKey || w.panel || w.category || w.section_ko || w.section_en || w.sectionTitle);
+        if(k) empty[k].push(w);
+      }
+      return empty;
+    }
 
-    const hp = audioCtx.createBiquadFilter();
-    hp.type = "highpass";
-    hp.frequency.value = 90;
-    hp.Q.value = 0.6;
-
-    noise.connect(lp);
-    lp.connect(hp);
-
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.value = 0.20;
-
-    hp.connect(noiseGain);
-
-    // gentle reverb-ish via delay (very subtle)
-    const delay = audioCtx.createDelay(1.0);
-    delay.delayTime.value = 0.18;
-    const fb = audioCtx.createGain();
-    fb.gain.value = 0.18;
-    delay.connect(fb);
-    fb.connect(delay);
-
-    const wet = audioCtx.createGain();
-    wet.gain.value = 0.18;
-
-    mix.connect(delay);
-    delay.connect(wet);
-
-    // sum to g
-    const sum = audioCtx.createGain();
-    sum.gain.value = 0.7;
-    mix.connect(sum);
-    wet.connect(sum);
-    noiseGain.connect(sum);
-
-    sum.connect(g);
-
-    // start oscillators
-    o1.start();
-    o2.start();
-    lfo.start();
-    noise.start();
-
-    return { node:g, kill: ()=>{ try{o1.stop();o2.stop();lfo.stop();noise.stop();}catch(e){} } };
+    return empty;
   }
 
-  function start(){
-    if(started) return;
-    started = true;
+  function makeWorkCaption(w){
+    const lines = [];
+    const titleKo = w.title_ko || w.titleKo || w.title || "";
+    const titleEn = w.title_en || w.titleEn || "";
+    if(titleKo) lines.push(titleKo);
+    if(titleEn) lines.push(titleEn);
 
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = ctx.createAnalyser();
-    analyser.fftSize = 256;
+    const meta = [];
+    const matKo = w.material_kr || w.materialKr || "";
+    const matEn = w.material_en || w.materialEn || "";
+    const sizeKo = w.size_kr || w.sizeKr || "";
+    const sizeEn = w.size_en || w.sizeEn || "";
+    const year = w.year || w.date || "";
+    if(matKo) meta.push(matKo);
+    if(matEn) meta.push(matEn);
+    if(sizeKo) meta.push(sizeKo);
+    if(sizeEn) meta.push(sizeEn);
+    if(year) meta.push(year);
+    if(meta.length) lines.push(meta.join(" / "));
+    return lines.join("\n");
+  }
 
-    gain = ctx.createGain();
-    gain.gain.value = 0.0;
+  function pickImg(w){
+    // support various keys seen in different pipelines
+    const thumb = w.image || w.thumb || w.src || w.image_path || w.imagePath || w.standard || w.standard_path || "";
+    const zoom  = w.zoom  || w.image_zoom || w.zoomSrc || w.zoom_path || w.zoomPath || w.hires || w.hires_path || thumb;
+    return { thumb: resolvePath(thumb), zoom: resolvePath(zoom) };
+  }
 
-    const ambient = makeAmbientNode(ctx);
-    src = ambient;
+  function renderWorksPanel(panelEl, list, lb){
+    if(!panelEl) return;
 
-    src.node.connect(analyser);
-    analyser.connect(gain);
-    gain.connect(ctx.destination);
+    if(!Array.isArray(list) || list.length===0){
+      showPanelMessage(panelEl,
+        "작품을 불러오지 못했습니다",
+        "Unable to load artworks",
+        "works.json 섹션 키/구조가 현재 스크립트 매핑과 다를 수 있습니다.\n(섹션명/section 필드 또는 sections 구조를 확인)"
+      );
+      return;
+    }
 
-    // fade in
-    const now = ctx.currentTime;
-    gain.gain.setValueAtTime(0.0, now);
-    gain.gain.linearRampToValueAtTime(0.28, now + 1.6);
+    const grid = document.createElement("div");
+    grid.className = "w-grid";
 
-    stopBtn.disabled = false;
+    list.forEach(w=>{
+      const card = document.createElement("div");
+      card.className = "w-card";
+      card.setAttribute("role","button");
+      card.setAttribute("tabindex","0");
 
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    const tick = ()=>{
+      const { thumb, zoom } = pickImg(w);
+
+      const img = document.createElement("img");
+      img.className = "w-thumb";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = thumb;
+      img.alt = "";
+      img.onerror = () => { img.style.opacity = "0.35"; };
+
+      const meta = document.createElement("div");
+      meta.className = "w-meta";
+
+      const title = document.createElement("div");
+      title.className = "w-title";
+      title.innerHTML = `
+        <div class="ko">${escapeHTML(w.title_ko || w.titleKo || w.title || "")}</div>
+        <div class="en">${escapeHTML(w.title_en || w.titleEn || "")}</div>
+      `;
+
+      const sub = document.createElement("div");
+      sub.className = "w-sub";
+      const subLines = [];
+      const mKo = w.material_kr || w.materialKr || "";
+      const mEn = w.material_en || w.materialEn || "";
+      const sKo = w.size_kr || w.sizeKr || "";
+      const sEn = w.size_en || w.sizeEn || "";
+      const y = w.year || w.date || "";
+      if(mKo) subLines.push(mKo);
+      if(mEn) subLines.push(mEn);
+      if(sKo) subLines.push(sKo);
+      if(sEn) subLines.push(sEn);
+      if(y) subLines.push(String(y));
+      sub.textContent = subLines.join("\n");
+
+      meta.appendChild(title);
+      meta.appendChild(sub);
+
+      card.appendChild(img);
+      card.appendChild(meta);
+
+      const open = () => lb?.open(zoom || thumb, makeWorkCaption(w));
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (e)=>{ if(e.key==="Enter" || e.key===" ") { e.preventDefault(); open(); } });
+
+      grid.appendChild(card);
+    });
+
+    panelEl.innerHTML = "";
+    panelEl.appendChild(grid);
+  }
+
+  async function loadWorks(){
+    const panels = {
+      pray: qs("#panel-pray"),
+      human: qs("#panel-human"),
+      rebirth: qs("#panel-rebirth"),
+      exist: qs("#panel-exist"),
+      cosmos: qs("#panel-cosmos")
+    };
+
+    Object.values(panels).forEach(p=>{
+      showPanelMessage(p, "작품 로딩 중…", "Loading artworks…", "works.json을 읽는 중입니다.");
+    });
+
+    const lb = lightboxSetup();
+    const res = await fetchJSONMulti(WORKS_PATHS);
+
+    if(!res.ok){
+      const msg = `works.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,4).join(" | ")}`;
+      Object.values(panels).forEach(p=>{
+        showPanelMessage(p, "작품 데이터 오류 (works.json)", "Works data error (works.json)", msg);
+      });
+      return;
+    }
+
+    const data = normalizeWorksData(res.data);
+    renderWorksPanel(panels.pray, data.pray, lb);
+    renderWorksPanel(panels.human, data.human, lb);
+    renderWorksPanel(panels.rebirth, data.rebirth, lb);
+    renderWorksPanel(panels.exist, data.exist, lb);
+    renderWorksPanel(panels.cosmos, data.cosmos, lb);
+  }
+
+  /* ----------------------------------------------------------
+    Reports loader (FIX: md_path)
+  ---------------------------------------------------------- */
+  const REPORTS_PATHS = [
+    "/data/reports.json",
+    "data/reports.json",
+    "/reports.json",
+    "reports.json"
+  ];
+
+  let REPORTS_CACHE = [];
+  let REPORTS_FILTER = "all";
+
+  function normalizeReports(raw){
+    if(!raw) return [];
+    if(Array.isArray(raw)) return raw;
+    if(Array.isArray(raw.reports)) return raw.reports;
+    if(Array.isArray(raw.items)) return raw.items;
+    return [];
+  }
+
+  function getReportFile(r){
+    return (
+      r.file || r.url || r.path ||
+      r.md_path || r.mdPath || r.markdown || r.markdown_path ||
+      r.html_path || r.htmlPath || r.href || ""
+    );
+  }
+
+  function refreshReportsSummaryVisibility(){
+    const grid = qs("#reportGrid");
+    if(grid && grid.style.display === "grid"){
+      renderReportsGrid();
+    }
+    syncReportsToggleLabel();
+  }
+
+  function syncReportsToggleLabel(){
+    const toggle = qs("#reportsToggle");
+    if(!toggle) return;
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    const mode = currentLangMode();
+    if(mode === "korean"){
+      toggle.textContent = isOpen ? "Close Reports" : "Open Reports"; // BODY 원문 버튼이 영문이므로 유지
+    }else{
+      toggle.textContent = isOpen ? "Close Reports" : "Open Reports";
+    }
+  }
+
+  function reportCardHTML(r){
+    const id = r.id || r.code || r.slug || "";
+    const titleKo = r.title_ko || r.titleKo || "";
+    const titleEn = r.title_en || r.titleEn || "";
+    const sumKo = r.summary_ko || r.summaryKo || "";
+    const sumEn = r.summary_en || r.summaryEn || "";
+    const cat = (r.category || r.type || "archive");
+
+    const mode = currentLangMode();
+
+    const titleBlock =
+      mode === "korean" ? `<div class="t"><span class="ko">${escapeHTML(titleKo)}</span></div>` :
+      mode === "english" ? `<div class="t"><span class="en">${escapeHTML(titleEn)}</span></div>` :
+      `<div class="t"><div class="ko">${escapeHTML(titleKo)}</div><div class="en">${escapeHTML(titleEn)}</div></div>`;
+
+    const summaryBlock =
+      mode === "korean" ? `<div class="s"><span class="ko">${escapeHTML(sumKo)}</span></div>` :
+      mode === "english" ? `<div class="s"><span class="en">${escapeHTML(sumEn)}</span></div>` :
+      `<div class="s"><div class="ko">${escapeHTML(sumKo)}</div><div class="en">${escapeHTML(sumEn)}</div></div>`;
+
+    return `
+      ${titleBlock}
+      <div class="m">${escapeHTML(id)} · ${escapeHTML(String(cat))}</div>
+      ${summaryBlock}
+      <div class="m" style="opacity:.7;margin-top:10px">open in new tab · download link inside</div>
+    `;
+  }
+
+  function openReportInNewTab(r){
+    const file = getReportFile(r);
+    if(!file){
+      alert("Report file path is missing (expected key: md_path / file / url).");
+      return;
+    }
+    const url = resolvePath(file);
+
+    const title = (r.title_ko || r.titleKo || "DCAR") + " / " + (r.title_en || r.titleEn || "");
+    const win = window.open("", "_blank", "noopener,noreferrer");
+    if(!win){
+      window.location.href = url;
+      return;
+    }
+
+    win.document.open();
+    win.document.write(`<!doctype html><html lang="ko"><head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>${escapeHTML(title)}</title>
+      <style>
+        body{margin:0; padding:20px; font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo","Noto Sans KR", Arial, sans-serif; background:#070A14; color:#EDE3C9;}
+        h1{margin:0 0 14px; font-size:18px; color:#E9D59B;}
+        pre{white-space:pre-wrap; line-height:1.7; background:rgba(255,255,255,.03); border:1px solid rgba(215,184,106,.18); border-radius:14px; padding:14px;}
+        a{color:#E9D59B;}
+        .dl{margin-top:14px; font-size:12px; opacity:.85;}
+      </style>
+    </head><body>
+      <h1>${escapeHTML(title)}</h1>
+      <pre id="content">Loading…</pre>
+      <div class="dl"><a href="${escapeHTML(url)}" download>download</a></div>
+      <script>
+        (async()=>{
+          try{
+            const res = await fetch("${escapeHTML(url)}?${cacheBust()}", { cache:"no-store" });
+            const txt = await res.text();
+            document.getElementById("content").textContent = txt;
+          }catch(e){
+            document.getElementById("content").textContent = "Failed to load report.";
+          }
+        })();
+      <\/script>
+    </body></html>`);
+    win.document.close();
+  }
+
+  function renderReportsGrid(){
+    const grid = qs("#reportGrid");
+    if(!grid) return;
+
+    const filtered = REPORTS_CACHE.filter(r=>{
+      const cat = String((r.category || r.type || "archive")).toLowerCase();
+      if(REPORTS_FILTER === "all") return true;
+      return cat === REPORTS_FILTER;
+    });
+
+    if(filtered.length === 0){
+      grid.innerHTML = `
+        <div class="w-msg" style="grid-column:1/-1">
+          <div class="ko" style="font-weight:900;margin-bottom:6px">보고서 목록이 비어있습니다</div>
+          <div class="en" style="font-weight:900;margin-bottom:6px">Reports list is empty</div>
+          <div style="opacity:.9;line-height:1.6">reports.json의 데이터/카테고리 키를 확인하세요.</div>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = "";
+    filtered.forEach(r=>{
+      const item = document.createElement("div");
+      item.className = "r-item";
+      item.innerHTML = reportCardHTML(r);
+      item.addEventListener("click", ()=>openReportInNewTab(r));
+      grid.appendChild(item);
+    });
+  }
+
+  async function loadReports(){
+    const grid = qs("#reportGrid");
+    const toggle = qs("#reportsToggle");
+    const tabs = qsa(".r-tab");
+
+    tabs.forEach(t=>{
+      t.addEventListener("click", ()=>{
+        tabs.forEach(x=>x.classList.remove("is-active"));
+        t.classList.add("is-active");
+        REPORTS_FILTER = String(t.dataset.r || "all").toLowerCase();
+        renderReportsGrid();
+      });
+    });
+
+    toggle?.addEventListener("click", ()=>{
+      const isOpen = toggle.getAttribute("aria-expanded")==="true";
+      toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      if(grid) grid.style.display = isOpen ? "none" : "grid";
+      syncReportsToggleLabel();
+      if(!isOpen) renderReportsGrid();
+    });
+
+    if(grid){
+      grid.style.display = "none";
+      grid.innerHTML = "";
+    }
+    syncReportsToggleLabel();
+
+    const res = await fetchJSONMulti(REPORTS_PATHS);
+    if(!res.ok){
+      if(grid){
+        grid.style.display = "grid";
+        showPanelMessage(grid,
+          "보고서 데이터 오류 (reports.json)",
+          "Reports data error (reports.json)",
+          `reports.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,4).join(" | ")}`
+        );
+      }
+      return;
+    }
+
+    REPORTS_CACHE = normalizeReports(res.data).map(r=>{
+      const cat = String((r.category || r.type || "archive")).toLowerCase();
+      return { ...r, category: cat };
+    });
+  }
+
+  /* ----------------------------------------------------------
+    Sound (safe)
+  ---------------------------------------------------------- */
+  function initSound(){
+    const btn = qs("#soundBtn");
+    const stopBtn = qs("#soundStopBtn");
+    const bar = qs("#fftBar span");
+
+    const AUDIO_SRC = ""; // e.g. "/audio/cosmic-resonance.mp3"
+
+    let audio = null;
+    let ctx = null, analyser=null, data=null, raf=0;
+
+    function setBar(v){
+      if(!bar) return;
+      bar.style.width = `${clamp(v,0,1)*100}%`;
+    }
+
+    function stop(){
+      cancelAnimationFrame(raf);
+      if(audio){
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      setBar(0);
+      if(stopBtn) stopBtn.disabled = true;
+    }
+
+    function tick(){
+      if(!analyser || !data) return;
       analyser.getByteFrequencyData(data);
-      // take average
       let sum = 0;
       for(let i=0;i<data.length;i++) sum += data[i];
-      const avg = sum / data.length; // 0..255
-      const pct = (avg / 255) * 100;
-      setBar(pct * 0.9);
+      const avg = sum / (data.length * 255);
+      setBar(avg);
       raf = requestAnimationFrame(tick);
-    };
-    tick();
-  }
+    }
 
-  function stop(){
-    if(!started) return;
-    stopBtn.disabled = true;
+    async function start(){
+      if(!AUDIO_SRC){
+        let x = 0;
+        const pulse = () => {
+          x += 0.04;
+          setBar(0.08 + Math.abs(Math.sin(x))*0.10);
+          raf = requestAnimationFrame(pulse);
+        };
+        cancelAnimationFrame(raf);
+        pulse();
+        if(stopBtn) stopBtn.disabled = false;
+        return;
+      }
 
-    // fade out then close
-    const now = ctx.currentTime;
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(0.0, now + 1.0);
+      if(!audio){
+        audio = new Audio(AUDIO_SRC);
+        audio.loop = true;
+        audio.crossOrigin = "anonymous";
+      }
+      try{
+        await audio.play();
+      }catch(e){
+        return;
+      }
 
-    setTimeout(()=>{
+      if(!ctx){
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const src = ctx.createMediaElementSource(audio);
+        analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        data = new Uint8Array(analyser.frequencyBinCount);
+        src.connect(analyser);
+        analyser.connect(ctx.destination);
+      }
+      if(stopBtn) stopBtn.disabled = false;
       cancelAnimationFrame(raf);
-      setBar(0);
-      try{ src && src.kill && src.kill(); }catch(e){}
-      try{ ctx && ctx.close(); }catch(e){}
-      started = false;
-      ctx = null;
-    }, 1100);
+      tick();
+    }
+
+    btn?.addEventListener("click", start);
+    stopBtn?.addEventListener("click", stop);
   }
 
-  playBtn.addEventListener("click", async ()=>{
-    try{
-      // required on iOS: resume on user gesture
-      if(!started) start();
-      else if(ctx && ctx.state === "suspended") await ctx.resume();
-    }catch(e){}
+  /* ----------------------------------------------------------
+    Boot
+  ---------------------------------------------------------- */
+  document.addEventListener("DOMContentLoaded", async () => {
+    initNav();
+    initLanguage();
+    initBio();
+    initWaves();
+
+    initWorksTabs();
+    await loadWorks();
+
+    await loadReports();
+
+    initSound();
   });
 
-  stopBtn.addEventListener("click", stop);
 })();
 </script>

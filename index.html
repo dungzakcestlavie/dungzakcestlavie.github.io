@@ -1064,7 +1064,7 @@ Numerous private collections worldwide.</p>
   </footer>
 
 <!-- ==========================================================
-③ SCRIPTS  (FULL — Waves + Works Zoom Fix + Reports Key Fix + Bio Local Lang + Sound/FFT + Speed)
+③ SCRIPTS  (FINAL — Waves + Works “dataset-only” Zoom Fix + Reports + Bio + Sound/FFT + Speed)
 ========================================================== -->
 <script>
 (() => {
@@ -1082,11 +1082,12 @@ Numerous private collections worldwide.</p>
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 
+  // ✅ 루트 기준 경로 고정(상대경로로 인한 오작동 방지)
   const slash = (p) => {
     const s = safeText(p).trim();
     if (!s) return "";
     if (/^https?:\/\//i.test(s)) return s;
-    return s.startsWith("/") ? s : ("/" + s);
+    return s.startsWith("/") ? s : ("/" + s.replace(/^\.?\//, ""));
   };
 
   const prefersReducedMotion = () =>
@@ -1134,7 +1135,6 @@ Numerous private collections worldwide.</p>
       if (!this.ctx) return;
       const g = this.ctx;
       g.clearRect(0,0,this.w,this.h);
-      // 은은한 고정 광도 레이어
       g.globalAlpha = 0.35;
       g.fillStyle = "rgba(215,184,106,.10)";
       g.beginPath();
@@ -1152,14 +1152,12 @@ Numerous private collections worldwide.</p>
       const g = this.ctx;
       g.clearRect(0,0,this.w,this.h);
 
-      // 배경 글로우(가볍게)
       g.globalAlpha = 0.18;
       g.fillStyle = "rgba(121,167,255,.10)";
       g.beginPath();
       g.ellipse(this.w*0.5, this.h*0.08, this.w*0.44, this.h*0.24, 0, 0, Math.PI*2);
       g.fill();
 
-      // 파동 라인 3겹(부드럽고 과하지 않게)
       const layers = [
         { a: 18, k: 0.012, s: 0.9,  o: 0.20 },
         { a: 28, k: 0.010, s: 1.2,  o: 0.18 },
@@ -1188,7 +1186,6 @@ Numerous private collections worldwide.</p>
         }
         g.stroke();
 
-        // 블루 하이라이트(가늘게)
         g.globalAlpha = L.o * 0.55;
         g.strokeStyle = "rgba(121,167,255,.50)";
         g.beginPath();
@@ -1243,8 +1240,7 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     2) Navigation (SCROLL ONLY — NO HIDE)
-     - “기능이 제멋대로” 느낌을 줄이기 위해, 섹션 display 조작 제거
+     2) Navigation (SCROLL ONLY)
   ========================================================= */
   const NAV = {
     btns: [],
@@ -1283,7 +1279,7 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     3) Lightbox
+     3) Lightbox (ARIA + dataset)
   ========================================================= */
   const LIGHTBOX = {
     root: $("#lightbox"),
@@ -1295,13 +1291,14 @@ Numerous private collections worldwide.</p>
 
     open(src, caption) {
       if (!this.root || !this.img || !src) return;
-      // 이미지 교체 시 깜빡임 최소화
       this.img.decoding = "async";
       this.img.src = src;
-
       if (this.cap) this.cap.textContent = caption || "";
+
       this.root.classList.add("is-open");
+      this.root.setAttribute("aria-hidden", "false");
       this.isOpen = true;
+
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
     },
@@ -1309,7 +1306,9 @@ Numerous private collections worldwide.</p>
     close() {
       if (!this.root) return;
       this.root.classList.remove("is-open");
+      this.root.setAttribute("aria-hidden", "true");
       this.isOpen = false;
+
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
     },
@@ -1318,6 +1317,13 @@ Numerous private collections worldwide.</p>
       if (!this.root) return;
 
       onTap(this.closeBtn, () => this.close());
+
+      // ✅ 배경 클릭 닫기(이미지/캡션 제외)
+      this.root.addEventListener("click", (e) => {
+        if (!this.isOpen) return;
+        const stage = e.target.closest(".lb-stage");
+        if (!stage) this.close();
+      }, { passive:true });
 
       document.addEventListener("keydown", (e) => {
         if (!this.isOpen) return;
@@ -1344,7 +1350,7 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     4) Works (ZOOM FIX + SPEED)
+     4) Works (FINAL: dataset-only open)
   ========================================================= */
   const WORKS = {
     raw: [],
@@ -1354,6 +1360,13 @@ Numerous private collections worldwide.</p>
     currentKey: "pray",
     currentIndex: 0,
     io: null,
+
+    // ✅ 현재 섹션에서 “실제 DOM 카드 목록”을 기준으로 이동한다
+    currentCards() {
+      const panel = this.panelEls[this.currentKey];
+      if (!panel) return [];
+      return $$(".w-card", panel);
+    },
 
     keyToSid(key){
       return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
@@ -1430,8 +1443,6 @@ Numerous private collections worldwide.</p>
 
     imgSrc(w) { return slash(w?.image || ""); },
 
-    // ✅ 확대(zoom) 문제 해결:
-    // - zoom 값이 없으면: /images/standard/ -> /images/zoom/ 추론
     zoomSrc(w) {
       const z = safeText(w?.zoom || "").trim();
       if (z) return slash(z);
@@ -1453,15 +1464,22 @@ Numerous private collections worldwide.</p>
       return [titlePlain, metaPlain].filter(Boolean).join(" · ");
     },
 
+    // ✅ 핵심: card에 “정답(zoom/cap)”을 박아둔다
     cardHTML(w, idx) {
       const src = this.imgSrc(w);
       if (!src) return "";
+      const zoom = this.zoomSrc(w);
+      const cap  = this.captionText(w);
+
       const titlePlain =
         LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
         : (w?.title_kr || w?.title_en || "");
 
       return `
-        <article class="w-card" data-idx="${idx}" data-zoom="${esc(this.zoomSrc(w))}">
+        <article class="w-card"
+          data-idx="${idx}"
+          data-zoom="${esc(zoom)}"
+          data-cap="${esc(cap)}">
           <img class="w-thumb" loading="lazy" decoding="async" src="${esc(src)}" alt="${esc(titlePlain)}">
           <div class="w-meta">
             <div class="w-title">${this.titleHTML(w)}</div>
@@ -1472,7 +1490,6 @@ Numerous private collections worldwide.</p>
     },
 
     attachLazyDecode(panel){
-      // 이미지 decode()가 가능한 브라우저에서 살짝 더 부드럽게
       const imgs = $$("img.w-thumb", panel);
       imgs.forEach(img => {
         if (!("decode" in img)) return;
@@ -1481,7 +1498,6 @@ Numerous private collections worldwide.</p>
     },
 
     setupObserver(panel){
-      // viewport 근처 카드 썸네일을 미리 디코드(가벼운 최적화)
       if (!("IntersectionObserver" in window)) return;
       if (this.io) { try { this.io.disconnect(); } catch(e) {} }
 
@@ -1529,40 +1545,19 @@ Numerous private collections worldwide.</p>
       this.attachLazyDecode(panel);
       this.setupObserver(panel);
 
+      // ✅ 클릭 시: 배열 재탐색 최소화 — dataset만 사용(“다른 그림” 원천 차단)
       $$(".w-card", panel).forEach(card => {
         onTap(card, () => {
           const idx = Number(card.getAttribute("data-idx") || "0");
           this.currentIndex = isNaN(idx) ? 0 : idx;
-          const w = this.currentWork();
-          if (!w) return;
 
-          const zoom = this.zoomSrc(w);
-          LIGHTBOX.open(zoom, this.captionText(w));
+          const zoom = (card.getAttribute("data-zoom") || "").trim();
+          const cap  = (card.getAttribute("data-cap") || "").trim();
 
-          // 다음/이전 zoom 미리 프리로드(체감 속도)
-          this.preloadNeighborZoom();
+          LIGHTBOX.open(zoom || "", cap || "");
+          this.preloadNeighborZoom(); // 체감 속도
         });
       });
-    },
-
-    currentArray() {
-      const sid = this.keyToSid(this.currentKey);
-      return this.bySection[sid] || [];
-    },
-
-    currentWork() {
-      const arr = this.currentArray();
-      if (!arr.length) return null;
-      const i = clamp(this.currentIndex, 0, arr.length-1);
-      return arr[i] || null;
-    },
-
-    step(delta) {
-      const arr = this.currentArray();
-      if (!arr.length) return null;
-      const n = arr.length;
-      this.currentIndex = (this.currentIndex + delta + n) % n;
-      return this.currentWork();
     },
 
     preload(url){
@@ -1572,15 +1567,37 @@ Numerous private collections worldwide.</p>
       img.src = url;
     },
 
+    // ✅ 이웃 프리로드도 dataset 기준(섹션 내 실제 카드 기준)
     preloadNeighborZoom(){
-      const arr = this.currentArray();
-      if (!arr.length) return;
-      const n = arr.length;
-      const i0 = this.currentIndex;
+      const cards = this.currentCards();
+      const n = cards.length;
+      if (!n) return;
+
+      const i0 = clamp(this.currentIndex, 0, n-1);
       const i1 = (i0 + 1) % n;
       const i2 = (i0 - 1 + n) % n;
-      this.preload(this.zoomSrc(arr[i1]));
-      this.preload(this.zoomSrc(arr[i2]));
+
+      const z1 = (cards[i1]?.getAttribute("data-zoom") || "").trim();
+      const z2 = (cards[i2]?.getAttribute("data-zoom") || "").trim();
+      this.preload(z1);
+      this.preload(z2);
+    },
+
+    // ✅ 좌/우 이동: 현재 섹션의 “카드 목록”을 기준으로 바꾼다
+    step(delta) {
+      const cards = this.currentCards();
+      const n = cards.length;
+      if (!n) return null;
+
+      this.currentIndex = (this.currentIndex + delta + n) % n;
+
+      const card = cards[this.currentIndex];
+      if (!card) return null;
+
+      return {
+        zoom: (card.getAttribute("data-zoom") || "").trim(),
+        cap:  (card.getAttribute("data-cap") || "").trim()
+      };
     },
 
     bindTabs() {
@@ -1604,7 +1621,7 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     5) Reports (KEY COMPAT: _ko/_kr 둘 다)
+     5) Reports (KEY COMPAT: _ko/_kr)
   ========================================================= */
   const REPORTS = {
     list: [],
@@ -1752,10 +1769,7 @@ Numerous private collections worldwide.</p>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>${esc(docTitle)}</title>
   <style>
-    :root{
-      --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd;
-      --gold:#e6c777;
-    }
+    :root{ --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd; --gold:#e6c777; }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       background: radial-gradient(1200px 600px at 50% -10%, rgba(170,205,255,.10), transparent 60%),
@@ -1875,11 +1889,8 @@ Numerous private collections worldwide.</p>
 
     open() {
       if (!this.modal) return;
-
-      // 글로벌 언어에 맞춰 기본값 지정(하이브리드는 KR 기본)
       if (LANG.mode === "english") this.setLocalLang("en");
       else this.setLocalLang("kr");
-
       this.modal.hidden = false;
     },
 
@@ -1913,7 +1924,6 @@ Numerous private collections worldwide.</p>
 
   /* =========================================================
      7) Sound + FFT (SAFE FALLBACK)
-     - 오디오 파일이 없으면 버튼 비활성화(깨지지 않게)
   ========================================================= */
   const SOUND = {
     btnPlay: null,
@@ -1996,7 +2006,7 @@ Numerous private collections worldwide.</p>
       this.analyser.getByteFrequencyData(this.data);
       let sum = 0;
       for (let i=0; i<this.data.length; i++) sum += this.data[i];
-      const avg = sum / this.data.length; // 0..255
+      const avg = sum / this.data.length;
       const pct = clamp((avg / 255) * 100, 0, 100);
 
       if (this.fftSpan) this.fftSpan.style.width = pct.toFixed(1) + "%";
@@ -2017,9 +2027,7 @@ Numerous private collections worldwide.</p>
         if (this.btnStop) this.btnStop.disabled = false;
         if (this.raf) cancelAnimationFrame(this.raf);
         this.meter();
-      } catch(e) {
-        // iOS 정책 등으로 실패 가능: 조용히 유지
-      }
+      } catch(e) {}
     },
 
     stop() {
@@ -2056,9 +2064,9 @@ Numerous private collections worldwide.</p>
     await SOUND.init();
 
     LIGHTBOX.bind((delta) => {
-      const w = WORKS.step(delta);
-      if (!w) return;
-      LIGHTBOX.open(WORKS.zoomSrc(w), WORKS.captionText(w));
+      const next = WORKS.step(delta);
+      if (!next) return;
+      LIGHTBOX.open(next.zoom, next.cap);
       WORKS.preloadNeighborZoom();
     });
 
@@ -2084,6 +2092,3 @@ Numerous private collections worldwide.</p>
   }
 })();
 </script>
-
-</body>
-</html>

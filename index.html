@@ -1,6 +1,6 @@
 <!-- ==========================================================
-① HEAD / STYLE  (REBUILD v2 + GOLD BOOST — CENTER FIX / BUTTON SIZE TUNE / NO BLUR GOLD)
-- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 번짐 0 + 존재감 ↑ (4) 접근성/속도
+① HEAD / STYLE  (FULL — CENTER FIX / BUTTON SIZE TUNE / STRONG GOLD / NO BLUR)
+- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 존재감 강화(번짐 0) (4) 접근성/속도
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -37,9 +37,9 @@
       --bg1:#070A14;
       --bg2:#0A1022;
 
-      /* ✅ GOLD BOOST (번짐 없이 존재감만 상승) */
-      --gold:#E3C97A;   /* was #D7B86A */
-      --gold2:#F2E3B0;  /* was #E9D59B */
+      /* ✅ GOLD 강화(번짐 없이 “단단한 존재감”) */
+      --gold:#E5C66E;     /* 기존보다 조금 더 밝고 선명 */
+      --gold2:#FFE7A8;    /* 타이틀/링크용 하이라이트 */
       --blue:#79A7FF;
 
       --ink:#EDE3C9;
@@ -48,7 +48,7 @@
 
       --card:rgba(255,255,255,.035);
       --card2:rgba(255,255,255,.055);
-      --line:rgba(227,201,122,.24);
+      --line:rgba(229,198,110,.26);  /* gold 기반 라인 강화 */
       --line2:rgba(121,167,255,.18);
 
       --shadow: 0 16px 40px rgba(0,0,0,.45);
@@ -62,7 +62,7 @@
 
       --maxw: 1120px;
 
-      /* 금빛 “단단함(번짐 없음)” 엣지 */
+      /* ✅ 번짐 0용 엣지(검은 “컷”) */
       --gold-edge: rgba(0,0,0,.82);
       --gold-edge2: rgba(0,0,0,.55);
 
@@ -78,7 +78,7 @@
     body{
       margin:0;
       background:
-        radial-gradient(1200px 700px at 50% 0%, rgba(227,201,122,.11), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        radial-gradient(1200px 700px at 50% 0%, rgba(229,198,110,.13), rgba(121,167,255,.07) 40%, rgba(0,0,0,0) 72%),
         linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
       color:var(--ink);
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -130,7 +130,7 @@
     }
 
     /* =========================================================
-       Header / Nav (CENTER FIX + SIZE TUNE)
+       Header / Nav (CENTER FIX + SIZE TUNE + STRONG GOLD)
     ========================================================= */
     header{
       position:sticky;
@@ -141,7 +141,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       background: linear-gradient(180deg, rgba(5,8,18,.92), rgba(5,8,18,.62));
-      border-bottom:1px solid rgba(227,201,122,.18);
+      border-bottom:1px solid rgba(229,198,110,.22);
     }
 
     header .brand,
@@ -152,25 +152,27 @@
       text-align:center;
     }
 
-    /* ✅ GOLD BOOST: 브랜드 텍스트 “선명/단단” 강화 (번짐 0) */
     header .brand{
       font-weight: 950;
       color: var(--gold2);
-      letter-spacing: .72px;
-      font-size: 15px;
+      letter-spacing: .78px;
+      font-size: 15.5px;
       line-height: 1.25;
-      -webkit-text-stroke: .45px rgba(0,0,0,.55);
+
+      /* ✅ “번짐 없이” 강한 금빛 */
+      -webkit-text-stroke: .45px rgba(0,0,0,.42);
       text-shadow:
         0 1px 0 var(--gold-edge),
-        0 -1px 0 var(--gold-edge2);
+        0 -1px 0 var(--gold-edge2),
+        0 0 0 rgba(0,0,0,0);
     }
 
     header .brand-sub{
       margin-top: 6px;
       font-size: 12px;
-      letter-spacing: .34px;
-      color: rgba(237,227,201,.78);
-      text-shadow: 0 1px 0 rgba(0,0,0,.55);
+      letter-spacing: .36px;
+      color: rgba(237,227,201,.82);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
 
     nav.primary{
@@ -185,7 +187,7 @@
 
     nav.primary button{
       appearance:none;
-      border: 1px solid rgba(227,201,122,.50);
+      border: 1px solid rgba(229,198,110,.34);
       background: rgba(255,255,255,.028);
       color: var(--gold2);
       padding: 8px var(--btnPadX);
@@ -199,16 +201,14 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     nav.primary button:hover{
-      background: rgba(227,201,122,.10);
-      border-color: rgba(227,201,122,.70);
+      background: rgba(229,198,110,.10);
+      border-color: rgba(229,198,110,.60);
       box-shadow: 0 10px 24px rgba(0,0,0,.36);
     }
     nav.primary button.active{
-      background: rgba(227,201,122,.18);
-      border-color: rgba(227,201,122,.92);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,.65),
-        0 12px 28px rgba(0,0,0,.40);
+      background: rgba(229,198,110,.14);
+      border-color: rgba(255,231,168,.70);
+      box-shadow: 0 12px 28px rgba(0,0,0,.40);
     }
     nav.primary button:active{ transform: translateY(1px); }
     nav.primary button:focus-visible{
@@ -237,16 +237,16 @@
       cursor:pointer;
       min-height: 38px;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.64);
     }
     .lang button.active{
-      border-color: rgba(227,201,122,.92);
-      background: rgba(227,201,122,.18);
+      border-color: rgba(255,231,168,.70);
+      background: rgba(229,198,110,.14);
       color: var(--gold2);
     }
     .lang button:hover{
-      border-color: rgba(227,201,122,.62);
-      background: rgba(227,201,122,.10);
+      border-color: rgba(229,198,110,.52);
+      background: rgba(229,198,110,.10);
     }
     .lang button:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -282,8 +282,7 @@
       font-size: 20px;
       letter-spacing:.45px;
       color: var(--gold2);
-      font-weight: 950;
-      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      -webkit-text-stroke: .35px rgba(0,0,0,.34);
       text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .poemwrap{
@@ -291,7 +290,7 @@
       padding: 14px 14px;
       border-radius: 14px;
       background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
-      border: 1px solid rgba(227,201,122,.16);
+      border: 1px solid rgba(229,198,110,.16);
     }
     .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
 
@@ -302,8 +301,7 @@
     #works h2{
       margin:0;
       color:var(--gold2);
-      font-weight: 950;
-      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      -webkit-text-stroke: .35px rgba(0,0,0,.34);
       text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .tabs{
@@ -315,7 +313,7 @@
     }
     .tabs .tab{
       appearance:none;
-      border:1px solid rgba(227,201,122,.40);
+      border:1px solid rgba(229,198,110,.26);
       background: rgba(255,255,255,.02);
       color:rgba(237,227,201,.92);
       border-radius: 999px;
@@ -328,13 +326,13 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .tabs .tab.active{
-      border-color: rgba(227,201,122,.92);
-      background: rgba(227,201,122,.18);
+      border-color: rgba(255,231,168,.70);
+      background: rgba(229,198,110,.14);
       color: var(--gold2);
     }
     .tabs .tab:hover{
-      border-color: rgba(227,201,122,.62);
-      background: rgba(227,201,122,.10);
+      border-color: rgba(229,198,110,.50);
+      background: rgba(229,198,110,.10);
     }
     .tabs .tab:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -366,8 +364,8 @@
     }
     .w-card:hover{
       transform: translateY(-1px);
-      border-color: rgba(227,201,122,.30);
-      background: rgba(227,201,122,.06);
+      border-color: rgba(229,198,110,.34);
+      background: rgba(229,198,110,.06);
     }
     .w-thumb{
       width:100%;
@@ -411,8 +409,7 @@
     #reports h2{
       margin:0;
       color:var(--gold2);
-      font-weight: 950;
-      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      -webkit-text-stroke: .35px rgba(0,0,0,.34);
       text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .reports-omega{ margin-top:14px; }
@@ -444,19 +441,19 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-tab.is-active{
-      border-color: rgba(227,201,122,.92);
-      background: rgba(227,201,122,.18);
+      border-color: rgba(255,231,168,.70);
+      background: rgba(229,198,110,.14);
       color: var(--gold2);
     }
     .r-tab:hover{
-      border-color: rgba(227,201,122,.62);
-      background: rgba(227,201,122,.10);
+      border-color: rgba(229,198,110,.46);
+      background: rgba(229,198,110,.10);
     }
 
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(227,201,122,.50);
-      background: rgba(227,201,122,.14);
+      border:1px solid rgba(229,198,110,.34);
+      background: rgba(229,198,110,.12);
       color: var(--gold2);
       border-radius: 999px;
       padding:8px 12px;
@@ -464,7 +461,7 @@
       cursor:pointer;
       min-height: 38px;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
     .r-grid{
@@ -491,14 +488,14 @@
     }
     .r-item:hover{
       transform: translateY(-1px);
-      border-color: rgba(227,201,122,.30);
-      background: rgba(227,201,122,.06);
+      border-color: rgba(229,198,110,.34);
+      background: rgba(229,198,110,.06);
     }
     .r-item .t{
       font-weight: 950;
       color: rgba(237,227,201,.94);
       line-height:1.35;
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-item .m{
       margin-top:6px;
@@ -514,6 +511,7 @@
       white-space: pre-line;
     }
 
+    /* report viewer minimal */
     .r-viewer{
       margin-top: 12px;
       padding: 14px 14px;
@@ -542,7 +540,7 @@
       width: calc(100% - 28px);
       margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
       background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
-      border:1px solid rgba(227,201,122,.18);
+      border:1px solid rgba(229,198,110,.22);
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -558,7 +556,7 @@
       color: var(--gold2);
       font-size: 15px;
       font-weight: 950;
-      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      -webkit-text-stroke: .35px rgba(0,0,0,.34);
       text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .bio-lang{ display:flex; gap:8px; align-items:center; }
@@ -577,13 +575,13 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .bio-lang .lang.active{
-      border-color: rgba(227,201,122,.92);
-      background: rgba(227,201,122,.18);
+      border-color: rgba(255,231,168,.70);
+      background: rgba(229,198,110,.14);
       color: var(--gold2);
     }
     .bio-close{
       appearance:none;
-      border:1px solid rgba(227,201,122,.45);
+      border:1px solid rgba(229,198,110,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       width: 42px;
@@ -672,13 +670,14 @@
       height: 46px;
       border-radius: 14px;
       appearance:none;
-      border:1px solid rgba(227,201,122,.45);
+      border:1px solid rgba(229,198,110,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-size: 18px;
       font-weight: 950;
       cursor:pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
 
     /* =========================================================
@@ -698,7 +697,7 @@
       display:block;
       height:100%;
       width:0%;
-      background: rgba(227,201,122,.65);
+      background: rgba(229,198,110,.62);
       transition: width .08s linear;
     }
 
@@ -715,7 +714,7 @@
       height: 48px;
       border-radius: 16px;
       appearance:none;
-      border: 1px solid rgba(227,201,122,.38);
+      border: 1px solid rgba(229,198,110,.34);
       background: rgba(0,0,0,0);
       color: var(--gold2);
       font-size: 18px;
@@ -734,7 +733,7 @@
       max-width: var(--maxw);
       margin: 18px auto 0;
       padding: 14px 18px calc(16px + var(--safe-bot));
-      border-top:1px solid rgba(227,201,122,.16);
+      border-top:1px solid rgba(229,198,110,.20);
       background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
       border-radius: 18px;
       text-align:center;
@@ -753,18 +752,18 @@
       min-height: 44px;
       padding: 0 14px;
       border-radius: 999px;
-      border:1px solid rgba(227,201,122,.45);
+      border:1px solid rgba(229,198,110,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-weight: 950;
       letter-spacing:.22px;
       text-decoration:none;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
+      text-shadow: 0 1px 0 rgba(0,0,0,.72);
     }
     footer .links a:hover{
-      background: rgba(227,201,122,.18);
-      border-color: rgba(227,201,122,.92);
+      background: rgba(229,198,110,.14);
+      border-color: rgba(255,231,168,.70);
       text-decoration:none;
     }
     footer .links a:active{ transform: translateY(1px); }

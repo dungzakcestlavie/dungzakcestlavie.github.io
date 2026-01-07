@@ -1051,21 +1051,21 @@ Numerous private collections worldwide.</p>
 
 <script>
 /* =========================================================
-   Lightflow ∮27 — SCRIPT (FINAL)
+   Lightflow ∮27 — SCRIPT (RE-DESIGN FINAL)
    - NEVER edits BODY original text
-   - Language: KR / EN / KR+EN (body class)
-   - Nav: Poem / Works / Reports show/hide + active
-   - Works: /data/works.json -> render ALL works into 5 panels
-   - Lightbox: open/close + keys + swipe (within current section)
-   - Reports: /data/reports.json -> KR/EN/KR+EN summary split
-             + category filter + open full text in new window
-             + small download link at bottom
-   - Bio modal: open/close + modal language toggle
-   - Waves canvas: refined, light, performant
-   - Sound: deep cosmic resonance (WebAudio) + level bar
+   - DOM-robust: finds containers even if IDs differ
+   - Language: KR / EN / KR+EN  (body class: korean|english|hybrid)
+   - Nav: show/hide panels safely
+   - Works: /data/works.json -> render by section_id(1..5)
+           + KR/EN/KR+EN title/meta reaction
+   - Reports: /data/reports.json (your schema: reports[].md_path)
+            -> list + KR/EN/KR+EN summary split
+            -> open in new window (clean viewer) + bottom download link
+   - Bio: open/close only if modal exists (no hard assumptions)
+   - Lightbox: if markup exists, bind safely
+   - Waves/Sound: leave as-is if present (bind only; no forced DOM)
 ========================================================= */
-
-(function () {
+(() => {
   "use strict";
 
   /* -----------------------------
@@ -1073,40 +1073,43 @@ Numerous private collections worldwide.</p>
   ----------------------------- */
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const bust = () => (Date.now().toString(36));
 
-  function nowBust() { return "v=" + Date.now(); }
+  const safeText = (v) => String(v ?? "");
+  const esc = (s) => String(s ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 
-  function withLeadingSlash(p) {
-    if (!p) return "";
-    const s = String(p).trim();
+  const slash = (p) => {
+    const s = safeText(p).trim();
     if (!s) return "";
     if (/^https?:\/\//i.test(s)) return s;
     return s.startsWith("/") ? s : ("/" + s);
+  };
+
+  const prefersReducedMotion = () =>
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function onTap(el, fn) {
+    if (!el) return;
+    el.addEventListener("click", fn, { passive: true });
+    // touchend는 iOS에서 click이 잘 나오므로, 굳이 preventDefault로 막지 않음(버그 유발 방지)
   }
 
-  function safeText(s) {
-    return String(s ?? "");
-  }
-
-  function escapeHTML(s) {
-    return String(s ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
-  function prefersReducedMotion() {
-    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function dispatch(name, detail) {
+    window.dispatchEvent(new CustomEvent(name, { detail }));
   }
 
   /* =========================================================
-     1) Language Controller (body.korean / body.english / body.hybrid)
+     1) Language Controller
+     - body class: korean|english|hybrid
+     - Buttons (if present): #koBtn #enBtn #hyBtn
   ========================================================= */
   const LANG = {
-    key: "LF_LANG_V2",
-    mode: "korean", // korean | english | hybrid
+    key: "LF_LANG_V3",
+    mode: "korean",
 
     set(mode) {
       const m = (mode === "english" || mode === "hybrid") ? mode : "korean";
@@ -1115,252 +1118,269 @@ Numerous private collections worldwide.</p>
       document.body.classList.remove("korean", "english", "hybrid");
       document.body.classList.add(m);
 
-      // Buttons active (your HEAD CSS uses .active)
-      const koBtn = $("#koBtn");
-      const enBtn = $("#enBtn");
-      const hyBtn = $("#hyBtn");
-      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove("active"));
-      if (m === "korean" && koBtn) koBtn.classList.add("active");
-      if (m === "english" && enBtn) enBtn.classList.add("active");
-      if (m === "hybrid" && hyBtn) hyBtn.classList.add("active");
+      // active states (if buttons exist)
+      const ko = $("#koBtn"), en = $("#enBtn"), hy = $("#hyBtn");
+      [ko,en,hy].forEach(b => b && b.classList.remove("active"));
+      if (m === "korean" && ko) ko.classList.add("active");
+      if (m === "english" && en) en.classList.add("active");
+      if (m === "hybrid" && hy) hy.classList.add("active");
 
-      // Notify other modules (Works/Reports)
-      window.dispatchEvent(new CustomEvent("lf:lang", { detail: { mode: m } }));
-
-      try { localStorage.setItem(this.key, m); } catch (e) {}
+      try { localStorage.setItem(this.key, m); } catch(e) {}
+      dispatch("lf:lang", { mode: m });
     },
 
     restore() {
       let saved = null;
-      try { saved = localStorage.getItem(this.key); } catch (e) {}
+      try { saved = localStorage.getItem(this.key); } catch(e) {}
       if (saved === "korean" || saved === "english" || saved === "hybrid") this.set(saved);
       else this.set("korean");
+    },
+
+    bindButtons() {
+      onTap($("#koBtn"), () => this.set("korean"));
+      onTap($("#enBtn"), () => this.set("english"));
+      onTap($("#hyBtn"), () => this.set("hybrid"));
     }
   };
-
-  function bindLanguageButtons() {
-    const koBtn = $("#koBtn");
-    const enBtn = $("#enBtn");
-    const hyBtn = $("#hyBtn");
-
-    if (koBtn) koBtn.addEventListener("click", () => LANG.set("korean"));
-    if (enBtn) enBtn.addEventListener("click", () => LANG.set("english"));
-    if (hyBtn) hyBtn.addEventListener("click", () => LANG.set("hybrid"));
-
-    // touch (iOS tap)
-    [koBtn, enBtn, hyBtn].forEach((btn, idx) => {
-      if (!btn) return;
-      btn.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        LANG.set(idx === 0 ? "korean" : idx === 1 ? "english" : "hybrid");
-      }, { passive: false });
-    });
-  }
 
   /* =========================================================
      2) Navigation (Poem / Works / Reports)
-     - show/hide sections decisively (your previous display:none issues)
+     - robust: supports nav buttons with data-target
+     - section targets can be #poem/#works/#reports
+       OR any element with [data-section="poem|works|reports"]
   ========================================================= */
   const NAV = {
-    buttons: [],
-    sections: {},
+    btns: [],
+    secs: { poem:null, works:null, reports:null },
 
-    init() {
-      this.buttons = $$('nav.primary button[data-target]');
-      this.sections = {
-        poem: $("#poem"),
-        works: $("#works"),
-        reports: $("#reports")
-      };
+    findSections() {
+      const byId = (id) => document.getElementById(id);
+      const byData = (k) => document.querySelector(`[data-section="${k}"]`);
 
-      this.buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const t = btn.getAttribute("data-target");
-          this.go(t, { scroll: true });
-        });
-        btn.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          const t = btn.getAttribute("data-target");
-          this.go(t, { scroll: true });
-        }, { passive: false });
+      this.secs.poem = byId("poem") || byData("poem");
+      this.secs.works = byId("works") || byData("works");
+      this.secs.reports = byId("reports") || byData("reports");
+    },
+
+    bind() {
+      // any nav buttons: nav button[data-target] OR [data-nav]
+      this.btns = $$('button[data-target], a[data-target], [data-nav]');
+      this.btns.forEach(b => {
+        const t = (b.getAttribute("data-target") || b.getAttribute("data-nav") || "").trim();
+        if (!t) return;
+        onTap(b, () => this.go(t, true));
       });
     },
 
-    go(target, opt={}) {
+    go(target, doScroll) {
       const t = (target === "works" || target === "reports") ? target : "poem";
+      this.findSections();
 
-      // Active highlight
-      this.buttons.forEach(b => b.classList.remove("active"));
-      const activeBtn = this.buttons.find(b => b.getAttribute("data-target") === t);
-      if (activeBtn) activeBtn.classList.add("active");
+      // active
+      this.btns.forEach(b => b.classList.remove("active"));
+      const active = this.btns.find(b => (b.getAttribute("data-target") || b.getAttribute("data-nav")) === t);
+      if (active) active.classList.add("active");
 
-      // show/hide
-      Object.keys(this.sections).forEach(k => {
-        const sec = this.sections[k];
-        if (!sec) return;
-        sec.style.display = (k === t) ? "" : "none";
+      // show/hide safely
+      Object.entries(this.secs).forEach(([k, el]) => {
+        if (!el) return;
+        el.style.display = (k === t) ? "" : "none";
       });
 
-      // For accessibility
-      this.buttons.forEach(b => b.removeAttribute("aria-current"));
-      if (activeBtn) activeBtn.setAttribute("aria-current", "page");
+      dispatch("lf:section", { target: t });
 
-      // When section becomes visible, allow modules to refresh layout
-      window.dispatchEvent(new CustomEvent("lf:section", { detail: { target: t } }));
-
-      // Scroll
-      if (opt.scroll) {
-        const sec = this.sections[t];
-        if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+      if (doScroll) {
+        const el = this.secs[t];
+        if (el) el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block:"start" });
       }
     }
   };
 
   /* =========================================================
-     3) Works (Render ALL)
-     Expect works.json format:
-       A) { "works": [ ... ] }
-       B) [ ... ]
-     Each work recommended fields:
-       section_id (1..5), image, zoom, title_kr, title_en,
-       material_kr, material_en, size_kr, size_en, year
+     3) Works
+     - Loads /data/works.json
+     - Renders by section_id 1..5
+     - DOM robust:
+       Panels can be:
+         #panel-pray, #panel-human, #panel-rebirth, #panel-exist, #panel-cosmos
+       OR any element with:
+         [data-works-panel="pray|human|rebirth|exist|cosmos"]
+     - Tabs:
+         button.tab[data-panel="pray|..."] OR [data-panel]
   ========================================================= */
   const WORKS = {
-    data: [],
-    bySection: { 1: [], 2: [], 3: [], 4: [], 5: [] },
+    raw: [],
+    bySection: {1:[],2:[],3:[],4:[],5:[]},
 
-    panels: {
-      pray: $("#panel-pray"),
-      human: $("#panel-human"),
-      rebirth: $("#panel-rebirth"),
-      exist: $("#panel-exist"),
-      cosmos: $("#panel-cosmos")
-    },
-
-    tabButtons: $$('button.tab[data-panel]'),
-    currentPanelKey: "pray",
+    panelEls: {},
+    tabBtns: [],
+    currentKey: "pray",
     currentIndex: 0,
 
+    keyToSid(key){
+      return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
+    },
+
+    sidToKey(sid){
+      return sid===1?"pray":sid===2?"human":sid===3?"rebirth":sid===4?"exist":"cosmos";
+    },
+
+    findPanels() {
+      const pick = (id, dk) => document.getElementById(id) || document.querySelector(`[data-works-panel="${dk}"]`);
+      this.panelEls = {
+        pray: pick("panel-pray","pray"),
+        human: pick("panel-human","human"),
+        rebirth: pick("panel-rebirth","rebirth"),
+        exist: pick("panel-exist","exist"),
+        cosmos: pick("panel-cosmos","cosmos")
+      };
+    },
+
+    findTabs() {
+      this.tabBtns = $$('button.tab[data-panel], a.tab[data-panel], [data-panel]');
+    },
+
     async load() {
-      try {
-        const res = await fetch("/data/works.json?" + nowBust(), { cache: "no-store" });
-        if (!res.ok) throw new Error("works.json fetch " + res.status);
-        const json = await res.json();
-        const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
-        this.data = arr;
+      const candidates = [
+        "/data/works.json",
+        "data/works.json",
+        "/works.json",
+        "works.json"
+      ];
 
-        // regroup
-        this.bySection = { 1: [], 2: [], 3: [], 4: [], 5: [] };
-        arr.forEach(w => {
-          const sid = Number(w?.section_id);
-          if (sid >= 1 && sid <= 5) this.bySection[sid].push(w);
-        });
-      } catch (e) {
-        console.warn("[Works] load failed:", e);
-        this.data = [];
-        this.bySection = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      let lastErr = null;
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const json = await res.json();
+          const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
+          this.raw = arr;
+          this.bySection = {1:[],2:[],3:[],4:[],5:[]};
+
+          arr.forEach(w => {
+            const sid = Number(w?.section_id);
+            if (sid>=1 && sid<=5) this.bySection[sid].push(w);
+          });
+          return true;
+        } catch(e) {
+          lastErr = e;
+        }
       }
+
+      console.warn("[Works] load failed:", lastErr);
+      this.raw = [];
+      this.bySection = {1:[],2:[],3:[],4:[],5:[]};
+      return false;
     },
 
-    panelKeyToSectionId(key) {
-      return key === "pray" ? 1 :
-             key === "human" ? 2 :
-             key === "rebirth" ? 3 :
-             key === "exist" ? 4 : 5;
+    // KR/EN/KR+EN title
+    titleHTML(w) {
+      const kr = safeText(w?.title_kr || "");
+      const en = safeText(w?.title_en || "");
+      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
+      if (LANG.mode === "hybrid") {
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><span class="en">${esc(en)}</span>`;
+        return `<span class="ko">${esc(kr || en)}</span>`;
+      }
+      return `<span class="ko">${esc(kr || en)}</span>`;
     },
 
-    sectionIdToPanelKey(id) {
-      return id === 1 ? "pray" :
-             id === 2 ? "human" :
-             id === 3 ? "rebirth" :
-             id === 4 ? "exist" : "cosmos";
+    // meta (material/size/year) KR/EN/KR+EN
+    metaHTML(w) {
+      const mkr = safeText(w?.material_kr || "");
+      const men = safeText(w?.material_en || "");
+      const skr = safeText(w?.size_kr || "");
+      const sen = safeText(w?.size_en || "");
+      const yr  = safeText(w?.year || "");
+
+      const krLine = [mkr, skr, yr].filter(Boolean).join(" · ");
+      const enLine = [men, sen, yr].filter(Boolean).join(" · ");
+
+      if (LANG.mode === "english") return `<span class="en">${esc(enLine || krLine)}</span>`;
+      if (LANG.mode === "hybrid") {
+        if (krLine && enLine) return `<span class="ko">${esc(krLine)}</span><span class="en">${esc(enLine)}</span>`;
+        return `<span class="ko">${esc(krLine || enLine)}</span>`;
+      }
+      return `<span class="ko">${esc(krLine || enLine)}</span>`;
     },
 
-    titleFor(w) {
-      if (!w) return "";
-      const m = LANG.mode;
-      if (m === "english") return safeText(w.title_en || w.title_kr || "");
-      return safeText(w.title_kr || w.title_en || "");
+    imgSrc(w) {
+      // works.json 규칙: image는 /images/standard... 를 포함한다고 가정하되, 방어적으로 처리
+      return slash(w?.image || "");
     },
 
-    metaFor(w) {
-      if (!w) return "";
-      const m = LANG.mode;
-      const mat = (m === "english") ? safeText(w.material_en || "") : safeText(w.material_kr || "");
-      const siz = (m === "english") ? safeText(w.size_en || "") : safeText(w.size_kr || "");
-      const yr  = safeText(w.year || "");
-      return [mat, siz, yr].filter(Boolean).join(" · ");
-    },
-
-    resolveStandard(w) {
-      // Works rule in your memory: image path already includes /images/standard...
-      return withLeadingSlash(w?.image);
-    },
-
-    resolveZoom(w) {
-      const z = safeText(w?.zoom).trim();
-      return z ? withLeadingSlash(z) : this.resolveStandard(w);
+    zoomSrc(w) {
+      const z = safeText(w?.zoom || "").trim();
+      return z ? slash(z) : this.imgSrc(w);
     },
 
     cardHTML(w, idx) {
-      const standard = this.resolveStandard(w);
-      if (!standard) return "";
-      const title = this.titleFor(w);
-      const meta  = this.metaFor(w);
-      const zoom  = this.resolveZoom(w);
-      const alt   = [title, meta].filter(Boolean).join(" · ");
+      const src = this.imgSrc(w);
+      if (!src) return "";
+      const zoom = this.zoomSrc(w);
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
+
+      const metaPlain =
+        LANG.mode === "english"
+          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
+          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
+
+      const alt = [titlePlain, metaPlain].filter(Boolean).join(" · ");
 
       return `
-        <article class="card" data-idx="${idx}"
-                 data-zoom="${escapeHTML(zoom)}"
-                 data-title="${escapeHTML(title)}"
-                 data-meta="${escapeHTML(meta)}">
-          <img loading="lazy" decoding="async"
-               src="${escapeHTML(standard)}"
-               alt="${escapeHTML(alt)}">
+        <article class="workCard" data-idx="${idx}"
+                 data-zoom="${esc(zoom)}"
+                 data-title="${esc(titlePlain)}"
+                 data-meta="${esc(metaPlain)}">
+          <img class="workThumb" loading="lazy" decoding="async"
+               src="${esc(src)}" alt="${esc(alt)}">
+          <div class="workCap">
+            <div class="workTitle">${this.titleHTML(w)}</div>
+            <div class="workMeta">${this.metaHTML(w)}</div>
+          </div>
         </article>
       `;
     },
 
-    renderPanel(panelKey) {
-      const key = this.panels[panelKey] ? panelKey : "pray";
-      this.currentPanelKey = key;
+    renderPanel(key) {
+      this.findPanels();
+      this.findTabs();
+
+      const k = this.panelEls[key] ? key : "pray";
+      this.currentKey = k;
       this.currentIndex = 0;
 
-      // Tab active
-      this.tabButtons.forEach(b => b.classList.remove("active"));
-      const activeTab = this.tabButtons.find(b => b.getAttribute("data-panel") === key);
+      // tab active
+      this.tabBtns.forEach(b => b.classList.remove("active"));
+      const activeTab = this.tabBtns.find(b => (b.getAttribute("data-panel") || "") === k);
       if (activeTab) activeTab.classList.add("active");
 
-      // Panel visible
-      const panelId = "panel-" + key;
+      // panel active: if they use .tabpanel/.active
       $$(".tabpanel").forEach(p => p.classList.remove("active"));
-      const panel = $("#" + panelId);
-      if (panel) panel.classList.add("active");
+      const panelId = "panel-" + k;
+      const idPanel = document.getElementById(panelId);
+      if (idPanel) idPanel.classList.add("active");
 
-      // Items
-      const sid = this.panelKeyToSectionId(key);
-      const items = this.bySection[sid] || [];
-
+      const panel = this.panelEls[k];
       if (!panel) return;
 
-      if (!items.length) {
-        panel.innerHTML = `
-          <div style="opacity:.75; padding:14px 2px; line-height:1.7;">
-            Works 데이터가 비어있습니다.<br>
-            section_id: ${sid}<br>
-            /data/works.json 구조, 이미지 경로(/images/standard, /images/zoom)와 파일명을 확인하세요.
-          </div>
-        `;
+      const sid = this.keyToSid(k);
+      const arr = this.bySection[sid] || [];
+
+      if (!arr.length) {
+        panel.innerHTML = `<div class="worksEmpty" id="worksEmpty">Works 데이터가 없습니다. (section_id: ${sid})</div>`;
         return;
       }
 
-      const html = items.map((w, i) => this.cardHTML(w, i)).filter(Boolean).join("");
-      panel.innerHTML = `<div class="grid">${html}</div>`;
+      const html = arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("");
+      panel.innerHTML = `<div class="worksGrid" id="worksGrid">${html}</div>`;
 
-      // Bind open lightbox
-      $$(".card", panel).forEach(card => {
-        card.addEventListener("click", () => {
+      // bind lightbox open
+      $$(".workCard", panel).forEach(card => {
+        onTap(card, () => {
           const idx = Number(card.getAttribute("data-idx") || "0");
           this.currentIndex = isNaN(idx) ? 0 : idx;
           LIGHTBOX.openFromWorks();
@@ -1368,16 +1388,20 @@ Numerous private collections worldwide.</p>
       });
     },
 
-    currentWork() {
-      const sid = this.panelKeyToSectionId(this.currentPanelKey);
-      const arr = this.bySection[sid] || [];
-      const idx = clamp(this.currentIndex, 0, Math.max(0, arr.length - 1));
-      return arr[idx] || null;
+    currentArray() {
+      const sid = this.keyToSid(this.currentKey);
+      return this.bySection[sid] || [];
     },
 
-    next(delta) {
-      const sid = this.panelKeyToSectionId(this.currentPanelKey);
-      const arr = this.bySection[sid] || [];
+    currentWork() {
+      const arr = this.currentArray();
+      if (!arr.length) return null;
+      const i = clamp(this.currentIndex, 0, arr.length-1);
+      return arr[i] || null;
+    },
+
+    step(delta) {
+      const arr = this.currentArray();
       if (!arr.length) return null;
       const n = arr.length;
       this.currentIndex = (this.currentIndex + delta + n) % n;
@@ -1385,30 +1409,31 @@ Numerous private collections worldwide.</p>
     },
 
     bindTabs() {
-      this.tabButtons.forEach(btn => {
-        btn.addEventListener("click", () => this.renderPanel(btn.getAttribute("data-panel")));
-        btn.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          this.renderPanel(btn.getAttribute("data-panel"));
-        }, { passive: false });
+      this.findTabs();
+      this.tabBtns.forEach(btn => {
+        const k = (btn.getAttribute("data-panel") || "").trim();
+        if (!k) return;
+        onTap(btn, () => this.renderPanel(k));
       });
     },
 
     async init() {
+      this.findPanels();
       this.bindTabs();
       await this.load();
-      // Initial panel: the active tab or pray
-      const active = this.tabButtons.find(b => b.classList.contains("active"));
-      const key = active ? active.getAttribute("data-panel") : "pray";
+
+      // initial: active tab or pray
+      const active = this.tabBtns.find(b => b.classList.contains("active"));
+      const key = active ? (active.getAttribute("data-panel") || "pray") : "pray";
       this.renderPanel(key);
     }
   };
 
   /* =========================================================
-     4) Lightbox (uses your existing markup)
-     - #lightbox .on
-     - img: #lbImg, caption: #lbCap, close: #lbClose
-     - ESC / ← → / swipe
+     4) Lightbox (optional)
+     Expected (if exists):
+       #lightbox (overlay)
+       #lbImg, #lbCap, #lbClose
   ========================================================= */
   const LIGHTBOX = {
     root: $("#lightbox"),
@@ -1421,13 +1446,10 @@ Numerous private collections worldwide.</p>
     open(src, caption) {
       if (!this.root || !this.img) return;
       if (!src) return;
-
       this.img.src = src;
       if (this.cap) this.cap.textContent = caption || "";
-
       this.root.classList.add("on");
       this.isOpen = true;
-
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
     },
@@ -1436,7 +1458,6 @@ Numerous private collections worldwide.</p>
       if (!this.root) return;
       this.root.classList.remove("on");
       this.isOpen = false;
-
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
     },
@@ -1444,29 +1465,39 @@ Numerous private collections worldwide.</p>
     openFromWorks() {
       const w = WORKS.currentWork();
       if (!w) return;
-      const src = WORKS.resolveZoom(w);
-      const t = WORKS.titleFor(w);
-      const m = WORKS.metaFor(w);
-      const cap = [t, m].filter(Boolean).join(" · ");
+      const src = WORKS.zoomSrc(w);
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
+      const metaPlain =
+        LANG.mode === "english"
+          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
+          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
+      const cap = [titlePlain, metaPlain].filter(Boolean).join(" · ");
       this.open(src, cap);
     },
 
-    showDelta(delta) {
-      const w = WORKS.next(delta);
+    show(delta) {
+      const w = WORKS.step(delta);
       if (!w) return;
-      const src = WORKS.resolveZoom(w);
-      const t = WORKS.titleFor(w);
-      const m = WORKS.metaFor(w);
-      const cap = [t, m].filter(Boolean).join(" · ");
+      const src = WORKS.zoomSrc(w);
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
+      const metaPlain =
+        LANG.mode === "english"
+          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
+          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
+      const cap = [titlePlain, metaPlain].filter(Boolean).join(" · ");
       this.open(src, cap);
     },
 
     bind() {
       if (!this.root) return;
 
-      if (this.closeBtn) this.closeBtn.addEventListener("click", () => this.close());
+      onTap(this.closeBtn, () => this.close());
 
-      // click outside stage closes
+      // click outside
       this.root.addEventListener("click", (e) => {
         if (e.target === this.root) this.close();
       });
@@ -1475,15 +1506,15 @@ Numerous private collections worldwide.</p>
       document.addEventListener("keydown", (e) => {
         if (!this.isOpen) return;
         if (e.key === "Escape") this.close();
-        if (e.key === "ArrowRight") this.showDelta(+1);
-        if (e.key === "ArrowLeft") this.showDelta(-1);
+        if (e.key === "ArrowRight") this.show(+1);
+        if (e.key === "ArrowLeft") this.show(-1);
       });
 
       // swipe
       this.root.addEventListener("touchstart", (e) => {
         if (!this.isOpen) return;
         this.touchX = e.touches?.[0]?.clientX ?? null;
-      }, { passive: true });
+      }, { passive:true });
 
       this.root.addEventListener("touchend", (e) => {
         if (!this.isOpen || this.touchX == null) return;
@@ -1492,377 +1523,238 @@ Numerous private collections worldwide.</p>
         const dx = x1 - this.touchX;
         this.touchX = null;
         if (Math.abs(dx) < 42) return;
-        this.showDelta(dx < 0 ? +1 : -1);
-      }, { passive: true });
+        this.show(dx < 0 ? +1 : -1);
+      }, { passive:true });
     }
   };
 
   /* =========================================================
-     5) Reports (KR/EN/KR+EN summary from JSON)
-     - containers: #reportGrid, #reportViewer
-     - tabs: .r-tab[data-r]
-     - toggle button: #reportsToggle (collapses viewer)
-     - open full in new window + small download link
+     5) Reports (your schema)
+     - input: /data/reports.json with:
+       { reports:[{id, title_ko, title_en, summary_ko, summary_en, md_path}] }
+     - output containers (robust):
+       #reportGrid OR [data-reports-grid]
   ========================================================= */
   const REPORTS = {
-    data: [],
-    currentFilter: "all",
-    isOpen: false,
+    list: [],
+    grid: null,
 
-    grid: $("#reportGrid"),
-    viewer: $("#reportViewer"),
-    toggleBtn: $("#reportsToggle"),
-    tabs: $$(".r-tab[data-r]"),
+    findGrid() {
+      this.grid = $("#reportGrid") || $('[data-reports-grid]') || $("#reportsGrid") || $(".reportGrid");
+    },
 
     async load() {
-      try {
-        const res = await fetch("/data/reports.json?" + nowBust(), { cache: "no-store" });
-        if (!res.ok) throw new Error("reports.json fetch " + res.status);
-        const json = await res.json();
-        const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
-        this.data = arr;
-      } catch (e) {
-        console.warn("[Reports] load failed:", e);
-        this.data = [];
+      const candidates = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
+      let lastErr = null;
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const json = await res.json();
+          const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
+          this.list = arr;
+          return true;
+        } catch(e) { lastErr = e; }
       }
+      console.warn("[Reports] load failed:", lastErr);
+      this.list = [];
+      return false;
     },
 
-    // robust getters (unknown schema tolerated)
-    getId(r) { return safeText(r.id || r.slug || r.code || "REPORT"); },
-    getCategory(r) { return safeText(r.category || r.group || r.type || "all").toLowerCase(); },
-
-    getTitleKR(r) { return safeText(r.title_kr || r.titleKR || r.title || r.name || ""); },
-    getTitleEN(r) { return safeText(r.title_en || r.titleEN || r.title_en_us || r.titleENUS || ""); },
-
-    getSummaryKR(r) { return safeText(r.summary_kr || r.summaryKR || r.summary || r.desc_kr || r.description_kr || ""); },
-    getSummaryEN(r) { return safeText(r.summary_en || r.summaryEN || r.desc_en || r.description_en || ""); },
-
-    getDate(r) { return safeText(r.date || r.updated || r.year || ""); },
-
-    // possible URLs (md/html/pdf)
-    getViewURL(r) {
-      return withLeadingSlash(r.view_url || r.url || r.page || r.html || r.link || "");
-    },
-    getTextURL(r) {
-      // md/txt/raw content file
-      return withLeadingSlash(r.text_url || r.md_url || r.markdown || r.raw || r.source || "");
-    },
-    getDownloadURL(r) {
-      // explicit download or pdf
-      return withLeadingSlash(r.download_url || r.pdf_url || r.pdf || r.file || "");
-    },
-
-    titleForMode(r) {
-      if (LANG.mode === "english") return this.getTitleEN(r) || this.getTitleKR(r);
+    titleHTML(r) {
+      const kr = safeText(r?.title_ko || "");
+      const en = safeText(r?.title_en || "");
+      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
-        const kr = this.getTitleKR(r);
-        const en = this.getTitleEN(r);
-        if (kr && en) return kr + " / " + en;
-        return kr || en || "";
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><span class="en">${esc(en)}</span>`;
+        return `<span class="ko">${esc(kr || en)}</span>`;
       }
-      return this.getTitleKR(r) || this.getTitleEN(r);
+      return `<span class="ko">${esc(kr || en)}</span>`;
     },
 
-    summaryForMode(r) {
-      if (LANG.mode === "english") return this.getSummaryEN(r) || this.getSummaryKR(r);
+    summaryHTML(r) {
+      const kr = safeText(r?.summary_ko || "");
+      const en = safeText(r?.summary_en || "");
+      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
-        const kr = this.getSummaryKR(r);
-        const en = this.getSummaryEN(r);
-        if (kr && en) return kr + "\n\n" + en;
-        return kr || en || "";
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><div class="workSplit"></div><span class="en">${esc(en)}</span>`;
+        return `<span class="ko">${esc(kr || en)}</span>`;
       }
-      return this.getSummaryKR(r) || this.getSummaryEN(r);
+      return `<span class="ko">${esc(kr || en)}</span>`;
     },
 
-    matchesFilter(r) {
-      const f = this.currentFilter;
-      if (!f || f === "all") return true;
-      const c = this.getCategory(r);
-      // allow multi-tag arrays
-      if (Array.isArray(r.tags)) {
-        return r.tags.map(x => safeText(x).toLowerCase()).includes(f);
-      }
-      return c === f;
+    mdURL(r) {
+      // your schema: md_path like "reports/DCAR-01-2025.md"
+      return slash(r?.md_path || "");
     },
 
     cardHTML(r) {
-      const id = this.getId(r);
-      const title = this.titleForMode(r);
-      const date = this.getDate(r);
-      const cat = this.getCategory(r) || "report";
-
-      const summary = this.summaryForMode(r);
-      const viewURL = this.getViewURL(r);      // if exists (html page)
-      const textURL = this.getTextURL(r);      // if exists (md/txt)
-      const dlURL   = this.getDownloadURL(r);  // if exists (pdf)
-
-      const badgePDF = dlURL && /\.pdf(\?|#|$)/i.test(dlURL);
-
+      const id = safeText(r?.id || r?.slug || "");
+      const url = this.mdURL(r);
       return `
-        <article class="r-card" data-id="${escapeHTML(id)}">
-          <div class="r-in">
-            <div class="r-title" title="${escapeHTML(title)}">${escapeHTML(title || id)}</div>
-            <div class="r-sub">${escapeHTML(id)}${date ? " · " + escapeHTML(date) : ""}</div>
-
-            <div class="r-meta">
-              <span class="r-badge">${escapeHTML(cat)}</span>
-              ${badgePDF ? `<span class="r-badge pdf">pdf</span>` : ``}
-            </div>
-
-            <div class="r-body">${escapeHTML(summary)}</div>
-
-            <div class="r-actions">
-              <button type="button" class="r-open"
-                data-view="${escapeHTML(viewURL)}"
-                data-text="${escapeHTML(textURL)}"
-                data-dl="${escapeHTML(dlURL)}"
-                data-title="${escapeHTML(title || id)}"
-                data-id="${escapeHTML(id)}"
-              >Open</button>
-
-              ${dlURL ? `<a class="r-dl" href="${escapeHTML(dlURL)}" target="_blank" rel="noopener">Download</a>` : ``}
-            </div>
+        <article class="r-card" data-md="${esc(url)}" data-id="${esc(id)}">
+          <div class="r-title">${this.titleHTML(r)}</div>
+          <div class="r-sub">${esc(id)}</div>
+          <div class="r-body">${this.summaryHTML(r)}</div>
+          <div class="r-actions">
+            <button type="button" class="r-open">Open</button>
           </div>
         </article>
       `;
     },
 
     render() {
+      this.findGrid();
       if (!this.grid) return;
 
-      const list = this.data.filter(r => this.matchesFilter(r));
-      if (!list.length) {
-        this.grid.innerHTML = `
-          <div style="opacity:.75; padding:10px 2px; line-height:1.7;">
-            Reports 데이터가 비어있습니다.<br>
-            /data/reports.json 구조를 확인하세요.
-          </div>
-        `;
+      if (!this.list.length) {
+        this.grid.innerHTML = `<div class="worksEmpty">Reports 데이터가 없습니다. (/data/reports.json 확인)</div>`;
         return;
       }
 
-      this.grid.innerHTML = list.map(r => this.cardHTML(r)).join("");
+      this.grid.innerHTML = this.list.map(r => this.cardHTML(r)).join("");
 
-      // bind open
       $$(".r-open", this.grid).forEach(btn => {
-        btn.addEventListener("click", () => {
-          const payload = {
-            id: btn.getAttribute("data-id") || "REPORT",
-            title: btn.getAttribute("data-title") || "Report",
-            viewURL: btn.getAttribute("data-view") || "",
-            textURL: btn.getAttribute("data-text") || "",
-            dlURL: btn.getAttribute("data-dl") || ""
-          };
-          this.openInNewWindow(payload);
-        });
+        btn.addEventListener("click", (e) => {
+          const card = e.currentTarget.closest(".r-card");
+          if (!card) return;
+          const md = card.getAttribute("data-md") || "";
+          const id = card.getAttribute("data-id") || "REPORT";
+          const titleEl = $(".r-title", card);
+          const titleText = titleEl ? titleEl.textContent.trim() : id;
+          this.openViewerWindow({ id, title:titleText, mdURL: md });
+        }, { passive:true });
       });
     },
 
-    setFilter(f) {
-      const filter = safeText(f || "all").toLowerCase();
-      this.currentFilter = filter;
-
-      this.tabs.forEach(t => t.classList.remove("is-active"));
-      const active = this.tabs.find(t => safeText(t.getAttribute("data-r")).toLowerCase() === filter);
-      if (active) active.classList.add("is-active");
-
-      this.render();
-    },
-
-    setOpen(open) {
-      this.isOpen = !!open;
-
-      if (this.toggleBtn) {
-        this.toggleBtn.setAttribute("aria-expanded", this.isOpen ? "true" : "false");
-        this.toggleBtn.textContent = this.isOpen ? "Close Reports" : "Open Reports";
-      }
-
-      // If closed: hide grid+viewer, if open: show grid and keep viewer empty unless used
-      if (this.grid) this.grid.style.display = this.isOpen ? "" : "none";
-      if (this.viewer) {
-        this.viewer.style.display = this.isOpen ? "" : "none";
-        if (!this.isOpen) this.viewer.textContent = "";
-      }
-    },
-
-    async openInNewWindow({ id, title, viewURL, textURL, dlURL }) {
-      // If viewURL is a real page and you prefer that, open directly:
-      // But requirement: "새 창에서 전체 원문 + 하단 download 링크"
-      // -> we'll generate a clean viewer window and fetch text when possible.
+    async openViewerWindow({ id, title, mdURL }) {
       const w = window.open("", "_blank", "noopener,noreferrer");
       if (!w) {
-        // popup blocked -> fallback
-        const fallback = viewURL || textURL || dlURL;
-        if (fallback) window.open(fallback, "_blank", "noopener,noreferrer");
+        if (mdURL) window.open(mdURL, "_blank", "noopener,noreferrer");
         return;
       }
 
       const docTitle = title || id || "Report";
-      const head = `
-        <!doctype html>
-        <html lang="ko">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-          <title>${escapeHTML(docTitle)}</title>
-          <style>
-            :root{
-              --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --line:#243169;
-              --panel:#0b122c; --muted:#9fb0d8;
-            }
-            *{box-sizing:border-box;margin:0;padding:0}
-            body{
-              background:linear-gradient(180deg,#070c1a,#02030a);
-              color:var(--fg);
-              font:15px/1.75 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
-            }
-            header{
-              position:sticky;top:0;z-index:10;
-              padding:14px 16px;
-              background:linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.82));
-              border-bottom:1px solid rgba(255,255,255,.08);
-              backdrop-filter: blur(10px);
-            }
-            h1{font-size:18px;color:var(--gold);letter-spacing:.04em}
-            .meta{margin-top:6px;color:var(--muted);font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace}
-            main{max-width:980px;margin:0 auto;padding:18px 16px 40px}
-            .panel{
-              background:linear-gradient(180deg,var(--panel),#050814);
-              border:1px solid var(--line);
-              border-radius:14px;
-              padding:16px 14px 18px;
-              white-space:pre-wrap;
-              overflow-wrap:anywhere;
-            }
-            .bar{
-              margin-top:14px;
-              display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-            }
-            a{
-              color:var(--gold);
-              text-decoration:none;
-              border:1px solid rgba(230,199,119,.35);
-              padding:6px 10px;border-radius:999px;
-              font-size:12px;
-            }
-            a:hover{background:rgba(230,199,119,.12)}
-            .tiny{
-              margin-top:12px;
-              font-size:12px;color:rgba(255,255,255,.65);
-              font-family:ui-monospace,Menlo,Consolas,monospace;
-            }
-          </style>
-        </head>
-        <body>
-          <header>
-            <h1>${escapeHTML(docTitle)}</h1>
-            <div class="meta">${escapeHTML(id || "")}</div>
-          </header>
-          <main>
-            <div id="content" class="panel">Loading…</div>
-            <div class="bar" id="bar"></div>
-            <div class="tiny">Lightflow · Reports Viewer</div>
-          </main>
-        </body>
-        </html>
-      `;
+
+      const shell = `
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>${esc(docTitle)}</title>
+  <style>
+    :root{
+      --bg:#070A14; --panel:#0b122c; --fg:#eef3ff; --muted:#aab7dd;
+      --gold:#e6c777; --line:rgba(230,199,119,.22);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background: radial-gradient(1200px 600px at 50% -10%, rgba(170,205,255,.10), transparent 60%),
+                  linear-gradient(180deg, #070A14, #02030a);
+      color:var(--fg);
+      font: 15px/1.85 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+    }
+    header{
+      position:sticky;top:0;z-index:20;
+      padding:14px 16px;
+      background: linear-gradient(180deg, rgba(8,12,24,.96), rgba(8,12,24,.80));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+      text-align:center;
+    }
+    h1{font-size:18px;color:var(--gold);letter-spacing:.04em}
+    .meta{margin-top:6px;font-size:12px;color:var(--muted);font-family: ui-monospace,Menlo,Consolas,monospace;}
+    main{max-width:980px;margin:0 auto;padding:18px 16px 44px}
+    pre{
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      background: linear-gradient(180deg, rgba(11,18,44,.92), rgba(5,8,20,.86));
+      border:1px solid rgba(230,199,119,.18);
+      border-radius:14px;
+      padding:16px 14px 18px;
+    }
+    .bar{margin-top:14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+    a{
+      color:var(--gold);
+      text-decoration:none;
+      border:1px solid rgba(230,199,119,.35);
+      padding:6px 10px;border-radius:999px;font-size:12px;
+    }
+    a:hover{background:rgba(230,199,119,.12)}
+    .tiny{margin-top:12px;font-size:12px;color:rgba(255,255,255,.65);text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>${esc(docTitle)}</h1>
+    <div class="meta">${esc(id)}</div>
+  </header>
+  <main>
+    <pre id="content">Loading…</pre>
+    <div class="bar" id="bar"></div>
+    <div class="tiny">Lightflow · Reports Viewer</div>
+  </main>
+</body>
+</html>`.trim();
+
       w.document.open();
-      w.document.write(head);
+      w.document.write(shell);
       w.document.close();
 
       const contentEl = w.document.getElementById("content");
       const barEl = w.document.getElementById("bar");
 
-      // Always provide at least one outward link if exists
-      const links = [];
-      if (viewURL) links.push({ label: "Open Source Page", href: viewURL });
-      if (textURL) links.push({ label: "Open Text", href: textURL });
-      if (dlURL)   links.push({ label: "download", href: dlURL });
-
-      // render bar links (small)
-      if (barEl && links.length) {
-        barEl.innerHTML = links.map(x => `<a href="${escapeHTML(x.href)}" target="_blank" rel="noopener">${escapeHTML(x.label)}</a>`).join("");
+      // bottom download link (md)
+      if (barEl && mdURL) {
+        barEl.innerHTML = `<a href="${esc(mdURL)}" target="_blank" rel="noopener">download</a>`;
       }
 
-      // Try to fetch report full text (priority: textURL)
-      const fetchURL = textURL || viewURL;
-
-      if (!fetchURL) {
-        if (contentEl) contentEl.textContent = "No content URL found in reports.json.";
+      if (!mdURL) {
+        if (contentEl) contentEl.textContent = "No md_path found in reports.json.";
         return;
       }
 
       try {
-        const res = await fetch(fetchURL + (fetchURL.includes("?") ? "&" : "?") + nowBust(), { cache: "no-store" });
-        if (!res.ok) throw new Error("fetch " + res.status);
+        const res = await fetch(mdURL + "?" + bust(), { cache:"no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const text = await res.text();
-
-        // If it's HTML, extract readable text by stripping tags (safe, simple)
-        const isHTML = /<html|<body|<div|<\/p>|<\/h\d>/i.test(text);
-        if (isHTML) {
-          const tmp = document.createElement("div");
-          tmp.innerHTML = text;
-          const cleaned = tmp.textContent || tmp.innerText || text;
-          if (contentEl) contentEl.textContent = cleaned.trim();
-        } else {
-          if (contentEl) contentEl.textContent = text.trim();
-        }
-      } catch (e) {
-        if (contentEl) {
-          contentEl.textContent =
-            "Failed to load report content.\n\n" +
-            "Try opening the source link instead.\n\n" +
-            String(e);
-        }
-      }
-    },
-
-    bind() {
-      // Tabs
-      this.tabs.forEach(t => {
-        const f = t.getAttribute("data-r");
-        t.addEventListener("click", () => this.setFilter(f));
-        t.addEventListener("touchend", (e) => { e.preventDefault(); this.setFilter(f); }, { passive: false });
-      });
-
-      // Toggle open/close
-      if (this.toggleBtn) {
-        this.toggleBtn.addEventListener("click", () => this.setOpen(!this.isOpen));
-        this.toggleBtn.addEventListener("touchend", (e) => {
-          e.preventDefault();
-          this.setOpen(!this.isOpen);
-        }, { passive: false });
+        if (contentEl) contentEl.textContent = text.trim();
+      } catch(e) {
+        if (contentEl) contentEl.textContent =
+          "Failed to load report text.\n\n" +
+          "Open the download link instead.\n\n" +
+          String(e);
       }
     },
 
     async init() {
-      this.bind();
       await this.load();
-      this.setOpen(false);      // default closed (clean)
-      this.setFilter("all");    // default filter
+      this.render();
     }
   };
 
   /* =========================================================
-     6) Bio Modal
+     6) Bio (optional, non-breaking)
+     - Works only if modal exists
+     - IDs/classes are soft-detected
   ========================================================= */
   const BIO = {
-    modal: $("#bio-modal"),
-    openBtn: $("#tab-bio"),
-    closeBtn: $(".bio-close"),
-    backdrop: $(".bio-backdrop"),
-    expoToggle: $("#expoToggle"),
-    expoSlide: $("#expoSlide"),
-    bioLangBtns: $$(".bio-lang .lang"),
-    activeBioLang: "kr",
+    modal: null,
+    openBtn: null,
+    closeBtn: null,
+    backdrop: null,
+
+    find() {
+      this.modal = $("#bio-modal") || $("#bioModal") || $('[data-bio-modal]');
+      this.openBtn = $("#tab-bio") || $('[data-open-bio]');
+      this.closeBtn = $(".bio-close") || $('[data-close-bio]');
+      this.backdrop = $(".bio-backdrop") || $('[data-bio-backdrop]');
+    },
 
     open() {
       if (!this.modal) return;
       this.modal.hidden = false;
-
-      // default: follow site language where possible
-      if (LANG.mode === "english") this.setLang("en");
-      else this.setLang("kr");
     },
 
     close() {
@@ -1870,458 +1762,57 @@ Numerous private collections worldwide.</p>
       this.modal.hidden = true;
     },
 
-    toggleExpo() {
-      if (!this.expoSlide || !this.expoToggle) return;
-      const isOpen = this.expoSlide.getAttribute("data-open") === "true";
-      this.expoSlide.setAttribute("data-open", isOpen ? "false" : "true");
-      this.expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
-    },
-
-    setLang(lang) {
-      const l = (lang === "en") ? "en" : "kr";
-      this.activeBioLang = l;
-
-      // show/hide within modal only
-      $$(".bio-card .bio-body.ko").forEach(el => el.style.display = (l === "kr") ? "" : "none");
-      $$(".bio-card .bio-body.en").forEach(el => el.style.display = (l === "en") ? "" : "none");
-
-      // Also keep the expo kicker line correct:
-      // - Kicker has both spans; it will be hidden by site lang in CSS,
-      //   but in modal we force the corresponding body only; keep spans unchanged.
-
-      // active button
-      this.bioLangBtns.forEach(b => b.classList.remove("active"));
-      const active = this.bioLangBtns.find(b => b.getAttribute("data-bio-lang") === l);
-      if (active) active.classList.add("active");
-    },
-
     bind() {
-      if (this.openBtn) {
-        this.openBtn.addEventListener("click", () => this.open());
-        this.openBtn.addEventListener("touchend", (e) => { e.preventDefault(); this.open(); }, { passive: false });
-      }
-      if (this.closeBtn) this.closeBtn.addEventListener("click", () => this.close());
-      if (this.backdrop) this.backdrop.addEventListener("click", () => this.close());
+      this.find();
+      if (this.openBtn) onTap(this.openBtn, () => this.open());
+      if (this.closeBtn) onTap(this.closeBtn, () => this.close());
+      if (this.backdrop) onTap(this.backdrop, () => this.close());
 
-      // ESC close
       document.addEventListener("keydown", (e) => {
         if (!this.modal || this.modal.hidden) return;
         if (e.key === "Escape") this.close();
       });
-
-      // Expo slide
-      if (this.expoToggle) {
-        this.expoToggle.addEventListener("click", () => this.toggleExpo());
-        this.expoToggle.addEventListener("touchend", (e) => { e.preventDefault(); this.toggleExpo(); }, { passive: false });
-      }
-
-      // Modal language buttons
-      this.bioLangBtns.forEach(btn => {
-        const l = btn.getAttribute("data-bio-lang");
-        btn.addEventListener("click", () => this.setLang(l));
-        btn.addEventListener("touchend", (e) => { e.preventDefault(); this.setLang(l); }, { passive: false });
-      });
     }
   };
 
   /* =========================================================
-     7) Waves Canvas (Refined + light)
-     - stops on reduced motion
-  ========================================================= */
-  const WAVES = {
-    canvas: $("#waves"),
-    ctx: null,
-    w: 0,
-    h: 0,
-    t: 0,
-    raf: 0,
-
-    resize() {
-      if (!this.canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      this.w = Math.floor(window.innerWidth * dpr);
-      this.h = Math.floor(window.innerHeight * dpr);
-      this.canvas.width = this.w;
-      this.canvas.height = this.h;
-      this.canvas.style.width = "100%";
-      this.canvas.style.height = "100%";
-      this.ctx = this.canvas.getContext("2d", { alpha: true });
-      if (this.ctx) this.ctx.setTransform(1,0,0,1,0,0);
-    },
-
-    draw() {
-      if (!this.ctx) return;
-      const ctx = this.ctx;
-      const w = this.w, h = this.h;
-      this.t += 0.006;
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Subtle strokes (no heavy glow; CSS handles blend)
-      // We intentionally keep it lightweight and non-bloomy.
-      const layers = 3;
-      for (let L = 0; L < layers; L++) {
-        const amp = (0.018 + L * 0.012) * h;
-        const baseY = (0.18 + L * 0.22) * h;
-        const freq = 1.2 + L * 0.7;
-
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += 18) {
-          const nx = x / w;
-          const y =
-            baseY +
-            Math.sin((nx * Math.PI * 2) * freq + this.t * (1.4 + L * 0.25)) * amp +
-            Math.sin((nx * Math.PI * 2) * (freq * 0.55) - this.t * (1.1 + L * 0.18)) * (amp * 0.45);
-
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-
-        ctx.lineWidth = 1.1 + L * 0.45;
-        ctx.strokeStyle = `rgba(170,205,255,${0.10 - L*0.02})`;
-        ctx.stroke();
-      }
-
-      // Soft dawn tint points (very sparse)
-      ctx.fillStyle = "rgba(230,199,119,0.06)";
-      for (let i=0;i<10;i++){
-        const x = (Math.sin(this.t*0.7 + i)*0.5 + 0.5) * w;
-        const y = (Math.cos(this.t*0.55 + i*1.7)*0.5 + 0.5) * h;
-        ctx.beginPath();
-        ctx.arc(x, y, 2.2, 0, Math.PI*2);
-        ctx.fill();
-      }
-
-      this.raf = requestAnimationFrame(() => this.draw());
-    },
-
-    start() {
-      if (!this.canvas) return;
-      if (prefersReducedMotion()) return;
-      this.resize();
-      cancelAnimationFrame(this.raf);
-      this.draw();
-    },
-
-    stop() {
-      cancelAnimationFrame(this.raf);
-      this.raf = 0;
-      if (this.ctx) this.ctx.clearRect(0,0,this.w,this.h);
-    }
-  };
-
-  /* =========================================================
-     8) Sound (Cosmic Resonance · meditation)
-     - Buttons: #soundBtn (toggle on), #soundStopBtn (stop)
-     - FFT bar: #fftBar span (level)
-  ========================================================= */
-  const SOUND = {
-    ctx: null,
-    master: null,
-    analyser: null,
-    data: null,
-    isOn: false,
-    key: "LF_SOUND_V2",
-    raf: 0,
-
-    btnOn: $("#soundBtn"),
-    btnOff: $("#soundStopBtn"),
-    bar: $("#fftBar span"),
-
-    init() {
-      if (this.ctx) return;
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-
-      this.ctx = new Ctx();
-      this.master = this.ctx.createGain();
-      this.master.gain.value = 0.0;
-
-      // analyser for bar
-      this.analyser = this.ctx.createAnalyser();
-      this.analyser.fftSize = 256;
-      this.data = new Uint8Array(this.analyser.frequencyBinCount);
-
-      // soft filter to avoid harshness
-      const lp = this.ctx.createBiquadFilter();
-      lp.type = "lowpass";
-      lp.frequency.value = 3800;
-      lp.Q.value = 0.55;
-
-      this.master.connect(lp);
-      lp.connect(this.analyser);
-      this.analyser.connect(this.ctx.destination);
-
-      // build pad + air + pulse
-      this.buildLayers();
-
-      // iOS resume guard
-      const resumeOnce = async () => {
-        if (!this.ctx) return;
-        try { await this.ctx.resume(); } catch(e) {}
-        window.removeEventListener("touchstart", resumeOnce);
-        window.removeEventListener("click", resumeOnce);
-      };
-      window.addEventListener("touchstart", resumeOnce, { passive: true });
-      window.addEventListener("click", resumeOnce, { passive: true });
-    },
-
-    buildLayers() {
-      const t0 = this.ctx.currentTime;
-
-      // Stable harmonic pad (low fatigue)
-      const freqs = [55, 82.5, 110, 165]; // 1, 3/2, 2, 3
-      freqs.forEach((f, i) => {
-        const o1 = this.ctx.createOscillator();
-        const o2 = this.ctx.createOscillator();
-        const g  = this.ctx.createGain();
-
-        o1.type = "sine";
-        o2.type = "triangle";
-
-        o1.frequency.value = f;
-        o2.frequency.value = f;
-        o1.detune.value = (i % 2 === 0) ? -7 : 6;
-        o2.detune.value = (i % 2 === 0) ? 9 : -8;
-
-        g.gain.value = 0.0;
-
-        o1.connect(g);
-        o2.connect(g);
-        g.connect(this.master);
-
-        o1.start(t0);
-        o2.start(t0);
-
-        const base = 0.020 / (1 + i*0.75);
-        g.gain.setValueAtTime(0.0, t0);
-        g.gain.linearRampToValueAtTime(base, t0 + 6.0 + i*1.1);
-      });
-
-      // Air noise (bandpass + slow breathe)
-      const bufferSize = 2 * this.ctx.sampleRate;
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random()*2-1) * 0.25;
-
-      const src = this.ctx.createBufferSource();
-      src.buffer = buffer;
-      src.loop = true;
-
-      const bp = this.ctx.createBiquadFilter();
-      bp.type = "bandpass";
-      bp.frequency.value = 420;
-      bp.Q.value = 0.9;
-
-      const ng = this.ctx.createGain();
-      ng.gain.value = 0.0;
-
-      src.connect(bp);
-      bp.connect(ng);
-      ng.connect(this.master);
-      src.start(t0);
-
-      // breathe loop
-      const breathe = () => {
-        if (!this.ctx) return;
-        const t = this.ctx.currentTime;
-        ng.gain.cancelScheduledValues(t);
-        ng.gain.setValueAtTime(ng.gain.value, t);
-        ng.gain.linearRampToValueAtTime(0.012, t + 5.4);
-        ng.gain.linearRampToValueAtTime(0.004, t + 10.8);
-
-        bp.frequency.cancelScheduledValues(t);
-        bp.frequency.setValueAtTime(bp.frequency.value, t);
-        bp.frequency.linearRampToValueAtTime(360 + Math.random()*220, t + 10.8);
-
-        setTimeout(breathe, 10800);
-      };
-      setTimeout(breathe, 900);
-
-      // Deep pulse (distant beacon)
-      const po = this.ctx.createOscillator();
-      po.type = "sine";
-      po.frequency.value = 36;
-
-      const pg = this.ctx.createGain();
-      pg.gain.value = 0.0;
-
-      const plp = this.ctx.createBiquadFilter();
-      plp.type = "lowpass";
-      plp.frequency.value = 220;
-      plp.Q.value = 0.7;
-
-      po.connect(plp);
-      plp.connect(pg);
-      pg.connect(this.master);
-      po.start(t0);
-
-      const pulse = () => {
-        if (!this.ctx) return;
-        const t = this.ctx.currentTime;
-        pg.gain.cancelScheduledValues(t);
-        pg.gain.setValueAtTime(0.0, t);
-        pg.gain.linearRampToValueAtTime(0.020, t + 0.14);
-        pg.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
-        setTimeout(pulse, (5.8 + Math.random()*2.6) * 1000);
-      };
-      setTimeout(pulse, 1200);
-    },
-
-    reflectUI() {
-      if (this.btnOn)  this.btnOn.classList.toggle("active", this.isOn);
-      if (this.btnOff) this.btnOff.disabled = !this.isOn;
-    },
-
-    async on() {
-      this.init();
-      if (!this.ctx) return;
-
-      try { await this.ctx.resume(); } catch(e) {}
-
-      const t = this.ctx.currentTime;
-      this.master.gain.cancelScheduledValues(t);
-      this.master.gain.setValueAtTime(this.master.gain.value, t);
-      this.master.gain.linearRampToValueAtTime(0.78, t + 4.2);
-
-      this.isOn = true;
-      this.reflectUI();
-      this.startBar();
-
-      try { localStorage.setItem(this.key, "ON"); } catch(e) {}
-    },
-
-    off() {
-      if (!this.ctx) {
-        this.isOn = false;
-        this.reflectUI();
-        try { localStorage.setItem(this.key, "OFF"); } catch(e) {}
-        return;
-      }
-
-      const t = this.ctx.currentTime;
-      this.master.gain.cancelScheduledValues(t);
-      this.master.gain.setValueAtTime(this.master.gain.value, t);
-      this.master.gain.linearRampToValueAtTime(0.0, t + 1.6);
-
-      this.isOn = false;
-      this.reflectUI();
-      this.stopBar();
-
-      try { localStorage.setItem(this.key, "OFF"); } catch(e) {}
-    },
-
-    async toggle() {
-      if (this.isOn) this.off();
-      else await this.on();
-    },
-
-    restore() {
-      let saved = null;
-      try { saved = localStorage.getItem(this.key); } catch(e) {}
-      if (saved === "ON") this.on();
-      else this.off();
-    },
-
-    startBar() {
-      if (!this.analyser || !this.bar) return;
-      cancelAnimationFrame(this.raf);
-
-      const tick = () => {
-        if (!this.analyser || !this.data || !this.bar) return;
-        this.analyser.getByteFrequencyData(this.data);
-        // average low bins (soft)
-        let sum = 0;
-        const n = Math.min(24, this.data.length);
-        for (let i=0;i<n;i++) sum += this.data[i];
-        const avg = sum / n / 255; // 0..1
-        const w = Math.round(clamp(avg * 180, 0, 180));
-        this.bar.style.width = w + "px";
-        this.raf = requestAnimationFrame(tick);
-      };
-      tick();
-    },
-
-    stopBar() {
-      cancelAnimationFrame(this.raf);
-      this.raf = 0;
-      if (this.bar) this.bar.style.width = "0px";
-    },
-
-    bind() {
-      if (this.btnOn) {
-        this.btnOn.addEventListener("click", () => this.toggle());
-        this.btnOn.addEventListener("touchend", (e) => { e.preventDefault(); this.toggle(); }, { passive: false });
-      }
-      if (this.btnOff) {
-        this.btnOff.addEventListener("click", () => this.off());
-        this.btnOff.addEventListener("touchend", (e) => { e.preventDefault(); this.off(); }, { passive: false });
-      }
-    }
-  };
-
-  /* =========================================================
-     9) Init order (stable)
+     7) Init (stable order)
   ========================================================= */
   async function init() {
-    // 1) language
     LANG.restore();
-    bindLanguageButtons();
+    LANG.bindButtons();
 
-    // 2) nav
-    NAV.init();
-    NAV.go("poem", { scroll: false });
+    NAV.findSections();
+    NAV.bind();
+    NAV.go("poem", false);
 
-    // 3) waves
-    if ($("#waves") && !prefersReducedMotion()) WAVES.start();
-    window.addEventListener("resize", () => {
-      if (prefersReducedMotion()) return;
-      WAVES.resize();
-    });
-
-    // 4) works + lightbox
     LIGHTBOX.bind();
+
     await WORKS.init();
-
-    // 5) reports
     await REPORTS.init();
-
-    // 6) bio
     BIO.bind();
 
-    // 7) sound
-    SOUND.bind();
-    SOUND.restore();
-
-    // Re-render text-dependent areas on language change
+    // Re-render on language change
     window.addEventListener("lf:lang", () => {
-      // Works: refresh current panel titles/meta language
-      WORKS.renderPanel(WORKS.currentPanelKey);
-      // Reports: re-render titles/summaries split
+      WORKS.renderPanel(WORKS.currentKey);
       REPORTS.render();
-      // Bio default content shown remains controlled by modal buttons; do not overwrite user choice
     });
 
-    // When switching sections via NAV, ensure layout refresh
+    // When switching section, refresh visible module
     window.addEventListener("lf:section", (e) => {
       const t = e.detail?.target;
-      if (t === "works") {
-        // ensure current panel exists
-        WORKS.renderPanel(WORKS.currentPanelKey);
-      }
-      if (t === "reports") {
-        // keep closed by default; user opens toggle
-        // but if already open, ensure grid visible
-        if (REPORTS.isOpen) REPORTS.setOpen(true);
-      }
+      if (t === "works") WORKS.renderPanel(WORKS.currentKey);
+      if (t === "reports") REPORTS.render();
     });
 
-    // Reduced motion: stop waves
-    if (prefersReducedMotion()) WAVES.stop();
+    // reduced motion: we do nothing here (waves module should respect CSS/other script)
+    if (prefersReducedMotion()) {
+      // no-op: keep safe
+    }
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", init, { once:true });
   } else {
     init();
   }

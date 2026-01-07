@@ -763,6 +763,9 @@
   </style>
 </head>
 
+<!-- ==========================================================
+② BODY / HTML  (USER ORIGINAL — DO NOT EDIT)
+========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
@@ -1049,22 +1052,10 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
+<!-- ==========================================================
+③ SCRIPTS  (FIX: class mismatch + reports toggle + lightbox class)
+========================================================== -->
 <script>
-/* =========================================================
-   Lightflow ∮27 — SCRIPT (RE-DESIGN FINAL)
-   - NEVER edits BODY original text
-   - DOM-robust: finds containers even if IDs differ
-   - Language: KR / EN / KR+EN  (body class: korean|english|hybrid)
-   - Nav: show/hide panels safely
-   - Works: /data/works.json -> render by section_id(1..5)
-           + KR/EN/KR+EN title/meta reaction
-   - Reports: /data/reports.json (your schema: reports[].md_path)
-            -> list + KR/EN/KR+EN summary split
-            -> open in new window (clean viewer) + bottom download link
-   - Bio: open/close only if modal exists (no hard assumptions)
-   - Lightbox: if markup exists, bind safely
-   - Waves/Sound: leave as-is if present (bind only; no forced DOM)
-========================================================= */
 (() => {
   "use strict";
 
@@ -1073,10 +1064,8 @@ Numerous private collections worldwide.</p>
   ----------------------------- */
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const bust = () => (Date.now().toString(36));
-
   const safeText = (v) => String(v ?? "");
   const esc = (s) => String(s ?? "")
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
@@ -1095,7 +1084,6 @@ Numerous private collections worldwide.</p>
   function onTap(el, fn) {
     if (!el) return;
     el.addEventListener("click", fn, { passive: true });
-    // touchend는 iOS에서 click이 잘 나오므로, 굳이 preventDefault로 막지 않음(버그 유발 방지)
   }
 
   function dispatch(name, detail) {
@@ -1104,8 +1092,6 @@ Numerous private collections worldwide.</p>
 
   /* =========================================================
      1) Language Controller
-     - body class: korean|english|hybrid
-     - Buttons (if present): #koBtn #enBtn #hyBtn
   ========================================================= */
   const LANG = {
     key: "LF_LANG_V3",
@@ -1118,7 +1104,6 @@ Numerous private collections worldwide.</p>
       document.body.classList.remove("korean", "english", "hybrid");
       document.body.classList.add(m);
 
-      // active states (if buttons exist)
       const ko = $("#koBtn"), en = $("#enBtn"), hy = $("#hyBtn");
       [ko,en,hy].forEach(b => b && b.classList.remove("active"));
       if (m === "korean" && ko) ko.classList.add("active");
@@ -1144,29 +1129,22 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     2) Navigation (Poem / Works / Reports)
-     - robust: supports nav buttons with data-target
-     - section targets can be #poem/#works/#reports
-       OR any element with [data-section="poem|works|reports"]
+     2) Navigation
   ========================================================= */
   const NAV = {
     btns: [],
     secs: { poem:null, works:null, reports:null },
 
     findSections() {
-      const byId = (id) => document.getElementById(id);
-      const byData = (k) => document.querySelector(`[data-section="${k}"]`);
-
-      this.secs.poem = byId("poem") || byData("poem");
-      this.secs.works = byId("works") || byData("works");
-      this.secs.reports = byId("reports") || byData("reports");
+      this.secs.poem = document.getElementById("poem");
+      this.secs.works = document.getElementById("works");
+      this.secs.reports = document.getElementById("reports");
     },
 
     bind() {
-      // any nav buttons: nav button[data-target] OR [data-nav]
-      this.btns = $$('button[data-target], a[data-target], [data-nav]');
+      this.btns = $$('button[data-target], a[data-target]');
       this.btns.forEach(b => {
-        const t = (b.getAttribute("data-target") || b.getAttribute("data-nav") || "").trim();
+        const t = (b.getAttribute("data-target") || "").trim();
         if (!t) return;
         onTap(b, () => this.go(t, true));
       });
@@ -1176,12 +1154,10 @@ Numerous private collections worldwide.</p>
       const t = (target === "works" || target === "reports") ? target : "poem";
       this.findSections();
 
-      // active
       this.btns.forEach(b => b.classList.remove("active"));
-      const active = this.btns.find(b => (b.getAttribute("data-target") || b.getAttribute("data-nav")) === t);
+      const active = this.btns.find(b => (b.getAttribute("data-target") || "") === t);
       if (active) active.classList.add("active");
 
-      // show/hide safely
       Object.entries(this.secs).forEach(([k, el]) => {
         if (!el) return;
         el.style.display = (k === t) ? "" : "none";
@@ -1197,21 +1173,75 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     3) Works
-     - Loads /data/works.json
-     - Renders by section_id 1..5
-     - DOM robust:
-       Panels can be:
-         #panel-pray, #panel-human, #panel-rebirth, #panel-exist, #panel-cosmos
-       OR any element with:
-         [data-works-panel="pray|human|rebirth|exist|cosmos"]
-     - Tabs:
-         button.tab[data-panel="pray|..."] OR [data-panel]
+     3) Lightbox  (FIX: use .is-open to match CSS)
+  ========================================================= */
+  const LIGHTBOX = {
+    root: $("#lightbox"),
+    img: $("#lbImg"),
+    cap: $("#lbCap"),
+    closeBtn: $("#lbClose"),
+    isOpen: false,
+    touchX: null,
+
+    open(src, caption) {
+      if (!this.root || !this.img || !src) return;
+      this.img.src = src;
+      if (this.cap) this.cap.textContent = caption || "";
+      this.root.classList.add("is-open");
+      this.isOpen = true;
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    },
+
+    close() {
+      if (!this.root) return;
+      this.root.classList.remove("is-open");
+      this.isOpen = false;
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    },
+
+    bind(stepFn, currentCapFn) {
+      if (!this.root) return;
+
+      onTap(this.closeBtn, () => this.close());
+
+      // click outside stage
+      this.root.addEventListener("click", (e) => {
+        if (e.target === this.root) this.close();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!this.isOpen) return;
+        if (e.key === "Escape") this.close();
+        if (e.key === "ArrowRight") stepFn && stepFn(+1);
+        if (e.key === "ArrowLeft") stepFn && stepFn(-1);
+      });
+
+      // swipe
+      this.root.addEventListener("touchstart", (e) => {
+        if (!this.isOpen) return;
+        this.touchX = e.touches?.[0]?.clientX ?? null;
+      }, { passive:true });
+
+      this.root.addEventListener("touchend", (e) => {
+        if (!this.isOpen || this.touchX == null) return;
+        const x1 = e.changedTouches?.[0]?.clientX ?? null;
+        if (x1 == null) return;
+        const dx = x1 - this.touchX;
+        this.touchX = null;
+        if (Math.abs(dx) < 42) return;
+        stepFn && stepFn(dx < 0 ? +1 : -1);
+      }, { passive:true });
+    }
+  };
+
+  /* =========================================================
+     4) Works  (FIX: render with existing CSS classes: w-grid/w-card...)
   ========================================================= */
   const WORKS = {
     raw: [],
     bySection: {1:[],2:[],3:[],4:[],5:[]},
-
     panelEls: {},
     tabBtns: [],
     currentKey: "pray",
@@ -1221,34 +1251,24 @@ Numerous private collections worldwide.</p>
       return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
     },
 
-    sidToKey(sid){
-      return sid===1?"pray":sid===2?"human":sid===3?"rebirth":sid===4?"exist":"cosmos";
-    },
-
     findPanels() {
-      const pick = (id, dk) => document.getElementById(id) || document.querySelector(`[data-works-panel="${dk}"]`);
       this.panelEls = {
-        pray: pick("panel-pray","pray"),
-        human: pick("panel-human","human"),
-        rebirth: pick("panel-rebirth","rebirth"),
-        exist: pick("panel-exist","exist"),
-        cosmos: pick("panel-cosmos","cosmos")
+        pray: document.getElementById("panel-pray"),
+        human: document.getElementById("panel-human"),
+        rebirth: document.getElementById("panel-rebirth"),
+        exist: document.getElementById("panel-exist"),
+        cosmos: document.getElementById("panel-cosmos")
       };
     },
 
     findTabs() {
-      this.tabBtns = $$('button.tab[data-panel], a.tab[data-panel], [data-panel]');
+      this.tabBtns = $$('button.tab[data-panel]');
     },
 
     async load() {
-      const candidates = [
-        "/data/works.json",
-        "data/works.json",
-        "/works.json",
-        "works.json"
-      ];
-
+      const candidates = ["/data/works.json","data/works.json","/works.json","works.json"];
       let lastErr = null;
+
       for (const url of candidates) {
         try {
           const res = await fetch(url + "?" + bust(), { cache:"no-store" });
@@ -1257,7 +1277,6 @@ Numerous private collections worldwide.</p>
           const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
           this.raw = arr;
           this.bySection = {1:[],2:[],3:[],4:[],5:[]};
-
           arr.forEach(w => {
             const sid = Number(w?.section_id);
             if (sid>=1 && sid<=5) this.bySection[sid].push(w);
@@ -1274,19 +1293,17 @@ Numerous private collections worldwide.</p>
       return false;
     },
 
-    // KR/EN/KR+EN title
     titleHTML(w) {
       const kr = safeText(w?.title_kr || "");
       const en = safeText(w?.title_en || "");
-      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
+      if (LANG.mode === "english") return `<div class="en">${esc(en || kr)}</div>`;
       if (LANG.mode === "hybrid") {
-        if (kr && en) return `<span class="ko">${esc(kr)}</span><span class="en">${esc(en)}</span>`;
-        return `<span class="ko">${esc(kr || en)}</span>`;
+        if (kr && en) return `<div class="ko">${esc(kr)}</div><div class="en">${esc(en)}</div>`;
+        return `<div class="ko">${esc(kr || en)}</div>`;
       }
-      return `<span class="ko">${esc(kr || en)}</span>`;
+      return `<div class="ko">${esc(kr || en)}</div>`;
     },
 
-    // meta (material/size/year) KR/EN/KR+EN
     metaHTML(w) {
       const mkr = safeText(w?.material_kr || "");
       const men = safeText(w?.material_en || "");
@@ -1297,16 +1314,15 @@ Numerous private collections worldwide.</p>
       const krLine = [mkr, skr, yr].filter(Boolean).join(" · ");
       const enLine = [men, sen, yr].filter(Boolean).join(" · ");
 
-      if (LANG.mode === "english") return `<span class="en">${esc(enLine || krLine)}</span>`;
+      if (LANG.mode === "english") return `<div class="en">${esc(enLine || krLine)}</div>`;
       if (LANG.mode === "hybrid") {
-        if (krLine && enLine) return `<span class="ko">${esc(krLine)}</span><span class="en">${esc(enLine)}</span>`;
-        return `<span class="ko">${esc(krLine || enLine)}</span>`;
+        if (krLine && enLine) return `<div class="ko">${esc(krLine)}</div><div class="en">${esc(enLine)}</div>`;
+        return `<div class="ko">${esc(krLine || enLine)}</div>`;
       }
-      return `<span class="ko">${esc(krLine || enLine)}</span>`;
+      return `<div class="ko">${esc(krLine || enLine)}</div>`;
     },
 
     imgSrc(w) {
-      // works.json 규칙: image는 /images/standard... 를 포함한다고 가정하되, 방어적으로 처리
       return slash(w?.image || "");
     },
 
@@ -1319,6 +1335,7 @@ Numerous private collections worldwide.</p>
       const src = this.imgSrc(w);
       if (!src) return "";
       const zoom = this.zoomSrc(w);
+
       const titlePlain =
         LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
         : (w?.title_kr || w?.title_en || "");
@@ -1328,18 +1345,12 @@ Numerous private collections worldwide.</p>
           ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
           : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
 
-      const alt = [titlePlain, metaPlain].filter(Boolean).join(" · ");
-
       return `
-        <article class="workCard" data-idx="${idx}"
-                 data-zoom="${esc(zoom)}"
-                 data-title="${esc(titlePlain)}"
-                 data-meta="${esc(metaPlain)}">
-          <img class="workThumb" loading="lazy" decoding="async"
-               src="${esc(src)}" alt="${esc(alt)}">
-          <div class="workCap">
-            <div class="workTitle">${this.titleHTML(w)}</div>
-            <div class="workMeta">${this.metaHTML(w)}</div>
+        <article class="w-card" data-idx="${idx}" data-zoom="${esc(zoom)}">
+          <img class="w-thumb" loading="lazy" decoding="async" src="${esc(src)}" alt="${esc(titlePlain)}">
+          <div class="w-meta">
+            <div class="w-title">${this.titleHTML(w)}</div>
+            <div class="w-sub">${this.metaHTML(w)}</div>
           </div>
         </article>
       `;
@@ -1358,32 +1369,32 @@ Numerous private collections worldwide.</p>
       const activeTab = this.tabBtns.find(b => (b.getAttribute("data-panel") || "") === k);
       if (activeTab) activeTab.classList.add("active");
 
-      // panel active: if they use .tabpanel/.active
+      // panel active
       $$(".tabpanel").forEach(p => p.classList.remove("active"));
-      const panelId = "panel-" + k;
-      const idPanel = document.getElementById(panelId);
-      if (idPanel) idPanel.classList.add("active");
-
       const panel = this.panelEls[k];
+      if (panel) panel.classList.add("active");
+
       if (!panel) return;
 
       const sid = this.keyToSid(k);
       const arr = this.bySection[sid] || [];
 
       if (!arr.length) {
-        panel.innerHTML = `<div class="worksEmpty" id="worksEmpty">Works 데이터가 없습니다. (section_id: ${sid})</div>`;
+        panel.innerHTML = `<div class="w-msg">Works 데이터가 없습니다.<small>(section_id: ${sid} / /data/works.json 확인)</small></div>`;
         return;
       }
 
       const html = arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("");
-      panel.innerHTML = `<div class="worksGrid" id="worksGrid">${html}</div>`;
+      panel.innerHTML = `<div class="w-grid">${html}</div>`;
 
       // bind lightbox open
-      $$(".workCard", panel).forEach(card => {
+      $$(".w-card", panel).forEach(card => {
         onTap(card, () => {
           const idx = Number(card.getAttribute("data-idx") || "0");
           this.currentIndex = isNaN(idx) ? 0 : idx;
-          LIGHTBOX.openFromWorks();
+          const w = this.currentWork();
+          if (!w) return;
+          LIGHTBOX.open(this.zoomSrc(w), this.captionText(w));
         });
       });
     },
@@ -1398,6 +1409,17 @@ Numerous private collections worldwide.</p>
       if (!arr.length) return null;
       const i = clamp(this.currentIndex, 0, arr.length-1);
       return arr[i] || null;
+    },
+
+    captionText(w){
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
+      const metaPlain =
+        LANG.mode === "english"
+          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
+          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
+      return [titlePlain, metaPlain].filter(Boolean).join(" · ");
     },
 
     step(delta) {
@@ -1422,7 +1444,6 @@ Numerous private collections worldwide.</p>
       this.bindTabs();
       await this.load();
 
-      // initial: active tab or pray
       const active = this.tabBtns.find(b => b.classList.contains("active"));
       const key = active ? (active.getAttribute("data-panel") || "pray") : "pray";
       this.renderPanel(key);
@@ -1430,122 +1451,26 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     4) Lightbox (optional)
-     Expected (if exists):
-       #lightbox (overlay)
-       #lbImg, #lbCap, #lbClose
-  ========================================================= */
-  const LIGHTBOX = {
-    root: $("#lightbox"),
-    img: $("#lbImg"),
-    cap: $("#lbCap"),
-    closeBtn: $("#lbClose"),
-    isOpen: false,
-    touchX: null,
-
-    open(src, caption) {
-      if (!this.root || !this.img) return;
-      if (!src) return;
-      this.img.src = src;
-      if (this.cap) this.cap.textContent = caption || "";
-      this.root.classList.add("on");
-      this.isOpen = true;
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-    },
-
-    close() {
-      if (!this.root) return;
-      this.root.classList.remove("on");
-      this.isOpen = false;
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    },
-
-    openFromWorks() {
-      const w = WORKS.currentWork();
-      if (!w) return;
-      const src = WORKS.zoomSrc(w);
-      const titlePlain =
-        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
-        : (w?.title_kr || w?.title_en || "");
-      const metaPlain =
-        LANG.mode === "english"
-          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
-          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
-      const cap = [titlePlain, metaPlain].filter(Boolean).join(" · ");
-      this.open(src, cap);
-    },
-
-    show(delta) {
-      const w = WORKS.step(delta);
-      if (!w) return;
-      const src = WORKS.zoomSrc(w);
-      const titlePlain =
-        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
-        : (w?.title_kr || w?.title_en || "");
-      const metaPlain =
-        LANG.mode === "english"
-          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
-          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
-      const cap = [titlePlain, metaPlain].filter(Boolean).join(" · ");
-      this.open(src, cap);
-    },
-
-    bind() {
-      if (!this.root) return;
-
-      onTap(this.closeBtn, () => this.close());
-
-      // click outside
-      this.root.addEventListener("click", (e) => {
-        if (e.target === this.root) this.close();
-      });
-
-      // keyboard
-      document.addEventListener("keydown", (e) => {
-        if (!this.isOpen) return;
-        if (e.key === "Escape") this.close();
-        if (e.key === "ArrowRight") this.show(+1);
-        if (e.key === "ArrowLeft") this.show(-1);
-      });
-
-      // swipe
-      this.root.addEventListener("touchstart", (e) => {
-        if (!this.isOpen) return;
-        this.touchX = e.touches?.[0]?.clientX ?? null;
-      }, { passive:true });
-
-      this.root.addEventListener("touchend", (e) => {
-        if (!this.isOpen || this.touchX == null) return;
-        const x1 = e.changedTouches?.[0]?.clientX ?? null;
-        if (x1 == null) return;
-        const dx = x1 - this.touchX;
-        this.touchX = null;
-        if (Math.abs(dx) < 42) return;
-        this.show(dx < 0 ? +1 : -1);
-      }, { passive:true });
-    }
-  };
-
-  /* =========================================================
-     5) Reports (your schema)
-     - input: /data/reports.json with:
-       { reports:[{id, title_ko, title_en, summary_ko, summary_en, md_path}] }
-     - output containers (robust):
-       #reportGrid OR [data-reports-grid]
+     5) Reports  (FIX: render with existing CSS .r-item/.t/.m/.s + toggle)
   ========================================================= */
   const REPORTS = {
     list: [],
     grid: null,
+    toggleBtn: null,
+    tabBtns: [],
+    filter: "all",
+    opened: false,
 
-    findGrid() {
-      this.grid = $("#reportGrid") || $('[data-reports-grid]') || $("#reportsGrid") || $(".reportGrid");
+    findUI() {
+      this.grid = document.getElementById("reportGrid");
+      this.toggleBtn = document.getElementById("reportsToggle");
+      this.tabBtns = $$('.r-tab[data-r]');
     },
 
     async load() {
       const candidates = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
       let lastErr = null;
+
       for (const url of candidates) {
         try {
           const res = await fetch(url + "?" + bust(), { cache:"no-store" });
@@ -1554,8 +1479,11 @@ Numerous private collections worldwide.</p>
           const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
           this.list = arr;
           return true;
-        } catch(e) { lastErr = e; }
+        } catch(e) {
+          lastErr = e;
+        }
       }
+
       console.warn("[Reports] load failed:", lastErr);
       this.list = [];
       return false;
@@ -1566,7 +1494,7 @@ Numerous private collections worldwide.</p>
       const en = safeText(r?.title_en || "");
       if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
-        if (kr && en) return `<span class="ko">${esc(kr)}</span><span class="en">${esc(en)}</span>`;
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
         return `<span class="ko">${esc(kr || en)}</span>`;
       }
       return `<span class="ko">${esc(kr || en)}</span>`;
@@ -1577,53 +1505,83 @@ Numerous private collections worldwide.</p>
       const en = safeText(r?.summary_en || "");
       if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
-        if (kr && en) return `<span class="ko">${esc(kr)}</span><div class="workSplit"></div><span class="en">${esc(en)}</span>`;
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
         return `<span class="ko">${esc(kr || en)}</span>`;
       }
       return `<span class="ko">${esc(kr || en)}</span>`;
     },
 
     mdURL(r) {
-      // your schema: md_path like "reports/DCAR-01-2025.md"
       return slash(r?.md_path || "");
+    },
+
+    matchFilter(r){
+      if (this.filter === "all") return true;
+      const cat = safeText(r?.category || r?.type || "").toLowerCase();
+      return cat === this.filter;
     },
 
     cardHTML(r) {
       const id = safeText(r?.id || r?.slug || "");
       const url = this.mdURL(r);
       return `
-        <article class="r-card" data-md="${esc(url)}" data-id="${esc(id)}">
-          <div class="r-title">${this.titleHTML(r)}</div>
-          <div class="r-sub">${esc(id)}</div>
-          <div class="r-body">${this.summaryHTML(r)}</div>
-          <div class="r-actions">
-            <button type="button" class="r-open">Open</button>
-          </div>
+        <article class="r-item" data-md="${esc(url)}" data-id="${esc(id)}">
+          <div class="t">${this.titleHTML(r)}</div>
+          <div class="m">${esc(id)}</div>
+          <div class="s">${this.summaryHTML(r)}</div>
         </article>
       `;
     },
 
     render() {
-      this.findGrid();
+      this.findUI();
       if (!this.grid) return;
 
-      if (!this.list.length) {
-        this.grid.innerHTML = `<div class="worksEmpty">Reports 데이터가 없습니다. (/data/reports.json 확인)</div>`;
+      const filtered = this.list.filter(r => this.matchFilter(r));
+
+      if (!filtered.length) {
+        this.grid.innerHTML = `<div class="w-msg">Reports 데이터가 없습니다.<small>(/data/reports.json 확인)</small></div>`;
         return;
       }
 
-      this.grid.innerHTML = this.list.map(r => this.cardHTML(r)).join("");
+      this.grid.innerHTML = filtered.map(r => this.cardHTML(r)).join("");
 
-      $$(".r-open", this.grid).forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const card = e.currentTarget.closest(".r-card");
-          if (!card) return;
+      // click opens new window viewer
+      $$(".r-item", this.grid).forEach(card => {
+        onTap(card, () => {
           const md = card.getAttribute("data-md") || "";
           const id = card.getAttribute("data-id") || "REPORT";
-          const titleEl = $(".r-title", card);
-          const titleText = titleEl ? titleEl.textContent.trim() : id;
+          const titleText = (card.querySelector(".t")?.textContent || id).trim();
           this.openViewerWindow({ id, title:titleText, mdURL: md });
-        }, { passive:true });
+        });
+      });
+    },
+
+    setOpen(open){
+      this.findUI();
+      this.opened = !!open;
+      if (!this.toggleBtn || !this.grid) return;
+
+      this.grid.style.display = this.opened ? "grid" : "none";
+      this.toggleBtn.setAttribute("aria-expanded", this.opened ? "true" : "false");
+      this.toggleBtn.textContent = this.opened ? "Close Reports" : "Open Reports";
+    },
+
+    setFilter(f){
+      this.filter = (f === "theory" || f === "archive" || f === "practice") ? f : "all";
+      this.findUI();
+      this.tabBtns.forEach(b => b.classList.remove("is-active"));
+      const active = this.tabBtns.find(b => (b.getAttribute("data-r") || "") === this.filter);
+      if (active) active.classList.add("is-active");
+      this.render();
+    },
+
+    bind(){
+      this.findUI();
+      if (this.toggleBtn) onTap(this.toggleBtn, () => this.setOpen(!this.opened));
+      this.tabBtns.forEach(btn => {
+        const f = (btn.getAttribute("data-r") || "all").trim();
+        onTap(btn, () => this.setFilter(f));
       });
     },
 
@@ -1635,7 +1593,6 @@ Numerous private collections worldwide.</p>
       }
 
       const docTitle = title || id || "Report";
-
       const shell = `
 <!doctype html>
 <html lang="ko">
@@ -1645,8 +1602,8 @@ Numerous private collections worldwide.</p>
   <title>${esc(docTitle)}</title>
   <style>
     :root{
-      --bg:#070A14; --panel:#0b122c; --fg:#eef3ff; --muted:#aab7dd;
-      --gold:#e6c777; --line:rgba(230,199,119,.22);
+      --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd;
+      --gold:#e6c777;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
@@ -1705,7 +1662,6 @@ Numerous private collections worldwide.</p>
       const contentEl = w.document.getElementById("content");
       const barEl = w.document.getElementById("bar");
 
-      // bottom download link (md)
       if (barEl && mdURL) {
         barEl.innerHTML = `<a href="${esc(mdURL)}" target="_blank" rel="noopener">download</a>`;
       }
@@ -1722,44 +1678,46 @@ Numerous private collections worldwide.</p>
         if (contentEl) contentEl.textContent = text.trim();
       } catch(e) {
         if (contentEl) contentEl.textContent =
-          "Failed to load report text.\n\n" +
-          "Open the download link instead.\n\n" +
-          String(e);
+          "Failed to load report text.\n\nOpen the download link instead.\n\n" + String(e);
       }
     },
 
     async init() {
+      this.bind();
       await this.load();
-      this.render();
+      this.setFilter("all");
+      this.setOpen(false);
     }
   };
 
   /* =========================================================
-     6) Bio (optional, non-breaking)
-     - Works only if modal exists
-     - IDs/classes are soft-detected
+     6) Bio (modal open/close + expo slide)
   ========================================================= */
   const BIO = {
     modal: null,
     openBtn: null,
     closeBtn: null,
     backdrop: null,
+    expoBtn: null,
+    expoSlide: null,
 
     find() {
-      this.modal = $("#bio-modal") || $("#bioModal") || $('[data-bio-modal]');
-      this.openBtn = $("#tab-bio") || $('[data-open-bio]');
-      this.closeBtn = $(".bio-close") || $('[data-close-bio]');
-      this.backdrop = $(".bio-backdrop") || $('[data-bio-backdrop]');
+      this.modal = $("#bio-modal");
+      this.openBtn = $("#tab-bio");
+      this.closeBtn = $(".bio-close");
+      this.backdrop = $(".bio-backdrop");
+      this.expoBtn = $("#expoToggle");
+      this.expoSlide = $("#expoSlide");
     },
 
-    open() {
-      if (!this.modal) return;
-      this.modal.hidden = false;
-    },
+    open() { if (this.modal) this.modal.hidden = false; },
+    close() { if (this.modal) this.modal.hidden = true; },
 
-    close() {
-      if (!this.modal) return;
-      this.modal.hidden = true;
+    toggleExpo() {
+      if (!this.expoSlide || !this.expoBtn) return;
+      const open = this.expoSlide.getAttribute("data-open") === "true";
+      this.expoSlide.setAttribute("data-open", open ? "false" : "true");
+      this.expoBtn.setAttribute("aria-expanded", open ? "false" : "true");
     },
 
     bind() {
@@ -1767,6 +1725,7 @@ Numerous private collections worldwide.</p>
       if (this.openBtn) onTap(this.openBtn, () => this.open());
       if (this.closeBtn) onTap(this.closeBtn, () => this.close());
       if (this.backdrop) onTap(this.backdrop, () => this.close());
+      if (this.expoBtn) onTap(this.expoBtn, () => this.toggleExpo());
 
       document.addEventListener("keydown", (e) => {
         if (!this.modal || this.modal.hidden) return;
@@ -1776,7 +1735,7 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     7) Init (stable order)
+     7) Init
   ========================================================= */
   async function init() {
     LANG.restore();
@@ -1786,10 +1745,16 @@ Numerous private collections worldwide.</p>
     NAV.bind();
     NAV.go("poem", false);
 
-    LIGHTBOX.bind();
-
     await WORKS.init();
     await REPORTS.init();
+
+    // Lightbox binds step controls through WORKS
+    LIGHTBOX.bind((delta) => {
+      const w = WORKS.step(delta);
+      if (!w) return;
+      LIGHTBOX.open(WORKS.zoomSrc(w), WORKS.captionText(w));
+    });
+
     BIO.bind();
 
     // Re-render on language change
@@ -1798,17 +1763,11 @@ Numerous private collections worldwide.</p>
       REPORTS.render();
     });
 
-    // When switching section, refresh visible module
     window.addEventListener("lf:section", (e) => {
       const t = e.detail?.target;
       if (t === "works") WORKS.renderPanel(WORKS.currentKey);
       if (t === "reports") REPORTS.render();
     });
-
-    // reduced motion: we do nothing here (waves module should respect CSS/other script)
-    if (prefersReducedMotion()) {
-      // no-op: keep safe
-    }
   }
 
   if (document.readyState === "loading") {
@@ -1818,3 +1777,6 @@ Numerous private collections worldwide.</p>
   }
 })();
 </script>
+
+</body>
+</html>

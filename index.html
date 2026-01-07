@@ -1,6 +1,5 @@
 <!-- ==========================================================
-Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
-① HEAD / STYLE  (안정/가독/무광 골드/배경/그리드/모달/라이트박스)
+① HEAD / STYLE  (FINAL — BASE SAFE / NO SHIFT)
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -28,6 +27,13 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
   <!-- Google Translate bar 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
+
+  <!-- ✅ (선택) 강제로 베이스를 지정하고 싶으면 사용:
+       예) GitHub Pages 하위 경로 /dungzakcestlavie.github.io/REPO/ 에서 테스트할 때
+       <meta name="lf-base" content="/REPO">
+  -->
+  <!-- <meta name="lf-base" content=""> -->
+
   <style>
     /* =========================================================
        Base / Reset
@@ -72,8 +78,18 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing:.2px;
       overflow-x:hidden;
-      padding-left: calc(var(--safe-left));
-      padding-right: calc(var(--safe-right));
+
+      /* ✅ 쏠림 방지 핵심:
+         - body에 safe-area padding을 주지 않음(중복 패딩/좌우 비대칭 방지)
+         - safe-area는 header/footer와 fixed UI(컨트롤)에서만 처리 */
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    /* ✅ safe-area는 컨테이너에만 적용 (중복 방지) */
+    header, main, footer{
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
     }
 
     a{ color:var(--gold2); text-decoration:none; }
@@ -206,7 +222,7 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
     }
 
     /* =========================================================
-       Main layout
+       Main layout (중앙 고정)
     ========================================================= */
     main{
       max-width: var(--maxw);
@@ -666,12 +682,17 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
       height: 44px;
       border-radius: 16px;
       appearance:none;
-      border: 1px solid rgba(215,184,106,.26);
-      background: rgba(5,8,18,.55);
+      border: 1px solid rgba(215,184,106,.32);
+
+      /* ✅ 사운드 버튼 투명 규칙 */
+      background: rgba(0,0,0,0);
+
       color: var(--gold2);
       font-size: 18px;
       cursor:pointer;
-      box-shadow: 0 12px 28px rgba(0,0,0,.35);
+      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     .ctrlbtn[disabled]{
       opacity:.5;
@@ -737,7 +758,6 @@ Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 </head>
 
 <!-- ==========================================================
-Lightflow ∮27 — FINAL STABLE (DAWN MICRO)
 ② BODY / HTML  (사용자 원문 100% 유지)
 ========================================================== -->
 <body class="korean">
@@ -1008,6 +1028,9 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
+<!-- ==========================================================
+③ SCRIPTS (FINAL — BASE SAFE / NO LEAK / WORKS+REPORTS STABLE)
+========================================================== -->
 <script>
 (() => {
   "use strict";
@@ -1023,13 +1046,6 @@ Numerous private collections worldwide.</p>
   const isReducedMotion = () =>
     !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-  const toAbs = (path) => {
-    const p = s(path).trim();
-    if (!p) return "";
-    if (/^https?:\/\//i.test(p)) return p;
-    return p.startsWith("/") ? p : "/" + p;
-  };
-
   const escapeHtml = (t) =>
     String(t ?? "")
       .replaceAll("&", "&amp;")
@@ -1044,11 +1060,44 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
+     ✅ BASE PATH (핵심 보정)
+     - 커스텀도메인(/) / github.io/REPO/ / 로컬 테스트 모두 안전
+  ========================================================= */
+  function detectBase() {
+    const forced = $('meta[name="lf-base"]')?.getAttribute("content");
+    if (forced && s(forced).trim() !== "") return s(forced).trim().replace(/\/+$/,"");
+
+    // github.io + /REPO/ 구조면 첫 번째 segment를 base로 사용
+    const host = location.hostname || "";
+    const path = location.pathname || "/";
+    if (/github\.io$/i.test(host)) {
+      const seg = path.split("/").filter(Boolean)[0];
+      if (seg) return "/" + seg;
+    }
+    // 기본은 루트
+    return "";
+  }
+
+  const BASE = detectBase();
+
+  function resolvePath(path) {
+    const p = s(path).trim();
+    if (!p) return "";
+    if (/^https?:\/\//i.test(p)) return p;
+
+    // 이미 / 로 시작: BASE 붙여서 /REPO + /data/... 형태로 보정
+    if (p.startsWith("/")) return (BASE ? (BASE + p) : p);
+
+    // 상대경로: BASE가 있으면 /REPO/ + p, 없으면 ./p
+    return (BASE ? (BASE + "/" + p) : p);
+  }
+
+  /* =========================================================
      Global UI State
   ========================================================= */
   const STATE = {
-    section: "poem", // poem | works | reports
-    lang: "KR"       // KR | EN | KR+EN
+    section: "poem",
+    lang: "KR"
   };
 
   function getLang() {
@@ -1077,7 +1126,6 @@ Numerous private collections worldwide.</p>
     BIO.syncToGlobal();
     if (LIGHTBOX.isOpen()) LIGHTBOX.refreshCaption();
 
-    // 중요한 UX: 언어 버튼 누르면 "지금 화면에 보이는 것"은 즉시 반응
     if (STATE.section === "works") WORKS.refreshCurrentPanel();
     if (STATE.section === "reports") REPORTS.refreshGridTextOnly();
   }
@@ -1090,13 +1138,11 @@ Numerous private collections worldwide.</p>
   }
 
   /* =========================================================
-     Section Switch (Works가 안 열리던 핵심을 여기서 확실히 해결)
-     - inline style="display:none" 가 있어도 강제로 덮어씀
+     Section Switch (inline display:none 강제 덮어씀)
   ========================================================= */
   function showSection(id) {
     const sections = $$("main > section");
     sections.forEach(sec => {
-      // iOS Safari에서 "" 로는 inline display:none 제거가 안 되는 경우가 있어 "block" 명시
       sec.style.display = (sec.id === id) ? "block" : "none";
     });
 
@@ -1114,16 +1160,10 @@ Numerous private collections worldwide.</p>
     if (id === "works") {
       WORKS.ensureLoaded().then(() => WORKS.ensureRendered()).catch(() => {});
     } else if (id === "reports") {
-      REPORTS.ensureLoaded().then(() => {
-        // reports는 "보이면 바로 open"이 UX가 좋음
-        REPORTS.forceOpen();
-      }).catch(() => {});
+      REPORTS.ensureLoaded().then(() => REPORTS.forceOpen()).catch(() => {});
     }
   }
 
-  /* =========================================================
-     Primary Navigation Bind
-  ========================================================= */
   function bindPrimaryNav() {
     $$("nav.primary button[data-target]").forEach(btn => {
       btn.addEventListener("click", () => showSection(btn.dataset.target));
@@ -1132,7 +1172,6 @@ Numerous private collections worldwide.</p>
     const bioBtn = $("#tab-bio");
     if (bioBtn) bioBtn.addEventListener("click", () => BIO.open());
 
-    // 초기 진입: poem
     showSection("poem");
   }
 
@@ -1146,10 +1185,7 @@ Numerous private collections worldwide.</p>
   }
 
   /* =========================================================
-     WORKS (speed + 안정)
-     - works.json: 기본은 캐시 사용(빠름)
-       필요할 때만 no-store
-     - 렌더는 "현재 탭만"
+     WORKS
   ========================================================= */
   const WORKS = {
     loaded: false,
@@ -1164,9 +1200,8 @@ Numerous private collections worldwide.</p>
       if (this._loadingPromise) return this._loadingPromise;
 
       this._loadingPromise = (async () => {
-        const urlFast = "/data/works.json"; // 캐시 허용 (속도)
-        const urlBust = "/data/works.json?ts=" + Date.now(); // 실패 시 fallback
-
+        const urlFast = resolvePath("/data/works.json");
+        const urlBust = urlFast + (urlFast.includes("?") ? "&" : "?") + "ts=" + Date.now();
         let json = null;
 
         try {
@@ -1201,7 +1236,8 @@ Numerous private collections worldwide.</p>
 
     normalize(w) {
       const sectionId = Number(w.section_id ?? w.sectionId ?? w.section ?? w.section_no ?? 0);
-
+      const img0 = s(w.image || w.img || w.standard || w.src || "");
+      const zoom0 = s(w.zoom || w.zoom_image || w.hires || w.large || w.image_zoom || "");
       return {
         id: s(w.id || w.ID || w.code || ""),
         section_id: sectionId,
@@ -1212,8 +1248,8 @@ Numerous private collections worldwide.</p>
         size_kr: s(w.size_kr ?? w.sizeKr ?? ""),
         size_en: s(w.size_en ?? w.sizeEn ?? ""),
         year: s(w.year ?? w.date ?? ""),
-        image: toAbs(w.image || w.img || w.standard || w.src || ""),
-        zoom: toAbs(w.zoom || w.zoom_image || w.hires || w.large || w.image_zoom || "")
+        image: resolvePath(img0),
+        zoom: resolvePath(zoom0)
       };
     },
 
@@ -1228,13 +1264,8 @@ Numerous private collections worldwide.</p>
       }
     },
 
-    list(panelKey) {
-      return this.panels[panelKey] || [];
-    },
-
-    panelEl(panelKey) {
-      return $("#panel-" + panelKey);
-    },
+    list(panelKey) { return this.panels[panelKey] || []; },
+    panelEl(panelKey) { return $("#panel-" + panelKey); },
 
     cardHTML(w, idx, panelKey) {
       const mode = getLang();
@@ -1254,7 +1285,6 @@ Numerous private collections worldwide.</p>
       }
 
       const subLine = (mode === "EN" ? (subE || subK) : (subK || subE)).trim();
-
       const thumb = w.image || w.zoom || "";
       const zoom = w.zoom || w.image || "";
 
@@ -1272,7 +1302,6 @@ Numerous private collections worldwide.</p>
 
     async render(panelKey) {
       await this.ensureLoaded();
-
       const el = this.panelEl(panelKey);
       if (!el) return;
 
@@ -1281,13 +1310,12 @@ Numerous private collections worldwide.</p>
         el.innerHTML = `
           <div class="w-msg">
             Works are empty.
-            <small>Expected: /data/works.json</small>
+            <small>Expected: ${escapeHtml(resolvePath("/data/works.json"))}</small>
           </div>
         `;
         return;
       }
 
-      // 현재 패널만 렌더: 빠름
       el.innerHTML = `
         <div class="w-grid">
           ${list.map((w, i) => this.cardHTML(w, i, panelKey)).join("")}
@@ -1305,17 +1333,11 @@ Numerous private collections worldwide.</p>
     },
 
     async ensureRendered() {
-      if (!this.renderedOnce.has(this.currentPanel)) {
-        await this.render(this.currentPanel);
-      } else {
-        // 언어 변경 시 즉시 반응 위해 재렌더 허용
-        await this.render(this.currentPanel);
-      }
+      await this.render(this.currentPanel);
     },
 
     refreshCurrentPanel() {
       if (STATE.section !== "works") return;
-      // 언어 전환 즉시 반응
       this.render(this.currentPanel).catch(() => {});
     },
 
@@ -1327,6 +1349,7 @@ Numerous private collections worldwide.</p>
           <div class="w-msg">
             ${escapeHtml(message)}
             <small>${escapeHtml(path)}</small>
+            <small>BASE: ${escapeHtml(BASE || "/")}</small>
           </div>
         `;
       });
@@ -1340,7 +1363,6 @@ Numerous private collections worldwide.</p>
     const activate = async (panelKey) => {
       tabs.forEach(t => t.classList.toggle("active", t.dataset.panel === panelKey));
       panels.forEach(p => p.classList.toggle("active", p.id === "panel-" + panelKey));
-
       WORKS.currentPanel = panelKey;
       if (STATE.section === "works") await WORKS.ensureRendered();
     };
@@ -1429,8 +1451,11 @@ Numerous private collections worldwide.</p>
       if (mode === "EN") return [tE, mE].filter(Boolean).join("\n");
 
       const lines = [];
-      if (tK || mK) { lines.push("KR:"); if (tK) lines.push(tK); if (mK) lines.push(mK); }
-      if (tE || mE) { if (lines.length) lines.push(""); lines.push("EN:"); if (tE) lines.push(tE); if (mE) lines.push(mE); }
+      if (tK) lines.push(tK);
+      if (mK) lines.push(mK);
+      if ((tK || mK) && (tE || mE)) lines.push("");
+      if (tE) lines.push(tE);
+      if (mE) lines.push(mE);
       return lines.join("\n").trim();
     }
   };
@@ -1450,7 +1475,7 @@ Numerous private collections worldwide.</p>
   }
 
   /* =========================================================
-     BIO MODAL (global lang sync + expo slide)
+     BIO MODAL
   ========================================================= */
   const BIO = {
     open() {
@@ -1532,9 +1557,7 @@ Numerous private collections worldwide.</p>
   }
 
   /* =========================================================
-     REPORTS (speed + 안정)
-     - reports.json은 캐시 우선
-     - 새 창 오픈은 유지
+     REPORTS (언어 규칙 확정)
   ========================================================= */
   const REPORTS = {
     loaded: false,
@@ -1549,9 +1572,8 @@ Numerous private collections worldwide.</p>
       if (this._loadingPromise) return this._loadingPromise;
 
       this._loadingPromise = (async () => {
-        const urlFast = "/data/reports.json";
-        const urlBust = "/data/reports.json?ts=" + Date.now();
-
+        const urlFast = resolvePath("/data/reports.json");
+        const urlBust = urlFast + (urlFast.includes("?") ? "&" : "?") + "ts=" + Date.now();
         let json = null;
 
         try {
@@ -1631,14 +1653,22 @@ Numerous private collections worldwide.</p>
     pickTitle(r) {
       const mode = getLang();
       if (mode === "EN") return r.title_en || r.title_ko || r.id;
-      if (mode === "KR+EN") return [s(r.title_ko).trim(), s(r.title_en).trim()].filter(Boolean).join(" / ") || r.id;
+      if (mode === "KR+EN") {
+        const a = s(r.title_ko).trim();
+        const b = s(r.title_en).trim();
+        return [a, b].filter(Boolean).join(" / ") || r.id;
+      }
       return r.title_ko || r.title_en || r.id;
     },
 
     pickSummary(r) {
       const mode = getLang();
       if (mode === "EN") return r.summary_en || r.summary_ko || "";
-      if (mode === "KR+EN") return [s(r.summary_ko).trim(), s(r.summary_en).trim()].filter(Boolean).join("\n\n");
+      if (mode === "KR+EN") {
+        const a = s(r.summary_ko).trim();
+        const b = s(r.summary_en).trim();
+        return [a, b].filter(Boolean).join("\n\n");
+      }
       return r.summary_ko || r.summary_en || "";
     },
 
@@ -1650,18 +1680,7 @@ Numerous private collections worldwide.</p>
     cardHTML(r, index) {
       const title = escapeHtml(this.pickTitle(r));
       const meta = escapeHtml(this.metaLine(r));
-
-      const mode = getLang();
-      let summaryText = "";
-      if (mode === "KR") summaryText = r.summary_ko || r.summary_en || "";
-      else if (mode === "EN") summaryText = r.summary_en || r.summary_ko || "";
-      else {
-        const k = r.summary_ko ? `KR: ${r.summary_ko}` : "";
-        const e = r.summary_en ? `EN: ${r.summary_en}` : "";
-        summaryText = [k, e].filter(Boolean).join("\n");
-      }
-
-      const summary = escapeHtml(summaryText);
+      const summary = escapeHtml(this.pickSummary(r));
 
       return `
         <div class="r-item" data-i="${index}">
@@ -1714,14 +1733,13 @@ Numerous private collections worldwide.</p>
     async fetchMd(mdPath) {
       const clean = s(mdPath).trim();
       if (!clean) return "";
-      const abs = toAbs(clean);
+      const abs = resolvePath(clean);
       if (!abs) return "";
 
       if (this.mdCache.has(abs)) return this.mdCache.get(abs);
 
-      // 본문은 최신이 중요하므로 no-store 우선
       try {
-        const r = await fetch(abs + "?ts=" + Date.now(), { cache: "no-store" });
+        const r = await fetch(abs + (abs.includes("?") ? "&" : "?") + "ts=" + Date.now(), { cache: "no-store" });
         if (!r.ok) throw new Error("md fetch failed");
         const txt = await r.text();
         this.mdCache.set(abs, txt);
@@ -1748,7 +1766,7 @@ Numerous private collections worldwide.</p>
 
       const fileName = this.downloadName(r);
       const rawPath = s(r.md_path).trim();
-      const absPath = rawPath ? toAbs(rawPath) : "";
+      const absPath = rawPath ? resolvePath(rawPath) : "";
 
       return `<!doctype html>
 <html lang="en">
@@ -1788,6 +1806,7 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace
     <span>download:</span>
     ${absPath ? `<a href="${escapeHtml(absPath)}" download>original file</a>` : `<a href="#" id="downloadText">${escapeHtml(fileName)}</a>`}
   </div>
+  <div class="note">BASE: ${escapeHtml(BASE || "/")}</div>
 </div>
 
 ${absPath ? "" : `<script>
@@ -1826,7 +1845,7 @@ ${absPath ? "" : `<script>
       const grid = $("#reportGrid");
       if (grid) {
         grid.style.display = "grid";
-        grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">${escapeHtml(msg)}<small>${escapeHtml(path)}</small></div>`;
+        grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">${escapeHtml(msg)}<small>${escapeHtml(path)}</small><small>BASE: ${escapeHtml(BASE || "/")}</small></div>`;
       }
       const viewer = $("#reportViewer");
       if (viewer) viewer.style.display = "none";
@@ -2012,7 +2031,7 @@ ${absPath ? "" : `<script>
   }
 
   /* =========================================================
-     WAVES (속도 최적화: reduced-motion이면 static)
+     WAVES
   ========================================================= */
   const WAVES = {
     canvas: null,
@@ -2102,7 +2121,6 @@ ${absPath ? "" : `<script>
         c.stroke();
       }
 
-      // 별먼지: 프레임마다 랜덤은 비용이 큼 -> 밀도 낮추고 최소화
       c.fillStyle = "rgba(237,227,201,0.012)";
       for (let i=0; i<55; i++) {
         const x = (Math.random() * this.w) | 0;
@@ -2112,24 +2130,16 @@ ${absPath ? "" : `<script>
     }
   };
 
-  /* =========================================================
-     Global Escape
-  ========================================================= */
   function bindEsc() {
     document.addEventListener("keydown", (e) => {
       if (e.key !== "Escape") return;
 
       const modal = $("#bio-modal");
       if (modal && modal.hidden === false) BIO.close();
-
       if (LIGHTBOX.isOpen()) LIGHTBOX.close();
     });
   }
 
-  /* =========================================================
-     Boot
-     - 속도: idle에서 works/reports JSON prefetch
-  ========================================================= */
   function prefetch() {
     idle(() => { WORKS.ensureLoaded().catch(()=>{}); });
     idle(() => { REPORTS.ensureLoaded().catch(()=>{}); });
@@ -2149,9 +2159,7 @@ ${absPath ? "" : `<script>
     WAVES.init();
     bindEsc();
 
-    // Reports 필터 기본
     REPORTS.setFilter("all");
-
     prefetch();
   }
 

@@ -1,7 +1,6 @@
 <!-- ==========================================================
-① HEAD / STYLE  (FINAL REBUILD — GRID LOCK / NAV FIX / GOLD HARD / NO LEAK)
-- BODY는 아래 ② 그대로 붙여넣기
-- SCRIPT는 아래 ③ 그대로 붙여넣기
+① HEAD / STYLE  (REBUILD v2 — CENTER FIX / BUTTON SIZE TUNE / NO BLUR GOLD)
+- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 번짐 0 (4) 접근성/속도
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -14,6 +13,7 @@
 
   <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
   <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
+
   <link rel="canonical" href="https://dungzak.art/" />
 
   <!-- OG / Twitter -->
@@ -30,7 +30,7 @@
 
   <style>
     /* =========================================================
-       Core Tokens
+       Base / Reset
     ========================================================= */
     :root{
       --bg0:#050812;
@@ -61,13 +61,15 @@
 
       --maxw: 1120px;
 
-      /* gold hard edge */
-      --gold-edge: rgba(0,0,0,.66);
-      --gold-edge2: rgba(0,0,0,.38);
+      /* 금빛 “단단함(번짐 없음)” 엣지 */
+      --gold-edge: rgba(0,0,0,.70);
+      --gold-edge2: rgba(0,0,0,.42);
 
-      /* header grid */
-      --hx: 18px;
-      --hy: 14px;
+      /* 버튼 크기 튜닝 */
+      --btnH: 40px;
+      --btnPadX: 12px;
+      --btnFont: 12.6px;
+      --btnRadius: 999px;
     }
 
     *{ box-sizing:border-box; }
@@ -81,8 +83,6 @@
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing:.2px;
       overflow-x:hidden;
-
-      /* ✅ 쏠림 방지: body에 safe-area 패딩 금지 */
       padding-left: 0;
       padding-right: 0;
     }
@@ -97,7 +97,7 @@
     img{ max-width:100%; display:block; }
 
     /* =========================================================
-       Language visibility (BODY 구조 유지, CSS로만 제어)
+       Language visibility (GLOBAL)
     ========================================================= */
     .ko,.en{ display:block; }
     body.korean .en{ display:none !important; }
@@ -106,7 +106,17 @@
     body.hybrid .en{ display:block !important; }
 
     /* =========================================================
-       Waves Canvas
+       Bio modal language (LOCAL)
+       - BODY 원문은 그대로 두고, 모달 내부만 별도 표시 제어
+    ========================================================= */
+    #bio-modal[data-bio="kr"] .bio-body.en,
+    #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
+
+    #bio-modal[data-bio="en"] .bio-body.ko,
+    #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
+
+    /* =========================================================
+       Waves canvas
     ========================================================= */
     #waves{
       position:fixed;
@@ -119,40 +129,33 @@
     }
 
     /* =========================================================
-       HEADER — GRID LOCK (브랜드/서브/네비/언어 동일 기준선)
-       - BODY HTML 변경 없이, CSS로만 “정렬/위계” 고정
+       Header / Nav (CENTER FIX + SIZE TUNE)
     ========================================================= */
     header{
       position:sticky;
       top:0;
       z-index:20;
-      padding-top: calc(var(--hy) + var(--safe-top));
-      padding-bottom: 12px;
+      padding-top: calc(12px + var(--safe-top));
+      padding-bottom: 10px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       background: linear-gradient(180deg, rgba(5,8,18,.92), rgba(5,8,18,.62));
       border-bottom:1px solid rgba(215,184,106,.18);
     }
 
-    /* BODY의 .brand / .brand-sub / nav.primary / .lang 을
-       하나의 “컨테이너 기준선”으로 통일 */
     header .brand,
-    header .brand-sub,
-    nav.primary,
-    .lang{
+    header .brand-sub{
       max-width: var(--maxw);
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: var(--hx);
-      padding-right: var(--hx);
+      margin: 0 auto;
+      padding: 0 18px;
+      text-align:center; /* ✅ 쏠림 해결 핵심 */
     }
 
-    /* ✅ 브랜드: 번짐 없는 금빛 */
     header .brand{
-      font-weight: 950;
+      font-weight: 900;
       color: var(--gold2);
-      letter-spacing: .9px;
-      font-size: 16px;
+      letter-spacing: .72px;
+      font-size: 15px;
       line-height: 1.25;
 
       -webkit-text-stroke: .35px rgba(0,0,0,.35);
@@ -162,49 +165,47 @@
     }
 
     header .brand-sub{
-      margin-top: 8px;
+      margin-top: 6px;
       font-size: 12px;
-      letter-spacing: .40px;
-      color: rgba(237,227,201,.80);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      letter-spacing: .34px;
+      color: rgba(237,227,201,.78);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
 
-    /* =========================================================
-       NAV — 데스크탑: 행 / 모바일: 2x2 그리드(요청)
-    ========================================================= */
     nav.primary{
-      margin-top: 12px;
+      max-width: var(--maxw);
+      margin: 10px auto 0;
+      padding: 0 18px;
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
+      justify-content:center; /* ✅ 중앙 정렬 */
     }
 
     nav.primary button{
       appearance:none;
-      border: 1px solid rgba(215,184,106,.34);
-      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.028);
       color: var(--gold2);
-      padding: 11px 14px;
-      border-radius: 999px;
-      font-weight: 950;
-      font-size: 13.5px;
+      padding: 8px var(--btnPadX);
+      border-radius: var(--btnRadius);
+      font-weight: 900;
+      font-size: var(--btnFont);
       cursor:pointer;
       transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
-      min-height: 44px;
-      box-shadow: var(--shadow2);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
-      white-space: nowrap;
+      min-height: var(--btnH);
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.64);
     }
     nav.primary button:hover{
-      background: rgba(215,184,106,.10);
-      border-color: rgba(215,184,106,.55);
-      box-shadow: 0 12px 30px rgba(0,0,0,.42);
-      text-decoration:none;
+      background: rgba(215,184,106,.08);
+      border-color: rgba(215,184,106,.52);
+      box-shadow: 0 10px 24px rgba(0,0,0,.36);
     }
     nav.primary button.active{
-      background: rgba(215,184,106,.14);
-      border-color: rgba(215,184,106,.78);
-      box-shadow: 0 14px 34px rgba(0,0,0,.48);
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.72);
+      box-shadow: 0 12px 28px rgba(0,0,0,.40);
     }
     nav.primary button:active{ transform: translateY(1px); }
     nav.primary button:focus-visible{
@@ -212,49 +213,31 @@
       outline-offset:2px;
     }
 
-    /* 모바일에서 2x2 그리드 + 마지막(Artist Bio)은 전체폭 */
-    @media (max-width: 560px){
-      nav.primary{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap:10px;
-      }
-      nav.primary button{
-        width:100%;
-        justify-content:center;
-      }
-      /* 4번째 버튼(Artist Bio) 풀폭 */
-      nav.primary button#tab-bio{
-        grid-column: 1 / -1;
-      }
-    }
-
-    /* =========================================================
-       LANG — 1줄 유지, 터치감/위계는 nav보다 한 단계 아래
-    ========================================================= */
     .lang{
-      margin-top: 10px;
+      max-width: var(--maxw);
+      margin: 8px auto 0;
+      padding: 0 18px;
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      justify-content:center; /* ✅ 중앙 정렬 */
     }
     .lang button{
       appearance:none;
-      border:1px solid rgba(121,167,255,.22);
-      background: rgba(255,255,255,.03);
+      border:1px solid rgba(121,167,255,.20);
+      background: rgba(255,255,255,.028);
       color: rgba(237,227,201,.92);
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-weight: 950;
-      font-size: 12.5px;
+      padding: 7px 11px;
+      border-radius: var(--btnRadius);
+      font-weight: 900;
+      font-size: 12px;
       cursor:pointer;
-      min-height: 42px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.32);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
-      white-space: nowrap;
+      min-height: 38px; /* ✅ 과대 방지 */
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .lang button.active{
-      border-color: rgba(215,184,106,.78);
+      border-color: rgba(215,184,106,.72);
       background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
@@ -266,18 +249,14 @@
       outline:2px solid rgba(121,167,255,.55);
       outline-offset:2px;
     }
-    @media (max-width: 560px){
-      .lang{ flex-wrap:nowrap; }
-      .lang button{ flex:1; text-align:center; }
-    }
 
     /* =========================================================
-       MAIN — 중앙 고정
+       Main layout
     ========================================================= */
     main{
       max-width: var(--maxw);
       margin: 0 auto;
-      padding: 18px var(--hx) calc(26px + var(--safe-bot));
+      padding: 18px 18px calc(26px + var(--safe-bot));
     }
 
     section{
@@ -301,7 +280,7 @@
       letter-spacing:.45px;
       color: var(--gold2);
       -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .poemwrap{
       margin-top:14px;
@@ -320,30 +299,31 @@
       margin:0;
       color:var(--gold2);
       -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .tabs{
       margin-top:14px;
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      justify-content:center; /* ✅ 중앙 정렬 */
     }
     .tabs .tab{
       appearance:none;
-      border:1px solid rgba(215,184,106,.24);
+      border:1px solid rgba(215,184,106,.22);
       background: rgba(255,255,255,.02);
       color:rgba(237,227,201,.90);
       border-radius: 999px;
-      padding:10px 12px;
-      font-weight:950;
-      font-size:12.5px;
+      padding: 8px 12px;
+      font-weight:900;
+      font-size:12.2px;
       cursor:pointer;
-      min-height: 42px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.30);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .tabs .tab.active{
-      border-color: rgba(215,184,106,.78);
+      border-color: rgba(215,184,106,.72);
       background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
@@ -378,7 +358,6 @@
       overflow:hidden;
       cursor:pointer;
       transition: transform .10s ease, border-color .16s ease, background .16s ease;
-      contain: content; /* speed */
     }
     .w-card:hover{
       transform: translateY(-1px);
@@ -396,12 +375,14 @@
       border-top:1px solid rgba(255,255,255,.045);
     }
     .w-title{
-      font-weight: 950;
+      font-weight: 900;
       color: rgba(237,227,201,.94);
       line-height:1.35;
       font-size: 13px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
+    .w-title .ko,
+    .w-title .en{ margin:0; }
     .w-sub{
       margin-top:6px;
       font-size: 12px;
@@ -426,39 +407,38 @@
       margin:0;
       color:var(--gold2);
       -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .reports-omega{ margin-top:14px; }
 
     .r-head{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      justify-content:center; /* ✅ 중앙 정렬 */
+      gap:10px;
       flex-wrap:wrap;
       padding: 10px 10px;
       border-radius: 14px;
       background: rgba(255,255,255,.02);
       border: 1px solid rgba(255,255,255,.05);
     }
-    .r-tabs{ display:flex; gap:8px; flex-wrap:wrap; }
-
+    .r-tabs{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
     .r-tab{
       appearance:none;
-      border:1px solid rgba(121,167,255,.18);
+      border:1px solid rgba(121,167,255,.16);
       background: rgba(255,255,255,.02);
       color: rgba(237,227,201,.88);
       border-radius: 999px;
-      padding:9px 12px;
-      font-weight:950;
-      font-size:12.5px;
+      padding:8px 12px;
+      font-weight:900;
+      font-size:12.2px;
       cursor:pointer;
-      min-height: 42px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.30);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-tab.is-active{
-      border-color: rgba(215,184,106,.78);
+      border-color: rgba(215,184,106,.72);
       background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
@@ -469,16 +449,16 @@
 
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(215,184,106,.34);
+      border:1px solid rgba(215,184,106,.30);
       background: rgba(215,184,106,.10);
       color: var(--gold2);
       border-radius: 999px;
-      padding:9px 12px;
+      padding:8px 12px;
       font-weight: 950;
       cursor:pointer;
-      min-height: 42px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.30);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
     .r-grid{
@@ -487,7 +467,6 @@
       grid-template-columns: repeat(3, minmax(0,1fr));
       gap: 12px;
     }
-    .r-grid.is-open{ display:grid; }
     @media (max-width: 980px){
       .r-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
@@ -503,7 +482,6 @@
       cursor:pointer;
       transition: transform .10s ease, border-color .16s ease, background .16s ease;
       white-space: pre-line;
-      contain: content; /* speed */
     }
     .r-item:hover{
       transform: translateY(-1px);
@@ -514,7 +492,7 @@
       font-weight: 950;
       color: rgba(237,227,201,.94);
       line-height:1.35;
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-item .m{
       margin-top:6px;
@@ -564,41 +542,40 @@
       font-size: 15px;
       font-weight: 950;
       -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .bio-lang{ display:flex; gap:8px; align-items:center; }
     .bio-lang .lang{
       appearance:none;
-      border:1px solid rgba(121,167,255,.18);
+      border:1px solid rgba(121,167,255,.16);
       background: rgba(255,255,255,.02);
       color: rgba(237,227,201,.88);
       border-radius: 999px;
-      padding:8px 12px;
+      padding:7px 10px;
       font-weight:950;
       font-size:12px;
       cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
-      white-space: nowrap;
+      min-height: 36px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.24);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .bio-lang .lang.active{
-      border-color: rgba(215,184,106,.78);
+      border-color: rgba(215,184,106,.72);
       background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
     .bio-close{
       appearance:none;
-      border:1px solid rgba(215,184,106,.34);
+      border:1px solid rgba(215,184,106,.30);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 14px;
       cursor:pointer;
       font-size: 18px;
       font-weight: 950;
-      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      box-shadow: 0 8px 18px rgba(0,0,0,.24);
     }
 
     .expo-kicker{
@@ -612,7 +589,7 @@
       padding: 12px 14px;
       font-weight: 950;
       cursor:pointer;
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
     .slide-wrap{
@@ -621,7 +598,7 @@
       transition: max-height .35s ease;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{ max-height: 1400px; }
+    .slide-wrap[data-open="true"]{ max-height: 1600px; }
     .bio-body{
       padding: 14px 14px;
       color: rgba(237,227,201,.88);
@@ -650,16 +627,17 @@
       padding-top: calc(var(--safe-top));
     }
     #lbImg{
-      max-width: min(980px, 96vw);
-      max-height: min(72vh, 760px);
+      max-width: min(1040px, 96vw);
+      max-height: min(78vh, 820px);
       border-radius: 16px;
       border:1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
       background: rgba(0,0,0,.25);
       object-fit: contain;
+      will-change: transform;
     }
     .lb-caption{
-      width: min(980px, 96vw);
+      width: min(1040px, 96vw);
       padding: 12px 12px;
       border-radius: 14px;
       border:1px solid rgba(255,255,255,.06);
@@ -667,7 +645,7 @@
       color: rgba(237,227,201,.88);
       white-space: pre-wrap;
       line-height:1.65;
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .lb-close{
       position:absolute;
@@ -677,13 +655,13 @@
       height: 46px;
       border-radius: 14px;
       appearance:none;
-      border:1px solid rgba(215,184,106,.34);
+      border:1px solid rgba(215,184,106,.30);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-size: 18px;
       font-weight: 950;
       cursor:pointer;
-      box-shadow: 0 12px 28px rgba(0,0,0,.32);
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
     }
 
     /* =========================================================
@@ -720,58 +698,56 @@
       height: 48px;
       border-radius: 16px;
       appearance:none;
-      border: 1px solid rgba(215,184,106,.34);
-
-      /* ✅ 투명 규칙 유지 */
+      border: 1px solid rgba(215,184,106,.30);
       background: rgba(0,0,0,0);
-
       color: var(--gold2);
       font-size: 18px;
       cursor:pointer;
-      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      box-shadow: 0 10px 24px rgba(0,0,0,.26);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
 
     /* =========================================================
-       Footer — 버튼급 링크 유지
+       Footer (버튼급 + 중앙 정렬)
     ========================================================= */
     footer{
       max-width: var(--maxw);
       margin: 18px auto 0;
-      padding: 14px var(--hx) calc(16px + var(--safe-bot));
+      padding: 14px 18px calc(16px + var(--safe-bot));
       border-top:1px solid rgba(215,184,106,.16);
       background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
       border-radius: 18px;
+      text-align:center;
     }
     footer .links{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       align-items:center;
+      justify-content:center;
     }
     footer .links a{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height: 48px;
-      padding: 0 16px;
+      min-height: 44px;
+      padding: 0 14px;
       border-radius: 999px;
-      border:1px solid rgba(215,184,106,.34);
+      border:1px solid rgba(215,184,106,.30);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-weight: 950;
-      letter-spacing:.25px;
+      letter-spacing:.22px;
       text-decoration:none;
-      box-shadow: 0 10px 24px rgba(0,0,0,.30);
-      text-shadow: 0 1px 0 rgba(0,0,0,.66);
-      white-space: nowrap;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     footer .links a:hover{
       background: rgba(215,184,106,.12);
-      border-color: rgba(215,184,106,.78);
+      border-color: rgba(215,184,106,.70);
       text-decoration:none;
     }
     footer .links a:active{ transform: translateY(1px); }
@@ -785,7 +761,7 @@
       margin-top: 10px;
       color: rgba(237,227,201,.70);
       letter-spacing:.2px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
     /* =========================================================
@@ -800,7 +776,6 @@
 
 <!-- ==========================================================
 ② BODY / HTML  (USER ORIGINAL — DO NOT EDIT)
-- 등작이 준 원문 그대로
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -1032,8 +1007,8 @@
           <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
           <br><p><strong>Collections</strong></p>
           <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland;
-Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); 
-Meritz Securities Co., Ltd., Republic of Korea; 
+Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection);
+Meritz Securities Co., Ltd., Republic of Korea;
 Numerous private collections worldwide.</p>
           <p><strong>Publications</strong></p>
           <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
@@ -1089,7 +1064,7 @@ Numerous private collections worldwide.</p>
   </footer>
 
 <!-- ==========================================================
-③ SCRIPTS  (FINAL — NO LAYOUT HACK / WORKS ZOOM FIX / REPORTS KR-EN / BIO SYNC / SOUND & WAVES)
+③ SCRIPTS  (FULL — Waves + Works Zoom Fix + Reports Key Fix + Bio Local Lang + Sound/FFT + Speed)
 ========================================================== -->
 <script>
 (() => {
@@ -1100,10 +1075,8 @@ Numerous private collections worldwide.</p>
   ----------------------------- */
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const bust = () => (Date.now().toString(36));
-
+  const nowBust = () => (Date.now().toString(36));
   const safeText = (v) => String(v ?? "");
   const esc = (s) => String(s ?? "")
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
@@ -1124,12 +1097,120 @@ Numerous private collections worldwide.</p>
     el.addEventListener("click", fn, { passive: true });
   }
 
+  function dispatch(name, detail) {
+    window.dispatchEvent(new CustomEvent(name, { detail }));
+  }
+
   /* =========================================================
-     1) Language Controller (CSS만 바꿈 / 레이아웃 건드리지 않음)
+     0) Waves Background (FAST + ELEGANT)
+  ========================================================= */
+  const WAVES = {
+    c: null, ctx: null, dpr: 1, w: 0, h: 0,
+    t: 0, raf: 0,
+    init() {
+      this.c = $("#waves");
+      if (!this.c) return;
+      this.ctx = this.c.getContext("2d", { alpha: true });
+      this.resize();
+      window.addEventListener("resize", () => this.resize(), { passive:true });
+
+      if (prefersReducedMotion()) {
+        this.drawStatic();
+        return;
+      }
+      this.loop();
+    },
+    resize() {
+      if (!this.c || !this.ctx) return;
+      this.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      this.w = Math.floor(window.innerWidth * this.dpr);
+      this.h = Math.floor(window.innerHeight * this.dpr);
+      this.c.width = this.w;
+      this.c.height = this.h;
+      this.c.style.width = "100%";
+      this.c.style.height = "100%";
+    },
+    drawStatic() {
+      if (!this.ctx) return;
+      const g = this.ctx;
+      g.clearRect(0,0,this.w,this.h);
+      // 은은한 고정 광도 레이어
+      g.globalAlpha = 0.35;
+      g.fillStyle = "rgba(215,184,106,.10)";
+      g.beginPath();
+      g.ellipse(this.w*0.5, this.h*0.05, this.w*0.45, this.h*0.28, 0, 0, Math.PI*2);
+      g.fill();
+      g.globalAlpha = 1;
+    },
+    loop() {
+      this.raf = requestAnimationFrame(() => this.loop());
+      this.t += 0.0065;
+      this.draw();
+    },
+    draw() {
+      if (!this.ctx) return;
+      const g = this.ctx;
+      g.clearRect(0,0,this.w,this.h);
+
+      // 배경 글로우(가볍게)
+      g.globalAlpha = 0.18;
+      g.fillStyle = "rgba(121,167,255,.10)";
+      g.beginPath();
+      g.ellipse(this.w*0.5, this.h*0.08, this.w*0.44, this.h*0.24, 0, 0, Math.PI*2);
+      g.fill();
+
+      // 파동 라인 3겹(부드럽고 과하지 않게)
+      const layers = [
+        { a: 18, k: 0.012, s: 0.9,  o: 0.20 },
+        { a: 28, k: 0.010, s: 1.2,  o: 0.18 },
+        { a: 40, k: 0.008, s: 1.55, o: 0.14 }
+      ];
+
+      for (let li=0; li<layers.length; li++) {
+        const L = layers[li];
+        g.globalAlpha = L.o;
+        g.lineWidth = Math.max(1, 1.2 * this.dpr);
+        g.strokeStyle = "rgba(215,184,106,.55)";
+        g.beginPath();
+
+        const mid = this.h * (0.28 + li*0.16);
+        const amp = L.a * this.dpr;
+
+        for (let x=0; x<=this.w; x+= Math.floor(10*this.dpr)) {
+          const nx = x * L.k;
+          const y =
+            mid
+            + Math.sin(nx + this.t*L.s) * amp
+            + Math.sin(nx*0.7 - this.t*1.1) * (amp*0.45)
+            + Math.sin(nx*1.4 + this.t*0.6) * (amp*0.25);
+          if (x===0) g.moveTo(x,y);
+          else g.lineTo(x,y);
+        }
+        g.stroke();
+
+        // 블루 하이라이트(가늘게)
+        g.globalAlpha = L.o * 0.55;
+        g.strokeStyle = "rgba(121,167,255,.50)";
+        g.beginPath();
+        for (let x=0; x<=this.w; x+= Math.floor(12*this.dpr)) {
+          const nx = x * (L.k*0.92);
+          const y = mid + Math.sin(nx + this.t*(L.s*1.08))*(amp*0.72);
+          if (x===0) g.moveTo(x,y);
+          else g.lineTo(x,y);
+        }
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+    }
+  };
+
+  /* =========================================================
+     1) Language Controller (GLOBAL)
   ========================================================= */
   const LANG = {
-    key: "LF_LANG_V4",
+    key: "LF_LANG_V3",
     mode: "korean",
+
     set(mode) {
       const m = (mode === "english" || mode === "hybrid") ? mode : "korean";
       this.mode = m;
@@ -1144,16 +1225,16 @@ Numerous private collections worldwide.</p>
       if (m === "hybrid" && hy) hy.classList.add("active");
 
       try { localStorage.setItem(this.key, m); } catch(e) {}
-      BIO.syncWithGlobalLang();   // ✅ Bio도 같이 맞춤
-      WORKS.rerenderCurrentPanel();
-      REPORTS.render();
+      dispatch("lf:lang", { mode: m });
     },
+
     restore() {
       let saved = null;
       try { saved = localStorage.getItem(this.key); } catch(e) {}
       if (saved === "korean" || saved === "english" || saved === "hybrid") this.set(saved);
       else this.set("korean");
     },
+
     bindButtons() {
       onTap($("#koBtn"), () => this.set("korean"));
       onTap($("#enBtn"), () => this.set("english"));
@@ -1162,34 +1243,47 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     2) Navigation (스크롤만 / display 조작 금지)
+     2) Navigation (SCROLL ONLY — NO HIDE)
+     - “기능이 제멋대로” 느낌을 줄이기 위해, 섹션 display 조작 제거
   ========================================================= */
   const NAV = {
     btns: [],
-    bind() {
-      this.btns = $$('nav.primary button[data-target]');
-      this.btns.forEach(b => {
-        const id = (b.getAttribute("data-target") || "").trim();
-        if (!id) return;
-        onTap(b, () => this.go(id));
-      });
+    secs: { poem:null, works:null, reports:null },
 
-      // Bio open
-      onTap($("#tab-bio"), () => BIO.open());
+    findSections() {
+      this.secs.poem = document.getElementById("poem");
+      this.secs.works = document.getElementById("works");
+      this.secs.reports = document.getElementById("reports");
     },
-    go(id) {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block:"start" });
 
-      // active 표시만
-      this.btns.forEach(x => x.classList.remove("active"));
-      const active = this.btns.find(x => (x.getAttribute("data-target")||"") === id);
+    bind() {
+      this.btns = $$('button[data-target], a[data-target]');
+      this.btns.forEach(b => {
+        const t = (b.getAttribute("data-target") || "").trim();
+        if (!t) return;
+        onTap(b, () => this.go(t, true));
+      });
+    },
+
+    go(target, doScroll) {
+      const t = (target === "works" || target === "reports") ? target : "poem";
+      this.findSections();
+
+      this.btns.forEach(b => b.classList.remove("active"));
+      const active = this.btns.find(b => (b.getAttribute("data-target") || "") === t);
       if (active) active.classList.add("active");
+
+      dispatch("lf:section", { target: t });
+
+      if (doScroll) {
+        const el = this.secs[t];
+        if (el) el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block:"start" });
+      }
     }
   };
 
   /* =========================================================
-     3) Lightbox (WORKS 배열과 1:1 고정, 확대 꼬임 방지)
+     3) Lightbox
   ========================================================= */
   const LIGHTBOX = {
     root: $("#lightbox"),
@@ -1201,13 +1295,10 @@ Numerous private collections worldwide.</p>
 
     open(src, caption) {
       if (!this.root || !this.img || !src) return;
-
-      // preload zoom for speed
-      const pre = new Image();
-      pre.decoding = "async";
-      pre.src = src;
-
+      // 이미지 교체 시 깜빡임 최소화
+      this.img.decoding = "async";
       this.img.src = src;
+
       if (this.cap) this.cap.textContent = caption || "";
       this.root.classList.add("is-open");
       this.isOpen = true;
@@ -1228,11 +1319,6 @@ Numerous private collections worldwide.</p>
 
       onTap(this.closeBtn, () => this.close());
 
-      // click outside stage: backdrop only (stage 외곽 닫기)
-      this.root.addEventListener("click", (e) => {
-        if (e.target === this.root) this.close();
-      });
-
       document.addEventListener("keydown", (e) => {
         if (!this.isOpen) return;
         if (e.key === "Escape") this.close();
@@ -1240,7 +1326,6 @@ Numerous private collections worldwide.</p>
         if (e.key === "ArrowLeft") stepFn && stepFn(-1);
       });
 
-      // swipe
       this.root.addEventListener("touchstart", (e) => {
         if (!this.isOpen) return;
         this.touchX = e.touches?.[0]?.clientX ?? null;
@@ -1259,30 +1344,33 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     4) Works (확대 꼬임 해결: data-id 기반 / 배열 고정)
+     4) Works (ZOOM FIX + SPEED)
   ========================================================= */
   const WORKS = {
     raw: [],
     bySection: {1:[],2:[],3:[],4:[],5:[]},
+    panelEls: {},
+    tabBtns: [],
     currentKey: "pray",
     currentIndex: 0,
+    io: null,
 
     keyToSid(key){
       return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
     },
 
-    panels(){
-      return {
-        pray: $("#panel-pray"),
-        human: $("#panel-human"),
-        rebirth: $("#panel-rebirth"),
-        exist: $("#panel-exist"),
-        cosmos: $("#panel-cosmos")
+    findPanels() {
+      this.panelEls = {
+        pray: document.getElementById("panel-pray"),
+        human: document.getElementById("panel-human"),
+        rebirth: document.getElementById("panel-rebirth"),
+        exist: document.getElementById("panel-exist"),
+        cosmos: document.getElementById("panel-cosmos")
       };
     },
 
-    tabs(){
-      return $$('button.tab[data-panel]');
+    findTabs() {
+      this.tabBtns = $$('button.tab[data-panel]');
     },
 
     async load() {
@@ -1291,22 +1379,18 @@ Numerous private collections worldwide.</p>
 
       for (const url of candidates) {
         try {
-          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          const res = await fetch(url + "?" + nowBust(), { cache:"no-store" });
           if (!res.ok) throw new Error("HTTP " + res.status);
           const json = await res.json();
           const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
           this.raw = arr;
-
           this.bySection = {1:[],2:[],3:[],4:[],5:[]};
           arr.forEach(w => {
             const sid = Number(w?.section_id);
             if (sid>=1 && sid<=5) this.bySection[sid].push(w);
           });
-
           return true;
-        } catch(e) {
-          lastErr = e;
-        }
+        } catch(e) { lastErr = e; }
       }
 
       console.warn("[Works] load failed:", lastErr);
@@ -1345,9 +1429,17 @@ Numerous private collections worldwide.</p>
     },
 
     imgSrc(w) { return slash(w?.image || ""); },
+
+    // ✅ 확대(zoom) 문제 해결:
+    // - zoom 값이 없으면: /images/standard/ -> /images/zoom/ 추론
     zoomSrc(w) {
       const z = safeText(w?.zoom || "").trim();
-      return z ? slash(z) : this.imgSrc(w);
+      if (z) return slash(z);
+
+      const s = this.imgSrc(w);
+      if (!s) return "";
+      if (s.includes("/images/standard/")) return s.replace("/images/standard/","/images/zoom/");
+      return s;
     },
 
     captionText(w){
@@ -1364,24 +1456,93 @@ Numerous private collections worldwide.</p>
     cardHTML(w, idx) {
       const src = this.imgSrc(w);
       if (!src) return "";
-
-      // ✅ id/slug가 있으면 그걸 우선 사용 (확대 꼬임 방지용 key)
-      const wid = safeText(w?.id || w?.work_id || w?.slug || w?.image || ("idx_"+idx));
-
-      const alt =
-        LANG.mode === "english"
-          ? (w?.title_en || w?.title_kr || "")
-          : (w?.title_kr || w?.title_en || "");
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
 
       return `
-        <article class="w-card" data-wid="${esc(wid)}" data-idx="${idx}">
-          <img class="w-thumb" loading="lazy" decoding="async" src="${esc(src)}" alt="${esc(alt)}">
+        <article class="w-card" data-idx="${idx}" data-zoom="${esc(this.zoomSrc(w))}">
+          <img class="w-thumb" loading="lazy" decoding="async" src="${esc(src)}" alt="${esc(titlePlain)}">
           <div class="w-meta">
             <div class="w-title">${this.titleHTML(w)}</div>
             <div class="w-sub">${this.metaHTML(w)}</div>
           </div>
         </article>
       `;
+    },
+
+    attachLazyDecode(panel){
+      // 이미지 decode()가 가능한 브라우저에서 살짝 더 부드럽게
+      const imgs = $$("img.w-thumb", panel);
+      imgs.forEach(img => {
+        if (!("decode" in img)) return;
+        img.addEventListener("load", () => { try { img.decode(); } catch(e) {} }, { once:true, passive:true });
+      });
+    },
+
+    setupObserver(panel){
+      // viewport 근처 카드 썸네일을 미리 디코드(가벼운 최적화)
+      if (!("IntersectionObserver" in window)) return;
+      if (this.io) { try { this.io.disconnect(); } catch(e) {} }
+
+      this.io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (!en.isIntersecting) return;
+          const img = en.target;
+          try { img.loading = "eager"; } catch(e) {}
+          if ("decode" in img) { try { img.decode(); } catch(e) {} }
+          this.io.unobserve(img);
+        });
+      }, { root: null, rootMargin: "240px 0px", threshold: 0.01 });
+
+      $$("img.w-thumb", panel).forEach(img => this.io.observe(img));
+    },
+
+    renderPanel(key) {
+      this.findPanels();
+      this.findTabs();
+
+      const k = this.panelEls[key] ? key : "pray";
+      this.currentKey = k;
+      this.currentIndex = 0;
+
+      this.tabBtns.forEach(b => b.classList.remove("active"));
+      const activeTab = this.tabBtns.find(b => (b.getAttribute("data-panel") || "") === k);
+      if (activeTab) activeTab.classList.add("active");
+
+      $$(".tabpanel").forEach(p => p.classList.remove("active"));
+      const panel = this.panelEls[k];
+      if (panel) panel.classList.add("active");
+      if (!panel) return;
+
+      const sid = this.keyToSid(k);
+      const arr = this.bySection[sid] || [];
+
+      if (!arr.length) {
+        panel.innerHTML = `<div class="w-msg">Works 데이터가 없습니다.<small>(section_id: ${sid} / /data/works.json 확인)</small></div>`;
+        return;
+      }
+
+      const html = arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("");
+      panel.innerHTML = `<div class="w-grid">${html}</div>`;
+
+      this.attachLazyDecode(panel);
+      this.setupObserver(panel);
+
+      $$(".w-card", panel).forEach(card => {
+        onTap(card, () => {
+          const idx = Number(card.getAttribute("data-idx") || "0");
+          this.currentIndex = isNaN(idx) ? 0 : idx;
+          const w = this.currentWork();
+          if (!w) return;
+
+          const zoom = this.zoomSrc(w);
+          LIGHTBOX.open(zoom, this.captionText(w));
+
+          // 다음/이전 zoom 미리 프리로드(체감 속도)
+          this.preloadNeighborZoom();
+        });
+      });
     },
 
     currentArray() {
@@ -1404,63 +1565,27 @@ Numerous private collections worldwide.</p>
       return this.currentWork();
     },
 
-    activateTab(key){
-      const tabs = this.tabs();
-      tabs.forEach(b => b.classList.remove("active"));
-      const active = tabs.find(b => (b.getAttribute("data-panel")||"") === key);
-      if (active) active.classList.add("active");
-
-      $$(".tabpanel").forEach(p => p.classList.remove("active"));
-      const panel = this.panels()[key];
-      if (panel) panel.classList.add("active");
+    preload(url){
+      if (!url) return;
+      const img = new Image();
+      img.decoding = "async";
+      img.src = url;
     },
 
-    renderPanel(key) {
-      const panels = this.panels();
-      const panel = panels[key] || panels.pray;
-      const k = panels[key] ? key : "pray";
-
-      this.currentKey = k;
-      this.currentIndex = 0;
-
-      this.activateTab(k);
-
-      if (!panel) return;
-
-      const sid = this.keyToSid(k);
-      const arr = this.bySection[sid] || [];
-
-      if (!arr.length) {
-        panel.innerHTML = `<div class="w-msg">Works 데이터가 없습니다.<small>(section_id: ${sid} / /data/works.json 확인)</small></div>`;
-        return;
-      }
-
-      panel.innerHTML = `<div class="w-grid">${arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("")}</div>`;
-
-      // ✅ 클릭 시: 그 카드의 idx를 그대로 currentIndex로
-      $$(".w-card", panel).forEach(card => {
-        onTap(card, () => {
-          const idx = Number(card.getAttribute("data-idx") || "0");
-          this.currentIndex = isNaN(idx) ? 0 : idx;
-          const w = this.currentWork();
-          if (!w) return;
-          LIGHTBOX.open(this.zoomSrc(w), this.captionText(w));
-        });
-      });
-    },
-
-    rerenderCurrentPanel(){
-      // 언어 전환 시: 같은 섹션, 같은 index 유지
-      const key = this.currentKey;
-      const idx = this.currentIndex;
-
-      this.renderPanel(key);
+    preloadNeighborZoom(){
       const arr = this.currentArray();
-      if (arr.length) this.currentIndex = clamp(idx, 0, arr.length-1);
+      if (!arr.length) return;
+      const n = arr.length;
+      const i0 = this.currentIndex;
+      const i1 = (i0 + 1) % n;
+      const i2 = (i0 - 1 + n) % n;
+      this.preload(this.zoomSrc(arr[i1]));
+      this.preload(this.zoomSrc(arr[i2]));
     },
 
     bindTabs() {
-      this.tabs().forEach(btn => {
+      this.findTabs();
+      this.tabBtns.forEach(btn => {
         const k = (btn.getAttribute("data-panel") || "").trim();
         if (!k) return;
         onTap(btn, () => this.renderPanel(k));
@@ -1468,25 +1593,32 @@ Numerous private collections worldwide.</p>
     },
 
     async init() {
+      this.findPanels();
       this.bindTabs();
       await this.load();
 
-      const active = this.tabs().find(b => b.classList.contains("active"));
+      const active = this.tabBtns.find(b => b.classList.contains("active"));
       const key = active ? (active.getAttribute("data-panel") || "pray") : "pray";
       this.renderPanel(key);
     }
   };
 
   /* =========================================================
-     5) Reports (KR/EN/KR+EN 분리 렌더 + 새 창 viewer + download)
+     5) Reports (KEY COMPAT: _ko/_kr 둘 다)
   ========================================================= */
   const REPORTS = {
     list: [],
-    grid: $("#reportGrid"),
-    toggleBtn: $("#reportsToggle"),
-    tabBtns: $$('button.r-tab[data-r]'),
+    grid: null,
+    toggleBtn: null,
+    tabBtns: [],
     filter: "all",
     opened: false,
+
+    findUI() {
+      this.grid = document.getElementById("reportGrid");
+      this.toggleBtn = document.getElementById("reportsToggle");
+      this.tabBtns = $$('.r-tab[data-r]');
+    },
 
     async load() {
       const candidates = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
@@ -1494,15 +1626,13 @@ Numerous private collections worldwide.</p>
 
       for (const url of candidates) {
         try {
-          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          const res = await fetch(url + "?" + nowBust(), { cache:"no-store" });
           if (!res.ok) throw new Error("HTTP " + res.status);
           const json = await res.json();
           const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
           this.list = arr;
           return true;
-        } catch(e) {
-          lastErr = e;
-        }
+        } catch(e) { lastErr = e; }
       }
 
       console.warn("[Reports] load failed:", lastErr);
@@ -1510,8 +1640,11 @@ Numerous private collections worldwide.</p>
       return false;
     },
 
+    getTitleKR(r){ return safeText(r?.title_ko || r?.title_kr || ""); },
+    getSummaryKR(r){ return safeText(r?.summary_ko || r?.summary_kr || ""); },
+
     titleHTML(r) {
-      const kr = safeText(r?.title_ko || "");
+      const kr = this.getTitleKR(r);
       const en = safeText(r?.title_en || "");
       if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
@@ -1522,7 +1655,7 @@ Numerous private collections worldwide.</p>
     },
 
     summaryHTML(r) {
-      const kr = safeText(r?.summary_ko || "");
+      const kr = this.getSummaryKR(r);
       const en = safeText(r?.summary_en || "");
       if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
       if (LANG.mode === "hybrid") {
@@ -1532,7 +1665,7 @@ Numerous private collections worldwide.</p>
       return `<span class="ko">${esc(kr || en)}</span>`;
     },
 
-    mdURL(r) { return slash(r?.md_path || ""); },
+    mdURL(r) { return slash(r?.md_path || r?.path || r?.url || ""); },
 
     matchFilter(r){
       if (this.filter === "all") return true;
@@ -1552,21 +1685,55 @@ Numerous private collections worldwide.</p>
       `;
     },
 
-    setOpen(open){
-      this.opened = !!open;
-      if (!this.grid || !this.toggleBtn) return;
+    render() {
+      this.findUI();
+      if (!this.grid) return;
 
-      this.grid.classList.toggle("is-open", this.opened);
+      const filtered = this.list.filter(r => this.matchFilter(r));
+
+      if (!filtered.length) {
+        this.grid.innerHTML = `<div class="w-msg">Reports 데이터가 없습니다.<small>(/data/reports.json 확인)</small></div>`;
+        return;
+      }
+
+      this.grid.innerHTML = filtered.map(r => this.cardHTML(r)).join("");
+
+      $$(".r-item", this.grid).forEach(card => {
+        onTap(card, () => {
+          const md = card.getAttribute("data-md") || "";
+          const id = card.getAttribute("data-id") || "REPORT";
+          const titleText = (card.querySelector(".t")?.textContent || id).trim();
+          this.openViewerWindow({ id, title:titleText, mdURL: md });
+        });
+      });
+    },
+
+    setOpen(open){
+      this.findUI();
+      this.opened = !!open;
+      if (!this.toggleBtn || !this.grid) return;
+
+      this.grid.style.display = this.opened ? "grid" : "none";
       this.toggleBtn.setAttribute("aria-expanded", this.opened ? "true" : "false");
       this.toggleBtn.textContent = this.opened ? "Close Reports" : "Open Reports";
     },
 
     setFilter(f){
       this.filter = (f === "theory" || f === "archive" || f === "practice") ? f : "all";
+      this.findUI();
       this.tabBtns.forEach(b => b.classList.remove("is-active"));
       const active = this.tabBtns.find(b => (b.getAttribute("data-r") || "") === this.filter);
       if (active) active.classList.add("is-active");
       this.render();
+    },
+
+    bind(){
+      this.findUI();
+      if (this.toggleBtn) onTap(this.toggleBtn, () => this.setOpen(!this.opened));
+      this.tabBtns.forEach(btn => {
+        const f = (btn.getAttribute("data-r") || "all").trim();
+        onTap(btn, () => this.setFilter(f));
+      });
     },
 
     async openViewerWindow({ id, title, mdURL }) {
@@ -1585,7 +1752,10 @@ Numerous private collections worldwide.</p>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>${esc(docTitle)}</title>
   <style>
-    :root{ --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd; --gold:#e6c777; }
+    :root{
+      --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd;
+      --gold:#e6c777;
+    }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       background: radial-gradient(1200px 600px at 50% -10%, rgba(170,205,255,.10), transparent 60%),
@@ -1653,7 +1823,7 @@ Numerous private collections worldwide.</p>
       }
 
       try {
-        const res = await fetch(mdURL + "?" + bust(), { cache:"no-store" });
+        const res = await fetch(mdURL + "?" + nowBust(), { cache:"no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const text = await res.text();
         if (contentEl) contentEl.textContent = text.trim();
@@ -1661,40 +1831,6 @@ Numerous private collections worldwide.</p>
         if (contentEl) contentEl.textContent =
           "Failed to load report text.\n\nOpen the download link instead.\n\n" + String(e);
       }
-    },
-
-    render() {
-      if (!this.grid) this.grid = $("#reportGrid");
-      if (!this.grid) return;
-
-      const filtered = this.list.filter(r => this.matchFilter(r));
-      if (!filtered.length) {
-        this.grid.innerHTML = `<div class="w-msg">Reports 데이터가 없습니다.<small>(/data/reports.json 확인)</small></div>`;
-        return;
-      }
-
-      this.grid.innerHTML = filtered.map(r => this.cardHTML(r)).join("");
-
-      $$(".r-item", this.grid).forEach(card => {
-        onTap(card, () => {
-          const md = card.getAttribute("data-md") || "";
-          const id = card.getAttribute("data-id") || "REPORT";
-          const titleText = (card.querySelector(".t")?.textContent || id).trim();
-          this.openViewerWindow({ id, title:titleText, mdURL: md });
-        });
-      });
-    },
-
-    bind(){
-      this.toggleBtn = $("#reportsToggle");
-      this.grid = $("#reportGrid");
-      this.tabBtns = $$('button.r-tab[data-r]');
-
-      if (this.toggleBtn) onTap(this.toggleBtn, () => this.setOpen(!this.opened));
-      this.tabBtns.forEach(btn => {
-        const f = (btn.getAttribute("data-r") || "all").trim();
-        onTap(btn, () => this.setFilter(f));
-      });
     },
 
     async init() {
@@ -1706,39 +1842,48 @@ Numerous private collections worldwide.</p>
   };
 
   /* =========================================================
-     6) Bio (modal + expo slide + 글로벌 언어 동기화)
+     6) Bio (Modal + Expo Slide + Local Language)
   ========================================================= */
   const BIO = {
-    modal: $("#bio-modal"),
-    openBtn: $("#tab-bio"),
-    closeBtn: $(".bio-close"),
-    backdrop: $(".bio-backdrop"),
-    expoBtn: $("#expoToggle"),
-    expoSlide: $("#expoSlide"),
-    bioLangBtns: $$('#bio-modal .bio-lang .lang[data-bio-lang]'),
+    modal: null,
+    openBtn: null,
+    closeBtn: null,
+    backdrop: null,
+    expoBtn: null,
+    expoSlide: null,
+    langBtns: [],
 
-    open() { if (this.modal) this.modal.hidden = false; },
-    close() { if (this.modal) this.modal.hidden = true; },
+    find() {
+      this.modal = $("#bio-modal");
+      this.openBtn = $("#tab-bio");
+      this.closeBtn = $(".bio-close");
+      this.backdrop = $(".bio-backdrop");
+      this.expoBtn = $("#expoToggle");
+      this.expoSlide = $("#expoSlide");
+      this.langBtns = $$('.bio-lang .lang[data-bio-lang]');
+    },
 
-    setBioLang(mode){ // "kr" | "en"
-      const m = (mode === "en") ? "en" : "kr";
-      const koBodies = $$('#bio-modal .bio-body.ko');
-      const enBodies = $$('#bio-modal .bio-body.en');
+    setLocalLang(m) {
+      if (!this.modal) return;
+      const mode = (m === "en") ? "en" : "kr";
+      this.modal.setAttribute("data-bio", mode);
 
-      // ✅ Bio 모달 내부 언어는 “둘 중 하나만” 노출
-      koBodies.forEach(el => el.style.display = (m === "kr") ? "" : "none");
-      enBodies.forEach(el => el.style.display = (m === "en") ? "" : "none");
-
-      this.bioLangBtns.forEach(b => b.classList.remove("active"));
-      const active = this.bioLangBtns.find(b => (b.getAttribute("data-bio-lang")||"") === m);
+      this.langBtns.forEach(b => b.classList.remove("active"));
+      const active = this.langBtns.find(b => (b.getAttribute("data-bio-lang")||"") === mode);
       if (active) active.classList.add("active");
     },
 
-    syncWithGlobalLang(){
-      // ✅ 글로벌 언어가 EN이면 Bio도 EN, 그 외는 KR
-      if (LANG.mode === "english") this.setBioLang("en");
-      else this.setBioLang("kr");
+    open() {
+      if (!this.modal) return;
+
+      // 글로벌 언어에 맞춰 기본값 지정(하이브리드는 KR 기본)
+      if (LANG.mode === "english") this.setLocalLang("en");
+      else this.setLocalLang("kr");
+
+      this.modal.hidden = false;
     },
+
+    close() { if (this.modal) this.modal.hidden = true; },
 
     toggleExpo() {
       if (!this.expoSlide || !this.expoBtn) return;
@@ -1748,273 +1893,188 @@ Numerous private collections worldwide.</p>
     },
 
     bind() {
+      this.find();
       if (this.openBtn) onTap(this.openBtn, () => this.open());
       if (this.closeBtn) onTap(this.closeBtn, () => this.close());
       if (this.backdrop) onTap(this.backdrop, () => this.close());
       if (this.expoBtn) onTap(this.expoBtn, () => this.toggleExpo());
 
-      this.bioLangBtns.forEach(btn => {
+      this.langBtns.forEach(btn => {
         const m = (btn.getAttribute("data-bio-lang")||"kr").trim();
-        onTap(btn, () => this.setBioLang(m));
+        onTap(btn, () => this.setLocalLang(m));
       });
 
       document.addEventListener("keydown", (e) => {
         if (!this.modal || this.modal.hidden) return;
         if (e.key === "Escape") this.close();
       });
-
-      // init state
-      this.syncWithGlobalLang();
     }
   };
 
   /* =========================================================
-     7) Sound (공명형 우주음: WebAudio 생성 / 외부파일 불필요)
+     7) Sound + FFT (SAFE FALLBACK)
+     - 오디오 파일이 없으면 버튼 비활성화(깨지지 않게)
   ========================================================= */
   const SOUND = {
+    btnPlay: null,
+    btnStop: null,
+    fftSpan: null,
+    audio: null,
     ctx: null,
-    master: null,
     analyser: null,
-    fftEl: $("#fftBar span"),
+    srcNode: null,
+    data: null,
+    raf: 0,
+    ready: false,
     playing: false,
-    raf: 0,
 
-    start(){
-      if (this.playing) return;
+    candidates: [
+      "/audio/cosmic-resonance.mp3",
+      "/audio/cosmic_resonance.mp3",
+      "/audio/ambient.mp3",
+      "/audio/cosmic.mp3"
+    ],
 
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-
-      if (!this.ctx) this.ctx = new AudioCtx();
-
-      // iOS: resume 필요
-      if (this.ctx.state === "suspended") this.ctx.resume();
-
-      // graph
-      const ctx = this.ctx;
-      this.master = ctx.createGain();
-      this.master.gain.value = 0.0;
-
-      this.analyser = ctx.createAnalyser();
-      this.analyser.fftSize = 512;
-
-      // gentle drone (3 osc + filter)
-      const o1 = ctx.createOscillator();
-      const o2 = ctx.createOscillator();
-      const o3 = ctx.createOscillator();
-      o1.type = "sine";
-      o2.type = "sine";
-      o3.type = "triangle";
-
-      // base freq (명상적 공명)
-      o1.frequency.value = 55.0;     // A1
-      o2.frequency.value = 110.0;    // A2
-      o3.frequency.value = 82.41;    // E2
-
-      const g1 = ctx.createGain(); g1.gain.value = 0.10;
-      const g2 = ctx.createGain(); g2.gain.value = 0.06;
-      const g3 = ctx.createGain(); g3.gain.value = 0.05;
-
-      const filt = ctx.createBiquadFilter();
-      filt.type = "lowpass";
-      filt.frequency.value = 1200;
-      filt.Q.value = 0.7;
-
-      // slow movement (LFO)
-      const lfo = ctx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.06;
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 240; // filter sweep
-      lfo.connect(lfoGain);
-      lfoGain.connect(filt.frequency);
-
-      // master fade in
-      const now = ctx.currentTime;
-      this.master.gain.cancelScheduledValues(now);
-      this.master.gain.setValueAtTime(0.0, now);
-      this.master.gain.linearRampToValueAtTime(0.38, now + 1.2);
-
-      // connect
-      o1.connect(g1); o2.connect(g2); o3.connect(g3);
-      g1.connect(filt); g2.connect(filt); g3.connect(filt);
-      filt.connect(this.analyser);
-      this.analyser.connect(this.master);
-      this.master.connect(ctx.destination);
-
-      // store nodes for stop
-      this._nodes = { o1,o2,o3,g1,g2,g3,filt,lfo,lfoGain };
-
-      // start
-      o1.start(); o2.start(); o3.start();
-      lfo.start();
-
-      this.playing = true;
-      this._fftLoop();
-
-      // UI
-      const playBtn = $("#soundBtn");
-      const stopBtn = $("#soundStopBtn");
-      if (playBtn) playBtn.disabled = true;
-      if (stopBtn) stopBtn.disabled = false;
+    find() {
+      this.btnPlay = $("#soundBtn");
+      this.btnStop = $("#soundStopBtn");
+      this.fftSpan = $("#fftBar span");
     },
 
-    stop(){
-      if (!this.playing || !this.ctx) return;
-
-      const ctx = this.ctx;
-      const now = ctx.currentTime;
-
-      try{
-        this.master.gain.cancelScheduledValues(now);
-        this.master.gain.setValueAtTime(this.master.gain.value, now);
-        this.master.gain.linearRampToValueAtTime(0.0, now + 0.5);
-      }catch(e){}
-
-      window.setTimeout(() => {
-        try{
-          const n = this._nodes;
-          if (n){
-            n.o1.stop(); n.o2.stop(); n.o3.stop();
-            n.lfo.stop();
-          }
-        }catch(e){}
-        this._nodes = null;
-      }, 520);
-
-      this.playing = false;
-      cancelAnimationFrame(this.raf);
-      this.raf = 0;
-
-      if (this.fftEl) this.fftEl.style.width = "0%";
-
-      // UI
-      const playBtn = $("#soundBtn");
-      const stopBtn = $("#soundStopBtn");
-      if (playBtn) playBtn.disabled = false;
-      if (stopBtn) stopBtn.disabled = true;
+    async pickSource() {
+      for (const u of this.candidates) {
+        try {
+          const res = await fetch(u, { method:"HEAD", cache:"no-store" });
+          if (res.ok) return u;
+        } catch(e) {}
+      }
+      return "";
     },
 
-    _fftLoop(){
-      if (!this.analyser || !this.fftEl || !this.playing) return;
+    async init() {
+      this.find();
+      if (!this.btnPlay || !this.btnStop) return;
 
-      const arr = new Uint8Array(this.analyser.frequencyBinCount);
-      this.analyser.getByteFrequencyData(arr);
+      const src = await this.pickSource();
+      if (!src) {
+        this.btnPlay.disabled = true;
+        this.btnStop.disabled = true;
+        return;
+      }
 
-      // average energy
+      this.audio = new Audio(src);
+      this.audio.loop = true;
+      this.audio.preload = "auto";
+
+      onTap(this.btnPlay, () => this.toggle());
+      onTap(this.btnStop, () => this.stop());
+
+      this.ready = true;
+    },
+
+    ensureCtx() {
+      if (!this.audio) return false;
+      if (this.ctx) return true;
+
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+
+      this.ctx = new AC();
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.data = new Uint8Array(this.analyser.frequencyBinCount);
+
+      this.srcNode = this.ctx.createMediaElementSource(this.audio);
+      this.srcNode.connect(this.analyser);
+      this.analyser.connect(this.ctx.destination);
+
+      return true;
+    },
+
+    meter() {
+      if (!this.analyser || !this.data) return;
+      this.analyser.getByteFrequencyData(this.data);
       let sum = 0;
-      for (let i=0;i<arr.length;i++) sum += arr[i];
-      const avg = sum / arr.length; // 0..255
+      for (let i=0; i<this.data.length; i++) sum += this.data[i];
+      const avg = sum / this.data.length; // 0..255
+      const pct = clamp((avg / 255) * 100, 0, 100);
 
-      const pct = clamp((avg / 255) * 100 * 1.25, 0, 100);
-      this.fftEl.style.width = pct.toFixed(1) + "%";
-
-      this.raf = requestAnimationFrame(() => this._fftLoop());
+      if (this.fftSpan) this.fftSpan.style.width = pct.toFixed(1) + "%";
+      this.raf = requestAnimationFrame(() => this.meter());
     },
 
-    bind(){
-      onTap($("#soundBtn"), () => this.start());
-      onTap($("#soundStopBtn"), () => this.stop());
+    async play() {
+      if (!this.ready || !this.audio) return;
+      if (!this.ensureCtx()) return;
+
+      try {
+        if (this.ctx.state === "suspended") await this.ctx.resume();
+      } catch(e) {}
+
+      try {
+        await this.audio.play();
+        this.playing = true;
+        if (this.btnStop) this.btnStop.disabled = false;
+        if (this.raf) cancelAnimationFrame(this.raf);
+        this.meter();
+      } catch(e) {
+        // iOS 정책 등으로 실패 가능: 조용히 유지
+      }
+    },
+
+    stop() {
+      if (!this.audio) return;
+      try { this.audio.pause(); } catch(e) {}
+      try { this.audio.currentTime = 0; } catch(e) {}
+      this.playing = false;
+      if (this.btnStop) this.btnStop.disabled = true;
+      if (this.fftSpan) this.fftSpan.style.width = "0%";
+      if (this.raf) cancelAnimationFrame(this.raf);
+    },
+
+    toggle() {
+      if (!this.audio) return;
+      if (this.playing) this.stop();
+      else this.play();
     }
   };
 
   /* =========================================================
-     8) Waves (가벼운 파동 + reduced-motion 대응)
+     8) Init
   ========================================================= */
-  const WAVES = {
-    c: $("#waves"),
-    ctx: null,
-    w: 0,
-    h: 0,
-    t: 0,
-    raf: 0,
-    resize(){
-      if (!this.c) return;
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      this.w = Math.floor(window.innerWidth * dpr);
-      this.h = Math.floor(window.innerHeight * dpr);
-      this.c.width = this.w;
-      this.c.height = this.h;
-      this.c.style.width = "100%";
-      this.c.style.height = "100%";
-      this.ctx = this.c.getContext("2d", { alpha:true });
-      if (this.ctx) this.ctx.setTransform(1,0,0,1,0,0);
-      this.dpr = dpr;
-    },
-    draw(){
-      if (!this.ctx) return;
-      const ctx = this.ctx;
-
-      ctx.clearRect(0,0,this.w,this.h);
-
-      // subtle waves
-      const t = this.t;
-      const midY = this.h * 0.52;
-      const amp = this.h * 0.015;
-
-      ctx.globalAlpha = 0.55;
-
-      // gold wave
-      ctx.beginPath();
-      for (let x=0; x<=this.w; x+=14*this.dpr){
-        const y = midY + Math.sin((x*0.0038) + t*0.9) * amp
-                        + Math.sin((x*0.0018) - t*0.6) * (amp*0.7);
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.strokeStyle = "rgba(215,184,106,0.16)";
-      ctx.lineWidth = 2*this.dpr;
-      ctx.stroke();
-
-      // blue wave
-      ctx.beginPath();
-      for (let x=0; x<=this.w; x+=16*this.dpr){
-        const y = (midY - this.h*0.10) + Math.sin((x*0.0032) - t*0.8) * (amp*0.9)
-                                   + Math.sin((x*0.0014) + t*0.5) * (amp*0.5);
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.strokeStyle = "rgba(121,167,255,0.12)";
-      ctx.lineWidth = 2*this.dpr;
-      ctx.stroke();
-
-      ctx.globalAlpha = 1;
-    },
-    loop(){
-      if (prefersReducedMotion()) return; // reduced-motion: 정지
-      this.t += 0.016;
-      this.draw();
-      this.raf = requestAnimationFrame(() => this.loop());
-    },
-    init(){
-      this.resize();
-      window.addEventListener("resize", () => this.resize(), { passive:true });
-      this.loop();
-    }
-  };
-
-  /* =========================================================
-     9) Init
-  ========================================================= */
-  async function init(){
+  async function init() {
     LANG.restore();
     LANG.bindButtons();
 
+    WAVES.init();
+
+    NAV.findSections();
     NAV.bind();
 
-    // Works / Reports
     await WORKS.init();
     await REPORTS.init();
+    await SOUND.init();
 
-    // Lightbox step
     LIGHTBOX.bind((delta) => {
       const w = WORKS.step(delta);
       if (!w) return;
       LIGHTBOX.open(WORKS.zoomSrc(w), WORKS.captionText(w));
+      WORKS.preloadNeighborZoom();
     });
 
-    // Bio / Sound / Waves
     BIO.bind();
-    SOUND.bind();
-    WAVES.init();
+
+    // Re-render on language change
+    window.addEventListener("lf:lang", () => {
+      WORKS.renderPanel(WORKS.currentKey);
+      REPORTS.render();
+    });
+
+    window.addEventListener("lf:section", (e) => {
+      const t = e.detail?.target;
+      if (t === "works") WORKS.renderPanel(WORKS.currentKey);
+      if (t === "reports") REPORTS.render();
+    });
   }
 
   if (document.readyState === "loading") {

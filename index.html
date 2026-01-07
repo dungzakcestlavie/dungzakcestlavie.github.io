@@ -2128,5 +2128,300 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
+<script>
+/* ==========================================================
+   Lightflow ∮27 — FULL SCRIPT (STABLE)
+   - waves canvas
+   - nav / scroll sync
+   - language KR / EN / KR+EN
+   - works.json (5 sections)
+   - reports.json (summary split + new tab)
+   - bio modal (local lang + slide)
+   - lightbox
+   - ambient sound + FFT
+========================================================== */
+(() => {
+  "use strict";
+
+  /* ----------------------------------------------------------
+     UTIL
+  ---------------------------------------------------------- */
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  const prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const esc = s => String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  const body = document.body;
+
+  /* ----------------------------------------------------------
+     GLOBAL LANGUAGE
+  ---------------------------------------------------------- */
+  function setLang(mode){
+    body.classList.remove('korean','english','hybrid');
+    body.classList.add(mode);
+    $('#koBtn')?.classList.toggle('active',mode==='korean');
+    $('#enBtn')?.classList.toggle('active',mode==='english');
+    $('#hyBtn')?.classList.toggle('active',mode==='hybrid');
+  }
+  $('#koBtn')?.onclick=()=>setLang('korean');
+  $('#enBtn')?.onclick=()=>setLang('english');
+  $('#hyBtn')?.onclick=()=>setLang('hybrid');
+  setLang('korean');
+
+  /* ----------------------------------------------------------
+     NAV SCROLL
+  ---------------------------------------------------------- */
+  const sections=['poem','works','reports'].map(id=>$('#'+id));
+  function syncNav(){
+    let best='poem',dist=1e9;
+    sections.forEach(s=>{
+      if(!s) return;
+      const d=Math.abs(s.getBoundingClientRect().top-120);
+      if(d<dist){dist=d;best=s.id;}
+    });
+    $$('.primary button[data-target]').forEach(b=>{
+      const on=b.dataset.target===best;
+      b.classList.toggle('active',on);
+    });
+  }
+  window.addEventListener('scroll',syncNav,{passive:true});
+  syncNav();
+
+  $$('.primary button[data-target]').forEach(b=>{
+    b.onclick=()=>$('#'+b.dataset.target)
+      ?.scrollIntoView({behavior:prefersReduce?'auto':'smooth'});
+  });
+
+  /* ----------------------------------------------------------
+     WAVES BACKGROUND
+  ---------------------------------------------------------- */
+  const canvas=$('#waves');
+  if(canvas){
+    const ctx=canvas.getContext('2d');
+    let w,h,dpr;
+    function resize(){
+      dpr=Math.min(2,devicePixelRatio||1);
+      w=innerWidth; h=innerHeight;
+      canvas.width=w*dpr; canvas.height=h*dpr;
+      canvas.style.width=w+'px';
+      canvas.style.height=h+'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    resize(); addEventListener('resize',resize);
+
+    const lines=[...Array(7)].map((_,i)=>({
+      y:0.15+i*0.12, amp:10+i*4,
+      f:0.002+i*0.0003, p:Math.random()*6
+    }));
+
+    function draw(t){
+      ctx.clearRect(0,0,w,h);
+      lines.forEach((l,i)=>{
+        ctx.beginPath();
+        for(let x=0;x<w;x+=12){
+          const y=h*l.y+
+            Math.sin(x*l.f+t*0.8+l.p)*l.amp;
+          x?ctx.lineTo(x,y):ctx.moveTo(x,y);
+        }
+        ctx.strokeStyle=i%2
+          ?`rgba(121,167,255,.12)`
+          :`rgba(215,184,106,.14)`;
+        ctx.stroke();
+      });
+    }
+    if(!prefersReduce){
+      let raf;
+      const loop=t=>{draw(t*0.001);raf=requestAnimationFrame(loop)};
+      raf=requestAnimationFrame(loop);
+    }else draw(0);
+  }
+
+  /* ----------------------------------------------------------
+     BIO MODAL
+  ---------------------------------------------------------- */
+  const bio=$('#bio-modal');
+  $('#tab-bio')?.onclick=()=>{
+    bio.hidden=false;
+    body.style.overflow='hidden';
+  };
+  $('.bio-close',bio)?.onclick=closeBio;
+  $('.bio-backdrop',bio)?.onclick=closeBio;
+  function closeBio(){
+    bio.hidden=true;
+    body.style.overflow='';
+  }
+
+  $$('.bio-lang .lang',bio).forEach(b=>{
+    b.onclick=()=>{
+      bio.dataset.bio=b.dataset.bioLang;
+      $$('.bio-lang .lang',bio)
+        .forEach(x=>x.classList.toggle('active',x===b));
+    };
+  });
+
+  $('#expoToggle')?.onclick=()=>{
+    const s=$('#expoSlide');
+    const o=s.dataset.open==='true';
+    s.dataset.open=o?'false':'true';
+  };
+
+  /* ----------------------------------------------------------
+     LIGHTBOX
+  ---------------------------------------------------------- */
+  const lb=$('#lightbox'),
+        lbImg=$('#lbImg'),
+        lbCap=$('#lbCap');
+  function openLB(src,cap){
+    lb.classList.add('is-open');
+    lbImg.src=src;
+    lbCap.textContent=cap||'';
+    body.style.overflow='hidden';
+  }
+  function closeLB(){
+    lb.classList.remove('is-open');
+    lbImg.src='';
+    body.style.overflow='';
+  }
+  $('#lbClose')?.onclick=closeLB;
+  lb?.addEventListener('click',e=>{
+    if(e.target===lb) closeLB();
+  });
+
+  /* ----------------------------------------------------------
+     WORKS
+  ---------------------------------------------------------- */
+  const panels={
+    pray:$('#panel-pray'),
+    human:$('#panel-human'),
+    rebirth:$('#panel-rebirth'),
+    exist:$('#panel-exist'),
+    cosmos:$('#panel-cosmos')
+  };
+
+  $$('.tabs .tab').forEach(t=>{
+    t.onclick=()=>{
+      $$('.tabs .tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      Object.values(panels).forEach(p=>p.classList.remove('active'));
+      panels[t.dataset.panel]?.classList.add('active');
+    };
+  });
+
+  function sectionKey(w){
+    const s=(w.section||'')+(w.title_ko||'')+(w.title_en||'');
+    if(/기도|pray/i.test(s))return'pray';
+    if(/인간|human/i.test(s))return'human';
+    if(/재탄생|rebirth/i.test(s))return'rebirth';
+    if(/존재|restoration|exist/i.test(s))return'exist';
+    if(/초의식|meta|cosmos/i.test(s))return'cosmos';
+    return null;
+  }
+
+  fetch('/data/works.json')
+    .then(r=>r.json())
+    .then(j=>{
+      const list=j.works||j;
+      list.forEach(w=>{
+        const k=sectionKey(w);
+        if(!k||!panels[k])return;
+        const img=w.image||w.img;
+        const zoom=w.zoom||('/images/zoom/'+img.split('/').pop());
+        const card=document.createElement('div');
+        card.className='w-card';
+        card.innerHTML=`
+          <img class="w-thumb" src="${img}">
+          <div class="w-meta">
+            <div class="w-title">
+              <div class="ko">${esc(w.title_ko||'')}</div>
+              <div class="en">${esc(w.title_en||'')}</div>
+            </div>
+            <div class="w-sub">
+              <div class="ko">${esc(w.material_kr||'')} ${esc(w.size_kr||'')}</div>
+              <div class="en">${esc(w.material_en||'')} ${esc(w.size_en||'')}</div>
+            </div>
+          </div>`;
+        card.onclick=()=>openLB(zoom,
+          `${w.title_ko||''}\n${w.title_en||''}`);
+        panels[k].appendChild(card);
+      });
+    });
+
+  /* ----------------------------------------------------------
+     REPORTS
+  ---------------------------------------------------------- */
+  const grid=$('#reportGrid');
+  let reports=[];
+  fetch('/data/reports.json')
+    .then(r=>r.json())
+    .then(j=>{
+      reports=j.reports||j;
+      renderReports();
+    });
+
+  function renderReports(){
+    grid.innerHTML='';
+    reports.forEach(r=>{
+      const item=document.createElement('div');
+      item.className='r-item';
+      item.innerHTML=`
+        <div class="t">
+          <div class="ko">${esc(r.title_ko)}</div>
+          <div class="en">${esc(r.title_en)}</div>
+        </div>
+        <div class="m">${esc(r.id)} · ${esc(r.year)}</div>
+        <div class="s">
+          <div class="ko">${esc(r.summary_ko)}</div>
+          <div class="en">${esc(r.summary_en)}</div>
+        </div>`;
+      item.onclick=()=>{
+        window.open('/'+r.md_path,'_blank');
+      };
+      grid.appendChild(item);
+    });
+  }
+
+  $('#reportsToggle')?.onclick=()=>{
+    const open=grid.style.display==='grid';
+    grid.style.display=open?'none':'grid';
+  };
+
+  /* ----------------------------------------------------------
+     SOUND + FFT
+  ---------------------------------------------------------- */
+  let ctx,osc,gain,an,raf;
+  function play(){
+    if(!ctx){
+      ctx=new AudioContext();
+      osc=ctx.createOscillator();
+      gain=ctx.createGain();
+      an=ctx.createAnalyser();
+      osc.type='sine'; osc.frequency.value=110;
+      gain.gain.value=0.12;
+      osc.connect(gain); gain.connect(an);
+      an.connect(ctx.destination);
+      osc.start();
+    }
+    const bar=$('#fftBar span');
+    const data=new Uint8Array(an.frequencyBinCount);
+    const loop=()=>{
+      an.getByteFrequencyData(data);
+      bar.style.width=(data[4]/255*100)+'%';
+      raf=requestAnimationFrame(loop);
+    };
+    loop();
+  }
+  function stop(){
+    cancelAnimationFrame(raf);
+    $('#fftBar span').style.width='0%';
+  }
+  $('#soundBtn')?.onclick=play;
+  $('#soundStopBtn')?.onclick=stop;
+
+})();
+</script>
 
 

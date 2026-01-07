@@ -1,5 +1,5 @@
 <!-- ==========================================================
-① HEAD / STYLE  (FINAL — BASE SAFE / NO SHIFT)
+① HEAD / STYLE  (REBUILD — GOLD HARD / LINK UPGRADE / NO LEAK)
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -20,7 +20,6 @@
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
   <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
   <meta property="og:url" content="https://dungzak.art/" />
-  <!-- 필요 시 대표 이미지 지정: /images/og.jpg 같은 파일이 있을 때만 사용 -->
   <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -28,10 +27,7 @@
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
 
-  <!-- ✅ (선택) 강제로 베이스를 지정하고 싶으면 사용:
-       예) GitHub Pages 하위 경로 /dungzakcestlavie.github.io/REPO/ 에서 테스트할 때
-       <meta name="lf-base" content="/REPO">
-  -->
+  <!-- (선택) base 강제 -->
   <!-- <meta name="lf-base" content=""> -->
 
   <style>
@@ -57,6 +53,7 @@
       --line2:rgba(121,167,255,.18);
 
       --shadow: 0 16px 40px rgba(0,0,0,.45);
+      --shadow2: 0 10px 26px rgba(0,0,0,.35);
       --r:18px;
 
       --safe-top: env(safe-area-inset-top, 0px);
@@ -65,6 +62,10 @@
       --safe-right: env(safe-area-inset-right, 0px);
 
       --maxw: 1120px;
+
+      /* ✅ 금빛 “단단함(번짐 없음)”용 엣지 */
+      --gold-edge: rgba(0,0,0,.62);
+      --gold-edge2: rgba(0,0,0,.38);
     }
 
     *{ box-sizing:border-box; }
@@ -79,14 +80,11 @@
       letter-spacing:.2px;
       overflow-x:hidden;
 
-      /* ✅ 쏠림 방지 핵심:
-         - body에 safe-area padding을 주지 않음(중복 패딩/좌우 비대칭 방지)
-         - safe-area는 header/footer와 fixed UI(컨트롤)에서만 처리 */
+      /* ✅ 쏠림 방지: body safe-area 패딩 금지 */
       padding-left: 0;
       padding-right: 0;
     }
 
-    /* ✅ safe-area는 컨테이너에만 적용 (중복 방지) */
     header, main, footer{
       padding-left: var(--safe-left);
       padding-right: var(--safe-right);
@@ -119,7 +117,7 @@
     }
 
     /* =========================================================
-       Header / Nav
+       Header / Nav (금빛 단단하게 + 버튼 터치감 강화)
     ========================================================= */
     header{
       position:sticky;
@@ -129,8 +127,8 @@
       padding-bottom: 12px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(5,8,18,.86), rgba(5,8,18,.58));
-      border-bottom:1px solid rgba(215,184,106,.16);
+      background: linear-gradient(180deg, rgba(5,8,18,.90), rgba(5,8,18,.60));
+      border-bottom:1px solid rgba(215,184,106,.18);
     }
 
     header .brand,
@@ -140,20 +138,28 @@
       padding: 0 18px;
     }
 
+    /* ✅ 등작/타이틀: “단단한 금빛(번짐X)” */
     header .brand{
-      font-weight:800;
-      color:var(--gold2);
-      letter-spacing:.7px;
-      text-shadow:none; /* 빛번짐 방지 */
-      font-size: 15px;
+      font-weight: 900;
+      color: var(--gold2);
+      letter-spacing: .9px;
+      font-size: 16px;
       line-height: 1.25;
+
+      /* 번짐 대신 “엣지” */
+      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      text-shadow:
+        0 1px 0 var(--gold-edge),
+        0 -1px 0 var(--gold-edge2);
     }
 
     header .brand-sub{
-      margin-top:6px;
-      font-size:12px;
-      letter-spacing:.35px;
-      color:rgba(237,227,201,.68);
+      margin-top: 7px;
+      font-size: 12px;
+      letter-spacing: .40px;
+      color: rgba(237,227,201,.78);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,.55);
     }
 
     nav.primary{
@@ -164,26 +170,33 @@
       gap:10px;
       flex-wrap:wrap;
     }
+
+    /* ✅ 상단 탭: 더 “버튼급” + 금빛 선명 */
     nav.primary button{
       appearance:none;
-      border:1px solid rgba(215,184,106,.28);
+      border: 1px solid rgba(215,184,106,.34);
       background: rgba(255,255,255,.03);
-      color:var(--gold2);
-      padding:10px 12px;
+      color: var(--gold2);
+      padding: 11px 14px;
       border-radius: 999px;
-      font-weight:700;
-      font-size:13px;
+      font-weight: 900;
+      font-size: 13.5px;
       cursor:pointer;
-      transition: transform .06s ease, background .18s ease, border-color .18s ease;
-      min-height: 40px; /* 터치영역 */
+      transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      min-height: 44px; /* 터치영역 */
+      box-shadow: var(--shadow2);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,.62);
     }
     nav.primary button:hover{
-      background: rgba(215,184,106,.08);
-      border-color: rgba(215,184,106,.42);
+      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.55);
+      box-shadow: 0 12px 30px rgba(0,0,0,.42);
     }
     nav.primary button.active{
-      background: rgba(215,184,106,.12);
-      border-color: rgba(215,184,106,.55);
+      background: rgba(215,184,106,.14);
+      border-color: rgba(215,184,106,.70);
+      box-shadow: 0 14px 34px rgba(0,0,0,.48);
     }
     nav.primary button:active{ transform: translateY(1px); }
     nav.primary button:focus-visible{
@@ -203,18 +216,24 @@
       appearance:none;
       border:1px solid rgba(121,167,255,.22);
       background: rgba(255,255,255,.03);
-      color:rgba(237,227,201,.9);
-      padding:8px 12px;
+      color: rgba(237,227,201,.92);
+      padding: 9px 12px;
       border-radius: 999px;
-      font-weight:800;
-      font-size:12px;
+      font-weight: 900;
+      font-size: 12.5px;
       cursor:pointer;
-      min-height: 38px;
+      min-height: 42px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.32);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
     .lang button.active{
-      border-color: rgba(215,184,106,.55);
-      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.70);
+      background: rgba(215,184,106,.12);
       color: var(--gold2);
+    }
+    .lang button:hover{
+      border-color: rgba(215,184,106,.45);
+      background: rgba(215,184,106,.08);
     }
     .lang button:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -248,24 +267,31 @@
     .hero h1{
       margin:0;
       font-size: 20px;
-      letter-spacing:.4px;
+      letter-spacing:.45px;
       color: var(--gold2);
-      text-shadow:none;
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,.62);
     }
     .poemwrap{
       margin-top:14px;
       padding: 14px 14px;
       border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      border: 1px solid rgba(215,184,106,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+      border: 1px solid rgba(215,184,106,.14);
     }
-    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.86); }
+    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
 
     /* =========================================================
        WORKS
     ========================================================= */
     #works{ padding: 18px; }
-    #works h2{ margin:0; color:var(--gold2); text-shadow:none; }
+    #works h2{
+      margin:0;
+      color:var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
     .tabs{
       margin-top:14px;
       display:flex;
@@ -274,20 +300,26 @@
     }
     .tabs .tab{
       appearance:none;
-      border:1px solid rgba(215,184,106,.20);
+      border:1px solid rgba(215,184,106,.24);
       background: rgba(255,255,255,.02);
-      color:rgba(237,227,201,.88);
+      color:rgba(237,227,201,.90);
       border-radius: 999px;
-      padding:9px 12px;
-      font-weight:800;
-      font-size:12px;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:12.5px;
       cursor:pointer;
-      min-height: 38px;
+      min-height: 42px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
     .tabs .tab.active{
-      border-color: rgba(215,184,106,.55);
-      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.70);
+      background: rgba(215,184,106,.12);
       color: var(--gold2);
+    }
+    .tabs .tab:hover{
+      border-color: rgba(215,184,106,.45);
+      background: rgba(215,184,106,.08);
     }
     .tabs .tab:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -319,7 +351,7 @@
     }
     .w-card:hover{
       transform: translateY(-1px);
-      border-color: rgba(215,184,106,.26);
+      border-color: rgba(215,184,106,.28);
       background: rgba(215,184,106,.05);
     }
     .w-thumb{
@@ -333,17 +365,18 @@
       border-top:1px solid rgba(255,255,255,.045);
     }
     .w-title{
-      font-weight:900;
-      color:rgba(237,227,201,.92);
+      font-weight: 900;
+      color: rgba(237,227,201,.94);
       line-height:1.35;
       font-size: 13px;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .w-title .ko,
     .w-title .en{ margin:0; }
     .w-sub{
       margin-top:6px;
       font-size: 12px;
-      color: rgba(237,227,201,.68);
+      color: rgba(237,227,201,.70);
       line-height:1.45;
       white-space: pre-line;
     }
@@ -360,7 +393,12 @@
        REPORTS
     ========================================================= */
     #reports{ padding:18px; }
-    #reports h2{ margin:0; color:var(--gold2); text-shadow:none; }
+    #reports h2{
+      margin:0;
+      color:var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
     .reports-omega{ margin-top:14px; }
 
     .r-head{
@@ -379,29 +417,38 @@
       appearance:none;
       border:1px solid rgba(121,167,255,.18);
       background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.85);
+      color: rgba(237,227,201,.88);
       border-radius: 999px;
-      padding:8px 12px;
-      font-weight:800;
-      font-size:12px;
+      padding:9px 12px;
+      font-weight:900;
+      font-size:12.5px;
       cursor:pointer;
-      min-height: 38px;
+      min-height: 42px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
     .r-tab.is-active{
-      border-color: rgba(215,184,106,.55);
-      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.70);
+      background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
+    .r-tab:hover{
+      border-color: rgba(215,184,106,.42);
+      background: rgba(215,184,106,.08);
+    }
+
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(215,184,106,.28);
-      background: rgba(215,184,106,.08);
+      border:1px solid rgba(215,184,106,.34);
+      background: rgba(215,184,106,.10);
       color: var(--gold2);
       border-radius: 999px;
-      padding:8px 12px;
-      font-weight:900;
+      padding:9px 12px;
+      font-weight: 950;
       cursor:pointer;
-      min-height: 38px;
+      min-height: 42px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
 
     .r-grid{
@@ -428,74 +475,35 @@
     }
     .r-item:hover{
       transform: translateY(-1px);
-      border-color: rgba(215,184,106,.26);
+      border-color: rgba(215,184,106,.28);
       background: rgba(215,184,106,.05);
     }
     .r-item .t{
-      font-weight:900;
-      color: rgba(237,227,201,.92);
+      font-weight: 950;
+      color: rgba(237,227,201,.94);
       line-height:1.35;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-item .m{
       margin-top:6px;
       font-size:12px;
-      color: rgba(237,227,201,.60);
+      color: rgba(237,227,201,.62);
     }
     .r-item .s{
       margin-top:10px;
       font-size:12px;
-      color: rgba(237,227,201,.74);
+      color: rgba(237,227,201,.78);
       line-height:1.55;
       white-space: pre-line;
-    }
-
-    .r-viewer{
-      display:none;
-      margin-top: 14px;
-      padding: 14px 14px;
-      border-radius: 16px;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.05);
-      box-shadow: var(--shadow);
-    }
-    .rv-title{
-      font-weight:900;
-      color: var(--gold2);
-      font-size: 15px;
-      line-height:1.35;
-    }
-    .rv-meta{
-      margin-top:6px;
-      font-size:12px;
-      color: rgba(237,227,201,.62);
-    }
-    .rv-summary,
-    .rv-body{
-      margin-top:12px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.05);
-      background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.85);
-      line-height:1.65;
-      white-space: pre-wrap;
-      word-break: break-word;
-      overflow:auto;
-      max-height: 60vh;
     }
 
     /* =========================================================
        BIO MODAL
     ========================================================= */
     #bio-modal[hidden]{ display:none !important; }
-    #bio-modal{
-      position: fixed;
-      inset:0;
-      z-index: 50;
-    }
+    #bio-modal{ position: fixed; inset:0; z-index: 50; }
     .bio-backdrop{
-      position:absolute;
-      inset:0;
+      position:absolute; inset:0;
       background: rgba(0,0,0,.62);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
@@ -512,9 +520,7 @@
       overflow:hidden;
     }
     .bio-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      display:flex; align-items:center; justify-content:space-between;
       gap:10px;
       padding: 14px 14px;
       border-bottom:1px solid rgba(255,255,255,.05);
@@ -522,42 +528,43 @@
     .bio-head h2{
       margin:0;
       color: var(--gold2);
-      text-shadow:none;
       font-size: 15px;
+      font-weight: 950;
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
-    .bio-lang{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    .bio-lang{ display:flex; gap:8px; align-items:center; }
     .bio-lang .lang{
       appearance:none;
       border:1px solid rgba(121,167,255,.18);
       background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.85);
+      color: rgba(237,227,201,.88);
       border-radius: 999px;
       padding:8px 12px;
-      font-weight:900;
+      font-weight:950;
       font-size:12px;
       cursor:pointer;
-      min-height: 36px;
+      min-height: 38px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
     .bio-lang .lang.active{
-      border-color: rgba(215,184,106,.55);
-      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.70);
+      background: rgba(215,184,106,.12);
       color: var(--gold2);
     }
     .bio-close{
       appearance:none;
-      border:1px solid rgba(215,184,106,.28);
+      border:1px solid rgba(215,184,106,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
       cursor:pointer;
       font-size: 18px;
-      font-weight:900;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
     }
 
     .expo-kicker{
@@ -567,10 +574,11 @@
       border:0;
       border-bottom:1px solid rgba(255,255,255,.05);
       background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.9);
+      color: rgba(237,227,201,.92);
       padding: 12px 14px;
-      font-weight:900;
+      font-weight: 950;
       cursor:pointer;
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
 
     .slide-wrap{
@@ -579,12 +587,10 @@
       transition: max-height .35s ease;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{
-      max-height: 1400px; /* 충분히 크게 */
-    }
+    .slide-wrap[data-open="true"]{ max-height: 1400px; }
     .bio-body{
       padding: 14px 14px;
-      color: rgba(237,227,201,.86);
+      color: rgba(237,227,201,.88);
       line-height: 1.7;
     }
     .bio-body p{ margin: 10px 0; }
@@ -594,9 +600,7 @@
        LIGHTBOX
     ========================================================= */
     #lightbox{
-      position: fixed;
-      inset:0;
-      z-index: 60;
+      position: fixed; inset:0; z-index: 60;
       display:none;
       background: rgba(0,0,0,.72);
       backdrop-filter: blur(8px);
@@ -606,10 +610,8 @@
     .lb-stage{
       position:absolute;
       inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
       gap: 12px;
       padding-top: calc(var(--safe-top));
     }
@@ -628,28 +630,30 @@
       border-radius: 14px;
       border:1px solid rgba(255,255,255,.06);
       background: rgba(5,8,18,.62);
-      color: rgba(237,227,201,.86);
+      color: rgba(237,227,201,.88);
       white-space: pre-wrap;
       line-height:1.65;
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
     .lb-close{
       position:absolute;
       top: calc(14px + var(--safe-top));
       right: calc(14px + var(--safe-right));
-      width: 42px;
-      height: 42px;
+      width: 46px;
+      height: 46px;
       border-radius: 14px;
       appearance:none;
-      border:1px solid rgba(215,184,106,.28);
+      border:1px solid rgba(215,184,106,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-size: 18px;
-      font-weight: 900;
+      font-weight: 950;
       cursor:pointer;
+      box-shadow: 0 12px 28px rgba(0,0,0,.32);
     }
 
     /* =========================================================
-       FFT + Controls
+       FFT + Controls (투명 유지)
     ========================================================= */
     #fftBar{
       position: fixed;
@@ -678,13 +682,13 @@
       gap:10px;
     }
     .ctrlbtn{
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 16px;
       appearance:none;
-      border: 1px solid rgba(215,184,106,.32);
+      border: 1px solid rgba(215,184,106,.34);
 
-      /* ✅ 사운드 버튼 투명 규칙 */
+      /* ✅ 투명 규칙 유지 */
       background: rgba(0,0,0,0);
 
       color: var(--gold2);
@@ -693,20 +697,18 @@
       box-shadow: 0 12px 28px rgba(0,0,0,.28);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
-    .ctrlbtn[disabled]{
-      opacity:.5;
-      cursor:not-allowed;
-    }
+    .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
 
     /* =========================================================
-       Footer (링크 버튼급)
+       Footer (링크 “버튼급” + 금빛 선명 + 터치감)
     ========================================================= */
     footer{
       max-width: var(--maxw);
       margin: 18px auto 0;
       padding: 14px 18px calc(16px + var(--safe-bot));
-      border-top:1px solid rgba(215,184,106,.14);
+      border-top:1px solid rgba(215,184,106,.16);
       background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
       border-radius: 18px;
     }
@@ -720,21 +722,24 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height: 44px;
-      padding: 0 14px;
+      min-height: 48px;
+      padding: 0 16px;
       border-radius: 999px;
-      border:1px solid rgba(215,184,106,.28);
+      border:1px solid rgba(215,184,106,.34);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
-      font-weight: 900;
-      letter-spacing:.2px;
+      font-weight: 950;
+      letter-spacing:.25px;
       text-decoration:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.60);
     }
     footer .links a:hover{
-      background: rgba(215,184,106,.10);
-      border-color: rgba(215,184,106,.55);
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.70);
       text-decoration:none;
     }
+    footer .links a:active{ transform: translateY(1px); }
     footer .links a:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
       outline-offset:2px;
@@ -743,8 +748,9 @@
     footer small{
       display:block;
       margin-top: 10px;
-      color: rgba(237,227,201,.62);
+      color: rgba(237,227,201,.70);
       letter-spacing:.2px;
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
     }
 
     /* =========================================================
@@ -757,12 +763,11 @@
   </style>
 </head>
 
-<!-- ==========================================================
-② BODY / HTML  (사용자 원문 100% 유지)
-========================================================== -->
 <body class="korean">
+  <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
 
+  <!-- HEADER -->
   <header>
     <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮27</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
@@ -837,7 +842,8 @@
     </section>
 
     <!-- 2) WORKS -->
-    <section id="works" style="display:none">
+    <!-- ✅ 변경: display:none 제거 (모든 작품이 항상 나오게) -->
+    <section id="works">
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
 
@@ -849,6 +855,7 @@
         <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
 
+      <!-- ✅ SCRIPT에서 works.json 읽어서 여기 5개 패널에 각각 “그리드”를 채우면 됨 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -857,7 +864,8 @@
     </section>
 
     <!-- 3) REPORTS -->
-    <section id="reports" style="display:none">
+    <!-- ✅ 변경: display:none 제거 (Reports도 항상 표시) -->
+    <section id="reports">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
 
@@ -869,18 +877,23 @@
             <button type="button" class="r-tab" data-r="archive">Archive</button>
             <button type="button" class="r-tab" data-r="practice">Practice</button>
           </div>
+
           <button type="button" id="reportsToggle" class="r-toggle" aria-expanded="false">
             Open Reports
           </button>
         </div>
 
+        <!-- ✅ 핵심: reports.json에서 title_ko/title_en + summary_ko/summary_en을 “SCRIPT가” 렌더링 -->
+        <!-- ✅ BODY에는 요약 텍스트를 직접 쓰지 않는다 -->
         <div id="reportGrid" class="r-grid"></div>
+
+        <!-- ✅ MD 원문은 새 창으로 열거나(권장) 또는 여기 viewer에 표시(선택) -->
         <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
       </div>
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL (원문 유지) -->
+  <!-- ARTIST BIO MODAL (원문 텍스트 유지 + 요청 수정 반영) -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -897,12 +910,15 @@
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
+      <!-- one-line summary -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
+      <!-- slide list -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
+        <!-- (한국어 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 인천, 대한민국</p>
@@ -942,6 +958,7 @@
           <p>《예술, 그 끝없는 사랑》(2024)</p>
         </div>
 
+        <!-- (영문 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
@@ -955,13 +972,13 @@
           <p>2009 Art Gallery You, Busan, Republic of Korea</p>
           <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
           <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+          <p>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
           <p>2000 Gallery Soho, Busan, Republic of Korea</p>
           <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
           <br><p><strong>Major International Exhibitions</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
           <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
+          <p>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
           <p>2011 Open Art in Amsterdam, Netherlands</p>
           <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
           <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
@@ -976,8 +993,8 @@
           <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
           <br><p><strong>Collections</strong></p>
           <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland;
-Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection);
-Meritz Securities Co., Ltd., Republic of Korea;
+Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); 
+Meritz Securities Co., Ltd., Republic of Korea; 
 Numerous private collections worldwide.</p>
           <p><strong>Publications</strong></p>
           <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
@@ -985,6 +1002,7 @@ Numerous private collections worldwide.</p>
         </div>
       </div>
 
+      <!-- Bio main -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -1001,6 +1019,7 @@ Numerous private collections worldwide.</p>
     </div>
   </div>
 
+  <!-- LIGHTBOX (◀ ▶ 화살표 제거 버전) -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
@@ -1009,12 +1028,14 @@ Numerous private collections worldwide.</p>
     <button id="lbClose" class="lb-close">✕</button>
   </div>
 
+  <!-- SOUND PLAYER -->
   <div id="fftBar"><span></span></div>
   <div id="ctrl">
     <button id="soundBtn" class="ctrlbtn">✨</button>
     <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
   </div>
 
+  <!-- FOOTER -->
   <footer>
     <div class="links">
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
@@ -1028,1145 +1049,1281 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-<!-- ==========================================================
-③ SCRIPTS (FINAL — BASE SAFE / NO LEAK / WORKS+REPORTS STABLE)
-========================================================== -->
 <script>
-(() => {
+/* =========================================================
+   Lightflow ∮27 — SCRIPT (FINAL)
+   - NEVER edits BODY original text
+   - Language: KR / EN / KR+EN (body class)
+   - Nav: Poem / Works / Reports show/hide + active
+   - Works: /data/works.json -> render ALL works into 5 panels
+   - Lightbox: open/close + keys + swipe (within current section)
+   - Reports: /data/reports.json -> KR/EN/KR+EN summary split
+             + category filter + open full text in new window
+             + small download link at bottom
+   - Bio modal: open/close + modal language toggle
+   - Waves canvas: refined, light, performant
+   - Sound: deep cosmic resonance (WebAudio) + level bar
+========================================================= */
+
+(function () {
   "use strict";
 
-  /* =========================================================
+  /* -----------------------------
      Helpers
-  ========================================================= */
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  ----------------------------- */
+  const $  = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-  const s = (v) => (v == null ? "" : String(v));
-  const isReducedMotion = () =>
-    !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function nowBust() { return "v=" + Date.now(); }
 
-  const escapeHtml = (t) =>
-    String(t ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
-  const idle = (fn) => {
-    if ("requestIdleCallback" in window) return requestIdleCallback(fn, { timeout: 1200 });
-    return setTimeout(fn, 1);
-  };
-
-  /* =========================================================
-     ✅ BASE PATH (핵심 보정)
-     - 커스텀도메인(/) / github.io/REPO/ / 로컬 테스트 모두 안전
-  ========================================================= */
-  function detectBase() {
-    const forced = $('meta[name="lf-base"]')?.getAttribute("content");
-    if (forced && s(forced).trim() !== "") return s(forced).trim().replace(/\/+$/,"");
-
-    // github.io + /REPO/ 구조면 첫 번째 segment를 base로 사용
-    const host = location.hostname || "";
-    const path = location.pathname || "/";
-    if (/github\.io$/i.test(host)) {
-      const seg = path.split("/").filter(Boolean)[0];
-      if (seg) return "/" + seg;
-    }
-    // 기본은 루트
-    return "";
-  }
-
-  const BASE = detectBase();
-
-  function resolvePath(path) {
-    const p = s(path).trim();
+  function withLeadingSlash(p) {
     if (!p) return "";
-    if (/^https?:\/\//i.test(p)) return p;
+    const s = String(p).trim();
+    if (!s) return "";
+    if (/^https?:\/\//i.test(s)) return s;
+    return s.startsWith("/") ? s : ("/" + s);
+  }
 
-    // 이미 / 로 시작: BASE 붙여서 /REPO + /data/... 형태로 보정
-    if (p.startsWith("/")) return (BASE ? (BASE + p) : p);
+  function safeText(s) {
+    return String(s ?? "");
+  }
 
-    // 상대경로: BASE가 있으면 /REPO/ + p, 없으면 ./p
-    return (BASE ? (BASE + "/" + p) : p);
+  function escapeHTML(s) {
+    return String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
   /* =========================================================
-     Global UI State
+     1) Language Controller (body.korean / body.english / body.hybrid)
   ========================================================= */
-  const STATE = {
-    section: "poem",
-    lang: "KR"
+  const LANG = {
+    key: "LF_LANG_V2",
+    mode: "korean", // korean | english | hybrid
+
+    set(mode) {
+      const m = (mode === "english" || mode === "hybrid") ? mode : "korean";
+      this.mode = m;
+
+      document.body.classList.remove("korean", "english", "hybrid");
+      document.body.classList.add(m);
+
+      // Buttons active (your HEAD CSS uses .active)
+      const koBtn = $("#koBtn");
+      const enBtn = $("#enBtn");
+      const hyBtn = $("#hyBtn");
+      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove("active"));
+      if (m === "korean" && koBtn) koBtn.classList.add("active");
+      if (m === "english" && enBtn) enBtn.classList.add("active");
+      if (m === "hybrid" && hyBtn) hyBtn.classList.add("active");
+
+      // Notify other modules (Works/Reports)
+      window.dispatchEvent(new CustomEvent("lf:lang", { detail: { mode: m } }));
+
+      try { localStorage.setItem(this.key, m); } catch (e) {}
+    },
+
+    restore() {
+      let saved = null;
+      try { saved = localStorage.getItem(this.key); } catch (e) {}
+      if (saved === "korean" || saved === "english" || saved === "hybrid") this.set(saved);
+      else this.set("korean");
+    }
   };
 
-  function getLang() {
-    if (document.body.classList.contains("english")) return "EN";
-    if (document.body.classList.contains("hybrid")) return "KR+EN";
-    return "KR";
-  }
-
-  function setLang(mode) {
-    document.body.classList.remove("korean", "english", "hybrid");
-    if (mode === "EN") document.body.classList.add("english");
-    else if (mode === "KR+EN") document.body.classList.add("hybrid");
-    else document.body.classList.add("korean");
-
-    STATE.lang = mode === "EN" ? "EN" : mode === "KR+EN" ? "KR+EN" : "KR";
-
+  function bindLanguageButtons() {
     const koBtn = $("#koBtn");
     const enBtn = $("#enBtn");
     const hyBtn = $("#hyBtn");
-    if (koBtn) koBtn.classList.toggle("active", STATE.lang === "KR");
-    if (enBtn) enBtn.classList.toggle("active", STATE.lang === "EN");
-    if (hyBtn) hyBtn.classList.toggle("active", STATE.lang === "KR+EN");
 
-    try { localStorage.setItem("LF_LANG", STATE.lang); } catch(e){}
+    if (koBtn) koBtn.addEventListener("click", () => LANG.set("korean"));
+    if (enBtn) enBtn.addEventListener("click", () => LANG.set("english"));
+    if (hyBtn) hyBtn.addEventListener("click", () => LANG.set("hybrid"));
 
-    BIO.syncToGlobal();
-    if (LIGHTBOX.isOpen()) LIGHTBOX.refreshCaption();
-
-    if (STATE.section === "works") WORKS.refreshCurrentPanel();
-    if (STATE.section === "reports") REPORTS.refreshGridTextOnly();
-  }
-
-  function restoreLang() {
-    let stored = "KR";
-    try { stored = localStorage.getItem("LF_LANG") || "KR"; } catch(e){}
-    if (!["KR", "EN", "KR+EN"].includes(stored)) stored = "KR";
-    setLang(stored);
+    // touch (iOS tap)
+    [koBtn, enBtn, hyBtn].forEach((btn, idx) => {
+      if (!btn) return;
+      btn.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        LANG.set(idx === 0 ? "korean" : idx === 1 ? "english" : "hybrid");
+      }, { passive: false });
+    });
   }
 
   /* =========================================================
-     Section Switch (inline display:none 강제 덮어씀)
+     2) Navigation (Poem / Works / Reports)
+     - show/hide sections decisively (your previous display:none issues)
   ========================================================= */
-  function showSection(id) {
-    const sections = $$("main > section");
-    sections.forEach(sec => {
-      sec.style.display = (sec.id === id) ? "block" : "none";
-    });
+  const NAV = {
+    buttons: [],
+    sections: {},
 
-    const navBtns = $$("nav.primary button[data-target]");
-    navBtns.forEach(btn => {
-      const t = btn.dataset.target;
-      const active = t === id;
-      btn.classList.toggle("active", active);
-      if (active) btn.setAttribute("aria-current", "page");
-      else btn.removeAttribute("aria-current");
-    });
+    init() {
+      this.buttons = $$('nav.primary button[data-target]');
+      this.sections = {
+        poem: $("#poem"),
+        works: $("#works"),
+        reports: $("#reports")
+      };
 
-    STATE.section = id;
+      this.buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const t = btn.getAttribute("data-target");
+          this.go(t, { scroll: true });
+        });
+        btn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          const t = btn.getAttribute("data-target");
+          this.go(t, { scroll: true });
+        }, { passive: false });
+      });
+    },
 
-    if (id === "works") {
-      WORKS.ensureLoaded().then(() => WORKS.ensureRendered()).catch(() => {});
-    } else if (id === "reports") {
-      REPORTS.ensureLoaded().then(() => REPORTS.forceOpen()).catch(() => {});
+    go(target, opt={}) {
+      const t = (target === "works" || target === "reports") ? target : "poem";
+
+      // Active highlight
+      this.buttons.forEach(b => b.classList.remove("active"));
+      const activeBtn = this.buttons.find(b => b.getAttribute("data-target") === t);
+      if (activeBtn) activeBtn.classList.add("active");
+
+      // show/hide
+      Object.keys(this.sections).forEach(k => {
+        const sec = this.sections[k];
+        if (!sec) return;
+        sec.style.display = (k === t) ? "" : "none";
+      });
+
+      // For accessibility
+      this.buttons.forEach(b => b.removeAttribute("aria-current"));
+      if (activeBtn) activeBtn.setAttribute("aria-current", "page");
+
+      // When section becomes visible, allow modules to refresh layout
+      window.dispatchEvent(new CustomEvent("lf:section", { detail: { target: t } }));
+
+      // Scroll
+      if (opt.scroll) {
+        const sec = this.sections[t];
+        if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+      }
     }
-  }
-
-  function bindPrimaryNav() {
-    $$("nav.primary button[data-target]").forEach(btn => {
-      btn.addEventListener("click", () => showSection(btn.dataset.target));
-    });
-
-    const bioBtn = $("#tab-bio");
-    if (bioBtn) bioBtn.addEventListener("click", () => BIO.open());
-
-    showSection("poem");
-  }
-
-  function bindLangButtons() {
-    const koBtn = $("#koBtn");
-    const enBtn = $("#enBtn");
-    const hyBtn = $("#hyBtn");
-    if (koBtn) koBtn.addEventListener("click", () => setLang("KR"));
-    if (enBtn) enBtn.addEventListener("click", () => setLang("EN"));
-    if (hyBtn) hyBtn.addEventListener("click", () => setLang("KR+EN"));
-  }
+  };
 
   /* =========================================================
-     WORKS
+     3) Works (Render ALL)
+     Expect works.json format:
+       A) { "works": [ ... ] }
+       B) [ ... ]
+     Each work recommended fields:
+       section_id (1..5), image, zoom, title_kr, title_en,
+       material_kr, material_en, size_kr, size_en, year
   ========================================================= */
   const WORKS = {
-    loaded: false,
-    works: [],
-    panels: { pray: [], human: [], rebirth: [], exist: [], cosmos: [] },
-    currentPanel: "pray",
-    renderedOnce: new Set(),
-    _loadingPromise: null,
+    data: [],
+    bySection: { 1: [], 2: [], 3: [], 4: [], 5: [] },
 
-    async ensureLoaded() {
-      if (this.loaded) return;
-      if (this._loadingPromise) return this._loadingPromise;
-
-      this._loadingPromise = (async () => {
-        const urlFast = resolvePath("/data/works.json");
-        const urlBust = urlFast + (urlFast.includes("?") ? "&" : "?") + "ts=" + Date.now();
-        let json = null;
-
-        try {
-          const r = await fetch(urlFast, { cache: "force-cache" });
-          if (!r.ok) throw new Error("fast fetch failed");
-          json = await r.json();
-        } catch (e1) {
-          try {
-            const r2 = await fetch(urlBust, { cache: "no-store" });
-            if (!r2.ok) throw new Error("bust fetch failed");
-            json = await r2.json();
-          } catch (e2) {
-            this.loaded = true;
-            this.showErrorAll("Works data not found.", urlFast);
-            return;
-          }
-        }
-
-        const arr = Array.isArray(json) ? json
-          : Array.isArray(json.works) ? json.works
-          : (json && typeof json === "object" && json.sections)
-              ? Object.values(json.sections).flatMap(v => Array.isArray(v) ? v : [])
-              : [];
-
-        this.works = arr.map(this.normalize);
-        this.split();
-        this.loaded = true;
-      })();
-
-      return this._loadingPromise;
+    panels: {
+      pray: $("#panel-pray"),
+      human: $("#panel-human"),
+      rebirth: $("#panel-rebirth"),
+      exist: $("#panel-exist"),
+      cosmos: $("#panel-cosmos")
     },
 
-    normalize(w) {
-      const sectionId = Number(w.section_id ?? w.sectionId ?? w.section ?? w.section_no ?? 0);
-      const img0 = s(w.image || w.img || w.standard || w.src || "");
-      const zoom0 = s(w.zoom || w.zoom_image || w.hires || w.large || w.image_zoom || "");
-      return {
-        id: s(w.id || w.ID || w.code || ""),
-        section_id: sectionId,
-        title_kr: s(w.title_kr ?? w.titleKr ?? w.title_kor ?? w.titleKR ?? ""),
-        title_en: s(w.title_en ?? w.titleEn ?? w.title_eng ?? w.titleEN ?? ""),
-        material_kr: s(w.material_kr ?? w.materialKr ?? ""),
-        material_en: s(w.material_en ?? w.materialEn ?? ""),
-        size_kr: s(w.size_kr ?? w.sizeKr ?? ""),
-        size_en: s(w.size_en ?? w.sizeEn ?? ""),
-        year: s(w.year ?? w.date ?? ""),
-        image: resolvePath(img0),
-        zoom: resolvePath(zoom0)
-      };
-    },
+    tabButtons: $$('button.tab[data-panel]'),
+    currentPanelKey: "pray",
+    currentIndex: 0,
 
-    split() {
-      this.panels = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-      for (const w of this.works) {
-        if (w.section_id === 1) this.panels.pray.push(w);
-        else if (w.section_id === 2) this.panels.human.push(w);
-        else if (w.section_id === 3) this.panels.rebirth.push(w);
-        else if (w.section_id === 4) this.panels.exist.push(w);
-        else if (w.section_id === 5) this.panels.cosmos.push(w);
+    async load() {
+      try {
+        const res = await fetch("/data/works.json?" + nowBust(), { cache: "no-store" });
+        if (!res.ok) throw new Error("works.json fetch " + res.status);
+        const json = await res.json();
+        const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
+        this.data = arr;
+
+        // regroup
+        this.bySection = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+        arr.forEach(w => {
+          const sid = Number(w?.section_id);
+          if (sid >= 1 && sid <= 5) this.bySection[sid].push(w);
+        });
+      } catch (e) {
+        console.warn("[Works] load failed:", e);
+        this.data = [];
+        this.bySection = { 1: [], 2: [], 3: [], 4: [], 5: [] };
       }
     },
 
-    list(panelKey) { return this.panels[panelKey] || []; },
-    panelEl(panelKey) { return $("#panel-" + panelKey); },
+    panelKeyToSectionId(key) {
+      return key === "pray" ? 1 :
+             key === "human" ? 2 :
+             key === "rebirth" ? 3 :
+             key === "exist" ? 4 : 5;
+    },
 
-    cardHTML(w, idx, panelKey) {
-      const mode = getLang();
+    sectionIdToPanelKey(id) {
+      return id === 1 ? "pray" :
+             id === 2 ? "human" :
+             id === 3 ? "rebirth" :
+             id === 4 ? "exist" : "cosmos";
+    },
 
-      const tK = w.title_kr || "";
-      const tE = w.title_en || "";
-      const subK = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
-      const subE = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
+    titleFor(w) {
+      if (!w) return "";
+      const m = LANG.mode;
+      if (m === "english") return safeText(w.title_en || w.title_kr || "");
+      return safeText(w.title_kr || w.title_en || "");
+    },
 
-      let titleBlock = "";
-      if (mode === "KR") titleBlock = escapeHtml(tK || tE);
-      else if (mode === "EN") titleBlock = escapeHtml(tE || tK);
-      else {
-        const a = tK ? `<div class="ko">${escapeHtml(tK)}</div>` : "";
-        const b = tE ? `<div class="en">${escapeHtml(tE)}</div>` : "";
-        titleBlock = (a + b) || escapeHtml(tK || tE);
-      }
+    metaFor(w) {
+      if (!w) return "";
+      const m = LANG.mode;
+      const mat = (m === "english") ? safeText(w.material_en || "") : safeText(w.material_kr || "");
+      const siz = (m === "english") ? safeText(w.size_en || "") : safeText(w.size_kr || "");
+      const yr  = safeText(w.year || "");
+      return [mat, siz, yr].filter(Boolean).join(" · ");
+    },
 
-      const subLine = (mode === "EN" ? (subE || subK) : (subK || subE)).trim();
-      const thumb = w.image || w.zoom || "";
-      const zoom = w.zoom || w.image || "";
+    resolveStandard(w) {
+      // Works rule in your memory: image path already includes /images/standard...
+      return withLeadingSlash(w?.image);
+    },
+
+    resolveZoom(w) {
+      const z = safeText(w?.zoom).trim();
+      return z ? withLeadingSlash(z) : this.resolveStandard(w);
+    },
+
+    cardHTML(w, idx) {
+      const standard = this.resolveStandard(w);
+      if (!standard) return "";
+      const title = this.titleFor(w);
+      const meta  = this.metaFor(w);
+      const zoom  = this.resolveZoom(w);
+      const alt   = [title, meta].filter(Boolean).join(" · ");
 
       return `
-        <article class="w-card" data-panel="${panelKey}" data-i="${idx}">
-          <img class="w-thumb" loading="lazy" decoding="async" src="${escapeHtml(thumb)}" alt="">
-          <div class="w-meta">
-            <div class="w-title">${titleBlock}</div>
-            ${subLine ? `<div class="w-sub">${escapeHtml(subLine)}</div>` : ""}
-          </div>
-          <span style="display:none" data-zoom="${escapeHtml(zoom)}"></span>
+        <article class="card" data-idx="${idx}"
+                 data-zoom="${escapeHTML(zoom)}"
+                 data-title="${escapeHTML(title)}"
+                 data-meta="${escapeHTML(meta)}">
+          <img loading="lazy" decoding="async"
+               src="${escapeHTML(standard)}"
+               alt="${escapeHTML(alt)}">
         </article>
       `;
     },
 
-    async render(panelKey) {
-      await this.ensureLoaded();
-      const el = this.panelEl(panelKey);
-      if (!el) return;
+    renderPanel(panelKey) {
+      const key = this.panels[panelKey] ? panelKey : "pray";
+      this.currentPanelKey = key;
+      this.currentIndex = 0;
 
-      const list = this.list(panelKey);
-      if (!list.length) {
-        el.innerHTML = `
-          <div class="w-msg">
-            Works are empty.
-            <small>Expected: ${escapeHtml(resolvePath("/data/works.json"))}</small>
+      // Tab active
+      this.tabButtons.forEach(b => b.classList.remove("active"));
+      const activeTab = this.tabButtons.find(b => b.getAttribute("data-panel") === key);
+      if (activeTab) activeTab.classList.add("active");
+
+      // Panel visible
+      const panelId = "panel-" + key;
+      $$(".tabpanel").forEach(p => p.classList.remove("active"));
+      const panel = $("#" + panelId);
+      if (panel) panel.classList.add("active");
+
+      // Items
+      const sid = this.panelKeyToSectionId(key);
+      const items = this.bySection[sid] || [];
+
+      if (!panel) return;
+
+      if (!items.length) {
+        panel.innerHTML = `
+          <div style="opacity:.75; padding:14px 2px; line-height:1.7;">
+            Works 데이터가 비어있습니다.<br>
+            section_id: ${sid}<br>
+            /data/works.json 구조, 이미지 경로(/images/standard, /images/zoom)와 파일명을 확인하세요.
           </div>
         `;
         return;
       }
 
-      el.innerHTML = `
-        <div class="w-grid">
-          ${list.map((w, i) => this.cardHTML(w, i, panelKey)).join("")}
-        </div>
-      `;
+      const html = items.map((w, i) => this.cardHTML(w, i)).filter(Boolean).join("");
+      panel.innerHTML = `<div class="grid">${html}</div>`;
 
-      $$(".w-card", el).forEach(card => {
+      // Bind open lightbox
+      $$(".card", panel).forEach(card => {
         card.addEventListener("click", () => {
-          const i = Number(card.dataset.i);
-          LIGHTBOX.open(panelKey, i);
-        }, { passive: true });
+          const idx = Number(card.getAttribute("data-idx") || "0");
+          this.currentIndex = isNaN(idx) ? 0 : idx;
+          LIGHTBOX.openFromWorks();
+        });
       });
-
-      this.renderedOnce.add(panelKey);
     },
 
-    async ensureRendered() {
-      await this.render(this.currentPanel);
+    currentWork() {
+      const sid = this.panelKeyToSectionId(this.currentPanelKey);
+      const arr = this.bySection[sid] || [];
+      const idx = clamp(this.currentIndex, 0, Math.max(0, arr.length - 1));
+      return arr[idx] || null;
     },
 
-    refreshCurrentPanel() {
-      if (STATE.section !== "works") return;
-      this.render(this.currentPanel).catch(() => {});
+    next(delta) {
+      const sid = this.panelKeyToSectionId(this.currentPanelKey);
+      const arr = this.bySection[sid] || [];
+      if (!arr.length) return null;
+      const n = arr.length;
+      this.currentIndex = (this.currentIndex + delta + n) % n;
+      return this.currentWork();
     },
 
-    showErrorAll(message, path) {
-      ["pray", "human", "rebirth", "exist", "cosmos"].forEach(k => {
-        const el = this.panelEl(k);
-        if (!el) return;
-        el.innerHTML = `
-          <div class="w-msg">
-            ${escapeHtml(message)}
-            <small>${escapeHtml(path)}</small>
-            <small>BASE: ${escapeHtml(BASE || "/")}</small>
-          </div>
-        `;
+    bindTabs() {
+      this.tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => this.renderPanel(btn.getAttribute("data-panel")));
+        btn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          this.renderPanel(btn.getAttribute("data-panel"));
+        }, { passive: false });
       });
+    },
+
+    async init() {
+      this.bindTabs();
+      await this.load();
+      // Initial panel: the active tab or pray
+      const active = this.tabButtons.find(b => b.classList.contains("active"));
+      const key = active ? active.getAttribute("data-panel") : "pray";
+      this.renderPanel(key);
     }
   };
 
-  function bindWorksTabs() {
-    const tabs = $$(".tabs .tab");
-    const panels = $$(".tabpanel");
-
-    const activate = async (panelKey) => {
-      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel === panelKey));
-      panels.forEach(p => p.classList.toggle("active", p.id === "panel-" + panelKey));
-      WORKS.currentPanel = panelKey;
-      if (STATE.section === "works") await WORKS.ensureRendered();
-    };
-
-    tabs.forEach(t => t.addEventListener("click", () => activate(t.dataset.panel)));
-    activate("pray");
-  }
-
   /* =========================================================
-     LIGHTBOX
+     4) Lightbox (uses your existing markup)
+     - #lightbox .on
+     - img: #lbImg, caption: #lbCap, close: #lbClose
+     - ESC / ← → / swipe
   ========================================================= */
   const LIGHTBOX = {
-    panelKey: "pray",
-    index: 0,
-    openState: false,
+    root: $("#lightbox"),
+    img: $("#lbImg"),
+    cap: $("#lbCap"),
+    closeBtn: $("#lbClose"),
+    isOpen: false,
+    touchX: null,
 
-    isOpen() { return this.openState; },
+    open(src, caption) {
+      if (!this.root || !this.img) return;
+      if (!src) return;
 
-    open(panelKey, index) {
-      this.panelKey = panelKey;
-      this.index = index;
+      this.img.src = src;
+      if (this.cap) this.cap.textContent = caption || "";
 
-      const box = $("#lightbox");
-      if (!box) return;
+      this.root.classList.add("on");
+      this.isOpen = true;
 
-      box.classList.add("is-open");
-      box.setAttribute("aria-hidden", "false");
-      this.openState = true;
-
-      this.render();
-      document.addEventListener("keydown", this.onKeyDown, { passive: false });
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
     },
 
     close() {
-      const box = $("#lightbox");
-      if (!box) return;
+      if (!this.root) return;
+      this.root.classList.remove("on");
+      this.isOpen = false;
 
-      box.classList.remove("is-open");
-      box.setAttribute("aria-hidden", "true");
-      this.openState = false;
-
-      document.removeEventListener("keydown", this.onKeyDown);
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
     },
 
-    onKeyDown(e) {
-      if (!LIGHTBOX.openState) return;
-
-      if (e.key === "Escape") { e.preventDefault(); LIGHTBOX.close(); }
-      else if (e.key === "ArrowLeft") { e.preventDefault(); LIGHTBOX.step(-1); }
-      else if (e.key === "ArrowRight") { e.preventDefault(); LIGHTBOX.step(+1); }
+    openFromWorks() {
+      const w = WORKS.currentWork();
+      if (!w) return;
+      const src = WORKS.resolveZoom(w);
+      const t = WORKS.titleFor(w);
+      const m = WORKS.metaFor(w);
+      const cap = [t, m].filter(Boolean).join(" · ");
+      this.open(src, cap);
     },
 
-    step(dir) {
-      const list = WORKS.list(this.panelKey);
-      if (!list.length) return;
-      this.index = (this.index + dir + list.length) % list.length;
-      this.render();
+    showDelta(delta) {
+      const w = WORKS.next(delta);
+      if (!w) return;
+      const src = WORKS.resolveZoom(w);
+      const t = WORKS.titleFor(w);
+      const m = WORKS.metaFor(w);
+      const cap = [t, m].filter(Boolean).join(" · ");
+      this.open(src, cap);
+    },
+
+    bind() {
+      if (!this.root) return;
+
+      if (this.closeBtn) this.closeBtn.addEventListener("click", () => this.close());
+
+      // click outside stage closes
+      this.root.addEventListener("click", (e) => {
+        if (e.target === this.root) this.close();
+      });
+
+      // keyboard
+      document.addEventListener("keydown", (e) => {
+        if (!this.isOpen) return;
+        if (e.key === "Escape") this.close();
+        if (e.key === "ArrowRight") this.showDelta(+1);
+        if (e.key === "ArrowLeft") this.showDelta(-1);
+      });
+
+      // swipe
+      this.root.addEventListener("touchstart", (e) => {
+        if (!this.isOpen) return;
+        this.touchX = e.touches?.[0]?.clientX ?? null;
+      }, { passive: true });
+
+      this.root.addEventListener("touchend", (e) => {
+        if (!this.isOpen || this.touchX == null) return;
+        const x1 = e.changedTouches?.[0]?.clientX ?? null;
+        if (x1 == null) return;
+        const dx = x1 - this.touchX;
+        this.touchX = null;
+        if (Math.abs(dx) < 42) return;
+        this.showDelta(dx < 0 ? +1 : -1);
+      }, { passive: true });
+    }
+  };
+
+  /* =========================================================
+     5) Reports (KR/EN/KR+EN summary from JSON)
+     - containers: #reportGrid, #reportViewer
+     - tabs: .r-tab[data-r]
+     - toggle button: #reportsToggle (collapses viewer)
+     - open full in new window + small download link
+  ========================================================= */
+  const REPORTS = {
+    data: [],
+    currentFilter: "all",
+    isOpen: false,
+
+    grid: $("#reportGrid"),
+    viewer: $("#reportViewer"),
+    toggleBtn: $("#reportsToggle"),
+    tabs: $$(".r-tab[data-r]"),
+
+    async load() {
+      try {
+        const res = await fetch("/data/reports.json?" + nowBust(), { cache: "no-store" });
+        if (!res.ok) throw new Error("reports.json fetch " + res.status);
+        const json = await res.json();
+        const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
+        this.data = arr;
+      } catch (e) {
+        console.warn("[Reports] load failed:", e);
+        this.data = [];
+      }
+    },
+
+    // robust getters (unknown schema tolerated)
+    getId(r) { return safeText(r.id || r.slug || r.code || "REPORT"); },
+    getCategory(r) { return safeText(r.category || r.group || r.type || "all").toLowerCase(); },
+
+    getTitleKR(r) { return safeText(r.title_kr || r.titleKR || r.title || r.name || ""); },
+    getTitleEN(r) { return safeText(r.title_en || r.titleEN || r.title_en_us || r.titleENUS || ""); },
+
+    getSummaryKR(r) { return safeText(r.summary_kr || r.summaryKR || r.summary || r.desc_kr || r.description_kr || ""); },
+    getSummaryEN(r) { return safeText(r.summary_en || r.summaryEN || r.desc_en || r.description_en || ""); },
+
+    getDate(r) { return safeText(r.date || r.updated || r.year || ""); },
+
+    // possible URLs (md/html/pdf)
+    getViewURL(r) {
+      return withLeadingSlash(r.view_url || r.url || r.page || r.html || r.link || "");
+    },
+    getTextURL(r) {
+      // md/txt/raw content file
+      return withLeadingSlash(r.text_url || r.md_url || r.markdown || r.raw || r.source || "");
+    },
+    getDownloadURL(r) {
+      // explicit download or pdf
+      return withLeadingSlash(r.download_url || r.pdf_url || r.pdf || r.file || "");
+    },
+
+    titleForMode(r) {
+      if (LANG.mode === "english") return this.getTitleEN(r) || this.getTitleKR(r);
+      if (LANG.mode === "hybrid") {
+        const kr = this.getTitleKR(r);
+        const en = this.getTitleEN(r);
+        if (kr && en) return kr + " / " + en;
+        return kr || en || "";
+      }
+      return this.getTitleKR(r) || this.getTitleEN(r);
+    },
+
+    summaryForMode(r) {
+      if (LANG.mode === "english") return this.getSummaryEN(r) || this.getSummaryKR(r);
+      if (LANG.mode === "hybrid") {
+        const kr = this.getSummaryKR(r);
+        const en = this.getSummaryEN(r);
+        if (kr && en) return kr + "\n\n" + en;
+        return kr || en || "";
+      }
+      return this.getSummaryKR(r) || this.getSummaryEN(r);
+    },
+
+    matchesFilter(r) {
+      const f = this.currentFilter;
+      if (!f || f === "all") return true;
+      const c = this.getCategory(r);
+      // allow multi-tag arrays
+      if (Array.isArray(r.tags)) {
+        return r.tags.map(x => safeText(x).toLowerCase()).includes(f);
+      }
+      return c === f;
+    },
+
+    cardHTML(r) {
+      const id = this.getId(r);
+      const title = this.titleForMode(r);
+      const date = this.getDate(r);
+      const cat = this.getCategory(r) || "report";
+
+      const summary = this.summaryForMode(r);
+      const viewURL = this.getViewURL(r);      // if exists (html page)
+      const textURL = this.getTextURL(r);      // if exists (md/txt)
+      const dlURL   = this.getDownloadURL(r);  // if exists (pdf)
+
+      const badgePDF = dlURL && /\.pdf(\?|#|$)/i.test(dlURL);
+
+      return `
+        <article class="r-card" data-id="${escapeHTML(id)}">
+          <div class="r-in">
+            <div class="r-title" title="${escapeHTML(title)}">${escapeHTML(title || id)}</div>
+            <div class="r-sub">${escapeHTML(id)}${date ? " · " + escapeHTML(date) : ""}</div>
+
+            <div class="r-meta">
+              <span class="r-badge">${escapeHTML(cat)}</span>
+              ${badgePDF ? `<span class="r-badge pdf">pdf</span>` : ``}
+            </div>
+
+            <div class="r-body">${escapeHTML(summary)}</div>
+
+            <div class="r-actions">
+              <button type="button" class="r-open"
+                data-view="${escapeHTML(viewURL)}"
+                data-text="${escapeHTML(textURL)}"
+                data-dl="${escapeHTML(dlURL)}"
+                data-title="${escapeHTML(title || id)}"
+                data-id="${escapeHTML(id)}"
+              >Open</button>
+
+              ${dlURL ? `<a class="r-dl" href="${escapeHTML(dlURL)}" target="_blank" rel="noopener">Download</a>` : ``}
+            </div>
+          </div>
+        </article>
+      `;
     },
 
     render() {
-      const w = WORKS.list(this.panelKey)[this.index];
-      if (!w) return;
+      if (!this.grid) return;
 
-      const img = $("#lbImg");
-      const cap = $("#lbCap");
-
-      if (img) img.src = w.zoom || w.image || "";
-      if (cap) cap.textContent = this.composeCaption(w);
-    },
-
-    refreshCaption() {
-      const w = WORKS.list(this.panelKey)[this.index];
-      if (!w) return;
-      const cap = $("#lbCap");
-      if (cap) cap.textContent = this.composeCaption(w);
-    },
-
-    composeCaption(w) {
-      const mode = getLang();
-      const tK = w.title_kr || w.title_en || "";
-      const tE = w.title_en || w.title_kr || "";
-      const mK = [w.material_kr, w.size_kr, w.year].filter(Boolean).join(" · ");
-      const mE = [w.material_en, w.size_en, w.year].filter(Boolean).join(" · ");
-
-      if (mode === "KR") return [tK, mK].filter(Boolean).join("\n");
-      if (mode === "EN") return [tE, mE].filter(Boolean).join("\n");
-
-      const lines = [];
-      if (tK) lines.push(tK);
-      if (mK) lines.push(mK);
-      if ((tK || mK) && (tE || mE)) lines.push("");
-      if (tE) lines.push(tE);
-      if (mE) lines.push(mE);
-      return lines.join("\n").trim();
-    }
-  };
-
-  function bindLightbox() {
-    const closeBtn = $("#lbClose");
-    if (closeBtn) closeBtn.addEventListener("click", () => LIGHTBOX.close());
-
-    const box = $("#lightbox");
-    if (box) {
-      box.addEventListener("click", (e) => {
-        const stage = $(".lb-stage");
-        if (stage && stage.contains(e.target)) return;
-        LIGHTBOX.close();
-      }, { passive: true });
-    }
-  }
-
-  /* =========================================================
-     BIO MODAL
-  ========================================================= */
-  const BIO = {
-    open() {
-      const modal = $("#bio-modal");
-      if (!modal) return;
-      modal.hidden = false;
-      this.syncToGlobal();
-    },
-
-    close() {
-      const modal = $("#bio-modal");
-      if (!modal) return;
-      modal.hidden = true;
-    },
-
-    setModalLang(mode) {
-      const modal = $("#bio-modal");
-      if (!modal) return;
-
-      const ks = $$(".bio-body.ko", modal);
-      const es = $$(".bio-body.en", modal);
-
-      if (mode === "en") {
-        ks.forEach(x => x.style.display = "none");
-        es.forEach(x => x.style.display = "block");
-      } else if (mode === "both") {
-        ks.forEach(x => x.style.display = "block");
-        es.forEach(x => x.style.display = "block");
-      } else {
-        ks.forEach(x => x.style.display = "block");
-        es.forEach(x => x.style.display = "none");
+      const list = this.data.filter(r => this.matchesFilter(r));
+      if (!list.length) {
+        this.grid.innerHTML = `
+          <div style="opacity:.75; padding:10px 2px; line-height:1.7;">
+            Reports 데이터가 비어있습니다.<br>
+            /data/reports.json 구조를 확인하세요.
+          </div>
+        `;
+        return;
       }
 
-      const bK = $('.bio-lang .lang[data-bio-lang="kr"]', modal);
-      const bE = $('.bio-lang .lang[data-bio-lang="en"]', modal);
-      if (bK && bE) {
-        bK.classList.toggle("active", mode !== "en");
-        bE.classList.toggle("active", mode === "en");
-        bK.setAttribute("aria-pressed", String(mode !== "en"));
-        bE.setAttribute("aria-pressed", String(mode === "en"));
-      }
-    },
+      this.grid.innerHTML = list.map(r => this.cardHTML(r)).join("");
 
-    syncToGlobal() {
-      const g = getLang();
-      if (g === "EN") this.setModalLang("en");
-      else if (g === "KR+EN") this.setModalLang("both");
-      else this.setModalLang("kr");
-    }
-  };
-
-  function bindBio() {
-    const close = $(".bio-close");
-    const backdrop = $(".bio-backdrop");
-    if (close) close.addEventListener("click", () => BIO.close());
-    if (backdrop) backdrop.addEventListener("click", () => BIO.close());
-
-    const modal = $("#bio-modal");
-    if (modal) {
-      $$(".bio-lang .lang", modal).forEach(btn => {
+      // bind open
+      $$(".r-open", this.grid).forEach(btn => {
         btn.addEventListener("click", () => {
-          const sel = btn.dataset.bioLang;
-          if (sel === "en") BIO.setModalLang("en");
-          else BIO.setModalLang("kr");
+          const payload = {
+            id: btn.getAttribute("data-id") || "REPORT",
+            title: btn.getAttribute("data-title") || "Report",
+            viewURL: btn.getAttribute("data-view") || "",
+            textURL: btn.getAttribute("data-text") || "",
+            dlURL: btn.getAttribute("data-dl") || ""
+          };
+          this.openInNewWindow(payload);
         });
       });
-    }
-
-    const expoBtn = $("#expoToggle");
-    if (expoBtn) {
-      expoBtn.addEventListener("click", () => {
-        const slide = $("#expoSlide");
-        if (!slide) return;
-        const open = slide.dataset.open === "true";
-        slide.dataset.open = open ? "false" : "true";
-        expoBtn.setAttribute("aria-expanded", open ? "false" : "true");
-      });
-    }
-  }
-
-  /* =========================================================
-     REPORTS (언어 규칙 확정)
-  ========================================================= */
-  const REPORTS = {
-    loaded: false,
-    open: false,
-    filter: "all",
-    raw: [],
-    mdCache: new Map(),
-    _loadingPromise: null,
-
-    async ensureLoaded() {
-      if (this.loaded) return;
-      if (this._loadingPromise) return this._loadingPromise;
-
-      this._loadingPromise = (async () => {
-        const urlFast = resolvePath("/data/reports.json");
-        const urlBust = urlFast + (urlFast.includes("?") ? "&" : "?") + "ts=" + Date.now();
-        let json = null;
-
-        try {
-          const r = await fetch(urlFast, { cache: "force-cache" });
-          if (!r.ok) throw new Error("fast fetch failed");
-          json = await r.json();
-        } catch (e1) {
-          try {
-            const r2 = await fetch(urlBust, { cache: "no-store" });
-            if (!r2.ok) throw new Error("bust fetch failed");
-            json = await r2.json();
-          } catch (e2) {
-            this.loaded = true;
-            this.showError("Reports data not found.", urlFast);
-            return;
-          }
-        }
-
-        const arr = Array.isArray(json) ? json
-          : Array.isArray(json.reports) ? json.reports
-          : [];
-
-        this.raw = arr.map(this.normalize);
-        this.loaded = true;
-        this.renderGrid();
-      })();
-
-      return this._loadingPromise;
-    },
-
-    normalize(x) {
-      return {
-        id: s(x.id || x.code || x.report_id || x.dcar || ""),
-        slug: s(x.slug || x.id || ""),
-        year: s(x.year || x.date || ""),
-        category: s(x.category || x.type || x.tag || "archive").toLowerCase(),
-        title_ko: s(x.title_ko ?? x.title_kr ?? x.titleKr ?? x.title ?? ""),
-        title_en: s(x.title_en ?? x.titleEn ?? ""),
-        summary_ko: s(x.summary_ko ?? x.summaryKr ?? x.summary_kr ?? ""),
-        summary_en: s(x.summary_en ?? x.summaryEn ?? ""),
-        md_path: s(x.md_path ?? x.md ?? x.path ?? "")
-      };
-    },
-
-    forceOpen() {
-      this.open = true;
-      const grid = $("#reportGrid");
-      const btn = $("#reportsToggle");
-      if (grid) grid.style.display = "grid";
-      if (btn) { btn.setAttribute("aria-expanded", "true"); btn.textContent = "Close Reports"; }
-      this.renderGrid();
-    },
-
-    toggleOpen() {
-      this.open = !this.open;
-      const grid = $("#reportGrid");
-      const btn = $("#reportsToggle");
-      if (grid) grid.style.display = this.open ? "grid" : "none";
-      if (btn) {
-        btn.setAttribute("aria-expanded", this.open ? "true" : "false");
-        btn.textContent = this.open ? "Close Reports" : "Open Reports";
-      }
-      if (this.open) this.renderGrid();
     },
 
     setFilter(f) {
-      this.filter = f || "all";
-      $$(".r-tab").forEach(b => b.classList.toggle("is-active", b.dataset.r === this.filter));
-      this.renderGrid();
+      const filter = safeText(f || "all").toLowerCase();
+      this.currentFilter = filter;
+
+      this.tabs.forEach(t => t.classList.remove("is-active"));
+      const active = this.tabs.find(t => safeText(t.getAttribute("data-r")).toLowerCase() === filter);
+      if (active) active.classList.add("is-active");
+
+      this.render();
     },
 
-    list() {
-      if (this.filter === "all") return this.raw;
-      return this.raw.filter(r => s(r.category).includes(this.filter));
-    },
+    setOpen(open) {
+      this.isOpen = !!open;
 
-    pickTitle(r) {
-      const mode = getLang();
-      if (mode === "EN") return r.title_en || r.title_ko || r.id;
-      if (mode === "KR+EN") {
-        const a = s(r.title_ko).trim();
-        const b = s(r.title_en).trim();
-        return [a, b].filter(Boolean).join(" / ") || r.id;
+      if (this.toggleBtn) {
+        this.toggleBtn.setAttribute("aria-expanded", this.isOpen ? "true" : "false");
+        this.toggleBtn.textContent = this.isOpen ? "Close Reports" : "Open Reports";
       }
-      return r.title_ko || r.title_en || r.id;
-    },
 
-    pickSummary(r) {
-      const mode = getLang();
-      if (mode === "EN") return r.summary_en || r.summary_ko || "";
-      if (mode === "KR+EN") {
-        const a = s(r.summary_ko).trim();
-        const b = s(r.summary_en).trim();
-        return [a, b].filter(Boolean).join("\n\n");
+      // If closed: hide grid+viewer, if open: show grid and keep viewer empty unless used
+      if (this.grid) this.grid.style.display = this.isOpen ? "" : "none";
+      if (this.viewer) {
+        this.viewer.style.display = this.isOpen ? "" : "none";
+        if (!this.isOpen) this.viewer.textContent = "";
       }
-      return r.summary_ko || r.summary_en || "";
     },
 
-    metaLine(r) {
-      const y = r.year ? (" · " + r.year) : "";
-      return (r.id || "") + y;
-    },
+    async openInNewWindow({ id, title, viewURL, textURL, dlURL }) {
+      // If viewURL is a real page and you prefer that, open directly:
+      // But requirement: "새 창에서 전체 원문 + 하단 download 링크"
+      // -> we'll generate a clean viewer window and fetch text when possible.
+      const w = window.open("", "_blank", "noopener,noreferrer");
+      if (!w) {
+        // popup blocked -> fallback
+        const fallback = viewURL || textURL || dlURL;
+        if (fallback) window.open(fallback, "_blank", "noopener,noreferrer");
+        return;
+      }
 
-    cardHTML(r, index) {
-      const title = escapeHtml(this.pickTitle(r));
-      const meta = escapeHtml(this.metaLine(r));
-      const summary = escapeHtml(this.pickSummary(r));
-
-      return `
-        <div class="r-item" data-i="${index}">
-          <div class="t">${title}</div>
-          <div class="m">${meta}</div>
-          ${summary ? `<div class="s">${summary}</div>` : ""}
-        </div>
+      const docTitle = title || id || "Report";
+      const head = `
+        <!doctype html>
+        <html lang="ko">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <title>${escapeHTML(docTitle)}</title>
+          <style>
+            :root{
+              --bg:#070c1a; --fg:#eaf0ff; --gold:#e6c777; --line:#243169;
+              --panel:#0b122c; --muted:#9fb0d8;
+            }
+            *{box-sizing:border-box;margin:0;padding:0}
+            body{
+              background:linear-gradient(180deg,#070c1a,#02030a);
+              color:var(--fg);
+              font:15px/1.75 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+            }
+            header{
+              position:sticky;top:0;z-index:10;
+              padding:14px 16px;
+              background:linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.82));
+              border-bottom:1px solid rgba(255,255,255,.08);
+              backdrop-filter: blur(10px);
+            }
+            h1{font-size:18px;color:var(--gold);letter-spacing:.04em}
+            .meta{margin-top:6px;color:var(--muted);font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace}
+            main{max-width:980px;margin:0 auto;padding:18px 16px 40px}
+            .panel{
+              background:linear-gradient(180deg,var(--panel),#050814);
+              border:1px solid var(--line);
+              border-radius:14px;
+              padding:16px 14px 18px;
+              white-space:pre-wrap;
+              overflow-wrap:anywhere;
+            }
+            .bar{
+              margin-top:14px;
+              display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+            }
+            a{
+              color:var(--gold);
+              text-decoration:none;
+              border:1px solid rgba(230,199,119,.35);
+              padding:6px 10px;border-radius:999px;
+              font-size:12px;
+            }
+            a:hover{background:rgba(230,199,119,.12)}
+            .tiny{
+              margin-top:12px;
+              font-size:12px;color:rgba(255,255,255,.65);
+              font-family:ui-monospace,Menlo,Consolas,monospace;
+            }
+          </style>
+        </head>
+        <body>
+          <header>
+            <h1>${escapeHTML(docTitle)}</h1>
+            <div class="meta">${escapeHTML(id || "")}</div>
+          </header>
+          <main>
+            <div id="content" class="panel">Loading…</div>
+            <div class="bar" id="bar"></div>
+            <div class="tiny">Lightflow · Reports Viewer</div>
+          </main>
+        </body>
+        </html>
       `;
+      w.document.open();
+      w.document.write(head);
+      w.document.close();
+
+      const contentEl = w.document.getElementById("content");
+      const barEl = w.document.getElementById("bar");
+
+      // Always provide at least one outward link if exists
+      const links = [];
+      if (viewURL) links.push({ label: "Open Source Page", href: viewURL });
+      if (textURL) links.push({ label: "Open Text", href: textURL });
+      if (dlURL)   links.push({ label: "download", href: dlURL });
+
+      // render bar links (small)
+      if (barEl && links.length) {
+        barEl.innerHTML = links.map(x => `<a href="${escapeHTML(x.href)}" target="_blank" rel="noopener">${escapeHTML(x.label)}</a>`).join("");
+      }
+
+      // Try to fetch report full text (priority: textURL)
+      const fetchURL = textURL || viewURL;
+
+      if (!fetchURL) {
+        if (contentEl) contentEl.textContent = "No content URL found in reports.json.";
+        return;
+      }
+
+      try {
+        const res = await fetch(fetchURL + (fetchURL.includes("?") ? "&" : "?") + nowBust(), { cache: "no-store" });
+        if (!res.ok) throw new Error("fetch " + res.status);
+        const text = await res.text();
+
+        // If it's HTML, extract readable text by stripping tags (safe, simple)
+        const isHTML = /<html|<body|<div|<\/p>|<\/h\d>/i.test(text);
+        if (isHTML) {
+          const tmp = document.createElement("div");
+          tmp.innerHTML = text;
+          const cleaned = tmp.textContent || tmp.innerText || text;
+          if (contentEl) contentEl.textContent = cleaned.trim();
+        } else {
+          if (contentEl) contentEl.textContent = text.trim();
+        }
+      } catch (e) {
+        if (contentEl) {
+          contentEl.textContent =
+            "Failed to load report content.\n\n" +
+            "Try opening the source link instead.\n\n" +
+            String(e);
+        }
+      }
     },
 
-    renderGrid() {
-      const grid = $("#reportGrid");
-      if (!grid) return;
-
-      if (!this.loaded) {
-        if (this.open) {
-          grid.style.display = "grid";
-          grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">Loading reports…</div>`;
-        }
-        return;
-      }
-
-      if (!this.open) { grid.style.display = "none"; return; }
-
-      const list = this.list();
-      if (!list.length) {
-        grid.style.display = "grid";
-        grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">No reports.</div>`;
-        return;
-      }
-
-      grid.style.display = "grid";
-      grid.innerHTML = list.map((r, i) => this.cardHTML(r, i)).join("");
-
-      $$(".r-item", grid).forEach(el => {
-        el.addEventListener("click", async () => {
-          const idx = Number(el.dataset.i);
-          const report = this.list()[idx];
-          if (report) await this.openInNewWindow(report);
-        });
+    bind() {
+      // Tabs
+      this.tabs.forEach(t => {
+        const f = t.getAttribute("data-r");
+        t.addEventListener("click", () => this.setFilter(f));
+        t.addEventListener("touchend", (e) => { e.preventDefault(); this.setFilter(f); }, { passive: false });
       });
-    },
 
-    refreshGridTextOnly() {
-      if (!this.loaded) return;
-      if (!this.open) return;
-      this.renderGrid();
-    },
-
-    async fetchMd(mdPath) {
-      const clean = s(mdPath).trim();
-      if (!clean) return "";
-      const abs = resolvePath(clean);
-      if (!abs) return "";
-
-      if (this.mdCache.has(abs)) return this.mdCache.get(abs);
-
-      try {
-        const r = await fetch(abs + (abs.includes("?") ? "&" : "?") + "ts=" + Date.now(), { cache: "no-store" });
-        if (!r.ok) throw new Error("md fetch failed");
-        const txt = await r.text();
-        this.mdCache.set(abs, txt);
-        return txt;
-      } catch(e) {
-        this.mdCache.set(abs, "");
-        return "";
+      // Toggle open/close
+      if (this.toggleBtn) {
+        this.toggleBtn.addEventListener("click", () => this.setOpen(!this.isOpen));
+        this.toggleBtn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          this.setOpen(!this.isOpen);
+        }, { passive: false });
       }
     },
 
-    downloadName(r) {
-      const base = r.id || r.slug || "DCAR";
-      return base.replaceAll(" ", "_") + ".txt";
-    },
-
-    buildWindowHtml(r, summary, body) {
-      const title = this.pickTitle(r);
-      const meta = this.metaLine(r);
-
-      const safeTitle = escapeHtml(title);
-      const safeMeta = escapeHtml(meta);
-      const safeSummary = summary ? escapeHtml(summary) : "";
-      const safeBody = body ? escapeHtml(body.trim()) : "";
-
-      const fileName = this.downloadName(r);
-      const rawPath = s(r.md_path).trim();
-      const absPath = rawPath ? resolvePath(rawPath) : "";
-
-      return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark light">
-<title>${safeTitle}</title>
-<style>
-:root{--bg:#070A14;--fg:#EDE3C9;--muted:rgba(237,227,201,.72);--gold:rgba(215,184,106,.95);--line:rgba(215,184,106,.22);--card:rgba(255,255,255,.04);--shadow:0 10px 40px rgba(0,0,0,.55)}
-html,body{height:100%}
-body{margin:0;background:radial-gradient(1100px 700px at 50% 0%, rgba(215,184,106,.08), transparent 60%),
-radial-gradient(1200px 900px at 30% 40%, rgba(121,167,255,.06), transparent 60%), var(--bg);
-color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif;line-height:1.55;letter-spacing:.2px}
-.wrap{max-width:980px;margin:0 auto;padding:28px 18px 40px}
-.title{font-size:22px;font-weight:800;color:var(--gold);letter-spacing:.4px}
-.meta{margin-top:6px;font-size:13px;color:var(--muted)}
-.block{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
-pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:13px;color:rgba(237,227,201,.92)}
-.download{margin-top:18px;font-size:12px;color:var(--muted);display:flex;gap:10px;align-items:center;justify-content:flex-end}
-.download a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(215,184,106,.35);padding-bottom:2px}
-.download a:hover{border-bottom-color:rgba(215,184,106,.7)}
-.note{font-size:12px;color:rgba(237,227,201,.68);margin-top:8px}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="title">${safeTitle}</div>
-  <div class="meta">${safeMeta}</div>
-
-  ${safeSummary ? `<div class="block"><pre>${safeSummary}</pre></div>` : ""}
-
-  ${safeBody ? `<div class="block"><pre>${safeBody}</pre></div>` :
-    `<div class="note">No full text was found. (If you use md_path in reports.json, the original text will appear here.)</div>`}
-
-  <div class="download">
-    <span>download:</span>
-    ${absPath ? `<a href="${escapeHtml(absPath)}" download>original file</a>` : `<a href="#" id="downloadText">${escapeHtml(fileName)}</a>`}
-  </div>
-  <div class="note">BASE: ${escapeHtml(BASE || "/")}</div>
-</div>
-
-${absPath ? "" : `<script>
-(function(){
-  var a=document.getElementById("downloadText");
-  if(!a) return;
-  var content=${JSON.stringify(body || summary || "")};
-  var name=${JSON.stringify(fileName)};
-  a.addEventListener("click", function(ev){
-    ev.preventDefault();
-    try{
-      var blob=new Blob([content], {type:"text/plain;charset=utf-8"});
-      var url=URL.createObjectURL(blob);
-      var link=document.createElement("a");
-      link.href=url; link.download=name;
-      document.body.appendChild(link); link.click(); link.remove();
-      setTimeout(function(){URL.revokeObjectURL(url)}, 1500);
-    }catch(e){}
-  });
-})();
-</script>`}
-</body></html>`;
-    },
-
-    async openInNewWindow(r) {
-      const summary = this.pickSummary(r);
-      const body = await this.fetchMd(r.md_path);
-      const html = this.buildWindowHtml(r, summary, body);
-
-      const w = window.open("", "_blank", "noopener");
-      if (!w) { alert("Popup blocked. Please allow popups to open the report in a new tab."); return; }
-      w.document.open(); w.document.write(html); w.document.close();
-    },
-
-    showError(msg, path) {
-      const grid = $("#reportGrid");
-      if (grid) {
-        grid.style.display = "grid";
-        grid.innerHTML = `<div class="w-msg" style="grid-column:1/-1">${escapeHtml(msg)}<small>${escapeHtml(path)}</small><small>BASE: ${escapeHtml(BASE || "/")}</small></div>`;
-      }
-      const viewer = $("#reportViewer");
-      if (viewer) viewer.style.display = "none";
+    async init() {
+      this.bind();
+      await this.load();
+      this.setOpen(false);      // default closed (clean)
+      this.setFilter("all");    // default filter
     }
   };
 
-  function bindReports() {
-    const toggle = $("#reportsToggle");
-    if (toggle) toggle.addEventListener("click", () => REPORTS.toggleOpen());
-
-    $$(".r-tab").forEach(b => b.addEventListener("click", () => REPORTS.setFilter(b.dataset.r || "all")));
-
-    const grid = $("#reportGrid");
-    if (grid) grid.style.display = "none";
-
-    const viewer = $("#reportViewer");
-    if (viewer) viewer.style.display = "none";
-  }
-
   /* =========================================================
-     SOUND (유지 + FFT)
+     6) Bio Modal
   ========================================================= */
-  const SOUND = {
-    audioContext: null,
-    masterGain: null,
-    analyser: null,
-    raf: 0,
-    started: false,
+  const BIO = {
+    modal: $("#bio-modal"),
+    openBtn: $("#tab-bio"),
+    closeBtn: $(".bio-close"),
+    backdrop: $(".bio-backdrop"),
+    expoToggle: $("#expoToggle"),
+    expoSlide: $("#expoSlide"),
+    bioLangBtns: $$(".bio-lang .lang"),
+    activeBioLang: "kr",
 
-    start() {
-      if (this.started) return;
-      this.started = true;
+    open() {
+      if (!this.modal) return;
+      this.modal.hidden = false;
 
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) { this.started = false; return; }
-
-      const ctx = new AC();
-      this.audioContext = ctx;
-
-      const master = ctx.createGain();
-      master.gain.value = 0.0;
-
-      const lowpass = ctx.createBiquadFilter();
-      lowpass.type = "lowpass";
-      lowpass.frequency.value = 900;
-      lowpass.Q.value = 0.7;
-
-      const o1 = ctx.createOscillator();
-      const o2 = ctx.createOscillator();
-      o1.type = "sine"; o2.type = "sine";
-      o1.frequency.value = 132;
-      o2.frequency.value = 198;
-
-      const g1 = ctx.createGain();
-      const g2 = ctx.createGain();
-      g1.gain.value = 0.18;
-      g2.gain.value = 0.14;
-
-      const lfo = ctx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.08;
-
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 0.08;
-
-      lfo.connect(lfoGain);
-      lfoGain.connect(g1.gain);
-
-      o1.connect(g1);
-      o2.connect(g2);
-      g1.connect(lowpass);
-      g2.connect(lowpass);
-
-      const delay = ctx.createDelay();
-      delay.delayTime.value = 0.26;
-
-      const feedback = ctx.createGain();
-      feedback.gain.value = 0.18;
-
-      delay.connect(feedback);
-      feedback.connect(delay);
-
-      lowpass.connect(delay);
-      delay.connect(master);
-
-      const direct = ctx.createGain();
-      direct.gain.value = 0.35;
-      lowpass.connect(direct);
-      direct.connect(master);
-
-      const an = ctx.createAnalyser();
-      an.fftSize = 1024;
-
-      master.connect(an);
-      an.connect(ctx.destination);
-
-      this.masterGain = master;
-      this.analyser = an;
-
-      o1.start(); o2.start(); lfo.start();
-
-      const now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setValueAtTime(0.0, now);
-      master.gain.linearRampToValueAtTime(0.55, now + 1.2);
-
-      document.body.classList.add("sound-on");
-
-      const startBtn = $("#soundBtn");
-      const stopBtn = $("#soundStopBtn");
-      if (startBtn) startBtn.setAttribute("disabled", "disabled");
-      if (stopBtn) stopBtn.removeAttribute("disabled");
-
-      this.loopFFT();
+      // default: follow site language where possible
+      if (LANG.mode === "english") this.setLang("en");
+      else this.setLang("kr");
     },
 
-    stop() {
-      if (!this.started) return;
-      this.started = false;
-
-      const ctx = this.audioContext;
-      if (ctx && this.masterGain) {
-        const now = ctx.currentTime;
-        this.masterGain.gain.cancelScheduledValues(now);
-        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-        this.masterGain.gain.linearRampToValueAtTime(0.0, now + 0.6);
-      }
-
-      cancelAnimationFrame(this.raf);
-      this.raf = 0;
-
-      setTimeout(() => {
-        try { if (this.audioContext) this.audioContext.close(); } catch(e){}
-        this.audioContext = null;
-        this.masterGain = null;
-        this.analyser = null;
-
-        const bar = $("#fftBar span");
-        if (bar) bar.style.width = "0%";
-
-        document.body.classList.remove("sound-on");
-
-        const startBtn = $("#soundBtn");
-        const stopBtn = $("#soundStopBtn");
-        if (startBtn) startBtn.removeAttribute("disabled");
-        if (stopBtn) stopBtn.setAttribute("disabled", "disabled");
-      }, 700);
+    close() {
+      if (!this.modal) return;
+      this.modal.hidden = true;
     },
 
-    loopFFT() {
-      const bar = $("#fftBar span");
-      if (!bar || !this.analyser) {
-        this.raf = requestAnimationFrame(() => this.loopFFT());
-        return;
+    toggleExpo() {
+      if (!this.expoSlide || !this.expoToggle) return;
+      const isOpen = this.expoSlide.getAttribute("data-open") === "true";
+      this.expoSlide.setAttribute("data-open", isOpen ? "false" : "true");
+      this.expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+    },
+
+    setLang(lang) {
+      const l = (lang === "en") ? "en" : "kr";
+      this.activeBioLang = l;
+
+      // show/hide within modal only
+      $$(".bio-card .bio-body.ko").forEach(el => el.style.display = (l === "kr") ? "" : "none");
+      $$(".bio-card .bio-body.en").forEach(el => el.style.display = (l === "en") ? "" : "none");
+
+      // Also keep the expo kicker line correct:
+      // - Kicker has both spans; it will be hidden by site lang in CSS,
+      //   but in modal we force the corresponding body only; keep spans unchanged.
+
+      // active button
+      this.bioLangBtns.forEach(b => b.classList.remove("active"));
+      const active = this.bioLangBtns.find(b => b.getAttribute("data-bio-lang") === l);
+      if (active) active.classList.add("active");
+    },
+
+    bind() {
+      if (this.openBtn) {
+        this.openBtn.addEventListener("click", () => this.open());
+        this.openBtn.addEventListener("touchend", (e) => { e.preventDefault(); this.open(); }, { passive: false });
+      }
+      if (this.closeBtn) this.closeBtn.addEventListener("click", () => this.close());
+      if (this.backdrop) this.backdrop.addEventListener("click", () => this.close());
+
+      // ESC close
+      document.addEventListener("keydown", (e) => {
+        if (!this.modal || this.modal.hidden) return;
+        if (e.key === "Escape") this.close();
+      });
+
+      // Expo slide
+      if (this.expoToggle) {
+        this.expoToggle.addEventListener("click", () => this.toggleExpo());
+        this.expoToggle.addEventListener("touchend", (e) => { e.preventDefault(); this.toggleExpo(); }, { passive: false });
       }
 
-      const data = new Uint8Array(this.analyser.frequencyBinCount);
-      this.analyser.getByteFrequencyData(data);
-
-      let sum = 0;
-      for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
-      const rms = Math.sqrt(sum / data.length) / 255;
-      bar.style.width = clamp(Math.round(rms * 100), 0, 100) + "%";
-
-      this.raf = requestAnimationFrame(() => this.loopFFT());
+      // Modal language buttons
+      this.bioLangBtns.forEach(btn => {
+        const l = btn.getAttribute("data-bio-lang");
+        btn.addEventListener("click", () => this.setLang(l));
+        btn.addEventListener("touchend", (e) => { e.preventDefault(); this.setLang(l); }, { passive: false });
+      });
     }
   };
 
-  function bindSound() {
-    const startBtn = $("#soundBtn");
-    const stopBtn = $("#soundStopBtn");
-
-    if (startBtn) startBtn.addEventListener("click", async () => {
-      SOUND.start();
-      try {
-        if (SOUND.audioContext && SOUND.audioContext.state === "suspended") {
-          await SOUND.audioContext.resume();
-        }
-      } catch(e){}
-    });
-
-    if (stopBtn) stopBtn.addEventListener("click", () => SOUND.stop());
-  }
-
   /* =========================================================
-     WAVES
+     7) Waves Canvas (Refined + light)
+     - stops on reduced motion
   ========================================================= */
   const WAVES = {
-    canvas: null,
+    canvas: $("#waves"),
     ctx: null,
     w: 0,
     h: 0,
     t: 0,
     raf: 0,
 
-    init() {
-      this.canvas = $("#waves");
-      if (!this.canvas) return;
-
-      this.ctx = this.canvas.getContext("2d", { alpha: true });
-      this.resize();
-
-      window.addEventListener("resize", () => this.resize(), { passive: true });
-
-      if (isReducedMotion()) {
-        this.drawStatic();
-        return;
-      }
-      this.loop();
-    },
-
     resize() {
       if (!this.canvas) return;
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       this.w = Math.floor(window.innerWidth * dpr);
       this.h = Math.floor(window.innerHeight * dpr);
       this.canvas.width = this.w;
       this.canvas.height = this.h;
       this.canvas.style.width = "100%";
       this.canvas.style.height = "100%";
+      this.ctx = this.canvas.getContext("2d", { alpha: true });
+      if (this.ctx) this.ctx.setTransform(1,0,0,1,0,0);
     },
 
-    drawStatic() {
-      const c = this.ctx;
-      if (!c) return;
-      c.clearRect(0,0,this.w,this.h);
-      const g = c.createRadialGradient(this.w*0.5, this.h*0.05, 0, this.w*0.5, this.h*0.05, this.h*0.95);
-      g.addColorStop(0, "rgba(215,184,106,0.06)");
-      g.addColorStop(0.35, "rgba(121,167,255,0.04)");
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      c.fillStyle = g;
-      c.fillRect(0,0,this.w,this.h);
-    },
+    draw() {
+      if (!this.ctx) return;
+      const ctx = this.ctx;
+      const w = this.w, h = this.h;
+      this.t += 0.006;
 
-    loop() {
-      this.t += 0.008;
-      this.render();
-      this.raf = requestAnimationFrame(() => this.loop());
-    },
+      ctx.clearRect(0, 0, w, h);
 
-    render() {
-      const c = this.ctx;
-      if (!c) return;
+      // Subtle strokes (no heavy glow; CSS handles blend)
+      // We intentionally keep it lightweight and non-bloomy.
+      const layers = 3;
+      for (let L = 0; L < layers; L++) {
+        const amp = (0.018 + L * 0.012) * h;
+        const baseY = (0.18 + L * 0.22) * h;
+        const freq = 1.2 + L * 0.7;
 
-      c.clearRect(0,0,this.w,this.h);
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 18) {
+          const nx = x / w;
+          const y =
+            baseY +
+            Math.sin((nx * Math.PI * 2) * freq + this.t * (1.4 + L * 0.25)) * amp +
+            Math.sin((nx * Math.PI * 2) * (freq * 0.55) - this.t * (1.1 + L * 0.18)) * (amp * 0.45);
 
-      const g = c.createRadialGradient(this.w*0.5, this.h*0.06, 0, this.w*0.5, this.h*0.06, this.h*1.1);
-      g.addColorStop(0, "rgba(215,184,106,0.055)");
-      g.addColorStop(0.38, "rgba(121,167,255,0.045)");
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      c.fillStyle = g;
-      c.fillRect(0,0,this.w,this.h);
-
-      const layers = [
-        { amp:16, sp:0.55, a:0.055, lw:2 },
-        { amp:24, sp:0.38, a:0.045, lw:2 },
-        { amp:34, sp:0.22, a:0.038, lw:2 }
-      ];
-
-      for (let li=0; li<layers.length; li++) {
-        const L = layers[li];
-        c.beginPath();
-        const baseY = this.h * (0.24 + li * 0.12);
-        for (let x=0; x<=this.w; x+=18) {
-          const nx = x / this.w;
-          const y = baseY
-            + Math.sin(nx*10 + this.t*L.sp*3.2 + li) * L.amp
-            + Math.sin(nx*4  + this.t*L.sp*2.1 + li*2) * (L.amp*0.45);
-          if (x===0) c.moveTo(x,y); else c.lineTo(x,y);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
         }
-        c.strokeStyle = `rgba(215,184,106,${L.a})`;
-        c.lineWidth = L.lw;
-        c.stroke();
+
+        ctx.lineWidth = 1.1 + L * 0.45;
+        ctx.strokeStyle = `rgba(170,205,255,${0.10 - L*0.02})`;
+        ctx.stroke();
       }
 
-      c.fillStyle = "rgba(237,227,201,0.012)";
-      for (let i=0; i<55; i++) {
-        const x = (Math.random() * this.w) | 0;
-        const y = (Math.random() * this.h) | 0;
-        c.fillRect(x, y, 1, 1);
+      // Soft dawn tint points (very sparse)
+      ctx.fillStyle = "rgba(230,199,119,0.06)";
+      for (let i=0;i<10;i++){
+        const x = (Math.sin(this.t*0.7 + i)*0.5 + 0.5) * w;
+        const y = (Math.cos(this.t*0.55 + i*1.7)*0.5 + 0.5) * h;
+        ctx.beginPath();
+        ctx.arc(x, y, 2.2, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      this.raf = requestAnimationFrame(() => this.draw());
+    },
+
+    start() {
+      if (!this.canvas) return;
+      if (prefersReducedMotion()) return;
+      this.resize();
+      cancelAnimationFrame(this.raf);
+      this.draw();
+    },
+
+    stop() {
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+      if (this.ctx) this.ctx.clearRect(0,0,this.w,this.h);
+    }
+  };
+
+  /* =========================================================
+     8) Sound (Cosmic Resonance · meditation)
+     - Buttons: #soundBtn (toggle on), #soundStopBtn (stop)
+     - FFT bar: #fftBar span (level)
+  ========================================================= */
+  const SOUND = {
+    ctx: null,
+    master: null,
+    analyser: null,
+    data: null,
+    isOn: false,
+    key: "LF_SOUND_V2",
+    raf: 0,
+
+    btnOn: $("#soundBtn"),
+    btnOff: $("#soundStopBtn"),
+    bar: $("#fftBar span"),
+
+    init() {
+      if (this.ctx) return;
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+
+      this.ctx = new Ctx();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0.0;
+
+      // analyser for bar
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.data = new Uint8Array(this.analyser.frequencyBinCount);
+
+      // soft filter to avoid harshness
+      const lp = this.ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.value = 3800;
+      lp.Q.value = 0.55;
+
+      this.master.connect(lp);
+      lp.connect(this.analyser);
+      this.analyser.connect(this.ctx.destination);
+
+      // build pad + air + pulse
+      this.buildLayers();
+
+      // iOS resume guard
+      const resumeOnce = async () => {
+        if (!this.ctx) return;
+        try { await this.ctx.resume(); } catch(e) {}
+        window.removeEventListener("touchstart", resumeOnce);
+        window.removeEventListener("click", resumeOnce);
+      };
+      window.addEventListener("touchstart", resumeOnce, { passive: true });
+      window.addEventListener("click", resumeOnce, { passive: true });
+    },
+
+    buildLayers() {
+      const t0 = this.ctx.currentTime;
+
+      // Stable harmonic pad (low fatigue)
+      const freqs = [55, 82.5, 110, 165]; // 1, 3/2, 2, 3
+      freqs.forEach((f, i) => {
+        const o1 = this.ctx.createOscillator();
+        const o2 = this.ctx.createOscillator();
+        const g  = this.ctx.createGain();
+
+        o1.type = "sine";
+        o2.type = "triangle";
+
+        o1.frequency.value = f;
+        o2.frequency.value = f;
+        o1.detune.value = (i % 2 === 0) ? -7 : 6;
+        o2.detune.value = (i % 2 === 0) ? 9 : -8;
+
+        g.gain.value = 0.0;
+
+        o1.connect(g);
+        o2.connect(g);
+        g.connect(this.master);
+
+        o1.start(t0);
+        o2.start(t0);
+
+        const base = 0.020 / (1 + i*0.75);
+        g.gain.setValueAtTime(0.0, t0);
+        g.gain.linearRampToValueAtTime(base, t0 + 6.0 + i*1.1);
+      });
+
+      // Air noise (bandpass + slow breathe)
+      const bufferSize = 2 * this.ctx.sampleRate;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random()*2-1) * 0.25;
+
+      const src = this.ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+
+      const bp = this.ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = 420;
+      bp.Q.value = 0.9;
+
+      const ng = this.ctx.createGain();
+      ng.gain.value = 0.0;
+
+      src.connect(bp);
+      bp.connect(ng);
+      ng.connect(this.master);
+      src.start(t0);
+
+      // breathe loop
+      const breathe = () => {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        ng.gain.cancelScheduledValues(t);
+        ng.gain.setValueAtTime(ng.gain.value, t);
+        ng.gain.linearRampToValueAtTime(0.012, t + 5.4);
+        ng.gain.linearRampToValueAtTime(0.004, t + 10.8);
+
+        bp.frequency.cancelScheduledValues(t);
+        bp.frequency.setValueAtTime(bp.frequency.value, t);
+        bp.frequency.linearRampToValueAtTime(360 + Math.random()*220, t + 10.8);
+
+        setTimeout(breathe, 10800);
+      };
+      setTimeout(breathe, 900);
+
+      // Deep pulse (distant beacon)
+      const po = this.ctx.createOscillator();
+      po.type = "sine";
+      po.frequency.value = 36;
+
+      const pg = this.ctx.createGain();
+      pg.gain.value = 0.0;
+
+      const plp = this.ctx.createBiquadFilter();
+      plp.type = "lowpass";
+      plp.frequency.value = 220;
+      plp.Q.value = 0.7;
+
+      po.connect(plp);
+      plp.connect(pg);
+      pg.connect(this.master);
+      po.start(t0);
+
+      const pulse = () => {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        pg.gain.cancelScheduledValues(t);
+        pg.gain.setValueAtTime(0.0, t);
+        pg.gain.linearRampToValueAtTime(0.020, t + 0.14);
+        pg.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+        setTimeout(pulse, (5.8 + Math.random()*2.6) * 1000);
+      };
+      setTimeout(pulse, 1200);
+    },
+
+    reflectUI() {
+      if (this.btnOn)  this.btnOn.classList.toggle("active", this.isOn);
+      if (this.btnOff) this.btnOff.disabled = !this.isOn;
+    },
+
+    async on() {
+      this.init();
+      if (!this.ctx) return;
+
+      try { await this.ctx.resume(); } catch(e) {}
+
+      const t = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(t);
+      this.master.gain.setValueAtTime(this.master.gain.value, t);
+      this.master.gain.linearRampToValueAtTime(0.78, t + 4.2);
+
+      this.isOn = true;
+      this.reflectUI();
+      this.startBar();
+
+      try { localStorage.setItem(this.key, "ON"); } catch(e) {}
+    },
+
+    off() {
+      if (!this.ctx) {
+        this.isOn = false;
+        this.reflectUI();
+        try { localStorage.setItem(this.key, "OFF"); } catch(e) {}
+        return;
+      }
+
+      const t = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(t);
+      this.master.gain.setValueAtTime(this.master.gain.value, t);
+      this.master.gain.linearRampToValueAtTime(0.0, t + 1.6);
+
+      this.isOn = false;
+      this.reflectUI();
+      this.stopBar();
+
+      try { localStorage.setItem(this.key, "OFF"); } catch(e) {}
+    },
+
+    async toggle() {
+      if (this.isOn) this.off();
+      else await this.on();
+    },
+
+    restore() {
+      let saved = null;
+      try { saved = localStorage.getItem(this.key); } catch(e) {}
+      if (saved === "ON") this.on();
+      else this.off();
+    },
+
+    startBar() {
+      if (!this.analyser || !this.bar) return;
+      cancelAnimationFrame(this.raf);
+
+      const tick = () => {
+        if (!this.analyser || !this.data || !this.bar) return;
+        this.analyser.getByteFrequencyData(this.data);
+        // average low bins (soft)
+        let sum = 0;
+        const n = Math.min(24, this.data.length);
+        for (let i=0;i<n;i++) sum += this.data[i];
+        const avg = sum / n / 255; // 0..1
+        const w = Math.round(clamp(avg * 180, 0, 180));
+        this.bar.style.width = w + "px";
+        this.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    },
+
+    stopBar() {
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+      if (this.bar) this.bar.style.width = "0px";
+    },
+
+    bind() {
+      if (this.btnOn) {
+        this.btnOn.addEventListener("click", () => this.toggle());
+        this.btnOn.addEventListener("touchend", (e) => { e.preventDefault(); this.toggle(); }, { passive: false });
+      }
+      if (this.btnOff) {
+        this.btnOff.addEventListener("click", () => this.off());
+        this.btnOff.addEventListener("touchend", (e) => { e.preventDefault(); this.off(); }, { passive: false });
       }
     }
   };
 
-  function bindEsc() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
+  /* =========================================================
+     9) Init order (stable)
+  ========================================================= */
+  async function init() {
+    // 1) language
+    LANG.restore();
+    bindLanguageButtons();
 
-      const modal = $("#bio-modal");
-      if (modal && modal.hidden === false) BIO.close();
-      if (LIGHTBOX.isOpen()) LIGHTBOX.close();
+    // 2) nav
+    NAV.init();
+    NAV.go("poem", { scroll: false });
+
+    // 3) waves
+    if ($("#waves") && !prefersReducedMotion()) WAVES.start();
+    window.addEventListener("resize", () => {
+      if (prefersReducedMotion()) return;
+      WAVES.resize();
     });
-  }
 
-  function prefetch() {
-    idle(() => { WORKS.ensureLoaded().catch(()=>{}); });
-    idle(() => { REPORTS.ensureLoaded().catch(()=>{}); });
-  }
+    // 4) works + lightbox
+    LIGHTBOX.bind();
+    await WORKS.init();
 
-  function bindAll() {
-    restoreLang();
-    bindLangButtons();
-    bindPrimaryNav();
+    // 5) reports
+    await REPORTS.init();
 
-    bindWorksTabs();
-    bindLightbox();
-    bindBio();
-    bindReports();
-    bindSound();
+    // 6) bio
+    BIO.bind();
 
-    WAVES.init();
-    bindEsc();
+    // 7) sound
+    SOUND.bind();
+    SOUND.restore();
 
-    REPORTS.setFilter("all");
-    prefetch();
+    // Re-render text-dependent areas on language change
+    window.addEventListener("lf:lang", () => {
+      // Works: refresh current panel titles/meta language
+      WORKS.renderPanel(WORKS.currentPanelKey);
+      // Reports: re-render titles/summaries split
+      REPORTS.render();
+      // Bio default content shown remains controlled by modal buttons; do not overwrite user choice
+    });
+
+    // When switching sections via NAV, ensure layout refresh
+    window.addEventListener("lf:section", (e) => {
+      const t = e.detail?.target;
+      if (t === "works") {
+        // ensure current panel exists
+        WORKS.renderPanel(WORKS.currentPanelKey);
+      }
+      if (t === "reports") {
+        // keep closed by default; user opens toggle
+        // but if already open, ensure grid visible
+        if (REPORTS.isOpen) REPORTS.setOpen(true);
+      }
+    });
+
+    // Reduced motion: stop waves
+    if (prefersReducedMotion()) WAVES.stop();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bindAll);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    bindAll();
+    init();
   }
 })();
 </script>

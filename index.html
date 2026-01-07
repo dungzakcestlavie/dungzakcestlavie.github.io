@@ -1,791 +1,939 @@
 <!-- ==========================================================
-① HEAD / STYLE  (FULL — CENTER FIX / BUTTON SIZE TUNE / STRONG GOLD / NO BLUR)
-- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 존재감 강화(번짐 0) (4) 접근성/속도
+③ SCRIPTS  (FINAL — NO LAYOUT HACK / WORKS ZOOM FIX / REPORTS KR-EN / BIO SYNC / SOUND & WAVES)
 ========================================================== -->
+<script>
+(() => {
+  "use strict";
+
+  /* -----------------------------
+     Helpers
+  ----------------------------- */
+  const $  = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const bust = () => (Date.now().toString(36));
+
+  const safeText = (v) => String(v ?? "");
+  const esc = (s) => String(s ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+  const slash = (p) => {
+    const s = safeText(p).trim();
+    if (!s) return "";
+    if (/^https?:\/\//i.test(s)) return s;
+    return s.startsWith("/") ? s : ("/" + s);
+  };
+
+  const prefersReducedMotion = () =>
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function onTap(el, fn) {
+    if (!el) return;
+    el.addEventListener("click", fn, { passive: true });
+  }
+
+  /* =========================================================
+     1) Language Controller (CSS만 바꿈 / 레이아웃 건드리지 않음)
+  ========================================================= */
+  const LANG = {
+    key: "LF_LANG_V4",
+    mode: "korean",
+    set(mode) {
+      const m = (mode === "english" || mode === "hybrid") ? mode : "korean";
+      this.mode = m;
+
+      document.body.classList.remove("korean", "english", "hybrid");
+      document.body.classList.add(m);
+
+      const ko = $("#koBtn"), en = $("#enBtn"), hy = $("#hyBtn");
+      [ko,en,hy].forEach(b => b && b.classList.remove("active"));
+      if (m === "korean" && ko) ko.classList.add("active");
+      if (m === "english" && en) en.classList.add("active");
+      if (m === "hybrid" && hy) hy.classList.add("active");
+
+      try { localStorage.setItem(this.key, m); } catch(e) {}
+      BIO.syncWithGlobalLang();   // ✅ Bio도 같이 맞춤
+      WORKS.rerenderCurrentPanel();
+      REPORTS.render();
+    },
+    restore() {
+      let saved = null;
+      try { saved = localStorage.getItem(this.key); } catch(e) {}
+      if (saved === "korean" || saved === "english" || saved === "hybrid") this.set(saved);
+      else this.set("korean");
+    },
+    bindButtons() {
+      onTap($("#koBtn"), () => this.set("korean"));
+      onTap($("#enBtn"), () => this.set("english"));
+      onTap($("#hyBtn"), () => this.set("hybrid"));
+    }
+  };
+
+  /* =========================================================
+     2) Navigation (스크롤만 / display 조작 금지)
+  ========================================================= */
+  const NAV = {
+    btns: [],
+    bind() {
+      this.btns = $$('nav.primary button[data-target]');
+      this.btns.forEach(b => {
+        const id = (b.getAttribute("data-target") || "").trim();
+        if (!id) return;
+        onTap(b, () => this.go(id));
+      });
+
+      // Bio open
+      onTap($("#tab-bio"), () => BIO.open());
+    },
+    go(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block:"start" });
+
+      // active 표시만
+      this.btns.forEach(x => x.classList.remove("active"));
+      const active = this.btns.find(x => (x.getAttribute("data-target")||"") === id);
+      if (active) active.classList.add("active");
+    }
+  };
+
+  /* =========================================================
+     3) Lightbox (WORKS 배열과 1:1 고정, 확대 꼬임 방지)
+  ========================================================= */
+  const LIGHTBOX = {
+    root: $("#lightbox"),
+    img: $("#lbImg"),
+    cap: $("#lbCap"),
+    closeBtn: $("#lbClose"),
+    isOpen: false,
+    touchX: null,
+
+    open(src, caption) {
+      if (!this.root || !this.img || !src) return;
+
+      // preload zoom for speed
+      const pre = new Image();
+      pre.decoding = "async";
+      pre.src = src;
+
+      this.img.src = src;
+      if (this.cap) this.cap.textContent = caption || "";
+      this.root.classList.add("is-open");
+      this.isOpen = true;
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    },
+
+    close() {
+      if (!this.root) return;
+      this.root.classList.remove("is-open");
+      this.isOpen = false;
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    },
+
+    bind(stepFn) {
+      if (!this.root) return;
+
+      onTap(this.closeBtn, () => this.close());
+
+      // click outside stage: backdrop only (stage 외곽 닫기)
+      this.root.addEventListener("click", (e) => {
+        if (e.target === this.root) this.close();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!this.isOpen) return;
+        if (e.key === "Escape") this.close();
+        if (e.key === "ArrowRight") stepFn && stepFn(+1);
+        if (e.key === "ArrowLeft") stepFn && stepFn(-1);
+      });
+
+      // swipe
+      this.root.addEventListener("touchstart", (e) => {
+        if (!this.isOpen) return;
+        this.touchX = e.touches?.[0]?.clientX ?? null;
+      }, { passive:true });
+
+      this.root.addEventListener("touchend", (e) => {
+        if (!this.isOpen || this.touchX == null) return;
+        const x1 = e.changedTouches?.[0]?.clientX ?? null;
+        if (x1 == null) return;
+        const dx = x1 - this.touchX;
+        this.touchX = null;
+        if (Math.abs(dx) < 42) return;
+        stepFn && stepFn(dx < 0 ? +1 : -1);
+      }, { passive:true });
+    }
+  };
+
+  /* =========================================================
+     4) Works (확대 꼬임 해결: data-id 기반 / 배열 고정)
+  ========================================================= */
+  const WORKS = {
+    raw: [],
+    bySection: {1:[],2:[],3:[],4:[],5:[]},
+    currentKey: "pray",
+    currentIndex: 0,
+
+    keyToSid(key){
+      return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
+    },
+
+    panels(){
+      return {
+        pray: $("#panel-pray"),
+        human: $("#panel-human"),
+        rebirth: $("#panel-rebirth"),
+        exist: $("#panel-exist"),
+        cosmos: $("#panel-cosmos")
+      };
+    },
+
+    tabs(){
+      return $$('button.tab[data-panel]');
+    },
+
+    async load() {
+      const candidates = ["/data/works.json","data/works.json","/works.json","works.json"];
+      let lastErr = null;
+
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const json = await res.json();
+          const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
+          this.raw = arr;
+
+          this.bySection = {1:[],2:[],3:[],4:[],5:[]};
+          arr.forEach(w => {
+            const sid = Number(w?.section_id);
+            if (sid>=1 && sid<=5) this.bySection[sid].push(w);
+          });
+
+          return true;
+        } catch(e) {
+          lastErr = e;
+        }
+      }
+
+      console.warn("[Works] load failed:", lastErr);
+      this.raw = [];
+      this.bySection = {1:[],2:[],3:[],4:[],5:[]};
+      return false;
+    },
+
+    titleHTML(w) {
+      const kr = safeText(w?.title_kr || "");
+      const en = safeText(w?.title_en || "");
+      if (LANG.mode === "english") return `<div class="en">${esc(en || kr)}</div>`;
+      if (LANG.mode === "hybrid") {
+        if (kr && en) return `<div class="ko">${esc(kr)}</div><div class="en">${esc(en)}</div>`;
+        return `<div class="ko">${esc(kr || en)}</div>`;
+      }
+      return `<div class="ko">${esc(kr || en)}</div>`;
+    },
+
+    metaHTML(w) {
+      const mkr = safeText(w?.material_kr || "");
+      const men = safeText(w?.material_en || "");
+      const skr = safeText(w?.size_kr || "");
+      const sen = safeText(w?.size_en || "");
+      const yr  = safeText(w?.year || "");
+
+      const krLine = [mkr, skr, yr].filter(Boolean).join(" · ");
+      const enLine = [men, sen, yr].filter(Boolean).join(" · ");
+
+      if (LANG.mode === "english") return `<div class="en">${esc(enLine || krLine)}</div>`;
+      if (LANG.mode === "hybrid") {
+        if (krLine && enLine) return `<div class="ko">${esc(krLine)}</div><div class="en">${esc(enLine)}</div>`;
+        return `<div class="ko">${esc(krLine || enLine)}</div>`;
+      }
+      return `<div class="ko">${esc(krLine || enLine)}</div>`;
+    },
+
+    imgSrc(w) { return slash(w?.image || ""); },
+    zoomSrc(w) {
+      const z = safeText(w?.zoom || "").trim();
+      return z ? slash(z) : this.imgSrc(w);
+    },
+
+    captionText(w){
+      const titlePlain =
+        LANG.mode === "english" ? (w?.title_en || w?.title_kr || "")
+        : (w?.title_kr || w?.title_en || "");
+      const metaPlain =
+        LANG.mode === "english"
+          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
+          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
+      return [titlePlain, metaPlain].filter(Boolean).join(" · ");
+    },
+
+    cardHTML(w, idx) {
+      const src = this.imgSrc(w);
+      if (!src) return "";
+
+      // ✅ id/slug가 있으면 그걸 우선 사용 (확대 꼬임 방지용 key)
+      const wid = safeText(w?.id || w?.work_id || w?.slug || w?.image || ("idx_"+idx));
+
+      const alt =
+        LANG.mode === "english"
+          ? (w?.title_en || w?.title_kr || "")
+          : (w?.title_kr || w?.title_en || "");
+
+      return `
+        <article class="w-card" data-wid="${esc(wid)}" data-idx="${idx}">
+          <img class="w-thumb" loading="lazy" decoding="async" src="${esc(src)}" alt="${esc(alt)}">
+          <div class="w-meta">
+            <div class="w-title">${this.titleHTML(w)}</div>
+            <div class="w-sub">${this.metaHTML(w)}</div>
+          </div>
+        </article>
+      `;
+    },
+
+    currentArray() {
+      const sid = this.keyToSid(this.currentKey);
+      return this.bySection[sid] || [];
+    },
+
+    currentWork() {
+      const arr = this.currentArray();
+      if (!arr.length) return null;
+      const i = clamp(this.currentIndex, 0, arr.length-1);
+      return arr[i] || null;
+    },
+
+    step(delta) {
+      const arr = this.currentArray();
+      if (!arr.length) return null;
+      const n = arr.length;
+      this.currentIndex = (this.currentIndex + delta + n) % n;
+      return this.currentWork();
+    },
+
+    activateTab(key){
+      const tabs = this.tabs();
+      tabs.forEach(b => b.classList.remove("active"));
+      const active = tabs.find(b => (b.getAttribute("data-panel")||"") === key);
+      if (active) active.classList.add("active");
+
+      $$(".tabpanel").forEach(p => p.classList.remove("active"));
+      const panel = this.panels()[key];
+      if (panel) panel.classList.add("active");
+    },
+
+    renderPanel(key) {
+      const panels = this.panels();
+      const panel = panels[key] || panels.pray;
+      const k = panels[key] ? key : "pray";
+
+      this.currentKey = k;
+      this.currentIndex = 0;
+
+      this.activateTab(k);
+
+      if (!panel) return;
+
+      const sid = this.keyToSid(k);
+      const arr = this.bySection[sid] || [];
+
+      if (!arr.length) {
+        panel.innerHTML = `<div class="w-msg">Works 데이터가 없습니다.<small>(section_id: ${sid} / /data/works.json 확인)</small></div>`;
+        return;
+      }
+
+      panel.innerHTML = `<div class="w-grid">${arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("")}</div>`;
+
+      // ✅ 클릭 시: 그 카드의 idx를 그대로 currentIndex로
+      $$(".w-card", panel).forEach(card => {
+        onTap(card, () => {
+          const idx = Number(card.getAttribute("data-idx") || "0");
+          this.currentIndex = isNaN(idx) ? 0 : idx;
+          const w = this.currentWork();
+          if (!w) return;
+          LIGHTBOX.open(this.zoomSrc(w), this.captionText(w));
+        });
+      });
+    },
+
+    rerenderCurrentPanel(){
+      // 언어 전환 시: 같은 섹션, 같은 index 유지
+      const key = this.currentKey;
+      const idx = this.currentIndex;
+
+      this.renderPanel(key);
+      const arr = this.currentArray();
+      if (arr.length) this.currentIndex = clamp(idx, 0, arr.length-1);
+    },
+
+    bindTabs() {
+      this.tabs().forEach(btn => {
+        const k = (btn.getAttribute("data-panel") || "").trim();
+        if (!k) return;
+        onTap(btn, () => this.renderPanel(k));
+      });
+    },
+
+    async init() {
+      this.bindTabs();
+      await this.load();
+
+      const active = this.tabs().find(b => b.classList.contains("active"));
+      const key = active ? (active.getAttribute("data-panel") || "pray") : "pray";
+      this.renderPanel(key);
+    }
+  };
+
+  /* =========================================================
+     5) Reports (KR/EN/KR+EN 분리 렌더 + 새 창 viewer + download)
+  ========================================================= */
+  const REPORTS = {
+    list: [],
+    grid: $("#reportGrid"),
+    toggleBtn: $("#reportsToggle"),
+    tabBtns: $$('button.r-tab[data-r]'),
+    filter: "all",
+    opened: false,
+
+    async load() {
+      const candidates = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
+      let lastErr = null;
+
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url + "?" + bust(), { cache:"no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const json = await res.json();
+          const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
+          this.list = arr;
+          return true;
+        } catch(e) {
+          lastErr = e;
+        }
+      }
+
+      console.warn("[Reports] load failed:", lastErr);
+      this.list = [];
+      return false;
+    },
+
+    titleHTML(r) {
+      const kr = safeText(r?.title_ko || "");
+      const en = safeText(r?.title_en || "");
+      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
+      if (LANG.mode === "hybrid") {
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
+        return `<span class="ko">${esc(kr || en)}</span>`;
+      }
+      return `<span class="ko">${esc(kr || en)}</span>`;
+    },
+
+    summaryHTML(r) {
+      const kr = safeText(r?.summary_ko || "");
+      const en = safeText(r?.summary_en || "");
+      if (LANG.mode === "english") return `<span class="en">${esc(en || kr)}</span>`;
+      if (LANG.mode === "hybrid") {
+        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
+        return `<span class="ko">${esc(kr || en)}</span>`;
+      }
+      return `<span class="ko">${esc(kr || en)}</span>`;
+    },
+
+    mdURL(r) { return slash(r?.md_path || ""); },
+
+    matchFilter(r){
+      if (this.filter === "all") return true;
+      const cat = safeText(r?.category || r?.type || "").toLowerCase();
+      return cat === this.filter;
+    },
+
+    cardHTML(r) {
+      const id = safeText(r?.id || r?.slug || "");
+      const url = this.mdURL(r);
+      return `
+        <article class="r-item" data-md="${esc(url)}" data-id="${esc(id)}">
+          <div class="t">${this.titleHTML(r)}</div>
+          <div class="m">${esc(id)}</div>
+          <div class="s">${this.summaryHTML(r)}</div>
+        </article>
+      `;
+    },
+
+    setOpen(open){
+      this.opened = !!open;
+      if (!this.grid || !this.toggleBtn) return;
+
+      this.grid.classList.toggle("is-open", this.opened);
+      this.toggleBtn.setAttribute("aria-expanded", this.opened ? "true" : "false");
+      this.toggleBtn.textContent = this.opened ? "Close Reports" : "Open Reports";
+    },
+
+    setFilter(f){
+      this.filter = (f === "theory" || f === "archive" || f === "practice") ? f : "all";
+      this.tabBtns.forEach(b => b.classList.remove("is-active"));
+      const active = this.tabBtns.find(b => (b.getAttribute("data-r") || "") === this.filter);
+      if (active) active.classList.add("is-active");
+      this.render();
+    },
+
+    async openViewerWindow({ id, title, mdURL }) {
+      const w = window.open("", "_blank", "noopener,noreferrer");
+      if (!w) {
+        if (mdURL) window.open(mdURL, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      const docTitle = title || id || "Report";
+      const shell = `
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="dark light" />
-  <meta name="theme-color" content="#070A14" />
-  <meta name="format-detection" content="telephone=no,address=no,email=no" />
-
-  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
-  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
-
-  <link rel="canonical" href="https://dungzak.art/" />
-
-  <!-- OG / Twitter -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
-  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
-  <meta property="og:url" content="https://dungzak.art/" />
-  <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
-  <meta name="twitter:card" content="summary_large_image" />
-
-  <!-- Google Translate bar 차단 -->
-  <meta name="google" content="notranslate" />
-  <meta name="googlebot" content="notranslate" />
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>${esc(docTitle)}</title>
   <style>
-    /* =========================================================
-       Base / Reset
-    ========================================================= */
-    :root{
-      --bg0:#050812;
-      --bg1:#070A14;
-      --bg2:#0A1022;
-
-      /* ✅ GOLD 강화(번짐 없이 “단단한 존재감”) */
-      --gold:#E5C66E;     /* 기존보다 조금 더 밝고 선명 */
-      --gold2:#FFE7A8;    /* 타이틀/링크용 하이라이트 */
-      --blue:#79A7FF;
-
-      --ink:#EDE3C9;
-      --muted:rgba(237,227,201,.72);
-      --muted2:rgba(237,227,201,.55);
-
-      --card:rgba(255,255,255,.035);
-      --card2:rgba(255,255,255,.055);
-      --line:rgba(229,198,110,.26);  /* gold 기반 라인 강화 */
-      --line2:rgba(121,167,255,.18);
-
-      --shadow: 0 16px 40px rgba(0,0,0,.45);
-      --shadow2: 0 10px 26px rgba(0,0,0,.35);
-      --r:18px;
-
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
-      --safe-left: env(safe-area-inset-left, 0px);
-      --safe-right: env(safe-area-inset-right, 0px);
-
-      --maxw: 1120px;
-
-      /* ✅ 번짐 0용 엣지(검은 “컷”) */
-      --gold-edge: rgba(0,0,0,.82);
-      --gold-edge2: rgba(0,0,0,.55);
-
-      /* 버튼 크기 튜닝 */
-      --btnH: 40px;
-      --btnPadX: 12px;
-      --btnFont: 12.6px;
-      --btnRadius: 999px;
-    }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    :root{ --bg:#070A14; --fg:#eef3ff; --muted:#aab7dd; --gold:#e6c777; }
+    *{box-sizing:border-box;margin:0;padding:0}
     body{
-      margin:0;
-      background:
-        radial-gradient(1200px 700px at 50% 0%, rgba(229,198,110,.13), rgba(121,167,255,.07) 40%, rgba(0,0,0,0) 72%),
-        linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
-      color:var(--ink);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      letter-spacing:.2px;
-      overflow-x:hidden;
-      padding-left: 0;
-      padding-right: 0;
+      background: radial-gradient(1200px 600px at 50% -10%, rgba(170,205,255,.10), transparent 60%),
+                  linear-gradient(180deg, #070A14, #02030a);
+      color:var(--fg);
+      font: 15px/1.85 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
     }
-
-    header, main, footer{
-      padding-left: var(--safe-left);
-      padding-right: var(--safe-right);
-    }
-
-    a{ color:var(--gold2); text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-    img{ max-width:100%; display:block; }
-
-    /* =========================================================
-       Language visibility (GLOBAL)
-    ========================================================= */
-    .ko,.en{ display:block; }
-    body.korean .en{ display:none !important; }
-    body.english .ko{ display:none !important; }
-    body.hybrid .ko,
-    body.hybrid .en{ display:block !important; }
-
-    /* =========================================================
-       Bio modal language (LOCAL)
-       - BODY 원문은 그대로 두고, 모달 내부만 별도 표시 제어
-    ========================================================= */
-    #bio-modal[data-bio="kr"] .bio-body.en,
-    #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
-
-    #bio-modal[data-bio="en"] .bio-body.ko,
-    #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
-
-    /* =========================================================
-       Waves canvas
-    ========================================================= */
-    #waves{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      z-index:-2;
-      pointer-events:none;
-      opacity:1;
-    }
-
-    /* =========================================================
-       Header / Nav (CENTER FIX + SIZE TUNE + STRONG GOLD)
-    ========================================================= */
     header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      padding-top: calc(12px + var(--safe-top));
-      padding-bottom: 10px;
+      position:sticky;top:0;z-index:20;
+      padding:14px 16px;
+      background: linear-gradient(180deg, rgba(8,12,24,.96), rgba(8,12,24,.80));
+      border-bottom:1px solid rgba(255,255,255,.08);
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(5,8,18,.92), rgba(5,8,18,.62));
-      border-bottom:1px solid rgba(229,198,110,.22);
-    }
-
-    header .brand,
-    header .brand-sub{
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 0 18px;
       text-align:center;
     }
-
-    header .brand{
-      font-weight: 950;
-      color: var(--gold2);
-      letter-spacing: .78px;
-      font-size: 15.5px;
-      line-height: 1.25;
-
-      /* ✅ “번짐 없이” 강한 금빛 */
-      -webkit-text-stroke: .45px rgba(0,0,0,.42);
-      text-shadow:
-        0 1px 0 var(--gold-edge),
-        0 -1px 0 var(--gold-edge2),
-        0 0 0 rgba(0,0,0,0);
-    }
-
-    header .brand-sub{
-      margin-top: 6px;
-      font-size: 12px;
-      letter-spacing: .36px;
-      color: rgba(237,227,201,.82);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
-    }
-
-    nav.primary{
-      max-width: var(--maxw);
-      margin: 10px auto 0;
-      padding: 0 18px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    nav.primary button{
-      appearance:none;
-      border: 1px solid rgba(229,198,110,.34);
-      background: rgba(255,255,255,.028);
-      color: var(--gold2);
-      padding: 8px var(--btnPadX);
-      border-radius: var(--btnRadius);
-      font-weight: 950;
-      font-size: var(--btnFont);
-      cursor:pointer;
-      transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
-      min-height: var(--btnH);
-      box-shadow: 0 8px 18px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-    nav.primary button:hover{
-      background: rgba(229,198,110,.10);
-      border-color: rgba(229,198,110,.60);
-      box-shadow: 0 10px 24px rgba(0,0,0,.36);
-    }
-    nav.primary button.active{
-      background: rgba(229,198,110,.14);
-      border-color: rgba(255,231,168,.70);
-      box-shadow: 0 12px 28px rgba(0,0,0,.40);
-    }
-    nav.primary button:active{ transform: translateY(1px); }
-    nav.primary button:focus-visible{
-      outline:2px solid rgba(121,167,255,.55);
-      outline-offset:2px;
-    }
-
-    .lang{
-      max-width: var(--maxw);
-      margin: 8px auto 0;
-      padding: 0 18px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-    .lang button{
-      appearance:none;
-      border:1px solid rgba(121,167,255,.20);
-      background: rgba(255,255,255,.028);
-      color: rgba(237,227,201,.92);
-      padding: 7px 11px;
-      border-radius: var(--btnRadius);
-      font-weight: 950;
-      font-size: 12px;
-      cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.64);
-    }
-    .lang button.active{
-      border-color: rgba(255,231,168,.70);
-      background: rgba(229,198,110,.14);
-      color: var(--gold2);
-    }
-    .lang button:hover{
-      border-color: rgba(229,198,110,.52);
-      background: rgba(229,198,110,.10);
-    }
-    .lang button:focus-visible{
-      outline:2px solid rgba(121,167,255,.55);
-      outline-offset:2px;
-    }
-
-    /* =========================================================
-       Main layout
-    ========================================================= */
-    main{
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 18px 18px calc(26px + var(--safe-bot));
-    }
-
-    section{
-      background: rgba(255,255,255,.02);
-      border:1px solid rgba(255,255,255,.04);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    /* =========================================================
-       POEM
-    ========================================================= */
-    .hero{
-      padding: 18px 18px 20px;
-      position:relative;
-    }
-    .hero h1{
-      margin:0;
-      font-size: 20px;
-      letter-spacing:.45px;
-      color: var(--gold2);
-      -webkit-text-stroke: .35px rgba(0,0,0,.34);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-    .poemwrap{
-      margin-top:14px;
-      padding: 14px 14px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
-      border: 1px solid rgba(229,198,110,.16);
-    }
-    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
-
-    /* =========================================================
-       WORKS
-    ========================================================= */
-    #works{ padding: 18px; }
-    #works h2{
-      margin:0;
-      color:var(--gold2);
-      -webkit-text-stroke: .35px rgba(0,0,0,.34);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-    .tabs{
-      margin-top:14px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-    .tabs .tab{
-      appearance:none;
-      border:1px solid rgba(229,198,110,.26);
-      background: rgba(255,255,255,.02);
-      color:rgba(237,227,201,.92);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-weight:950;
-      font-size:12.2px;
-      cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
-    }
-    .tabs .tab.active{
-      border-color: rgba(255,231,168,.70);
-      background: rgba(229,198,110,.14);
-      color: var(--gold2);
-    }
-    .tabs .tab:hover{
-      border-color: rgba(229,198,110,.50);
-      background: rgba(229,198,110,.10);
-    }
-    .tabs .tab:focus-visible{
-      outline:2px solid rgba(121,167,255,.55);
-      outline-offset:2px;
-    }
-
-    .tabpanel{ display:none; margin-top:16px; }
-    .tabpanel.active{ display:block; }
-
-    .w-grid{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 12px;
-    }
-    @media (max-width: 980px){
-      .w-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
-    }
-    @media (max-width: 680px){
-      .w-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-
-    .w-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      border:1px solid rgba(255,255,255,.05);
-      border-radius: 16px;
-      overflow:hidden;
-      cursor:pointer;
-      transition: transform .10s ease, border-color .16s ease, background .16s ease;
-    }
-    .w-card:hover{
-      transform: translateY(-1px);
-      border-color: rgba(229,198,110,.34);
-      background: rgba(229,198,110,.06);
-    }
-    .w-thumb{
-      width:100%;
-      aspect-ratio: 4/5;
-      object-fit: cover;
-      background: rgba(0,0,0,.18);
-    }
-    .w-meta{
-      padding: 10px 10px 12px;
-      border-top:1px solid rgba(255,255,255,.045);
-    }
-    .w-title{
-      font-weight: 950;
-      color: rgba(237,227,201,.94);
-      line-height:1.35;
-      font-size: 13px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
-    }
-    .w-title .ko,
-    .w-title .en{ margin:0; }
-    .w-sub{
-      margin-top:6px;
-      font-size: 12px;
-      color: rgba(237,227,201,.70);
-      line-height:1.45;
-      white-space: pre-line;
-    }
-    .w-msg{
-      padding: 16px;
-      border-radius: 14px;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.05);
-      color: rgba(237,227,201,.85);
-    }
-    .w-msg small{ display:block; margin-top:6px; color: rgba(237,227,201,.58); }
-
-    /* =========================================================
-       REPORTS
-    ========================================================= */
-    #reports{ padding:18px; }
-    #reports h2{
-      margin:0;
-      color:var(--gold2);
-      -webkit-text-stroke: .35px rgba(0,0,0,.34);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-    .reports-omega{ margin-top:14px; }
-
-    .r-head{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
-      padding: 10px 10px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.02);
-      border: 1px solid rgba(255,255,255,.05);
-    }
-    .r-tabs{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
-    .r-tab{
-      appearance:none;
-      border:1px solid rgba(121,167,255,.16);
-      background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.88);
-      border-radius: 999px;
-      padding:8px 12px;
-      font-weight:950;
-      font-size:12.2px;
-      cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .r-tab.is-active{
-      border-color: rgba(255,231,168,.70);
-      background: rgba(229,198,110,.14);
-      color: var(--gold2);
-    }
-    .r-tab:hover{
-      border-color: rgba(229,198,110,.46);
-      background: rgba(229,198,110,.10);
-    }
-
-    .r-toggle{
-      appearance:none;
-      border:1px solid rgba(229,198,110,.34);
-      background: rgba(229,198,110,.12);
-      color: var(--gold2);
-      border-radius: 999px;
-      padding:8px 12px;
-      font-weight: 950;
-      cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-
-    .r-grid{
-      margin-top: 12px;
-      display:none;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 12px;
-    }
-    @media (max-width: 980px){
-      .r-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-    @media (max-width: 680px){
-      .r-grid{ grid-template-columns: 1fr; }
-    }
-
-    .r-item{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      border:1px solid rgba(255,255,255,.05);
-      border-radius: 16px;
-      padding: 12px 12px;
-      cursor:pointer;
-      transition: transform .10s ease, border-color .16s ease, background .16s ease;
-      white-space: pre-line;
-    }
-    .r-item:hover{
-      transform: translateY(-1px);
-      border-color: rgba(229,198,110,.34);
-      background: rgba(229,198,110,.06);
-    }
-    .r-item .t{
-      font-weight: 950;
-      color: rgba(237,227,201,.94);
-      line-height:1.35;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .r-item .m{
-      margin-top:6px;
-      font-size:12px;
-      color: rgba(237,227,201,.62);
-      font-family: ui-monospace, Menlo, Consolas, monospace;
-    }
-    .r-item .s{
-      margin-top:10px;
-      font-size:12px;
-      color: rgba(237,227,201,.78);
-      line-height:1.55;
-      white-space: pre-line;
-    }
-
-    /* report viewer minimal */
-    .r-viewer{
-      margin-top: 12px;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(5,8,18,.30);
-      color: rgba(237,227,201,.86);
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    /* =========================================================
-       BIO MODAL
-    ========================================================= */
-    #bio-modal[hidden]{ display:none !important; }
-    #bio-modal{ position: fixed; inset:0; z-index: 50; }
-    .bio-backdrop{
-      position:absolute; inset:0;
-      background: rgba(0,0,0,.62);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .bio-card{
-      position:relative;
-      max-width: 980px;
-      width: calc(100% - 28px);
-      margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
-      background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
-      border:1px solid rgba(229,198,110,.22);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .bio-head{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      padding: 14px 14px;
-      border-bottom:1px solid rgba(255,255,255,.05);
-    }
-    .bio-head h2{
-      margin:0;
-      color: var(--gold2);
-      font-size: 15px;
-      font-weight: 950;
-      -webkit-text-stroke: .35px rgba(0,0,0,.34);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-    .bio-lang{ display:flex; gap:8px; align-items:center; }
-    .bio-lang .lang{
-      appearance:none;
-      border:1px solid rgba(121,167,255,.16);
-      background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.88);
-      border-radius: 999px;
-      padding:7px 10px;
-      font-weight:950;
-      font-size:12px;
-      cursor:pointer;
-      min-height: 36px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.24);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .bio-lang .lang.active{
-      border-color: rgba(255,231,168,.70);
-      background: rgba(229,198,110,.14);
-      color: var(--gold2);
-    }
-    .bio-close{
-      appearance:none;
-      border:1px solid rgba(229,198,110,.34);
-      background: rgba(255,255,255,.02);
-      color: var(--gold2);
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-size: 18px;
-      font-weight: 950;
-      box-shadow: 0 8px 18px rgba(0,0,0,.24);
-    }
-
-    .expo-kicker{
-      width:100%;
-      text-align:left;
-      appearance:none;
-      border:0;
-      border-bottom:1px solid rgba(255,255,255,.05);
-      background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.92);
-      padding: 12px 14px;
-      font-weight: 950;
-      cursor:pointer;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-
-    .slide-wrap{
-      max-height: 0px;
-      overflow:hidden;
-      transition: max-height .35s ease;
-      border-bottom:1px solid rgba(255,255,255,.05);
-    }
-    .slide-wrap[data-open="true"]{ max-height: 1600px; }
-    .bio-body{
-      padding: 14px 14px;
-      color: rgba(237,227,201,.88);
-      line-height: 1.7;
-    }
-    .bio-body p{ margin: 10px 0; }
-    .bio-body strong{ color: var(--gold2); }
-
-    /* =========================================================
-       LIGHTBOX
-    ========================================================= */
-    #lightbox{
-      position: fixed; inset:0; z-index: 60;
-      display:none;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    #lightbox.is-open{ display:block; }
-    .lb-stage{
-      position:absolute;
-      inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      gap: 12px;
-      padding-top: calc(var(--safe-top));
-    }
-    #lbImg{
-      max-width: min(1040px, 96vw);
-      max-height: min(78vh, 820px);
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow: var(--shadow);
-      background: rgba(0,0,0,.25);
-      object-fit: contain;
-      will-change: transform;
-    }
-    .lb-caption{
-      width: min(1040px, 96vw);
-      padding: 12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.06);
-      background: rgba(5,8,18,.62);
-      color: rgba(237,227,201,.88);
-      white-space: pre-wrap;
-      line-height:1.65;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .lb-close{
-      position:absolute;
-      top: calc(14px + var(--safe-top));
-      right: calc(14px + var(--safe-right));
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      appearance:none;
-      border:1px solid rgba(229,198,110,.34);
-      background: rgba(255,255,255,.02);
-      color: var(--gold2);
-      font-size: 18px;
-      font-weight: 950;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.70);
-    }
-
-    /* =========================================================
-       FFT + Controls (투명 유지)
-    ========================================================= */
-    #fftBar{
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: calc(0px + var(--safe-bot));
-      height: 3px;
-      z-index: 70;
-      background: rgba(255,255,255,.06);
-      pointer-events:none;
-    }
-    #fftBar span{
-      display:block;
-      height:100%;
-      width:0%;
-      background: rgba(229,198,110,.62);
-      transition: width .08s linear;
-    }
-
-    #ctrl{
-      position: fixed;
-      right: calc(14px + var(--safe-right));
-      bottom: calc(14px + var(--safe-bot) + 6px);
-      z-index: 71;
-      display:flex;
-      gap:10px;
-    }
-    .ctrlbtn{
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      appearance:none;
-      border: 1px solid rgba(229,198,110,.34);
-      background: rgba(0,0,0,0);
-      color: var(--gold2);
-      font-size: 18px;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.26);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
-
-    /* =========================================================
-       Footer (버튼급 + 중앙 정렬)
-    ========================================================= */
-    footer{
-      max-width: var(--maxw);
-      margin: 18px auto 0;
-      padding: 14px 18px calc(16px + var(--safe-bot));
-      border-top:1px solid rgba(229,198,110,.20);
-      background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
-      border-radius: 18px;
-      text-align:center;
-    }
-    footer .links{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-    }
-    footer .links a{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height: 44px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border:1px solid rgba(229,198,110,.34);
-      background: rgba(255,255,255,.02);
-      color: var(--gold2);
-      font-weight: 950;
-      letter-spacing:.22px;
+    h1{font-size:18px;color:var(--gold);letter-spacing:.04em}
+    .meta{margin-top:6px;font-size:12px;color:var(--muted);font-family: ui-monospace,Menlo,Consolas,monospace;}
+    main{max-width:980px;margin:0 auto;padding:18px 16px 44px}
+    pre{
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      background: linear-gradient(180deg, rgba(11,18,44,.92), rgba(5,8,20,.86));
+      border:1px solid rgba(230,199,119,.18);
+      border-radius:14px;
+      padding:16px 14px 18px;
+    }
+    .bar{margin-top:14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+    a{
+      color:var(--gold);
       text-decoration:none;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.72);
+      border:1px solid rgba(230,199,119,.35);
+      padding:6px 10px;border-radius:999px;font-size:12px;
     }
-    footer .links a:hover{
-      background: rgba(229,198,110,.14);
-      border-color: rgba(255,231,168,.70);
-      text-decoration:none;
-    }
-    footer .links a:active{ transform: translateY(1px); }
-    footer .links a:focus-visible{
-      outline:2px solid rgba(121,167,255,.55);
-      outline-offset:2px;
-    }
-
-    footer small{
-      display:block;
-      margin-top: 10px;
-      color: rgba(237,227,201,.70);
-      letter-spacing:.2px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-
-    /* =========================================================
-       Reduced motion
-    ========================================================= */
-    @media (prefers-reduced-motion: reduce){
-      *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
-      #fftBar span{ transition:none !important; }
-    }
+    a:hover{background:rgba(230,199,119,.12)}
+    .tiny{margin-top:12px;font-size:12px;color:rgba(255,255,255,.65);text-align:center}
   </style>
 </head>
+<body>
+  <header>
+    <h1>${esc(docTitle)}</h1>
+    <div class="meta">${esc(id)}</div>
+  </header>
+  <main>
+    <pre id="content">Loading…</pre>
+    <div class="bar" id="bar"></div>
+    <div class="tiny">Lightflow · Reports Viewer</div>
+  </main>
+</body>
+</html>`.trim();
+
+      w.document.open();
+      w.document.write(shell);
+      w.document.close();
+
+      const contentEl = w.document.getElementById("content");
+      const barEl = w.document.getElementById("bar");
+
+      if (barEl && mdURL) {
+        barEl.innerHTML = `<a href="${esc(mdURL)}" target="_blank" rel="noopener">download</a>`;
+      }
+
+      if (!mdURL) {
+        if (contentEl) contentEl.textContent = "No md_path found in reports.json.";
+        return;
+      }
+
+      try {
+        const res = await fetch(mdURL + "?" + bust(), { cache:"no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const text = await res.text();
+        if (contentEl) contentEl.textContent = text.trim();
+      } catch(e) {
+        if (contentEl) contentEl.textContent =
+          "Failed to load report text.\n\nOpen the download link instead.\n\n" + String(e);
+      }
+    },
+
+    render() {
+      if (!this.grid) this.grid = $("#reportGrid");
+      if (!this.grid) return;
+
+      const filtered = this.list.filter(r => this.matchFilter(r));
+      if (!filtered.length) {
+        this.grid.innerHTML = `<div class="w-msg">Reports 데이터가 없습니다.<small>(/data/reports.json 확인)</small></div>`;
+        return;
+      }
+
+      this.grid.innerHTML = filtered.map(r => this.cardHTML(r)).join("");
+
+      $$(".r-item", this.grid).forEach(card => {
+        onTap(card, () => {
+          const md = card.getAttribute("data-md") || "";
+          const id = card.getAttribute("data-id") || "REPORT";
+          const titleText = (card.querySelector(".t")?.textContent || id).trim();
+          this.openViewerWindow({ id, title:titleText, mdURL: md });
+        });
+      });
+    },
+
+    bind(){
+      this.toggleBtn = $("#reportsToggle");
+      this.grid = $("#reportGrid");
+      this.tabBtns = $$('button.r-tab[data-r]');
+
+      if (this.toggleBtn) onTap(this.toggleBtn, () => this.setOpen(!this.opened));
+      this.tabBtns.forEach(btn => {
+        const f = (btn.getAttribute("data-r") || "all").trim();
+        onTap(btn, () => this.setFilter(f));
+      });
+    },
+
+    async init() {
+      this.bind();
+      await this.load();
+      this.setFilter("all");
+      this.setOpen(false);
+    }
+  };
+
+  /* =========================================================
+     6) Bio (modal + expo slide + 글로벌 언어 동기화)
+  ========================================================= */
+  const BIO = {
+    modal: $("#bio-modal"),
+    openBtn: $("#tab-bio"),
+    closeBtn: $(".bio-close"),
+    backdrop: $(".bio-backdrop"),
+    expoBtn: $("#expoToggle"),
+    expoSlide: $("#expoSlide"),
+    bioLangBtns: $$('#bio-modal .bio-lang .lang[data-bio-lang]'),
+
+    open() { if (this.modal) this.modal.hidden = false; },
+    close() { if (this.modal) this.modal.hidden = true; },
+
+    setBioLang(mode){ // "kr" | "en"
+      const m = (mode === "en") ? "en" : "kr";
+      const koBodies = $$('#bio-modal .bio-body.ko');
+      const enBodies = $$('#bio-modal .bio-body.en');
+
+      // ✅ Bio 모달 내부 언어는 “둘 중 하나만” 노출
+      koBodies.forEach(el => el.style.display = (m === "kr") ? "" : "none");
+      enBodies.forEach(el => el.style.display = (m === "en") ? "" : "none");
+
+      this.bioLangBtns.forEach(b => b.classList.remove("active"));
+      const active = this.bioLangBtns.find(b => (b.getAttribute("data-bio-lang")||"") === m);
+      if (active) active.classList.add("active");
+    },
+
+    syncWithGlobalLang(){
+      // ✅ 글로벌 언어가 EN이면 Bio도 EN, 그 외는 KR
+      if (LANG.mode === "english") this.setBioLang("en");
+      else this.setBioLang("kr");
+    },
+
+    toggleExpo() {
+      if (!this.expoSlide || !this.expoBtn) return;
+      const open = this.expoSlide.getAttribute("data-open") === "true";
+      this.expoSlide.setAttribute("data-open", open ? "false" : "true");
+      this.expoBtn.setAttribute("aria-expanded", open ? "false" : "true");
+    },
+
+    bind() {
+      if (this.openBtn) onTap(this.openBtn, () => this.open());
+      if (this.closeBtn) onTap(this.closeBtn, () => this.close());
+      if (this.backdrop) onTap(this.backdrop, () => this.close());
+      if (this.expoBtn) onTap(this.expoBtn, () => this.toggleExpo());
+
+      this.bioLangBtns.forEach(btn => {
+        const m = (btn.getAttribute("data-bio-lang")||"kr").trim();
+        onTap(btn, () => this.setBioLang(m));
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!this.modal || this.modal.hidden) return;
+        if (e.key === "Escape") this.close();
+      });
+
+      // init state
+      this.syncWithGlobalLang();
+    }
+  };
+
+  /* =========================================================
+     7) Sound (공명형 우주음: WebAudio 생성 / 외부파일 불필요)
+  ========================================================= */
+  const SOUND = {
+    ctx: null,
+    master: null,
+    analyser: null,
+    fftEl: $("#fftBar span"),
+    playing: false,
+    raf: 0,
+
+    start(){
+      if (this.playing) return;
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      if (!this.ctx) this.ctx = new AudioCtx();
+
+      // iOS: resume 필요
+      if (this.ctx.state === "suspended") this.ctx.resume();
+
+      // graph
+      const ctx = this.ctx;
+      this.master = ctx.createGain();
+      this.master.gain.value = 0.0;
+
+      this.analyser = ctx.createAnalyser();
+      this.analyser.fftSize = 512;
+
+      // gentle drone (3 osc + filter)
+      const o1 = ctx.createOscillator();
+      const o2 = ctx.createOscillator();
+      const o3 = ctx.createOscillator();
+      o1.type = "sine";
+      o2.type = "sine";
+      o3.type = "triangle";
+
+      // base freq (명상적 공명)
+      o1.frequency.value = 55.0;     // A1
+      o2.frequency.value = 110.0;    // A2
+      o3.frequency.value = 82.41;    // E2
+
+      const g1 = ctx.createGain(); g1.gain.value = 0.10;
+      const g2 = ctx.createGain(); g2.gain.value = 0.06;
+      const g3 = ctx.createGain(); g3.gain.value = 0.05;
+
+      const filt = ctx.createBiquadFilter();
+      filt.type = "lowpass";
+      filt.frequency.value = 1200;
+      filt.Q.value = 0.7;
+
+      // slow movement (LFO)
+      const lfo = ctx.createOscillator();
+      lfo.type = "sine";
+      lfo.frequency.value = 0.06;
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = 240; // filter sweep
+      lfo.connect(lfoGain);
+      lfoGain.connect(filt.frequency);
+
+      // master fade in
+      const now = ctx.currentTime;
+      this.master.gain.cancelScheduledValues(now);
+      this.master.gain.setValueAtTime(0.0, now);
+      this.master.gain.linearRampToValueAtTime(0.38, now + 1.2);
+
+      // connect
+      o1.connect(g1); o2.connect(g2); o3.connect(g3);
+      g1.connect(filt); g2.connect(filt); g3.connect(filt);
+      filt.connect(this.analyser);
+      this.analyser.connect(this.master);
+      this.master.connect(ctx.destination);
+
+      // store nodes for stop
+      this._nodes = { o1,o2,o3,g1,g2,g3,filt,lfo,lfoGain };
+
+      // start
+      o1.start(); o2.start(); o3.start();
+      lfo.start();
+
+      this.playing = true;
+      this._fftLoop();
+
+      // UI
+      const playBtn = $("#soundBtn");
+      const stopBtn = $("#soundStopBtn");
+      if (playBtn) playBtn.disabled = true;
+      if (stopBtn) stopBtn.disabled = false;
+    },
+
+    stop(){
+      if (!this.playing || !this.ctx) return;
+
+      const ctx = this.ctx;
+      const now = ctx.currentTime;
+
+      try{
+        this.master.gain.cancelScheduledValues(now);
+        this.master.gain.setValueAtTime(this.master.gain.value, now);
+        this.master.gain.linearRampToValueAtTime(0.0, now + 0.5);
+      }catch(e){}
+
+      window.setTimeout(() => {
+        try{
+          const n = this._nodes;
+          if (n){
+            n.o1.stop(); n.o2.stop(); n.o3.stop();
+            n.lfo.stop();
+          }
+        }catch(e){}
+        this._nodes = null;
+      }, 520);
+
+      this.playing = false;
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+
+      if (this.fftEl) this.fftEl.style.width = "0%";
+
+      // UI
+      const playBtn = $("#soundBtn");
+      const stopBtn = $("#soundStopBtn");
+      if (playBtn) playBtn.disabled = false;
+      if (stopBtn) stopBtn.disabled = true;
+    },
+
+    _fftLoop(){
+      if (!this.analyser || !this.fftEl || !this.playing) return;
+
+      const arr = new Uint8Array(this.analyser.frequencyBinCount);
+      this.analyser.getByteFrequencyData(arr);
+
+      // average energy
+      let sum = 0;
+      for (let i=0;i<arr.length;i++) sum += arr[i];
+      const avg = sum / arr.length; // 0..255
+
+      const pct = clamp((avg / 255) * 100 * 1.25, 0, 100);
+      this.fftEl.style.width = pct.toFixed(1) + "%";
+
+      this.raf = requestAnimationFrame(() => this._fftLoop());
+    },
+
+    bind(){
+      onTap($("#soundBtn"), () => this.start());
+      onTap($("#soundStopBtn"), () => this.stop());
+    }
+  };
+
+  /* =========================================================
+     8) Waves (가벼운 파동 + reduced-motion 대응)
+  ========================================================= */
+  const WAVES = {
+    c: $("#waves"),
+    ctx: null,
+    w: 0,
+    h: 0,
+    t: 0,
+    raf: 0,
+    resize(){
+      if (!this.c) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      this.w = Math.floor(window.innerWidth * dpr);
+      this.h = Math.floor(window.innerHeight * dpr);
+      this.c.width = this.w;
+      this.c.height = this.h;
+      this.c.style.width = "100%";
+      this.c.style.height = "100%";
+      this.ctx = this.c.getContext("2d", { alpha:true });
+      if (this.ctx) this.ctx.setTransform(1,0,0,1,0,0);
+      this.dpr = dpr;
+    },
+    draw(){
+      if (!this.ctx) return;
+      const ctx = this.ctx;
+
+      ctx.clearRect(0,0,this.w,this.h);
+
+      // subtle waves
+      const t = this.t;
+      const midY = this.h * 0.52;
+      const amp = this.h * 0.015;
+
+      ctx.globalAlpha = 0.55;
+
+      // gold wave
+      ctx.beginPath();
+      for (let x=0; x<=this.w; x+=14*this.dpr){
+        const y = midY + Math.sin((x*0.0038) + t*0.9) * amp
+                        + Math.sin((x*0.0018) - t*0.6) * (amp*0.7);
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = "rgba(215,184,106,0.16)";
+      ctx.lineWidth = 2*this.dpr;
+      ctx.stroke();
+
+      // blue wave
+      ctx.beginPath();
+      for (let x=0; x<=this.w; x+=16*this.dpr){
+        const y = (midY - this.h*0.10) + Math.sin((x*0.0032) - t*0.8) * (amp*0.9)
+                                   + Math.sin((x*0.0014) + t*0.5) * (amp*0.5);
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = "rgba(121,167,255,0.12)";
+      ctx.lineWidth = 2*this.dpr;
+      ctx.stroke();
+
+      ctx.globalAlpha = 1;
+    },
+    loop(){
+      if (prefersReducedMotion()) return; // reduced-motion: 정지
+      this.t += 0.016;
+      this.draw();
+      this.raf = requestAnimationFrame(() => this.loop());
+    },
+    init(){
+      this.resize();
+      window.addEventListener("resize", () => this.resize(), { passive:true });
+      this.loop();
+    }
+  };
+
+  /* =========================================================
+     9) Init
+  ========================================================= */
+  async function init(){
+    LANG.restore();
+    LANG.bindButtons();
+
+    NAV.bind();
+
+    // Works / Reports
+    await WORKS.init();
+    await REPORTS.init();
+
+    // Lightbox step
+    LIGHTBOX.bind((delta) => {
+      const w = WORKS.step(delta);
+      if (!w) return;
+      LIGHTBOX.open(WORKS.zoomSrc(w), WORKS.captionText(w));
+    });
+
+    // Bio / Sound / Waves
+    BIO.bind();
+    SOUND.bind();
+    WAVES.init();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once:true });
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>

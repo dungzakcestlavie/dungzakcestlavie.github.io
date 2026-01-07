@@ -1,151 +1,793 @@
+<!-- ==========================================================
+Lightflow ∮27 — FINAL STABLE (3-PART)
+① HEAD / STYLE  (BASE 유지 + “단일 섹션 뷰”/사운드바 투명 보강)
+② BODY / HTML   (등작 원문 그대로 유지)
+③ SCRIPTS       (단일 섹션 뷰 + Works/Reports + Bio + Waves + Sound)
+========================================================== -->
 <!doctype html>
 <html lang="ko">
+
+<!-- ==========================================================
+① HEAD / STYLE  (BASE + FIX)
+========================================================== -->
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="color-scheme" content="dark light" />
-<meta name="theme-color" content="#070A14" />
-<title>등작 燈酌 DUNGZAK CESTLAVIE · Lightflow</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#070A14" />
+  <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
-<style>
-/* =======================
-   GLOBAL BASE
-======================= */
-body{
-  margin:0;
-  background:#070A14;
-  color:#EDE3C9;
-  font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  overflow-x:hidden;
-}
-.ko,.en{display:block;}
-body.korean .en{display:none}
-body.english .ko{display:none}
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
+  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
 
-/* =======================
-   SECTION VISIBILITY (핵심)
-======================= */
-main > section{display:none;}
-main > section.is-active{display:block;}
+  <link rel="canonical" href="https://dungzak.art/" />
 
-/* =======================
-   HEADER / NAV
-======================= */
-header{
-  position:sticky; top:0; z-index:10;
-  padding:14px 12px;
-  background:rgba(5,8,18,.82);
-  backdrop-filter:blur(8px);
-  text-align:center;
-}
-nav button{
-  margin:4px;
-  padding:8px 14px;
-  border-radius:999px;
-  border:1px solid rgba(215,184,106,.35);
-  background:transparent;
-  color:#E9D59B;
-  font-weight:800;
-}
-nav button.active{
-  background:rgba(215,184,106,.15);
-}
+  <!-- OG / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
+  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
+  <meta property="og:url" content="https://dungzak.art/" />
+  <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
+  <meta name="twitter:card" content="summary_large_image" />
 
-/* =======================
-   WORKS GRID
-======================= */
-.w-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:12px;
-}
-.w-card{
-  background:rgba(255,255,255,.03);
-  border-radius:14px;
-  overflow:hidden;
-}
-.w-card img{
-  width:100%;
-  aspect-ratio:4/5;
-  object-fit:cover;
-}
+  <!-- Google Translate bar 차단 -->
+  <meta name="google" content="notranslate" />
+  <meta name="googlebot" content="notranslate" />
 
-/* =======================
-   REPORTS
-======================= */
-.r-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:12px;
-}
-.r-item{
-  padding:12px;
-  border-radius:14px;
-  background:rgba(255,255,255,.03);
-}
+  <style>
+    /* =========================================================
+       Base / Reset
+    ========================================================= */
+    :root{
+      --bg0:#050812;
+      --bg1:#070A14;
+      --bg2:#0A1022;
 
-/* =======================
-   BIO MODAL
-======================= */
-#bio-modal[hidden]{display:none}
-#bio-modal{
-  position:fixed; inset:0; z-index:30;
-}
-.bio-backdrop{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.6);
-}
-.bio-card{
-  position:relative;
-  margin:60px auto;
-  max-width:900px;
-  background:#070A14;
-  border-radius:18px;
-  padding:14px;
-}
-#bio-modal .ko,#bio-modal .en{display:none}
-#bio-modal[data-bio="kr"] .ko{display:block}
-#bio-modal[data-bio="en"] .en{display:block}
+      --gold:#D7B86A;
+      --gold2:#E9D59B;
+      --blue:#79A7FF;
 
-/* =======================
-   SOUND BAR (완전 투명)
-======================= */
-#fftBar{
-  position:fixed;
-  left:0; right:0;
-  bottom:0;
-  height:2px;
-  pointer-events:none;
-  background:transparent;
-}
-#fftBar span{
-  display:block;
-  height:100%;
-  width:0%;
-  background:rgba(215,184,106,.18);
-}
+      --ink:#EDE3C9;
+      --muted:rgba(237,227,201,.72);
+      --muted2:rgba(237,227,201,.55);
 
-#ctrl{
-  position:fixed;
-  right:14px;
-  bottom:18px;
-  display:flex;
-  gap:8px;
-}
-.ctrlbtn{
-  width:46px; height:46px;
-  border-radius:14px;
-  border:1px solid rgba(215,184,106,.35);
-  background:rgba(0,0,0,.2);
-  color:#E9D59B;
-  font-size:18px;
-}
-</style>
+      --card:rgba(255,255,255,.035);
+      --card2:rgba(255,255,255,.055);
+      --line:rgba(215,184,106,.22);
+      --line2:rgba(121,167,255,.18);
+
+      --shadow: 0 16px 40px rgba(0,0,0,.45);
+      --shadow2: 0 10px 26px rgba(0,0,0,.35);
+      --r:18px;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+
+      --maxw: 1120px;
+
+      /* 금빛 “단단함(번짐 없음)” 엣지 */
+      --gold-edge: rgba(0,0,0,.70);
+      --gold-edge2: rgba(0,0,0,.42);
+
+      /* 버튼 크기 튜닝 */
+      --btnH: 40px;
+      --btnPadX: 12px;
+      --btnFont: 12.6px;
+      --btnRadius: 999px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing:.2px;
+      overflow-x:hidden;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    header, main, footer{
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+    }
+
+    a{ color:var(--gold2); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    img{ max-width:100%; display:block; }
+
+    /* =========================================================
+       Language visibility (GLOBAL)
+    ========================================================= */
+    .ko,.en{ display:block; }
+    body.korean .en{ display:none !important; }
+    body.english .ko{ display:none !important; }
+    body.hybrid .ko,
+    body.hybrid .en{ display:block !important; }
+
+    /* =========================================================
+       Bio modal language (LOCAL)
+       - BODY 원문은 그대로 두고, 모달 내부만 별도 표시 제어
+    ========================================================= */
+    #bio-modal[data-bio="kr"] .bio-body.en,
+    #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
+
+    #bio-modal[data-bio="en"] .bio-body.ko,
+    #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
+
+    /* =========================================================
+       Waves canvas
+    ========================================================= */
+    #waves{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-2;
+      pointer-events:none;
+      opacity:1;
+    }
+
+    /* =========================================================
+       Header / Nav (CENTER FIX + SIZE TUNE)
+    ========================================================= */
+    header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding-top: calc(12px + var(--safe-top));
+      padding-bottom: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(5,8,18,.92), rgba(5,8,18,.62));
+      border-bottom:1px solid rgba(215,184,106,.18);
+    }
+
+    header .brand,
+    header .brand-sub{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 18px;
+      text-align:center;
+    }
+
+    header .brand{
+      font-weight: 900;
+      color: var(--gold2);
+      letter-spacing: .72px;
+      font-size: 15px;
+      line-height: 1.25;
+
+      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      text-shadow:
+        0 1px 0 var(--gold-edge),
+        0 -1px 0 var(--gold-edge2);
+    }
+
+    header .brand-sub{
+      margin-top: 6px;
+      font-size: 12px;
+      letter-spacing: .34px;
+      color: rgba(237,227,201,.78);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
+    }
+
+    nav.primary{
+      max-width: var(--maxw);
+      margin: 10px auto 0;
+      padding: 0 18px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    nav.primary button{
+      appearance:none;
+      border: 1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.028);
+      color: var(--gold2);
+      padding: 8px var(--btnPadX);
+      border-radius: var(--btnRadius);
+      font-weight: 900;
+      font-size: var(--btnFont);
+      cursor:pointer;
+      transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      min-height: var(--btnH);
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.64);
+    }
+    nav.primary button:hover{
+      background: rgba(215,184,106,.08);
+      border-color: rgba(215,184,106,.52);
+      box-shadow: 0 10px 24px rgba(0,0,0,.36);
+    }
+    nav.primary button.active{
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.72);
+      box-shadow: 0 12px 28px rgba(0,0,0,.40);
+    }
+    nav.primary button:active{ transform: translateY(1px); }
+    nav.primary button:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
+    }
+
+    .lang{
+      max-width: var(--maxw);
+      margin: 8px auto 0;
+      padding: 0 18px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .lang button{
+      appearance:none;
+      border:1px solid rgba(121,167,255,.20);
+      background: rgba(255,255,255,.028);
+      color: rgba(237,227,201,.92);
+      padding: 7px 11px;
+      border-radius: var(--btnRadius);
+      font-weight: 900;
+      font-size: 12px;
+      cursor:pointer;
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .lang button.active{
+      border-color: rgba(215,184,106,.72);
+      background: rgba(215,184,106,.12);
+      color: var(--gold2);
+    }
+    .lang button:hover{
+      border-color: rgba(215,184,106,.45);
+      background: rgba(215,184,106,.08);
+    }
+    .lang button:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
+    }
+
+    /* =========================================================
+       Main layout
+    ========================================================= */
+    main{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 18px 18px calc(26px + var(--safe-bot));
+    }
+
+    section{
+      background: rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.04);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* =========================================================
+       ✅ SINGLE SECTION VIEW (Poem/Works/Reports 한 번에 하나만)
+       - JS가 .is-active를 붙였다 뗐다.
+       - 이 CSS가 없으면 “한 창에 다 뜸” 현상이 발생.
+    ========================================================= */
+    main > section{ display:none; }
+    main > section.is-active{ display:block; }
+
+    /* =========================================================
+       POEM
+    ========================================================= */
+    .hero{
+      padding: 18px 18px 20px;
+      position:relative;
+    }
+    .hero h1{
+      margin:0;
+      font-size: 20px;
+      letter-spacing:.45px;
+      color: var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .poemwrap{
+      margin-top:14px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+      border: 1px solid rgba(215,184,106,.14);
+    }
+    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
+
+    /* =========================================================
+       WORKS
+    ========================================================= */
+    #works{ padding: 18px; }
+    #works h2{
+      margin:0;
+      color:var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .tabs{
+      margin-top:14px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .tabs .tab{
+      appearance:none;
+      border:1px solid rgba(215,184,106,.22);
+      background: rgba(255,255,255,.02);
+      color:rgba(237,227,201,.90);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight:900;
+      font-size:12.2px;
+      cursor:pointer;
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .tabs .tab.active{
+      border-color: rgba(215,184,106,.72);
+      background: rgba(215,184,106,.12);
+      color: var(--gold2);
+    }
+    .tabs .tab:hover{
+      border-color: rgba(215,184,106,.45);
+      background: rgba(215,184,106,.08);
+    }
+    .tabs .tab:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
+    }
+
+    .tabpanel{ display:none; margin-top:16px; }
+    .tabpanel.active{ display:block; }
+
+    .w-grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+    @media (max-width: 980px){
+      .w-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    @media (max-width: 680px){
+      .w-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    .w-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.05);
+      border-radius: 16px;
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform .10s ease, border-color .16s ease, background .16s ease;
+    }
+    .w-card:hover{
+      transform: translateY(-1px);
+      border-color: rgba(215,184,106,.28);
+      background: rgba(215,184,106,.05);
+    }
+    .w-thumb{
+      width:100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      background: rgba(0,0,0,.18);
+    }
+    .w-meta{
+      padding: 10px 10px 12px;
+      border-top:1px solid rgba(255,255,255,.045);
+    }
+    .w-title{
+      font-weight: 900;
+      color: rgba(237,227,201,.94);
+      line-height:1.35;
+      font-size: 13px;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .w-sub{
+      margin-top:6px;
+      font-size: 12px;
+      color: rgba(237,227,201,.70);
+      line-height:1.45;
+      white-space: pre-line;
+    }
+    .w-msg{
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.05);
+      color: rgba(237,227,201,.85);
+    }
+    .w-msg small{ display:block; margin-top:6px; color: rgba(237,227,201,.58); }
+
+    /* =========================================================
+       REPORTS
+    ========================================================= */
+    #reports{ padding:18px; }
+    #reports h2{
+      margin:0;
+      color:var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .reports-omega{ margin-top:14px; }
+
+    .r-head{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding: 10px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .r-tabs{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .r-tab{
+      appearance:none;
+      border:1px solid rgba(121,167,255,.16);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.88);
+      border-radius: 999px;
+      padding:8px 12px;
+      font-weight:900;
+      font-size:12.2px;
+      cursor:pointer;
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .r-tab.is-active{
+      border-color: rgba(215,184,106,.72);
+      background: rgba(215,184,106,.12);
+      color: var(--gold2);
+    }
+    .r-tab:hover{
+      border-color: rgba(215,184,106,.42);
+      background: rgba(215,184,106,.08);
+    }
+
+    .r-toggle{
+      appearance:none;
+      border:1px solid rgba(215,184,106,.30);
+      background: rgba(215,184,106,.10);
+      color: var(--gold2);
+      border-radius: 999px;
+      padding:8px 12px;
+      font-weight: 950;
+      cursor:pointer;
+      min-height: 38px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+
+    .r-grid{
+      margin-top: 12px;
+      display:none;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+    }
+    @media (max-width: 980px){
+      .r-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 680px){
+      .r-grid{ grid-template-columns: 1fr; }
+    }
+
+    .r-item{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.05);
+      border-radius: 16px;
+      padding: 12px 12px;
+      cursor:pointer;
+      transition: transform .10s ease, border-color .16s ease, background .16s ease;
+      white-space: pre-line;
+    }
+    .r-item:hover{
+      transform: translateY(-1px);
+      border-color: rgba(215,184,106,.28);
+      background: rgba(215,184,106,.05);
+    }
+    .r-item .t{
+      font-weight: 950;
+      color: rgba(237,227,201,.94);
+      line-height:1.35;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .r-item .m{
+      margin-top:6px;
+      font-size:12px;
+      color: rgba(237,227,201,.62);
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+    }
+    .r-item .s{
+      margin-top:10px;
+      font-size:12px;
+      color: rgba(237,227,201,.78);
+      line-height:1.55;
+      white-space: pre-line;
+    }
+
+    /* =========================================================
+       BIO MODAL
+    ========================================================= */
+    #bio-modal[hidden]{ display:none !important; }
+    #bio-modal{ position: fixed; inset:0; z-index: 50; }
+    .bio-backdrop{
+      position:absolute; inset:0;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .bio-card{
+      position:relative;
+      max-width: 980px;
+      width: calc(100% - 28px);
+      margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
+      background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
+      border:1px solid rgba(215,184,106,.18);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .bio-head{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding: 14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .bio-head h2{
+      margin:0;
+      color: var(--gold2);
+      font-size: 15px;
+      font-weight: 950;
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .bio-lang{ display:flex; gap:8px; align-items:center; }
+    .bio-lang .lang{
+      appearance:none;
+      border:1px solid rgba(121,167,255,.16);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.88);
+      border-radius: 999px;
+      padding:7px 10px;
+      font-weight:950;
+      font-size:12px;
+      cursor:pointer;
+      min-height: 36px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.24);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .bio-lang .lang.active{
+      border-color: rgba(215,184,106,.72);
+      background: rgba(215,184,106,.12);
+      color: var(--gold2);
+    }
+    .bio-close{
+      appearance:none;
+      border:1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-size: 18px;
+      font-weight: 950;
+      box-shadow: 0 8px 18px rgba(0,0,0,.24);
+    }
+
+    .expo-kicker{
+      width:100%;
+      text-align:left;
+      appearance:none;
+      border:0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.02);
+      color: rgba(237,227,201,.92);
+      padding: 12px 14px;
+      font-weight: 950;
+      cursor:pointer;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+
+    .slide-wrap{
+      max-height: 0px;
+      overflow:hidden;
+      transition: max-height .35s ease;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .slide-wrap[data-open="true"]{ max-height: 1600px; }
+    .bio-body{
+      padding: 14px 14px;
+      color: rgba(237,227,201,.88);
+      line-height: 1.7;
+    }
+    .bio-body p{ margin: 10px 0; }
+    .bio-body strong{ color: var(--gold2); }
+
+    /* =========================================================
+       LIGHTBOX
+    ========================================================= */
+    #lightbox{
+      position: fixed; inset:0; z-index: 60;
+      display:none;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    #lightbox.is-open{ display:block; }
+    .lb-stage{
+      position:absolute;
+      inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap: 12px;
+      padding-top: calc(var(--safe-top));
+    }
+    #lbImg{
+      max-width: min(1040px, 96vw);
+      max-height: min(78vh, 820px);
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      background: rgba(0,0,0,.25);
+      object-fit: contain;
+      will-change: transform;
+    }
+    .lb-caption{
+      width: min(1040px, 96vw);
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(5,8,18,.62);
+      color: rgba(237,227,201,.88);
+      white-space: pre-wrap;
+      line-height:1.65;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .lb-close{
+      position:absolute;
+      top: calc(14px + var(--safe-top));
+      right: calc(14px + var(--safe-right));
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      appearance:none;
+      border:1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      font-size: 18px;
+      font-weight: 950;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+    }
+
+    /* =========================================================
+       FFT + Controls (✅ 투명/어둡게 고정)
+    ========================================================= */
+    #fftBar{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: calc(0px + var(--safe-bot));
+      height: 3px;
+      z-index: 70;
+      background: transparent !important;
+      pointer-events:none;
+    }
+    #fftBar span{
+      display:block;
+      height:100%;
+      width:0%;
+      background: rgba(215,184,106,.16) !important;
+      transition: width .08s linear;
+    }
+
+    #ctrl{
+      position: fixed;
+      right: calc(14px + var(--safe-right));
+      bottom: calc(14px + var(--safe-bot) + 6px);
+      z-index: 71;
+      display:flex;
+      gap:10px;
+    }
+    .ctrlbtn{
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      appearance:none;
+      border: 1px solid rgba(215,184,106,.30);
+      background: rgba(0,0,0,0);
+      color: var(--gold2);
+      font-size: 18px;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.26);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+    .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    /* =========================================================
+       Footer (버튼급 + 중앙 정렬)
+    ========================================================= */
+    footer{
+      max-width: var(--maxw);
+      margin: 18px auto 0;
+      padding: 14px 18px calc(16px + var(--safe-bot));
+      border-top:1px solid rgba(215,184,106,.16);
+      background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
+      border-radius: 18px;
+      text-align:center;
+    }
+    footer .links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+    }
+    footer .links a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border:1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      font-weight: 950;
+      letter-spacing:.22px;
+      text-decoration:none;
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    footer .links a:hover{
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.70);
+      text-decoration:none;
+    }
+    footer .links a:active{ transform: translateY(1px); }
+    footer .links a:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
+    }
+
+    footer small{
+      display:block;
+      margin-top: 10px;
+      color: rgba(237,227,201,.70);
+      letter-spacing:.2px;
+      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    }
+
+    /* =========================================================
+       Reduced motion
+    ========================================================= */
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
+      #fftBar span{ transition:none !important; }
+    }
+  </style>
 </head>
 
 <!-- ==========================================================
 ② BODY / HTML  (USER ORIGINAL — DO NOT EDIT)
-- 아래 BODY는 등작 원문 그대로
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -226,7 +868,6 @@ nav button.active{
     </section>
 
     <!-- 2) WORKS -->
-    <!-- ✅ 변경: display:none 제거 (모든 작품이 항상 나오게) -->
     <section id="works">
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
@@ -239,7 +880,6 @@ nav button.active{
         <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
 
-      <!-- ✅ SCRIPT에서 works.json 읽어서 여기 5개 패널에 각각 “그리드”를 채우면 됨 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -248,7 +888,6 @@ nav button.active{
     </section>
 
     <!-- 3) REPORTS -->
-    <!-- ✅ 변경: display:none 제거 (Reports도 항상 표시) -->
     <section id="reports">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -267,17 +906,13 @@ nav button.active{
           </button>
         </div>
 
-        <!-- ✅ 핵심: reports.json에서 title_ko/title_en + summary_ko/summary_en을 “SCRIPT가” 렌더링 -->
-        <!-- ✅ BODY에는 요약 텍스트를 직접 쓰지 않는다 -->
         <div id="reportGrid" class="r-grid"></div>
-
-        <!-- ✅ MD 원문은 새 창으로 열거나(권장) 또는 여기 viewer에 표시(선택) -->
         <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
       </div>
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL (원문 텍스트 유지 + 요청 수정 반영) -->
+  <!-- ARTIST BIO MODAL -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -294,15 +929,12 @@ nav button.active{
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
-      <!-- one-line summary -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- slide list -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
-        <!-- (한국어 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 인천, 대한민국</p>
@@ -342,7 +974,6 @@ nav button.active{
           <p>《예술, 그 끝없는 사랑》(2024)</p>
         </div>
 
-        <!-- (영문 Bio 본문 그대로 + 최상단 2026 추가) -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
@@ -377,8 +1008,8 @@ nav button.active{
           <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
           <br><p><strong>Collections</strong></p>
           <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland;
-Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); 
-Meritz Securities Co., Ltd., Republic of Korea; 
+Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection);
+Meritz Securities Co., Ltd., Republic of Korea;
 Numerous private collections worldwide.</p>
           <p><strong>Publications</strong></p>
           <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
@@ -386,7 +1017,6 @@ Numerous private collections worldwide.</p>
         </div>
       </div>
 
-      <!-- Bio main -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -403,7 +1033,7 @@ Numerous private collections worldwide.</p>
     </div>
   </div>
 
-  <!-- LIGHTBOX (◀ ▶ 화살표 제거 버전) -->
+  <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
@@ -433,845 +1063,779 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-<!-- ==========================================================
-③ SCRIPTS  (FINAL — SECTION SINGLE VIEW + WORKS/REPORTS + BIO FIX + SOUND REAL + WAVES)
-- HEAD/BODY는 그대로 둔다
-- ✅ Poem/Works/Reports: 한 번에 하나만 보이게 (display 제어)
-- ✅ Bio KR/EN: 모달 내부 요소까지 확실히 분리 제어
-- ✅ Works/Reports: 다중 경로 + 캐시버스트 + 실패 메시지
-- ✅ Sound: iOS 클릭-언락 + 실제 파일 경로 다중 시도 + FFT 바 “투명/어둡게”
-- ✅ Waves: 안정 렌더
-========================================================== -->
-<script>
-(() => {
-  "use strict";
+  <!-- ==========================================================
+  ③ SCRIPTS  (FINAL)
+  - ✅ Poem/Works/Reports: “한 번에 하나만” 보이게 (.is-active)
+  - ✅ Works/Reports: 다중 경로 + 캐시버스트 + 실패 메시지
+  - ✅ Bio: 모달 내부 KR/EN 강제 분리(전역 언어와 독립)
+  - ✅ Sound: iOS unlock + 실제 파일 경로 다중 시도 + FFT “투명/어둡게”
+  - ✅ Waves: 안정 렌더
+  ========================================================== -->
+  <script>
+  (() => {
+    "use strict";
 
-  /* ----------------------------------------------------------
-    Utils
-  ---------------------------------------------------------- */
-  const qs  = (sel, el=document) => el.querySelector(sel);
-  const qsa = (sel, el=document) => Array.from(el.querySelectorAll(sel));
-  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-  const escapeHTML = (s) => String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    /* ---------------- Utils ---------------- */
+    const qs  = (sel, el=document) => el.querySelector(sel);
+    const qsa = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+    const escapeHTML = (s) => String(s ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
-  const cacheBust = () => `cb=${Date.now().toString(36)}${Math.random().toString(36).slice(2,8)}`;
+    const cacheBust = () => `cb=${Date.now().toString(36)}${Math.random().toString(36).slice(2,8)}`;
 
-  async function fetchText(url, timeoutMs=9000){
-    const controller = new AbortController();
-    const t = setTimeout(()=>controller.abort(), timeoutMs);
-    try{
-      const u = url.includes("?") ? `${url}&${cacheBust()}` : `${url}?${cacheBust()}`;
-      const res = await fetch(u, { cache:"no-store", signal:controller.signal });
-      if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return await res.text();
-    } finally {
-      clearTimeout(t);
-    }
-  }
-
-  async function fetchJSONMulti(paths, timeoutMs=9000){
-    const errors = [];
-    for(const raw of paths){
+    async function fetchText(url, timeoutMs=9000){
+      const controller = new AbortController();
+      const t = setTimeout(()=>controller.abort(), timeoutMs);
       try{
-        const txt = await fetchText(raw, timeoutMs);
+        const u = url.includes("?") ? `${url}&${cacheBust()}` : `${url}?${cacheBust()}`;
+        const res = await fetch(u, { cache:"no-store", signal:controller.signal });
+        if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return await res.text();
+      } finally { clearTimeout(t); }
+    }
+
+    async function fetchJSONMulti(paths, timeoutMs=9000){
+      const errors = [];
+      for(const raw of paths){
         try{
-          const data = JSON.parse(txt);
-          return { ok:true, url:raw, data, errors };
+          const txt = await fetchText(raw, timeoutMs);
+          try{
+            const data = JSON.parse(txt);
+            return { ok:true, url:raw, data, errors };
+          }catch(_e){
+            errors.push(`JSON parse error @ ${raw}`);
+          }
         }catch(e){
-          errors.push(`JSON parse error @ ${raw}`);
+          errors.push(`${e?.name || "FetchError"}: ${e?.message || ""} @ ${raw}`);
         }
-      }catch(e){
-        errors.push(`${e?.name || "FetchError"}: ${e?.message || ""} @ ${raw}`);
       }
-    }
-    return { ok:false, url:null, data:null, errors };
-  }
-
-  function showPanelMessage(panelEl, titleKo, titleEn, details){
-    if(!panelEl) return;
-    panelEl.innerHTML = `
-      <div class="w-msg">
-        <div class="ko" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleKo)}</div>
-        <div class="en" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleEn)}</div>
-        <div style="opacity:.9;line-height:1.6;white-space:pre-wrap">${escapeHTML(details || "")}</div>
-        <small class="ko">관리: JSON 경로 / GitHub Pages 배포 / 파일명 대소문자를 확인하세요.</small>
-        <small class="en">Check JSON path / GitHub Pages deploy / filename case-sensitivity.</small>
-      </div>
-    `;
-  }
-
-  /* ----------------------------------------------------------
-    SECTION SINGLE VIEW (Poem/Works/Reports 한 번에 하나만)
-  ---------------------------------------------------------- */
-  function initSingleViewSections(){
-    const navBtns = qsa('nav.primary button[data-target]');
-    const poem   = qs("#poem");
-    const works  = qs("#works");
-    const reports= qs("#reports");
-    const map = { poem, works, reports };
-
-    function setVisible(key){
-      Object.entries(map).forEach(([k, el])=>{
-        if(!el) return;
-        el.style.display = (k===key) ? "" : "none";
-      });
-      navBtns.forEach(b=>{
-        const on = b.dataset.target === key;
-        b.classList.toggle("active", on);
-        if(on) b.setAttribute("aria-current","page");
-        else b.removeAttribute("aria-current");
-      });
+      return { ok:false, url:null, data:null, errors };
     }
 
-    // 기본: poem만
-    setVisible("poem");
+    function resolvePath(p){
+      if(!p) return "";
+      if(/^https?:\/\//i.test(p)) return p;
+      if(p.startsWith("/")) return p;
+      return "/" + p;
+    }
 
-    navBtns.forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const t = btn.dataset.target;
-        if(!map[t]) return;
-        setVisible(t);
-        // 스크롤은 “부드럽게” 대신, 단일 뷰라서 상단으로만
+    function showPanelMessage(panelEl, titleKo, titleEn, details){
+      if(!panelEl) return;
+      panelEl.innerHTML = `
+        <div class="w-msg">
+          <div class="ko" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleKo)}</div>
+          <div class="en" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleEn)}</div>
+          <div style="opacity:.9;line-height:1.6;white-space:pre-wrap">${escapeHTML(details || "")}</div>
+          <small class="ko">관리: JSON 경로 / GitHub Pages 배포 / 파일명 대소문자를 확인하세요.</small>
+          <small class="en">Check JSON path / GitHub Pages deploy / filename case-sensitivity.</small>
+        </div>
+      `;
+    }
+
+    /* ---------------- 1) Single section view ---------------- */
+    function initSingleViewSections(){
+      const sections = qsa("main > section");
+      const navBtns = qsa('nav.primary button[data-target]');
+      const map = {};
+      sections.forEach(s => map[s.id] = s);
+
+      function setActive(id){
+        sections.forEach(s => s.classList.toggle("is-active", s.id === id));
+        navBtns.forEach(b=>{
+          const on = b.dataset.target === id;
+          b.classList.toggle("active", on);
+          if(on) b.setAttribute("aria-current","page");
+          else b.removeAttribute("aria-current");
+        });
         window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ✅ 기본: poem만 (CSS + JS 둘 다로 확실히)
+      if(map.poem) setActive("poem");
+
+      navBtns.forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const t = btn.dataset.target;
+          if(map[t]) setActive(t);
+        });
       });
-    });
-  }
-
-  /* ----------------------------------------------------------
-    Language (GLOBAL)
-  ---------------------------------------------------------- */
-  function initLanguage(){
-    const koBtn = qs("#koBtn");
-    const enBtn = qs("#enBtn");
-    const hyBtn = qs("#hyBtn");
-
-    const set = (mode) => {
-      document.body.classList.remove("korean","english","hybrid");
-      document.body.classList.add(mode);
-      [koBtn,enBtn,hyBtn].forEach(b => b && b.classList.remove("active"));
-      if(mode==="korean" && koBtn) koBtn.classList.add("active");
-      if(mode==="english" && enBtn) enBtn.classList.add("active");
-      if(mode==="hybrid" && hyBtn) hyBtn.classList.add("active");
-      refreshReportsSummaryVisibility(mode);
-    };
-
-    koBtn?.addEventListener("click", () => set("korean"));
-    enBtn?.addEventListener("click", () => set("english"));
-    hyBtn?.addEventListener("click", () => set("hybrid"));
-
-    const cls = document.body.classList;
-    if(!cls.contains("korean") && !cls.contains("english") && !cls.contains("hybrid")){
-      set("korean");
-    }
-  }
-
-  /* ----------------------------------------------------------
-    Bio modal (KR/EN 오류 완전 차단: 모달 내부 요소도 강제 분리)
-  ---------------------------------------------------------- */
-  function initBio(){
-    const modal = qs("#bio-modal");
-    const openBtn = qs("#tab-bio");
-    const closeBtn = qs(".bio-close", modal || document);
-    const backdrop = qs(".bio-backdrop", modal || document);
-    const expoToggle = qs("#expoToggle");
-    const expoSlide = qs("#expoSlide");
-
-    if(!modal) return;
-
-    const bioLangBtns = qsa('#bio-modal .bio-lang .lang');
-    const bioKoEls = qsa("#bio-modal .ko");
-    const bioEnEls = qsa("#bio-modal .en");
-
-    function applyBioLang(lang){
-      // data-bio 유지 (HEAD 규칙도 같이 작동)
-      modal.setAttribute("data-bio", lang);
-
-      // 버튼 active
-      bioLangBtns.forEach(b=>{
-        const on = b.dataset.bioLang === lang;
-        b.classList.toggle("active", on);
-        b.setAttribute("aria-pressed", on ? "true" : "false");
-      });
-
-      // ✅ 모달 내부 전체 .ko/.en 강제 표시 제어(전역 body 언어와 분리)
-      // (전시 슬라이드/본문/타이틀 모두 안정)
-      bioKoEls.forEach(el=>{ el.style.display = (lang==="kr") ? "" : "none"; });
-      bioEnEls.forEach(el=>{ el.style.display = (lang==="en") ? "" : "none"; });
-
-      // expoToggle 안의 ko/en span도 포함되어 있으니 자동으로 분리됨
     }
 
-    function open(){
-      modal.hidden = false;
-      document.body.style.overflow = "hidden";
-      const current = modal.getAttribute("data-bio") || "kr";
-      applyBioLang(current);
-    }
-    function close(){
-      modal.hidden = true;
-      document.body.style.overflow = "";
-    }
+    /* ---------------- 2) Global language ---------------- */
+    function initLanguage(){
+      const koBtn = qs("#koBtn");
+      const enBtn = qs("#enBtn");
+      const hyBtn = qs("#hyBtn");
 
-    openBtn?.addEventListener("click", open);
-    closeBtn?.addEventListener("click", close);
-    backdrop?.addEventListener("click", close);
-    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && !modal.hidden) close(); });
+      const set = (mode) => {
+        document.body.classList.remove("korean","english","hybrid");
+        document.body.classList.add(mode);
+        [koBtn,enBtn,hyBtn].forEach(b => b && b.classList.remove("active"));
+        if(mode==="korean" && koBtn) koBtn.classList.add("active");
+        if(mode==="english" && enBtn) enBtn.classList.add("active");
+        if(mode==="hybrid" && hyBtn) hyBtn.classList.add("active");
+        refreshReportsSummaryVisibility();
+      };
 
-    bioLangBtns.forEach(b=>{
-      b.addEventListener("click", () => applyBioLang(b.dataset.bioLang || "kr"));
-    });
+      koBtn?.addEventListener("click", () => set("korean"));
+      enBtn?.addEventListener("click", () => set("english"));
+      hyBtn?.addEventListener("click", () => set("hybrid"));
 
-    expoToggle?.addEventListener("click", ()=>{
-      const isOpen = expoSlide?.getAttribute("data-open")==="true";
-      expoSlide?.setAttribute("data-open", isOpen ? "false" : "true");
-      expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
-    });
-
-    // 기본값
-    if(!modal.getAttribute("data-bio")) modal.setAttribute("data-bio","kr");
-  }
-
-  /* ----------------------------------------------------------
-    Waves background canvas (stable)
-  ---------------------------------------------------------- */
-  function initWaves(){
-    const canvas = qs("#waves");
-    if(!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha:true });
-    if(!ctx) return;
-
-    let w=0,h=0,dpr=1,t=0;
-    const prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    function resize(){
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      w = Math.floor(window.innerWidth);
-      h = Math.floor(window.innerHeight);
-      canvas.width = Math.floor(w*dpr);
-      canvas.height = Math.floor(h*dpr);
-      canvas.style.width = w+"px";
-      canvas.style.height = h+"px";
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    window.addEventListener("resize", resize, { passive:true });
-    resize();
-
-    function draw(){
-      ctx.clearRect(0,0,w,h);
-
-      const g = ctx.createRadialGradient(w*0.5, h*0.15, 0, w*0.5, h*0.15, Math.max(w,h)*0.9);
-      g.addColorStop(0, "rgba(215,184,106,0.08)");
-      g.addColorStop(0.35, "rgba(121,167,255,0.05)");
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,w,h);
-
-      const lines = 6;
-      for(let i=0;i<lines;i++){
-        const yBase = h*(0.18 + i*0.12);
-        const amp = h*(0.012 + i*0.002);
-        const freq = 0.010 + i*0.0012;
-
-        ctx.beginPath();
-        for(let x=0;x<=w;x+=10){
-          const y = yBase
-            + Math.sin((x*freq) + t*(0.9 + i*0.12)) * amp
-            + Math.sin((x*freq*0.6) - t*(0.7 + i*0.08)) * amp*0.55;
-          if(x===0) ctx.moveTo(x,y);
-          else ctx.lineTo(x,y);
-        }
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = i%2===0 ? "rgba(215,184,106,0.09)" : "rgba(121,167,255,0.07)";
-        ctx.stroke();
+      const cls = document.body.classList;
+      if(!cls.contains("korean") && !cls.contains("english") && !cls.contains("hybrid")){
+        set("korean");
       }
     }
 
-    function loop(){
-      if(!prefersReduce) t += 0.012;
-      draw();
-      requestAnimationFrame(loop);
+    /* ---------------- 3) Bio modal (KR/EN 오류 차단) ---------------- */
+    function initBio(){
+      const modal = qs("#bio-modal");
+      const openBtn = qs("#tab-bio");
+      if(!modal) return;
+
+      const closeBtn = qs(".bio-close", modal);
+      const backdrop = qs(".bio-backdrop", modal);
+      const expoToggle = qs("#expoToggle", modal);
+      const expoSlide = qs("#expoSlide", modal);
+
+      const bioLangBtns = qsa('#bio-modal .bio-lang .lang');
+      const bioKoEls = qsa("#bio-modal .ko");
+      const bioEnEls = qsa("#bio-modal .en");
+
+      function applyBioLang(lang){
+        modal.setAttribute("data-bio", lang);
+
+        bioLangBtns.forEach(b=>{
+          const on = (b.dataset.bioLang === lang);
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+
+        // ✅ 전역 body 언어와 완전 분리: 모달 내부는 강제 display 제어
+        bioKoEls.forEach(el => el.style.display = (lang==="kr") ? "" : "none");
+        bioEnEls.forEach(el => el.style.display = (lang==="en") ? "" : "none");
+      }
+
+      function open(){
+        modal.hidden = false;
+        document.body.style.overflow = "hidden";
+        applyBioLang(modal.getAttribute("data-bio") || "kr");
+      }
+      function close(){
+        modal.hidden = true;
+        document.body.style.overflow = "";
+      }
+
+      openBtn?.addEventListener("click", open);
+      closeBtn?.addEventListener("click", close);
+      backdrop?.addEventListener("click", close);
+      window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && !modal.hidden) close(); });
+
+      bioLangBtns.forEach(b=>{
+        b.addEventListener("click", ()=> applyBioLang(b.dataset.bioLang || "kr"));
+      });
+
+      expoToggle?.addEventListener("click", ()=>{
+        const isOpen = expoSlide?.getAttribute("data-open")==="true";
+        expoSlide?.setAttribute("data-open", isOpen ? "false" : "true");
+        expoToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      });
+
+      if(!modal.getAttribute("data-bio")) modal.setAttribute("data-bio","kr");
     }
-    loop();
-  }
 
-  /* ----------------------------------------------------------
-    Works tabs
-  ---------------------------------------------------------- */
-  function initWorksTabs(){
-    const tabs = qsa("#works .tabs .tab");
-    const panels = {
-      pray: qs("#panel-pray"),
-      human: qs("#panel-human"),
-      rebirth: qs("#panel-rebirth"),
-      exist: qs("#panel-exist"),
-      cosmos: qs("#panel-cosmos")
-    };
+    /* ---------------- 4) Waves background (stable) ---------------- */
+    function initWaves(){
+      const canvas = qs("#waves");
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d", { alpha:true });
+      if(!ctx) return;
 
-    function activate(key){
-      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel===key));
-      Object.entries(panels).forEach(([k,el]) => { if(el) el.classList.toggle("active", k===key); });
+      let w=0,h=0,dpr=1,t=0;
+      const prefersReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function resize(){
+        dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        w = Math.floor(window.innerWidth);
+        h = Math.floor(window.innerHeight);
+        canvas.width = Math.floor(w*dpr);
+        canvas.height = Math.floor(h*dpr);
+        canvas.style.width = w+"px";
+        canvas.style.height = h+"px";
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+      window.addEventListener("resize", resize, { passive:true });
+      resize();
+
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+
+        const g = ctx.createRadialGradient(w*0.5, h*0.15, 0, w*0.5, h*0.15, Math.max(w,h)*0.9);
+        g.addColorStop(0, "rgba(215,184,106,0.08)");
+        g.addColorStop(0.35, "rgba(121,167,255,0.05)");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        const lines = 6;
+        for(let i=0;i<lines;i++){
+          const yBase = h*(0.18 + i*0.12);
+          const amp = h*(0.012 + i*0.002);
+          const freq = 0.010 + i*0.0012;
+
+          ctx.beginPath();
+          for(let x=0;x<=w;x+=10){
+            const y = yBase
+              + Math.sin((x*freq) + t*(0.9 + i*0.12)) * amp
+              + Math.sin((x*freq*0.6) - t*(0.7 + i*0.08)) * amp*0.55;
+            if(x===0) ctx.moveTo(x,y);
+            else ctx.lineTo(x,y);
+          }
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = i%2===0 ? "rgba(215,184,106,0.09)" : "rgba(121,167,255,0.07)";
+          ctx.stroke();
+        }
+      }
+
+      function loop(){
+        if(!prefersReduce) t += 0.012;
+        draw();
+        requestAnimationFrame(loop);
+      }
+      loop();
     }
 
-    tabs.forEach(t=> t.addEventListener("click", ()=>activate(t.dataset.panel)) );
-    activate("pray");
-  }
-
-  /* ----------------------------------------------------------
-    Lightbox
-  ---------------------------------------------------------- */
-  function lightboxSetup(){
-    const lb = qs("#lightbox");
-    const lbImg = qs("#lbImg");
-    const lbCap = qs("#lbCap");
-    const lbClose = qs("#lbClose");
-
-    function open(src, caption){
-      if(!lb || !lbImg || !lbCap) return;
-      lbImg.src = src || "";
-      lbImg.alt = "";
-      lbCap.textContent = caption || "";
-      lb.classList.add("is-open");
-      lb.setAttribute("aria-hidden","false");
-      document.body.style.overflow = "hidden";
-    }
-    function close(){
-      if(!lb || !lbImg) return;
-      lb.classList.remove("is-open");
-      lb.setAttribute("aria-hidden","true");
-      lbImg.src = "";
-      document.body.style.overflow = "";
-    }
-
-    lbClose?.addEventListener("click", close);
-    lb?.addEventListener("click", (e)=>{ if(e.target === lb) close(); });
-    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && lb?.classList.contains("is-open")) close(); });
-
-    return { open, close };
-  }
-
-  /* ----------------------------------------------------------
-    Works loader
-  ---------------------------------------------------------- */
-  const WORKS_PATHS = [
-    "/data/works.json",
-    "data/works.json",
-    "/works.json",
-    "works.json"
-  ];
-
-  function normalizeWorksData(raw){
-    const empty = { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
-    if(!raw) return empty;
-
-    if(raw.sections && typeof raw.sections==="object"){
-      return {
-        pray: raw.sections.pray || [],
-        human: raw.sections.human || [],
-        rebirth: raw.sections.rebirth || [],
-        exist: raw.sections.exist || [],
-        cosmos: raw.sections.cosmos || []
+    /* ---------------- 5) Works tabs ---------------- */
+    function initWorksTabs(){
+      const tabs = qsa("#works .tabs .tab");
+      const panels = {
+        pray: qs("#panel-pray"),
+        human: qs("#panel-human"),
+        rebirth: qs("#panel-rebirth"),
+        exist: qs("#panel-exist"),
+        cosmos: qs("#panel-cosmos")
       };
+
+      function activate(key){
+        tabs.forEach(t => t.classList.toggle("active", t.dataset.panel===key));
+        Object.entries(panels).forEach(([k,el]) => { if(el) el.classList.toggle("active", k===key); });
+      }
+
+      tabs.forEach(t=> t.addEventListener("click", ()=>activate(t.dataset.panel)) );
+      activate("pray");
     }
-    if(raw.pray || raw.human || raw.rebirth || raw.exist || raw.cosmos){
-      return {
-        pray: raw.pray || [],
-        human: raw.human || [],
-        rebirth: raw.rebirth || [],
-        exist: raw.exist || [],
-        cosmos: raw.cosmos || []
-      };
+
+    /* ---------------- 6) Lightbox ---------------- */
+    function lightboxSetup(){
+      const lb = qs("#lightbox");
+      const lbImg = qs("#lbImg");
+      const lbCap = qs("#lbCap");
+      const lbClose = qs("#lbClose");
+
+      function open(src, caption){
+        if(!lb || !lbImg || !lbCap) return;
+        lbImg.src = src || "";
+        lbImg.alt = "";
+        lbCap.textContent = caption || "";
+        lb.classList.add("is-open");
+        lb.setAttribute("aria-hidden","false");
+        document.body.style.overflow = "hidden";
+      }
+      function close(){
+        if(!lb || !lbImg) return;
+        lb.classList.remove("is-open");
+        lb.setAttribute("aria-hidden","true");
+        lbImg.src = "";
+        document.body.style.overflow = "";
+      }
+
+      lbClose?.addEventListener("click", close);
+      lb?.addEventListener("click", (e)=>{ if(e.target === lb) close(); });
+      window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && lb?.classList.contains("is-open")) close(); });
+
+      return { open, close };
     }
-    if(Array.isArray(raw)){
-      for(const w of raw){
-        const key = w.section || w.panel || w.category;
-        if(key && empty[key]) empty[key].push(w);
+
+    /* ---------------- 7) Works loader ---------------- */
+    const WORKS_PATHS = ["/data/works.json","data/works.json","/works.json","works.json"];
+
+    function normalizeWorksData(raw){
+      const empty = { pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+      if(!raw) return empty;
+
+      if(raw.sections && typeof raw.sections==="object"){
+        return {
+          pray: raw.sections.pray || [],
+          human: raw.sections.human || [],
+          rebirth: raw.sections.rebirth || [],
+          exist: raw.sections.exist || [],
+          cosmos: raw.sections.cosmos || []
+        };
+      }
+      if(raw.pray || raw.human || raw.rebirth || raw.exist || raw.cosmos){
+        return {
+          pray: raw.pray || [],
+          human: raw.human || [],
+          rebirth: raw.rebirth || [],
+          exist: raw.exist || [],
+          cosmos: raw.cosmos || []
+        };
+      }
+      if(Array.isArray(raw)){
+        for(const w of raw){
+          const key = w.section || w.panel || w.category;
+          if(key && empty[key]) empty[key].push(w);
+        }
+        return empty;
       }
       return empty;
     }
-    return empty;
-  }
 
-  function resolvePath(p){
-    if(!p) return "";
-    if(/^https?:\/\//i.test(p)) return p;
-    if(p.startsWith("/")) return p;
-    return "/" + p;
-  }
+    function makeWorkCaption(w){
+      const lines = [];
+      const titleKo = w.title_ko || w.titleKo || w.title || "";
+      const titleEn = w.title_en || w.titleEn || "";
+      if(titleKo) lines.push(titleKo);
+      if(titleEn) lines.push(titleEn);
 
-  function makeWorkCaption(w){
-    const lines = [];
-    const titleKo = w.title_ko || w.titleKo || w.title || "";
-    const titleEn = w.title_en || w.titleEn || "";
-    if(titleKo) lines.push(titleKo);
-    if(titleEn) lines.push(titleEn);
-
-    const meta = [];
-    const matKo = w.material_kr || w.materialKr || "";
-    const matEn = w.material_en || w.materialEn || "";
-    const sizeKo = w.size_kr || w.sizeKr || "";
-    const sizeEn = w.size_en || w.sizeEn || "";
-    const year = w.year || w.date || "";
-    if(matKo) meta.push(matKo);
-    if(matEn) meta.push(matEn);
-    if(sizeKo) meta.push(sizeKo);
-    if(sizeEn) meta.push(sizeEn);
-    if(year) meta.push(year);
-    if(meta.length) lines.push(meta.join(" / "));
-    return lines.join("\n");
-  }
-
-  function renderWorksPanel(panelEl, list, lb){
-    if(!panelEl) return;
-
-    if(!Array.isArray(list) || list.length===0){
-      showPanelMessage(panelEl,
-        "작품을 불러오지 못했습니다",
-        "Unable to load artworks",
-        "works.json이 비어있거나 섹션 키(pray/human/rebirth/exist/cosmos)가 맞지 않습니다."
-      );
-      return;
+      const meta = [];
+      const matKo = w.material_kr || w.materialKr || "";
+      const matEn = w.material_en || w.materialEn || "";
+      const sizeKo = w.size_kr || w.sizeKr || "";
+      const sizeEn = w.size_en || w.sizeEn || "";
+      const year = w.year || w.date || "";
+      if(matKo) meta.push(matKo);
+      if(matEn) meta.push(matEn);
+      if(sizeKo) meta.push(sizeKo);
+      if(sizeEn) meta.push(sizeEn);
+      if(year) meta.push(year);
+      if(meta.length) lines.push(meta.join(" / "));
+      return lines.join("\n");
     }
 
-    const grid = document.createElement("div");
-    grid.className = "w-grid";
+    function renderWorksPanel(panelEl, list, lb){
+      if(!panelEl) return;
 
-    list.forEach(w=>{
-      const card = document.createElement("div");
-      card.className = "w-card";
-      card.setAttribute("role","button");
-      card.setAttribute("tabindex","0");
-
-      const thumbSrc = resolvePath(w.image || w.thumb || w.src || "");
-      const zoomSrc  = resolvePath(w.zoom  || w.image_zoom || w.zoomSrc || thumbSrc);
-
-      const img = document.createElement("img");
-      img.className = "w-thumb";
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.src = thumbSrc;
-      img.alt = "";
-      img.onerror = () => { img.style.opacity = "0.35"; };
-
-      const meta = document.createElement("div");
-      meta.className = "w-meta";
-
-      const title = document.createElement("div");
-      title.className = "w-title";
-      title.innerHTML = `
-        <div class="ko">${escapeHTML(w.title_ko || w.titleKo || w.title || "")}</div>
-        <div class="en">${escapeHTML(w.title_en || w.titleEn || "")}</div>
-      `;
-
-      const sub = document.createElement("div");
-      sub.className = "w-sub";
-      const subLines = [];
-      const mKo = w.material_kr || w.materialKr || "";
-      const mEn = w.material_en || w.materialEn || "";
-      const sKo = w.size_kr || w.sizeKr || "";
-      const sEn = w.size_en || w.sizeEn || "";
-      const y = w.year || w.date || "";
-      if(mKo) subLines.push(mKo);
-      if(mEn) subLines.push(mEn);
-      if(sKo) subLines.push(sKo);
-      if(sEn) subLines.push(sEn);
-      if(y) subLines.push(String(y));
-      sub.textContent = subLines.join("\n");
-
-      meta.appendChild(title);
-      meta.appendChild(sub);
-
-      card.appendChild(img);
-      card.appendChild(meta);
-
-      const open = () => lb?.open(zoomSrc, makeWorkCaption(w));
-      card.addEventListener("click", open);
-      card.addEventListener("keydown", (e)=>{
-        if(e.key==="Enter" || e.key===" "){ e.preventDefault(); open(); }
-      });
-
-      grid.appendChild(card);
-    });
-
-    panelEl.innerHTML = "";
-    panelEl.appendChild(grid);
-  }
-
-  async function loadWorks(){
-    const panels = {
-      pray: qs("#panel-pray"),
-      human: qs("#panel-human"),
-      rebirth: qs("#panel-rebirth"),
-      exist: qs("#panel-exist"),
-      cosmos: qs("#panel-cosmos")
-    };
-
-    Object.values(panels).forEach(p=>{
-      showPanelMessage(p, "작품 로딩 중…", "Loading artworks…", "works.json을 읽는 중입니다.");
-    });
-
-    const lb = lightboxSetup();
-    const res = await fetchJSONMulti(WORKS_PATHS);
-
-    if(!res.ok){
-      const msg = `works.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,3).join(" | ")}`;
-      Object.values(panels).forEach(p=>{
-        showPanelMessage(p, "작품 데이터 오류 (works.json)", "Works data error (works.json)", msg);
-      });
-      return;
-    }
-
-    const data = normalizeWorksData(res.data);
-    renderWorksPanel(panels.pray, data.pray, lb);
-    renderWorksPanel(panels.human, data.human, lb);
-    renderWorksPanel(panels.rebirth, data.rebirth, lb);
-    renderWorksPanel(panels.exist, data.exist, lb);
-    renderWorksPanel(panels.cosmos, data.cosmos, lb);
-  }
-
-  /* ----------------------------------------------------------
-    Reports loader (요약: 언어 모드 분리 + 새 창 원문 + download)
-  ---------------------------------------------------------- */
-  const REPORTS_PATHS = [
-    "/data/reports.json",
-    "data/reports.json",
-    "/reports.json",
-    "reports.json"
-  ];
-
-  let REPORTS_CACHE = [];
-  let REPORTS_FILTER = "all";
-
-  function refreshReportsSummaryVisibility(mode){
-    const grid = qs("#reportGrid");
-    if(grid && grid.style.display === "grid") renderReportsGrid();
-  }
-
-  function normalizeReports(raw){
-    if(!raw) return [];
-    if(Array.isArray(raw)) return raw;
-    if(Array.isArray(raw.reports)) return raw.reports;
-    return [];
-  }
-
-  function reportCardHTML(r){
-    const id = r.id || r.code || r.slug || "";
-    const titleKo = r.title_ko || r.titleKo || "";
-    const titleEn = r.title_en || r.titleEn || "";
-    const sumKo = r.summary_ko || r.summaryKo || "";
-    const sumEn = r.summary_en || r.summaryEn || "";
-    const cat = (r.category || r.type || "archive").toLowerCase();
-
-    const mode =
-      document.body.classList.contains("english") ? "english" :
-      document.body.classList.contains("hybrid")  ? "hybrid"  : "korean";
-
-    const titleBlock =
-      mode === "korean"  ? `<div class="t"><span class="ko">${escapeHTML(titleKo)}</span></div>` :
-      mode === "english" ? `<div class="t"><span class="en">${escapeHTML(titleEn)}</span></div>` :
-      `<div class="t"><div class="ko">${escapeHTML(titleKo)}</div><div class="en">${escapeHTML(titleEn)}</div></div>`;
-
-    const summaryBlock =
-      mode === "korean"  ? `<div class="s"><span class="ko">${escapeHTML(sumKo)}</span></div>` :
-      mode === "english" ? `<div class="s"><span class="en">${escapeHTML(sumEn)}</span></div>` :
-      `<div class="s"><div class="ko">${escapeHTML(sumKo)}</div><div class="en">${escapeHTML(sumEn)}</div></div>`;
-
-    return `
-      ${titleBlock}
-      <div class="m">${escapeHTML(id)} · ${escapeHTML(cat)}</div>
-      ${summaryBlock}
-      <div class="m" style="opacity:.7;margin-top:10px">open in new tab · download link inside</div>
-    `;
-  }
-
-  function openReportInNewTab(r){
-    const file = r.file || r.url || r.path || "";
-    if(!file){
-      alert("reports.json에 file/url/path가 없습니다.");
-      return;
-    }
-    const url = resolvePath(file);
-    const title = (r.title_ko || r.titleKo || "DCAR") + " / " + (r.title_en || r.titleEn || "");
-
-    const win = window.open("", "_blank", "noopener,noreferrer");
-    if(!win){ window.location.href = url; return; }
-
-    win.document.open();
-    win.document.write(`<!doctype html><html lang="ko"><head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>${escapeHTML(title)}</title>
-      <style>
-        body{margin:0; padding:20px; font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo","Noto Sans KR", Arial, sans-serif; background:#070A14; color:#EDE3C9;}
-        h1{margin:0 0 14px; font-size:18px; color:#E9D59B;}
-        pre{white-space:pre-wrap; line-height:1.7; background:rgba(255,255,255,.03); border:1px solid rgba(215,184,106,.18); border-radius:14px; padding:14px;}
-        a{color:#E9D59B;}
-        .dl{margin-top:14px; font-size:12px; opacity:.85;}
-      </style>
-    </head><body>
-      <h1>${escapeHTML(title)}</h1>
-      <pre id="content">Loading…</pre>
-      <div class="dl"><a href="${escapeHTML(url)}" download>download</a></div>
-      <script>
-        (async()=>{
-          try{
-            const res = await fetch("${escapeHTML(url)}?${cacheBust()}", { cache:"no-store" });
-            const txt = await res.text();
-            document.getElementById("content").textContent = txt;
-          }catch(e){
-            document.getElementById("content").textContent = "Failed to load report.";
-          }
-        })();
-      <\/script>
-    </body></html>`);
-    win.document.close();
-  }
-
-  function renderReportsGrid(){
-    const grid = qs("#reportGrid");
-    if(!grid) return;
-
-    const filtered = REPORTS_CACHE.filter(r=>{
-      const cat = (r.category || r.type || "archive").toLowerCase();
-      if(REPORTS_FILTER === "all") return true;
-      return cat === REPORTS_FILTER;
-    });
-
-    if(filtered.length === 0){
-      grid.innerHTML = `
-        <div class="w-msg" style="grid-column:1/-1">
-          <div class="ko" style="font-weight:900;margin-bottom:6px">보고서 목록이 비어있습니다</div>
-          <div class="en" style="font-weight:900;margin-bottom:6px">Reports list is empty</div>
-          <div style="opacity:.9;line-height:1.6">reports.json 데이터/카테고리 키(theory/archive/practice)를 확인하세요.</div>
-        </div>
-      `;
-      return;
-    }
-
-    grid.innerHTML = "";
-    filtered.forEach(r=>{
-      const item = document.createElement("div");
-      item.className = "r-item";
-      item.innerHTML = reportCardHTML(r);
-      item.addEventListener("click", ()=>openReportInNewTab(r));
-      grid.appendChild(item);
-    });
-  }
-
-  async function loadReports(){
-    const grid = qs("#reportGrid");
-    const toggle = qs("#reportsToggle");
-    const tabs = qsa(".r-tab");
-
-    tabs.forEach(t=>{
-      t.addEventListener("click", ()=>{
-        tabs.forEach(x=>x.classList.remove("is-active"));
-        t.classList.add("is-active");
-        REPORTS_FILTER = (t.dataset.r || "all").toLowerCase();
-        renderReportsGrid();
-      });
-    });
-
-    toggle?.addEventListener("click", ()=>{
-      const isOpen = toggle.getAttribute("aria-expanded")==="true";
-      toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
-      toggle.textContent = isOpen ? "Open Reports" : "Close Reports";
-      if(grid){
-        grid.style.display = isOpen ? "none" : "grid";
-      }
-      if(!isOpen) renderReportsGrid();
-    });
-
-    if(grid){
-      grid.style.display = "none";
-      grid.innerHTML = "";
-    }
-
-    const res = await fetchJSONMulti(REPORTS_PATHS);
-    if(!res.ok){
-      if(grid){
-        grid.style.display = "grid";
-        showPanelMessage(grid,
-          "보고서 데이터 오류 (reports.json)",
-          "Reports data error (reports.json)",
-          `reports.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,3).join(" | ")}`
+      if(!Array.isArray(list) || list.length===0){
+        showPanelMessage(panelEl,
+          "작품을 불러오지 못했습니다",
+          "Unable to load artworks",
+          "works.json이 비어있거나 섹션 키(pray/human/rebirth/exist/cosmos)가 맞지 않습니다."
         );
+        return;
       }
-      return;
+
+      const grid = document.createElement("div");
+      grid.className = "w-grid";
+
+      list.forEach(w=>{
+        const card = document.createElement("div");
+        card.className = "w-card";
+        card.setAttribute("role","button");
+        card.setAttribute("tabindex","0");
+
+        const thumbSrc = resolvePath(w.image || w.thumb || w.src || "");
+        const zoomSrc  = resolvePath(w.zoom  || w.image_zoom || w.zoomSrc || thumbSrc);
+
+        const img = document.createElement("img");
+        img.className = "w-thumb";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.src = thumbSrc;
+        img.alt = "";
+        img.onerror = () => { img.style.opacity = "0.35"; };
+
+        const meta = document.createElement("div");
+        meta.className = "w-meta";
+
+        const title = document.createElement("div");
+        title.className = "w-title";
+        title.innerHTML = `
+          <div class="ko">${escapeHTML(w.title_ko || w.titleKo || w.title || "")}</div>
+          <div class="en">${escapeHTML(w.title_en || w.titleEn || "")}</div>
+        `;
+
+        const sub = document.createElement("div");
+        sub.className = "w-sub";
+        const subLines = [];
+        const mKo = w.material_kr || w.materialKr || "";
+        const mEn = w.material_en || w.materialEn || "";
+        const sKo = w.size_kr || w.sizeKr || "";
+        const sEn = w.size_en || w.sizeEn || "";
+        const y = w.year || w.date || "";
+        if(mKo) subLines.push(mKo);
+        if(mEn) subLines.push(mEn);
+        if(sKo) subLines.push(sKo);
+        if(sEn) subLines.push(sEn);
+        if(y) subLines.push(String(y));
+        sub.textContent = subLines.join("\n");
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+
+        card.appendChild(img);
+        card.appendChild(meta);
+
+        const open = () => lb?.open(zoomSrc, makeWorkCaption(w));
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (e)=>{
+          if(e.key==="Enter" || e.key===" "){ e.preventDefault(); open(); }
+        });
+
+        grid.appendChild(card);
+      });
+
+      panelEl.innerHTML = "";
+      panelEl.appendChild(grid);
     }
 
-    REPORTS_CACHE = normalizeReports(res.data).map(r=>{
+    async function loadWorks(){
+      const panels = {
+        pray: qs("#panel-pray"),
+        human: qs("#panel-human"),
+        rebirth: qs("#panel-rebirth"),
+        exist: qs("#panel-exist"),
+        cosmos: qs("#panel-cosmos")
+      };
+
+      Object.values(panels).forEach(p=>{
+        showPanelMessage(p, "작품 로딩 중…", "Loading artworks…", "works.json을 읽는 중입니다.");
+      });
+
+      const lb = lightboxSetup();
+      const res = await fetchJSONMulti(WORKS_PATHS);
+
+      if(!res.ok){
+        const msg = `works.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,4).join(" | ")}`;
+        Object.values(panels).forEach(p=>{
+          showPanelMessage(p, "작품 데이터 오류 (works.json)", "Works data error (works.json)", msg);
+        });
+        return;
+      }
+
+      const data = normalizeWorksData(res.data);
+      renderWorksPanel(panels.pray, data.pray, lb);
+      renderWorksPanel(panels.human, data.human, lb);
+      renderWorksPanel(panels.rebirth, data.rebirth, lb);
+      renderWorksPanel(panels.exist, data.exist, lb);
+      renderWorksPanel(panels.cosmos, data.cosmos, lb);
+    }
+
+    /* ---------------- 8) Reports loader ---------------- */
+    const REPORTS_PATHS = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
+    let REPORTS_CACHE = [];
+    let REPORTS_FILTER = "all";
+
+    function normalizeReports(raw){
+      if(!raw) return [];
+      if(Array.isArray(raw)) return raw;
+      if(Array.isArray(raw.reports)) return raw.reports;
+      return [];
+    }
+
+    function currentLangMode(){
+      return document.body.classList.contains("english") ? "english"
+        : document.body.classList.contains("hybrid") ? "hybrid"
+        : "korean";
+    }
+
+    function reportCardHTML(r){
+      const id = r.id || r.code || r.slug || "";
+      const titleKo = r.title_ko || r.titleKo || "";
+      const titleEn = r.title_en || r.titleEn || "";
+      const sumKo = r.summary_ko || r.summaryKo || "";
+      const sumEn = r.summary_en || r.summaryEn || "";
       const cat = (r.category || r.type || "archive").toLowerCase();
-      return { ...r, category: cat };
-    });
-  }
 
-  /* ----------------------------------------------------------
-    Sound (REAL PLAY + iOS unlock + FFT bar dim/transparent)
-  ---------------------------------------------------------- */
-  function initSound(){
-    const btn = qs("#soundBtn");
-    const stopBtn = qs("#soundStopBtn");
-    const fftWrap = qs("#fftBar");
-    const bar = qs("#fftBar span");
+      const mode = currentLangMode();
 
-    // ✅ 너무 밝으면 여기서 강제로 어둡게/투명하게
-    if(fftWrap) fftWrap.style.background = "transparent";
-    if(bar) bar.style.background = "rgba(215,184,106,0.18)";
+      const titleBlock =
+        mode === "korean"  ? `<div class="t"><span class="ko">${escapeHTML(titleKo)}</span></div>` :
+        mode === "english" ? `<div class="t"><span class="en">${escapeHTML(titleEn)}</span></div>` :
+        `<div class="t"><div class="ko">${escapeHTML(titleKo)}</div><div class="en">${escapeHTML(titleEn)}</div></div>`;
 
-    // ✅ 실제 파일 경로 다중 시도 (레포에 하나라도 있으면 재생됨)
-    const AUDIO_CANDIDATES = [
-      "/audio/cosmic-resonance.mp3",
-      "audio/cosmic-resonance.mp3",
-      "/audio/cosmic_resonance.mp3",
-      "audio/cosmic_resonance.mp3",
-      "/audio/ambient.mp3",
-      "audio/ambient.mp3"
-    ];
+      const summaryBlock =
+        mode === "korean"  ? `<div class="s"><span class="ko">${escapeHTML(sumKo)}</span></div>` :
+        mode === "english" ? `<div class="s"><span class="en">${escapeHTML(sumEn)}</span></div>` :
+        `<div class="s"><div class="ko">${escapeHTML(sumKo)}</div><div class="en">${escapeHTML(sumEn)}</div></div>`;
 
-    let audio = null;
-    let ctx = null, analyser=null, data=null, raf=0;
-    let lastGoodSrc = null;
-    let warned = false;
-
-    function setBar(v){
-      if(!bar) return;
-      bar.style.width = `${clamp(v,0,1)*100}%`;
+      return `
+        ${titleBlock}
+        <div class="m">${escapeHTML(id)} · ${escapeHTML(cat)}</div>
+        ${summaryBlock}
+        <div class="m" style="opacity:.7;margin-top:10px">open in new tab · download inside</div>
+      `;
     }
 
-    function stop(){
-      cancelAnimationFrame(raf);
-      if(audio){
-        audio.pause();
+    function openReportInNewTab(r){
+      const file = r.file || r.url || r.path || "";
+      if(!file){
+        alert("reports.json에 file/url/path가 없습니다.");
+        return;
       }
-      setBar(0);
-      stopBtn && (stopBtn.disabled = true);
+      const url = resolvePath(file);
+      const title = (r.title_ko || r.titleKo || "DCAR") + " / " + (r.title_en || r.titleEn || "");
+
+      const win = window.open("", "_blank", "noopener,noreferrer");
+      if(!win){ window.location.href = url; return; }
+
+      win.document.open();
+      win.document.write(`<!doctype html><html lang="ko"><head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${escapeHTML(title)}</title>
+        <style>
+          body{margin:0; padding:20px; font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo","Noto Sans KR", Arial, sans-serif; background:#070A14; color:#EDE3C9;}
+          h1{margin:0 0 14px; font-size:18px; color:#E9D59B;}
+          pre{white-space:pre-wrap; line-height:1.7; background:rgba(255,255,255,.03); border:1px solid rgba(215,184,106,.18); border-radius:14px; padding:14px;}
+          a{color:#E9D59B;}
+          .dl{margin-top:14px; font-size:12px; opacity:.85;}
+        </style>
+      </head><body>
+        <h1>${escapeHTML(title)}</h1>
+        <pre id="content">Loading…</pre>
+        <div class="dl"><a href="${escapeHTML(url)}" download>download</a></div>
+        <script>
+          (async()=>{
+            try{
+              const res = await fetch("${escapeHTML(url)}?${cacheBust()}", { cache:"no-store" });
+              const txt = await res.text();
+              document.getElementById("content").textContent = txt;
+            }catch(e){
+              document.getElementById("content").textContent = "Failed to load report.";
+            }
+          })();
+        <\/script>
+      </body></html>`);
+      win.document.close();
     }
 
-    function tick(){
-      if(!analyser || !data) return;
-      analyser.getByteFrequencyData(data);
-      let sum = 0;
-      for(let i=0;i<data.length;i++) sum += data[i];
-      const avg = sum / (data.length * 255);
-      setBar(avg);
-      raf = requestAnimationFrame(tick);
+    function renderReportsGrid(){
+      const grid = qs("#reportGrid");
+      if(!grid) return;
+
+      const filtered = REPORTS_CACHE.filter(r=>{
+        const cat = (r.category || r.type || "archive").toLowerCase();
+        return (REPORTS_FILTER === "all") ? true : (cat === REPORTS_FILTER);
+      });
+
+      if(filtered.length === 0){
+        grid.innerHTML = `
+          <div class="w-msg" style="grid-column:1/-1">
+            <div class="ko" style="font-weight:900;margin-bottom:6px">보고서 목록이 비어있습니다</div>
+            <div class="en" style="font-weight:900;margin-bottom:6px">Reports list is empty</div>
+            <div style="opacity:.9;line-height:1.6">reports.json 데이터/카테고리 키(theory/archive/practice)를 확인하세요.</div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = "";
+      filtered.forEach(r=>{
+        const item = document.createElement("div");
+        item.className = "r-item";
+        item.innerHTML = reportCardHTML(r);
+        item.addEventListener("click", ()=>openReportInNewTab(r));
+        grid.appendChild(item);
+      });
     }
 
-    async function pickPlayableSrc(){
-      // 이미 성공한 src가 있으면 재사용
-      if(lastGoodSrc) return lastGoodSrc;
+    function refreshReportsSummaryVisibility(){
+      const grid = qs("#reportGrid");
+      if(grid && grid.style.display === "grid") renderReportsGrid();
+    }
 
-      // 각 후보에 대해 HEAD 요청(일부 서버는 HEAD 미지원 → GET fallback)
-      for(const src of AUDIO_CANDIDATES){
-        const url = resolvePath(src);
-        try{
-          const u = url.includes("?") ? `${url}&${cacheBust()}` : `${url}?${cacheBust()}`;
-          let ok = false;
+    async function loadReports(){
+      const grid = qs("#reportGrid");
+      const toggle = qs("#reportsToggle");
+      const tabs = qsa(".r-tab");
 
+      tabs.forEach(t=>{
+        t.addEventListener("click", ()=>{
+          tabs.forEach(x=>x.classList.remove("is-active"));
+          t.classList.add("is-active");
+          REPORTS_FILTER = (t.dataset.r || "all").toLowerCase();
+          renderReportsGrid();
+        });
+      });
+
+      toggle?.addEventListener("click", ()=>{
+        const isOpen = toggle.getAttribute("aria-expanded")==="true";
+        toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+        toggle.textContent = isOpen ? "Open Reports" : "Close Reports";
+        if(grid) grid.style.display = isOpen ? "none" : "grid";
+        if(!isOpen) renderReportsGrid();
+      });
+
+      if(grid){
+        grid.style.display = "none";
+        grid.innerHTML = "";
+      }
+
+      const res = await fetchJSONMulti(REPORTS_PATHS);
+      if(!res.ok){
+        if(grid){
+          grid.style.display = "grid";
+          showPanelMessage(grid,
+            "보고서 데이터 오류 (reports.json)",
+            "Reports data error (reports.json)",
+            `reports.json을 불러오지 못했습니다.\n${(res.errors||[]).slice(0,4).join(" | ")}`
+          );
+        }
+        return;
+      }
+
+      REPORTS_CACHE = normalizeReports(res.data).map(r=>{
+        const cat = (r.category || r.type || "archive").toLowerCase();
+        return { ...r, category: cat };
+      });
+    }
+
+    /* ---------------- 9) Sound (REAL PLAY) ---------------- */
+    function initSound(){
+      const btn = qs("#soundBtn");
+      const stopBtn = qs("#soundStopBtn");
+      const bar = qs("#fftBar span");
+
+      // ✅ 밝기 강제 (CSS도 있지만 혹시 덮어씌워질 때 대비)
+      if(bar) bar.style.background = "rgba(215,184,106,0.16)";
+
+      const AUDIO_CANDIDATES = [
+        "/audio/cosmic-resonance.mp3",
+        "audio/cosmic-resonance.mp3",
+        "/audio/cosmic_resonance.mp3",
+        "audio/cosmic_resonance.mp3",
+        "/audio/ambient.mp3",
+        "audio/ambient.mp3"
+      ];
+
+      let audio = null;
+      let ctx = null, analyser=null, data=null, raf=0;
+      let lastGoodSrc = null;
+
+      function setBar(v){
+        if(!bar) return;
+        bar.style.width = `${clamp(v,0,1)*100}%`;
+      }
+
+      function stop(){
+        cancelAnimationFrame(raf);
+        if(audio) audio.pause();
+        setBar(0);
+        if(stopBtn) stopBtn.disabled = true;
+      }
+
+      function tick(){
+        if(!analyser || !data) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for(let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / (data.length * 255);
+        setBar(avg);
+        raf = requestAnimationFrame(tick);
+      }
+
+      async function pickPlayableSrc(){
+        if(lastGoodSrc) return lastGoodSrc;
+
+        for(const src of AUDIO_CANDIDATES){
+          const url = resolvePath(src);
           try{
-            const r = await fetch(u, { method:"HEAD", cache:"no-store" });
-            ok = r.ok;
-          }catch(_e){
-            const r2 = await fetch(u, { method:"GET", cache:"no-store" });
-            ok = r2.ok;
-          }
+            const u = url.includes("?") ? `${url}&${cacheBust()}` : `${url}?${cacheBust()}`;
+            let ok = false;
 
-          if(ok){
-            lastGoodSrc = url;
-            return url;
-          }
-        }catch(e){ /* continue */ }
-      }
-      return null;
-    }
-
-    async function ensureAudio(){
-      const src = await pickPlayableSrc();
-      if(!src){
-        if(!warned){
-          warned = true;
-          // UI만 유지하고, 소리 파일 경로가 없다는 사실을 알려줌
-          console.warn("[Sound] No playable audio file found in candidates.");
+            try{
+              const r = await fetch(u, { method:"HEAD", cache:"no-store" });
+              ok = r.ok;
+            }catch(_e){
+              const r2 = await fetch(u, { method:"GET", cache:"no-store" });
+              ok = r2.ok;
+            }
+            if(ok){
+              lastGoodSrc = url;
+              return url;
+            }
+          }catch(_e){ /* continue */ }
         }
         return null;
       }
 
-      if(!audio){
-        audio = new Audio(src);
-        audio.loop = true;
-        audio.crossOrigin = "anonymous";
-        audio.preload = "auto";
-      }else{
-        // src가 바뀌었으면 교체
-        if(audio.src !== src) audio.src = src;
-      }
-      return audio;
-    }
+      async function ensureAudio(){
+        const src = await pickPlayableSrc();
+        if(!src) return null;
 
-    async function start(){
-      // iOS: 사용자 클릭에서 AudioContext resume 필수
-      if(!ctx){
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if(!audio){
+          audio = new Audio(src);
+          audio.loop = true;
+          audio.crossOrigin = "anonymous";
+          audio.preload = "auto";
+        }else{
+          if(audio.src !== src) audio.src = src;
+        }
+        return audio;
       }
-      try{ await ctx.resume(); }catch(_e){}
 
-      const a = await ensureAudio();
-      if(!a){
-        // 소리 파일 없으면 “살아있는 듯” 미세 펄스만
+      async function start(){
+        // iOS: 사용자 클릭에서 AudioContext resume 필수
+        if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        try{ await ctx.resume(); }catch(_e){}
+
+        const a = await ensureAudio();
+        if(!a){
+          // 파일이 없으면 “가짜 펄스”만 보여주고 안내는 콘솔로.
+          cancelAnimationFrame(raf);
+          let x = 0;
+          const pulse = () => {
+            x += 0.04;
+            setBar(0.05 + Math.abs(Math.sin(x))*0.06);
+            raf = requestAnimationFrame(pulse);
+          };
+          pulse();
+          if(stopBtn) stopBtn.disabled = false;
+          console.warn("[Sound] No playable audio file found. Put an mp3 in /audio/ (e.g., cosmic-resonance.mp3).");
+          return;
+        }
+
+        if(!analyser){
+          const srcNode = ctx.createMediaElementSource(a);
+          analyser = ctx.createAnalyser();
+          analyser.fftSize = 256;
+          data = new Uint8Array(analyser.frequencyBinCount);
+          srcNode.connect(analyser);
+          analyser.connect(ctx.destination);
+        }
+
+        try{
+          await a.play();
+        }catch(e){
+          console.warn("[Sound] play blocked:", e);
+          return;
+        }
+
+        if(stopBtn) stopBtn.disabled = false;
         cancelAnimationFrame(raf);
-        let x = 0;
-        const pulse = () => {
-          x += 0.04;
-          setBar(0.05 + Math.abs(Math.sin(x))*0.08);
-          raf = requestAnimationFrame(pulse);
-        };
-        pulse();
-        stopBtn && (stopBtn.disabled = false);
-        return;
+        tick();
       }
 
-      // analyser chain
-      if(!analyser){
-        const srcNode = ctx.createMediaElementSource(a);
-        analyser = ctx.createAnalyser();
-        analyser.fftSize = 256;
-        data = new Uint8Array(analyser.frequencyBinCount);
-        srcNode.connect(analyser);
-        analyser.connect(ctx.destination);
-      }
-
-      try{
-        await a.play(); // autoplay block → 클릭이므로 대부분 통과
-      }catch(e){
-        // 그래도 막히면 다음 탭에서 재클릭
-        console.warn("[Sound] play blocked:", e);
-        return;
-      }
-
-      stopBtn && (stopBtn.disabled = false);
-      cancelAnimationFrame(raf);
-      tick();
+      btn?.addEventListener("click", start);
+      stopBtn?.addEventListener("click", stop);
     }
 
-    btn?.addEventListener("click", start);
-    stopBtn?.addEventListener("click", stop);
-  }
+    /* ---------------- Boot ---------------- */
+    document.addEventListener("DOMContentLoaded", async () => {
+      initSingleViewSections();  // ✅ Poem/Works/Reports “한 번에 하나만”
+      initLanguage();
+      initBio();
+      initWaves();
+      initWorksTabs();
+      await loadWorks();
+      await loadReports();
+      initSound();
+    });
 
-  /* ----------------------------------------------------------
-    Boot
-  ---------------------------------------------------------- */
-  document.addEventListener("DOMContentLoaded", async () => {
-    initSingleViewSections();   // ✅ Poem/Works/Reports 한 번에 하나만
-    initLanguage();
-    initBio();
-    initWaves();
-    initWorksTabs();
-    await loadWorks();
-    await loadReports();
-    initSound();
-  });
-
-})();
-</script>
+  })();
+  </script>
+</body>
+</html>

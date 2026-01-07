@@ -1,6 +1,6 @@
 <!-- ==========================================================
-① HEAD / STYLE  (REBUILD v2 — CENTER FIX / BUTTON SIZE TUNE / NO BLUR GOLD)
-- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 번짐 0 (4) 접근성/속도
+① HEAD / STYLE  (REBUILD v2 + GOLD BOOST — CENTER FIX / BUTTON SIZE TUNE / NO BLUR GOLD)
+- 목표: (1) 상단 쏠림 제거 (2) 버튼 과대 해결 (3) 금빛 번짐 0 + 존재감 ↑ (4) 접근성/속도
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
@@ -37,8 +37,9 @@
       --bg1:#070A14;
       --bg2:#0A1022;
 
-      --gold:#D7B86A;
-      --gold2:#E9D59B;
+      /* ✅ GOLD BOOST (번짐 없이 존재감만 상승) */
+      --gold:#E3C97A;   /* was #D7B86A */
+      --gold2:#F2E3B0;  /* was #E9D59B */
       --blue:#79A7FF;
 
       --ink:#EDE3C9;
@@ -47,7 +48,7 @@
 
       --card:rgba(255,255,255,.035);
       --card2:rgba(255,255,255,.055);
-      --line:rgba(215,184,106,.22);
+      --line:rgba(227,201,122,.24);
       --line2:rgba(121,167,255,.18);
 
       --shadow: 0 16px 40px rgba(0,0,0,.45);
@@ -62,8 +63,8 @@
       --maxw: 1120px;
 
       /* 금빛 “단단함(번짐 없음)” 엣지 */
-      --gold-edge: rgba(0,0,0,.70);
-      --gold-edge2: rgba(0,0,0,.42);
+      --gold-edge: rgba(0,0,0,.82);
+      --gold-edge2: rgba(0,0,0,.55);
 
       /* 버튼 크기 튜닝 */
       --btnH: 40px;
@@ -77,7 +78,7 @@
     body{
       margin:0;
       background:
-        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        radial-gradient(1200px 700px at 50% 0%, rgba(227,201,122,.11), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
         linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
       color:var(--ink);
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -140,7 +141,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       background: linear-gradient(180deg, rgba(5,8,18,.92), rgba(5,8,18,.62));
-      border-bottom:1px solid rgba(215,184,106,.18);
+      border-bottom:1px solid rgba(227,201,122,.18);
     }
 
     header .brand,
@@ -148,17 +149,17 @@
       max-width: var(--maxw);
       margin: 0 auto;
       padding: 0 18px;
-      text-align:center; /* ✅ 쏠림 해결 핵심 */
+      text-align:center;
     }
 
+    /* ✅ GOLD BOOST: 브랜드 텍스트 “선명/단단” 강화 (번짐 0) */
     header .brand{
-      font-weight: 900;
+      font-weight: 950;
       color: var(--gold2);
       letter-spacing: .72px;
       font-size: 15px;
       line-height: 1.25;
-
-      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      -webkit-text-stroke: .45px rgba(0,0,0,.55);
       text-shadow:
         0 1px 0 var(--gold-edge),
         0 -1px 0 var(--gold-edge2);
@@ -179,33 +180,35 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      justify-content:center; /* ✅ 중앙 정렬 */
+      justify-content:center;
     }
 
     nav.primary button{
       appearance:none;
-      border: 1px solid rgba(215,184,106,.30);
+      border: 1px solid rgba(227,201,122,.50);
       background: rgba(255,255,255,.028);
       color: var(--gold2);
       padding: 8px var(--btnPadX);
       border-radius: var(--btnRadius);
-      font-weight: 900;
+      font-weight: 950;
       font-size: var(--btnFont);
       cursor:pointer;
       transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
       min-height: var(--btnH);
       box-shadow: 0 8px 18px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.64);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     nav.primary button:hover{
-      background: rgba(215,184,106,.08);
-      border-color: rgba(215,184,106,.52);
+      background: rgba(227,201,122,.10);
+      border-color: rgba(227,201,122,.70);
       box-shadow: 0 10px 24px rgba(0,0,0,.36);
     }
     nav.primary button.active{
-      background: rgba(215,184,106,.12);
-      border-color: rgba(215,184,106,.72);
-      box-shadow: 0 12px 28px rgba(0,0,0,.40);
+      background: rgba(227,201,122,.18);
+      border-color: rgba(227,201,122,.92);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.65),
+        0 12px 28px rgba(0,0,0,.40);
     }
     nav.primary button:active{ transform: translateY(1px); }
     nav.primary button:focus-visible{
@@ -220,7 +223,7 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      justify-content:center; /* ✅ 중앙 정렬 */
+      justify-content:center;
     }
     .lang button{
       appearance:none;
@@ -229,21 +232,21 @@
       color: rgba(237,227,201,.92);
       padding: 7px 11px;
       border-radius: var(--btnRadius);
-      font-weight: 900;
+      font-weight: 950;
       font-size: 12px;
       cursor:pointer;
-      min-height: 38px; /* ✅ 과대 방지 */
+      min-height: 38px;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .lang button.active{
-      border-color: rgba(215,184,106,.72);
-      background: rgba(215,184,106,.12);
+      border-color: rgba(227,201,122,.92);
+      background: rgba(227,201,122,.18);
       color: var(--gold2);
     }
     .lang button:hover{
-      border-color: rgba(215,184,106,.45);
-      background: rgba(215,184,106,.08);
+      border-color: rgba(227,201,122,.62);
+      background: rgba(227,201,122,.10);
     }
     .lang button:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -279,15 +282,16 @@
       font-size: 20px;
       letter-spacing:.45px;
       color: var(--gold2);
-      -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      font-weight: 950;
+      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .poemwrap{
       margin-top:14px;
       padding: 14px 14px;
       border-radius: 14px;
       background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
-      border: 1px solid rgba(215,184,106,.14);
+      border: 1px solid rgba(227,201,122,.16);
     }
     .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
 
@@ -298,38 +302,39 @@
     #works h2{
       margin:0;
       color:var(--gold2);
-      -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      font-weight: 950;
+      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .tabs{
       margin-top:14px;
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      justify-content:center; /* ✅ 중앙 정렬 */
+      justify-content:center;
     }
     .tabs .tab{
       appearance:none;
-      border:1px solid rgba(215,184,106,.22);
+      border:1px solid rgba(227,201,122,.40);
       background: rgba(255,255,255,.02);
-      color:rgba(237,227,201,.90);
+      color:rgba(237,227,201,.92);
       border-radius: 999px;
       padding: 8px 12px;
-      font-weight:900;
+      font-weight:950;
       font-size:12.2px;
       cursor:pointer;
       min-height: 38px;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .tabs .tab.active{
-      border-color: rgba(215,184,106,.72);
-      background: rgba(215,184,106,.12);
+      border-color: rgba(227,201,122,.92);
+      background: rgba(227,201,122,.18);
       color: var(--gold2);
     }
     .tabs .tab:hover{
-      border-color: rgba(215,184,106,.45);
-      background: rgba(215,184,106,.08);
+      border-color: rgba(227,201,122,.62);
+      background: rgba(227,201,122,.10);
     }
     .tabs .tab:focus-visible{
       outline:2px solid rgba(121,167,255,.55);
@@ -361,8 +366,8 @@
     }
     .w-card:hover{
       transform: translateY(-1px);
-      border-color: rgba(215,184,106,.28);
-      background: rgba(215,184,106,.05);
+      border-color: rgba(227,201,122,.30);
+      background: rgba(227,201,122,.06);
     }
     .w-thumb{
       width:100%;
@@ -375,11 +380,11 @@
       border-top:1px solid rgba(255,255,255,.045);
     }
     .w-title{
-      font-weight: 900;
+      font-weight: 950;
       color: rgba(237,227,201,.94);
       line-height:1.35;
       font-size: 13px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .w-title .ko,
     .w-title .en{ margin:0; }
@@ -406,15 +411,16 @@
     #reports h2{
       margin:0;
       color:var(--gold2);
-      -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      font-weight: 950;
+      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .reports-omega{ margin-top:14px; }
 
     .r-head{
       display:flex;
       align-items:center;
-      justify-content:center; /* ✅ 중앙 정렬 */
+      justify-content:center;
       gap:10px;
       flex-wrap:wrap;
       padding: 10px 10px;
@@ -430,7 +436,7 @@
       color: rgba(237,227,201,.88);
       border-radius: 999px;
       padding:8px 12px;
-      font-weight:900;
+      font-weight:950;
       font-size:12.2px;
       cursor:pointer;
       min-height: 38px;
@@ -438,19 +444,19 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .r-tab.is-active{
-      border-color: rgba(215,184,106,.72);
-      background: rgba(215,184,106,.12);
+      border-color: rgba(227,201,122,.92);
+      background: rgba(227,201,122,.18);
       color: var(--gold2);
     }
     .r-tab:hover{
-      border-color: rgba(215,184,106,.42);
-      background: rgba(215,184,106,.08);
+      border-color: rgba(227,201,122,.62);
+      background: rgba(227,201,122,.10);
     }
 
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(215,184,106,.30);
-      background: rgba(215,184,106,.10);
+      border:1px solid rgba(227,201,122,.50);
+      background: rgba(227,201,122,.14);
       color: var(--gold2);
       border-radius: 999px;
       padding:8px 12px;
@@ -458,7 +464,7 @@
       cursor:pointer;
       min-height: 38px;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
 
     .r-grid{
@@ -485,14 +491,14 @@
     }
     .r-item:hover{
       transform: translateY(-1px);
-      border-color: rgba(215,184,106,.28);
-      background: rgba(215,184,106,.05);
+      border-color: rgba(227,201,122,.30);
+      background: rgba(227,201,122,.06);
     }
     .r-item .t{
       font-weight: 950;
       color: rgba(237,227,201,.94);
       line-height:1.35;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
     .r-item .m{
       margin-top:6px;
@@ -506,6 +512,17 @@
       color: rgba(237,227,201,.78);
       line-height:1.55;
       white-space: pre-line;
+    }
+
+    .r-viewer{
+      margin-top: 12px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(5,8,18,.30);
+      color: rgba(237,227,201,.86);
+      line-height: 1.7;
+      white-space: pre-wrap;
     }
 
     /* =========================================================
@@ -525,7 +542,7 @@
       width: calc(100% - 28px);
       margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
       background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
-      border:1px solid rgba(215,184,106,.18);
+      border:1px solid rgba(227,201,122,.18);
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -541,8 +558,8 @@
       color: var(--gold2);
       font-size: 15px;
       font-weight: 950;
-      -webkit-text-stroke: .25px rgba(0,0,0,.28);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      -webkit-text-stroke: .35px rgba(0,0,0,.5);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     .bio-lang{ display:flex; gap:8px; align-items:center; }
     .bio-lang .lang{
@@ -560,13 +577,13 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
     .bio-lang .lang.active{
-      border-color: rgba(215,184,106,.72);
-      background: rgba(215,184,106,.12);
+      border-color: rgba(227,201,122,.92);
+      background: rgba(227,201,122,.18);
       color: var(--gold2);
     }
     .bio-close{
       appearance:none;
-      border:1px solid rgba(215,184,106,.30);
+      border:1px solid rgba(227,201,122,.45);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       width: 42px;
@@ -655,7 +672,7 @@
       height: 46px;
       border-radius: 14px;
       appearance:none;
-      border:1px solid rgba(215,184,106,.30);
+      border:1px solid rgba(227,201,122,.45);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-size: 18px;
@@ -681,7 +698,7 @@
       display:block;
       height:100%;
       width:0%;
-      background: rgba(215,184,106,.55);
+      background: rgba(227,201,122,.65);
       transition: width .08s linear;
     }
 
@@ -698,7 +715,7 @@
       height: 48px;
       border-radius: 16px;
       appearance:none;
-      border: 1px solid rgba(215,184,106,.30);
+      border: 1px solid rgba(227,201,122,.38);
       background: rgba(0,0,0,0);
       color: var(--gold2);
       font-size: 18px;
@@ -717,7 +734,7 @@
       max-width: var(--maxw);
       margin: 18px auto 0;
       padding: 14px 18px calc(16px + var(--safe-bot));
-      border-top:1px solid rgba(215,184,106,.16);
+      border-top:1px solid rgba(227,201,122,.16);
       background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
       border-radius: 18px;
       text-align:center;
@@ -736,18 +753,18 @@
       min-height: 44px;
       padding: 0 14px;
       border-radius: 999px;
-      border:1px solid rgba(215,184,106,.30);
+      border:1px solid rgba(227,201,122,.45);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
       font-weight: 950;
       letter-spacing:.22px;
       text-decoration:none;
       box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
     }
     footer .links a:hover{
-      background: rgba(215,184,106,.12);
-      border-color: rgba(215,184,106,.70);
+      background: rgba(227,201,122,.18);
+      border-color: rgba(227,201,122,.92);
       text-decoration:none;
     }
     footer .links a:active{ transform: translateY(1px); }
@@ -773,1601 +790,3 @@
     }
   </style>
 </head>
-
-<!-- ==========================================================
-② BODY / HTML  (USER ORIGINAL — DO NOT EDIT)
-========================================================== -->
-<body class="korean">
-  <!-- BACKGROUND -->
-  <canvas id="waves" aria-hidden="true"></canvas>
-
-  <!-- HEADER -->
-  <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮27</div>
-    <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
-
-    <nav class="primary" aria-label="Primary">
-      <button type="button" data-target="poem" class="active" aria-current="page">Poem</button>
-      <button type="button" data-target="works">Works</button>
-      <button type="button" data-target="reports">Reports</button>
-      <button type="button" id="tab-bio">Artist Bio</button>
-    </nav>
-
-    <div class="lang" aria-label="Language">
-      <button type="button" id="koBtn" class="active">KR</button>
-      <button type="button" id="enBtn">EN</button>
-      <button type="button" id="hyBtn">KR+EN</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- 1) POEM -->
-    <section id="poem" class="hero">
-      <h1 class="ko">빛 · 기억 · 존재</h1>
-      <h1 class="en">Light · Memory · Being</h1>
-
-      <div class="poemwrap">
-        <p class="ko" style="font-weight:700">〈파리의 센느강〉</p>
-        <p class="en" style="font-weight:700">〈The Seine of Paris〉</p>
-        <p class="ko" style="opacity:.85;margin-top:4px">등작 燈酌 DUNGZAK CESTLAVIE</p>
-        <p class="en" style="opacity:.85;margin-top:4px">DUNGZAK CESTLAVIE</p>
-
-        <div class="poem">
-          <p class="ko">센느강 다리 아래, 노트르담 성당의 촛불이 켜질 무렵—</p>
-          <p class="en">Beneath the bridge of the Seine, as the candles of Notre-Dame begin to glow—</p>
-
-          <p class="ko">소박한 꿈들을 안고 사는 사람들이 모여 춤춘다.</p>
-          <p class="en">People who live with humble dreams gather to dance.</p>
-
-          <p class="ko">빙글빙글 돌아가며 내딛는 발걸음의 화음 위로,</p>
-          <p class="en">Their circling steps form harmonies upon the rhythm of their feet,</p>
-
-          <p class="ko">바이올린이 새파랗고 샛노랑의 빛을 흩뿌리며 웃는다.</p>
-          <p class="en">As violins scatter blue and golden light, laughing in brilliance.</p>
-
-          <p class="ko">꿈꾸는 여인들과 꿈꾸는 남성들이 손을 잡고,</p>
-          <p class="en">Dreaming women and dreaming men clasp hands,</p>
-
-          <p class="ko">사람의 향기를 맡으며 재빠른 음률에 몸을 맡긴다.</p>
-          <p class="en">Breathing the scent of humanity, surrendering to the swift rhythm.</p>
-
-          <p class="ko">아담과 이브의 별자국이 눈물방울처럼 흘러내리는 나무,</p>
-          <p class="en">A tree where Adam and Eve’s star-traces drip like tears,</p>
-
-          <p class="ko">그 풍경 속에서 초승달은 어여쁜 하얀 미소를 흘린다.</p>
-          <p class="en">In that scene, the crescent moon releases a tender white smile.</p>
-
-          <p class="ko">샤락, 샤락— 춤사위의 리듬이 확장될수록,</p>
-          <p class="en">Sharak, sharak— as the rhythm of dance expands,</p>
-
-          <p class="ko">구경하던 이들마저 어깨와 허리를 들썩이며,</p>
-          <p class="en">Even the onlookers begin to sway their shoulders and waists,</p>
-
-          <p class="ko">사랑의 입맞춤을 의식한다.</p>
-          <p class="en">Becoming aware of love’s gentle kiss.</p>
-
-          <p class="ko">흘러감 속에 포개진 순간, 그들은 영혼의 박제가 되어,</p>
-          <p class="en">Within the flowing overlap of time, they become taxidermies of the soul,</p>
-
-          <p class="ko">멈춤 속에 영원을 새긴다.</p>
-          <p class="en">inscribing eternity into stillness.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2) WORKS -->
-    <!-- ✅ 변경: display:none 제거 (모든 작품이 항상 나오게) -->
-    <section id="works">
-      <h2 class="ko">작품 아카이브</h2>
-      <h2 class="en">Artworks</h2>
-
-      <div class="tabs" role="tablist">
-        <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
-        <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
-        <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
-        <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
-        <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
-      </div>
-
-      <!-- ✅ SCRIPT에서 works.json 읽어서 여기 5개 패널에 각각 “그리드”를 채우면 됨 -->
-      <div id="panel-pray" class="tabpanel active"></div>
-      <div id="panel-human" class="tabpanel"></div>
-      <div id="panel-rebirth" class="tabpanel"></div>
-      <div id="panel-exist" class="tabpanel"></div>
-      <div id="panel-cosmos" class="tabpanel"></div>
-    </section>
-
-    <!-- 3) REPORTS -->
-    <!-- ✅ 변경: display:none 제거 (Reports도 항상 표시) -->
-    <section id="reports">
-      <h2 class="ko">미학 보고서 (DCAR Series)</h2>
-      <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
-
-      <div class="reports-omega">
-        <div class="r-head">
-          <div class="r-tabs">
-            <button type="button" class="r-tab is-active" data-r="all">All</button>
-            <button type="button" class="r-tab" data-r="theory">Theory</button>
-            <button type="button" class="r-tab" data-r="archive">Archive</button>
-            <button type="button" class="r-tab" data-r="practice">Practice</button>
-          </div>
-
-          <button type="button" id="reportsToggle" class="r-toggle" aria-expanded="false">
-            Open Reports
-          </button>
-        </div>
-
-        <!-- ✅ 핵심: reports.json에서 title_ko/title_en + summary_ko/summary_en을 “SCRIPT가” 렌더링 -->
-        <!-- ✅ BODY에는 요약 텍스트를 직접 쓰지 않는다 -->
-        <div id="reportGrid" class="r-grid"></div>
-
-        <!-- ✅ MD 원문은 새 창으로 열거나(권장) 또는 여기 viewer에 표시(선택) -->
-        <div id="reportViewer" class="r-viewer" aria-live="polite"></div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ARTIST BIO MODAL (원문 텍스트 유지 + 요청 수정 반영) -->
-  <div id="bio-modal" hidden>
-    <div class="bio-backdrop"></div>
-
-    <div class="bio-card" role="dialog" aria-modal="true" aria-labelledby="bio-title">
-      <div class="bio-head">
-        <h2 id="bio-title" class="ko">작가 소개</h2>
-        <h2 class="en">Artist Bio</h2>
-
-        <div class="bio-lang">
-          <button class="lang active" data-bio-lang="kr" aria-pressed="true">KR</button>
-          <button class="lang" data-bio-lang="en" aria-pressed="false">EN</button>
-        </div>
-
-        <button class="bio-close" aria-label="Close">✕</button>
-      </div>
-
-      <!-- one-line summary -->
-      <button class="expo-kicker" id="expoToggle" aria-expanded="false">
-        <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
-        <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
-      </button>
-
-      <!-- slide list -->
-      <div class="slide-wrap" id="expoSlide" data-open="false">
-        <!-- (한국어 Bio 본문 그대로 + 최상단 2026 추가) -->
-        <div class="bio-body ko">
-          <p><strong>국내 주요전시</strong></p>
-          <p>2026 김정숙 갤러리, 인천, 대한민국</p>
-          <p>2025 구구갤러리 목동, 서울, 대한민국</p>
-          <p>2023, 2024 구구갤러리 목동, 서울, 대한민국</p>
-          <p>2023 아트플러스 갤러리 인사동, 서울, 대한민국</p>
-          <p>2019, 2022 해양 에너지 정원 한남동, 서울, 대한민국</p>
-          <p>2015 NC 갤러리, 부산, 대한민국</p>
-          <p>2014 갤러리 골목, 이태원, 서울, 대한민국</p>
-          <p>2013 프라미스 랜드, 부산, 대한민국</p>
-          <p>2009 아트 갤러리 유, 부산, 대한민국</p>
-          <p>2005 횡성 문화관, 강원도, 대한민국</p>
-          <p>2003 스페이스 키친, 서울, 대한민국</p>
-          <p>2003 홍대 놀이터 사계 야외 전시, 서울, 대한민국</p>
-          <p>2000 갤러리 소호, 부산, 대한민국</p>
-          <p>2000 세원백화점, 부산, 대한민국</p>
-          <br><p><strong>국외 주요전시</strong></p>
-          <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
-          <p>2015 모스크바 국제공항 『삶과 예술의 간격』, 모스크바, 러시아</p>
-          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 & 전시, 베트남</p>
-          <p>2011 Open Art in Amsterdam, 네덜란드</p>
-          <p>2006 Linka Gallery, 암스테르담, 네덜란드</p>
-          <p>2005 Lune Cafe, 몽파르나스, 파리, 프랑스</p>
-          <p>2005 루브르 박물관 외벽 전시, 파리, 프랑스</p>
-          <br><p><strong>그 외 전시</strong></p>
-          <p>2025 그림따라 걷는 도시 익산, 익산, 대한민국</p>
-          <p>2025 갤러리5 전국 초대전, 인천, 대한민국</p>
-          <p>2024, 2025 구구갤러리 송년 선물전, 서울, 대한민국</p>
-          <p>2022 김영우·등작 2인전, 아르템 갤러리, 서울, 대한민국</p>
-          <p>2004 광주비엔날레 “The Stage”, 광주, 대한민국</p>
-          <p>2004 하대리 숲속 미술제 “예술의 휴가”, 횡성군, 대한민국</p>
-          <p>2000 José Delgado·등작 2인전, 서면 메트로 미술관, 부산, 대한민국</p>
-          <br><p><strong>소장</strong></p>
-          <p>베를린 시청; 훔볼트 병원; 노트르담 대성당(파리); 파리 정치대학; 바르샤바 국립 의료원; 일본 도쿄 교회; 베트남 호찌민 중앙 경찰서; 네덜란드 암스테르담 반 고흐 미술관(포트폴리오); 미국 뉴욕 현대 미술관(포트폴리오); 메리츠 증권; 국내외 개인 소장자 다수</p>
-          <br><p><strong>저서</strong></p>
-          <p>《1 눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망》(2022)</p>
-          <p>《예술, 그 끝없는 사랑》(2024)</p>
-        </div>
-
-        <!-- (영문 Bio 본문 그대로 + 최상단 2026 추가) -->
-        <div class="bio-body en">
-          <p><strong>Major Exhibitions in Korea</strong></p>
-          <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
-          <p>2025 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
-          <p>2023, 2024 Gugu Gallery Mokdong, Seoul, Republic of Korea</p>
-          <p>2023 Art Plus Gallery Insadong, Seoul, Republic of Korea</p>
-          <p>2019, 2022 Ocean Energy Garden, Hannam-dong, Seoul, Republic of Korea</p>
-          <p>2015 NC Gallery, Busan, Republic of Korea</p>
-          <p>2014 Gallery Golmok, Itaewon, Seoul, Republic of Korea</p>
-          <p>2013 Promise Land, Busan, Republic of Korea</p>
-          <p>2009 Art Gallery You, Busan, Republic of Korea</p>
-          <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
-          <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
-          <p>2000 Gallery Soho, Busan, Republic of Korea</p>
-          <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
-          <br><p><strong>Major International Exhibitions</strong></p>
-          <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
-          <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
-          <p>2011 Open Art in Amsterdam, Netherlands</p>
-          <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
-          <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
-          <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
-          <br><p><strong>Selected Other Exhibitions</strong></p>
-          <p>2025 Walking with Art in Iksan, Republic of Korea</p>
-          <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
-          <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Republic of Korea</p>
-          <p>2022 Two-person Exhibition (Kim Young-woo &amp; DUNGZAK CESTLAVIE), Artem Gallery, Seoul</p>
-          <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
-          <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
-          <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
-          <br><p><strong>Collections</strong></p>
-          <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland;
-Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection);
-Meritz Securities Co., Ltd., Republic of Korea;
-Numerous private collections worldwide.</p>
-          <p><strong>Publications</strong></p>
-          <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
-          <p><em>Art, the Endless Love</em> (2024)</p>
-        </div>
-      </div>
-
-      <!-- Bio main -->
-      <div class="bio-body ko">
-        <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
-        <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
-        <p>서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등지에서 회화와 다매체 프로젝트를 선보여 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 ‘빛의 윤리’와 ‘존재 감응의 미학’을 구축해왔다.</p>
-        <p>등작의 작품은 기도문이자 기록이며, 상처 이후에 남는 따뜻함과 지워지지 않는 기억의 지속, 그리고 인간 존엄에 대한 조용한 선언이다. 그의 예술 세계는 ‘고통 이후의 빛’, ‘기억이 스스로를 복원하는 순간’, ‘존재가 다시 깨어나는 호흡’을 중심으로 확장된다.</p>
-      </div>
-
-      <div class="bio-body en">
-        <p>DUNGZAK CESTLAVIE is a Korean contemporary artist whose practice centers on the triad “Light · Memory · Being.”</p>
-        <p>His paintings trace emotional residues, the genesis of light passing through wounds, and cycles of disappearance and rebirth. Beyond image or color, his work expands into an ethics of light and the dignity of memory.</p>
-        <p>Based in Seoul, he has developed painting and multi-media projects across Berlin, Paris, Amsterdam, Warsaw, and Moscow, integrating text, sound, video, and archival structures.</p>
-        <p>Each work is both prayer and record: a quiet declaration of human dignity, the warmth that follows wounding, and the breath by which being reawakens.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- LIGHTBOX (◀ ▶ 화살표 제거 버전) -->
-  <div id="lightbox" aria-hidden="true">
-    <div class="lb-stage">
-      <img id="lbImg" alt="">
-      <div id="lbCap" class="lb-caption"></div>
-    </div>
-    <button id="lbClose" class="lb-close">✕</button>
-  </div>
-
-  <!-- SOUND PLAYER -->
-  <div id="fftBar"><span></span></div>
-  <div id="ctrl">
-    <button id="soundBtn" class="ctrlbtn">✨</button>
-    <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="links">
-      <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
-      <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">MUSIC UNIVERSE</a>
-      <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">Naver Info</a>
-      <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
-    </div>
-
-    <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
-    <small class="en">©DUNGZAK CESTLAVIE</small>
-  </footer>
-
-<!-- ==========================================================
-③ SCRIPTS  (REBUILD — STABLE FULL)
-- BODY는 그대로(변경 금지)
-- Works: /data/works.json 로드 → 5개 패널 그리드 렌더 → Lightbox(zoom) 정확히
-- Reports: /data/reports.json 로드 → 언어(KR/EN/KR+EN) 분리 요약 렌더
-         → 클릭 시 새 창 Viewer(원문 텍스트) + 하단 download
-- Bio: 모달 열기/닫기, 로컬(KR/EN) 토글, 요약줄 클릭 시 전시/소장/저서 슬라이드
-- Sound: “루메라 우주 공명음” (외부 mp3 없이 WebAudio 합성) + FFT bar
-- Speed: cache-bust, lazy decode, IntersectionObserver
-========================================================== -->
-<script>
-(() => {
-  "use strict";
-
-  /* =========================================================
-     0) Helpers
-  ========================================================= */
-  const $  = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-  const safeText = (v) => String(v ?? "");
-  const esc = (s) => String(s ?? "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const nowBust = () => Date.now().toString(36);
-
-  const prefersReducedMotion = () =>
-    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // root 기준 절대경로 보정(상대경로/./../로 인한 오류 방지)
-  const slash = (p) => {
-    const s = safeText(p).trim();
-    if (!s) return "";
-    if (/^https?:\/\//i.test(s)) return s;
-    return s.startsWith("/") ? s : ("/" + s.replace(/^\.?\//, ""));
-  };
-
-  // iOS에서 click passive 옵션에 대한 안전 처리
-  function onTap(el, fn) {
-    if (!el) return;
-    el.addEventListener("click", (e) => {
-      try { fn(e); } catch(err){ console.error(err); }
-    }, { passive:true });
-  }
-
-  function dispatch(name, detail) {
-    window.dispatchEvent(new CustomEvent(name, { detail }));
-  }
-
-  function once(el, type, fn, opts){
-    if (!el) return;
-    const handler = (e) => { el.removeEventListener(type, handler, opts); fn(e); };
-    el.addEventListener(type, handler, opts);
-  }
-
-  /* =========================================================
-     1) Waves Background (FAST + ELEGANT)
-  ========================================================= */
-  const WAVES = {
-    c:null, ctx:null, dpr:1, w:0, h:0, t:0, raf:0,
-
-    init(){
-      this.c = $("#waves");
-      if (!this.c) return;
-      this.ctx = this.c.getContext("2d", { alpha:true });
-      this.resize();
-      window.addEventListener("resize", () => this.resize(), { passive:true });
-
-      if (prefersReducedMotion()) {
-        this.drawStatic();
-        return;
-      }
-      this.loop();
-    },
-
-    resize(){
-      if (!this.c || !this.ctx) return;
-      this.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      this.w = Math.floor(window.innerWidth * this.dpr);
-      this.h = Math.floor(window.innerHeight * this.dpr);
-      this.c.width = this.w;
-      this.c.height = this.h;
-      this.c.style.width = "100%";
-      this.c.style.height = "100%";
-    },
-
-    drawStatic(){
-      const g = this.ctx;
-      if (!g) return;
-      g.clearRect(0,0,this.w,this.h);
-      g.globalAlpha = 0.35;
-      g.fillStyle = "rgba(215,184,106,.10)";
-      g.beginPath();
-      g.ellipse(this.w*0.5, this.h*0.06, this.w*0.46, this.h*0.26, 0, 0, Math.PI*2);
-      g.fill();
-      g.globalAlpha = 1;
-    },
-
-    loop(){
-      this.raf = requestAnimationFrame(() => this.loop());
-      this.t += 0.0065;
-      this.draw();
-    },
-
-    draw(){
-      const g = this.ctx;
-      if (!g) return;
-      g.clearRect(0,0,this.w,this.h);
-
-      // top glow
-      g.globalAlpha = 0.18;
-      g.fillStyle = "rgba(121,167,255,.10)";
-      g.beginPath();
-      g.ellipse(this.w*0.5, this.h*0.08, this.w*0.44, this.h*0.24, 0, 0, Math.PI*2);
-      g.fill();
-
-      const layers = [
-        { a: 18, k: 0.012, s: 0.90, o: 0.20 },
-        { a: 28, k: 0.010, s: 1.20, o: 0.18 },
-        { a: 40, k: 0.008, s: 1.55, o: 0.14 }
-      ];
-
-      for (let li=0; li<layers.length; li++){
-        const L = layers[li];
-        const mid = this.h * (0.28 + li*0.16);
-        const amp = L.a * this.dpr;
-
-        g.globalAlpha = L.o;
-        g.lineWidth = Math.max(1, 1.2 * this.dpr);
-        g.strokeStyle = "rgba(215,184,106,.55)";
-        g.beginPath();
-
-        const step = Math.floor(10*this.dpr);
-        for (let x=0; x<=this.w; x+=step){
-          const nx = x * L.k;
-          const y =
-            mid
-            + Math.sin(nx + this.t*L.s) * amp
-            + Math.sin(nx*0.7 - this.t*1.1) * (amp*0.45)
-            + Math.sin(nx*1.4 + this.t*0.6) * (amp*0.25);
-          if (x===0) g.moveTo(x,y); else g.lineTo(x,y);
-        }
-        g.stroke();
-
-        g.globalAlpha = L.o * 0.55;
-        g.strokeStyle = "rgba(121,167,255,.50)";
-        g.beginPath();
-        const step2 = Math.floor(12*this.dpr);
-        for (let x=0; x<=this.w; x+=step2){
-          const nx = x * (L.k*0.92);
-          const y = mid + Math.sin(nx + this.t*(L.s*1.08))*(amp*0.72);
-          if (x===0) g.moveTo(x,y); else g.lineTo(x,y);
-        }
-        g.stroke();
-      }
-      g.globalAlpha = 1;
-    }
-  };
-
-  /* =========================================================
-     2) Language Controller (GLOBAL)
-  ========================================================= */
-  const LANG = {
-    key: "LF_LANG_V3",
-    mode: "korean",
-
-    set(mode){
-      const m = (mode === "english" || mode === "hybrid") ? mode : "korean";
-      this.mode = m;
-
-      document.body.classList.remove("korean","english","hybrid");
-      document.body.classList.add(m);
-
-      const ko = $("#koBtn"), en = $("#enBtn"), hy = $("#hyBtn");
-      [ko,en,hy].forEach(b => b && b.classList.remove("active"));
-      if (m==="korean" && ko) ko.classList.add("active");
-      if (m==="english" && en) en.classList.add("active");
-      if (m==="hybrid" && hy) hy.classList.add("active");
-
-      try { localStorage.setItem(this.key, m); } catch(e) {}
-      dispatch("lf:lang", { mode:m });
-    },
-
-    restore(){
-      let saved = null;
-      try { saved = localStorage.getItem(this.key); } catch(e) {}
-      if (saved==="korean" || saved==="english" || saved==="hybrid") this.set(saved);
-      else this.set("korean");
-    },
-
-    bindButtons(){
-      onTap($("#koBtn"), () => this.set("korean"));
-      onTap($("#enBtn"), () => this.set("english"));
-      onTap($("#hyBtn"), () => this.set("hybrid"));
-    }
-  };
-
-  /* =========================================================
-     3) Navigation (SCROLL ONLY)
-  ========================================================= */
-  const NAV = {
-    btns: [],
-    secs: { poem:null, works:null, reports:null },
-
-    findSections(){
-      this.secs.poem = $("#poem");
-      this.secs.works = $("#works");
-      this.secs.reports = $("#reports");
-    },
-
-    bind(){
-      this.btns = $$('button[data-target], a[data-target]');
-      this.btns.forEach(b => {
-        const t = (b.getAttribute("data-target") || "").trim();
-        if (!t) return;
-        onTap(b, () => this.go(t, true));
-      });
-    },
-
-    go(target, doScroll){
-      const t = (target === "works" || target === "reports") ? target : "poem";
-
-      this.btns.forEach(b => b.classList.remove("active"));
-      const active = this.btns.find(b => (b.getAttribute("data-target") || "") === t);
-      if (active) active.classList.add("active");
-
-      dispatch("lf:section", { target:t });
-
-      if (doScroll){
-        const el = this.secs[t];
-        if (el) el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block:"start" });
-      }
-    }
-  };
-
-  /* =========================================================
-     4) Lightbox (dataset-only)
-  ========================================================= */
-  const LIGHTBOX = {
-    root: null,
-    img: null,
-    cap: null,
-    closeBtn: null,
-    isOpen: false,
-    touchX: null,
-
-    find(){
-      this.root = $("#lightbox");
-      this.img = $("#lbImg");
-      this.cap = $("#lbCap");
-      this.closeBtn = $("#lbClose");
-    },
-
-    open(src, caption){
-      if (!this.root || !this.img || !src) return;
-      this.img.decoding = "async";
-      this.img.src = src;
-      if (this.cap) this.cap.textContent = caption || "";
-
-      this.root.classList.add("is-open");
-      this.root.setAttribute("aria-hidden","false");
-      this.isOpen = true;
-
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-    },
-
-    close(){
-      if (!this.root) return;
-      this.root.classList.remove("is-open");
-      this.root.setAttribute("aria-hidden","true");
-      this.isOpen = false;
-
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    },
-
-    bind(stepFn){
-      if (!this.root) return;
-
-      onTap(this.closeBtn, () => this.close());
-
-      this.root.addEventListener("click", (e) => {
-        if (!this.isOpen) return;
-        const stage = e.target.closest(".lb-stage");
-        if (!stage) this.close();
-      }, { passive:true });
-
-      document.addEventListener("keydown", (e) => {
-        if (!this.isOpen) return;
-        if (e.key === "Escape") this.close();
-        if (e.key === "ArrowRight") stepFn && stepFn(+1);
-        if (e.key === "ArrowLeft") stepFn && stepFn(-1);
-      });
-
-      this.root.addEventListener("touchstart", (e) => {
-        if (!this.isOpen) return;
-        this.touchX = e.touches?.[0]?.clientX ?? null;
-      }, { passive:true });
-
-      this.root.addEventListener("touchend", (e) => {
-        if (!this.isOpen || this.touchX == null) return;
-        const x1 = e.changedTouches?.[0]?.clientX ?? null;
-        if (x1 == null) return;
-        const dx = x1 - this.touchX;
-        this.touchX = null;
-        if (Math.abs(dx) < 42) return;
-        stepFn && stepFn(dx < 0 ? +1 : -1);
-      }, { passive:true });
-    }
-  };
-
-  /* =========================================================
-     5) Works (robust load + stable render)
-  ========================================================= */
-  const WORKS = {
-    raw: [],
-    bySection: {1:[],2:[],3:[],4:[],5:[]},
-
-    panelEls: {},
-    tabBtns: [],
-    currentKey: "pray",
-    currentIndex: 0,
-    io: null,
-
-    findPanels(){
-      this.panelEls = {
-        pray: $("#panel-pray"),
-        human: $("#panel-human"),
-        rebirth: $("#panel-rebirth"),
-        exist: $("#panel-exist"),
-        cosmos: $("#panel-cosmos")
-      };
-    },
-
-    findTabs(){
-      this.tabBtns = $$('button.tab[data-panel]');
-    },
-
-    keyToSid(key){
-      return key==="pray"?1:key==="human"?2:key==="rebirth"?3:key==="exist"?4:5;
-    },
-
-    currentCards(){
-      const panel = this.panelEls[this.currentKey];
-      if (!panel) return [];
-      return $$(".w-card", panel);
-    },
-
-    async load(){
-      const candidates = ["/data/works.json","data/works.json","/works.json","works.json"];
-      let lastErr = null;
-
-      for (const url of candidates){
-        try{
-          const res = await fetch(url + "?" + nowBust(), { cache:"no-store" });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-
-          const json = await res.json();
-          const arr = Array.isArray(json) ? json : (Array.isArray(json?.works) ? json.works : []);
-
-          this.raw = arr;
-          this.bySection = {1:[],2:[],3:[],4:[],5:[]};
-
-          arr.forEach(w => {
-            const sid = Number(w?.section_id);
-            if (sid>=1 && sid<=5) this.bySection[sid].push(w);
-          });
-
-          return true;
-        }catch(e){ lastErr = e; }
-      }
-
-      console.warn("[Works] load failed:", lastErr);
-      this.raw = [];
-      this.bySection = {1:[],2:[],3:[],4:[],5:[]};
-      return false;
-    },
-
-    titleHTML(w){
-      const kr = safeText(w?.title_kr || "");
-      const en = safeText(w?.title_en || "");
-
-      if (LANG.mode==="english") return `<div class="en">${esc(en || kr)}</div>`;
-      if (LANG.mode==="hybrid"){
-        if (kr && en) return `<div class="ko">${esc(kr)}</div><div class="en">${esc(en)}</div>`;
-        return `<div class="ko">${esc(kr || en)}</div>`;
-      }
-      return `<div class="ko">${esc(kr || en)}</div>`;
-    },
-
-    metaHTML(w){
-      const mkr = safeText(w?.material_kr || "");
-      const men = safeText(w?.material_en || "");
-      const skr = safeText(w?.size_kr || "");
-      const sen = safeText(w?.size_en || "");
-      const yr  = safeText(w?.year || "");
-
-      const krLine = [mkr, skr, yr].filter(Boolean).join(" · ");
-      const enLine = [men, sen, yr].filter(Boolean).join(" · ");
-
-      if (LANG.mode==="english") return `<div class="en">${esc(enLine || krLine)}</div>`;
-      if (LANG.mode==="hybrid"){
-        if (krLine && enLine) return `<div class="ko">${esc(krLine)}</div><div class="en">${esc(enLine)}</div>`;
-        return `<div class="ko">${esc(krLine || enLine)}</div>`;
-      }
-      return `<div class="ko">${esc(krLine || enLine)}</div>`;
-    },
-
-    imgSrc(w){ return slash(w?.image || ""); },
-
-    zoomSrc(w){
-      const z = safeText(w?.zoom || "").trim();
-      if (z) return slash(z);
-
-      const s = this.imgSrc(w);
-      if (!s) return "";
-      if (s.includes("/images/standard/")) return s.replace("/images/standard/","/images/zoom/");
-      return s;
-    },
-
-    captionText(w){
-      const titlePlain =
-        LANG.mode==="english" ? (w?.title_en || w?.title_kr || "")
-                              : (w?.title_kr || w?.title_en || "");
-      const metaPlain =
-        LANG.mode==="english"
-          ? [w?.material_en, w?.size_en, w?.year].filter(Boolean).join(" · ")
-          : [w?.material_kr, w?.size_kr, w?.year].filter(Boolean).join(" · ");
-      return [safeText(titlePlain), safeText(metaPlain)].filter(s=>s.trim()).join(" · ").trim();
-    },
-
-    cardHTML(w, idx){
-      const src = this.imgSrc(w);
-      if (!src) return "";
-      const zoom = this.zoomSrc(w);
-      const cap = this.captionText(w);
-
-      const altTitle =
-        LANG.mode==="english" ? (w?.title_en || w?.title_kr || "")
-                              : (w?.title_kr || w?.title_en || "");
-
-      return `
-        <article class="w-card"
-          data-idx="${idx}"
-          data-zoom="${esc(zoom)}"
-          data-cap="${esc(cap)}">
-          <img class="w-thumb" loading="lazy" decoding="async"
-               src="${esc(src)}" alt="${esc(altTitle)}">
-          <div class="w-meta">
-            <div class="w-title">${this.titleHTML(w)}</div>
-            <div class="w-sub">${this.metaHTML(w)}</div>
-          </div>
-        </article>
-      `;
-    },
-
-    attachLazyDecode(panel){
-      const imgs = $$("img.w-thumb", panel);
-      imgs.forEach(img => {
-        if (!("decode" in img)) return;
-        img.addEventListener("load", () => { try { img.decode(); } catch(e) {} }, { once:true, passive:true });
-      });
-    },
-
-    setupObserver(panel){
-      if (!("IntersectionObserver" in window)) return;
-
-      if (this.io) { try { this.io.disconnect(); } catch(e) {} }
-      this.io = new IntersectionObserver((entries) => {
-        entries.forEach(en => {
-          if (!en.isIntersecting) return;
-          const img = en.target;
-          try { img.loading = "eager"; } catch(e) {}
-          if ("decode" in img) { try { img.decode(); } catch(e) {} }
-          this.io.unobserve(img);
-        });
-      }, { root:null, rootMargin:"240px 0px", threshold:0.01 });
-
-      $$("img.w-thumb", panel).forEach(img => this.io.observe(img));
-    },
-
-    renderPanel(key){
-      this.findPanels();
-      this.findTabs();
-
-      const k = this.panelEls[key] ? key : "pray";
-      this.currentKey = k;
-      this.currentIndex = 0;
-
-      this.tabBtns.forEach(b => b.classList.remove("active"));
-      const activeTab = this.tabBtns.find(b => (b.getAttribute("data-panel")||"") === k);
-      if (activeTab) activeTab.classList.add("active");
-
-      $$(".tabpanel").forEach(p => p.classList.remove("active"));
-      const panel = this.panelEls[k];
-      if (panel) panel.classList.add("active");
-      if (!panel) return;
-
-      const sid = this.keyToSid(k);
-      const arr = this.bySection[sid] || [];
-
-      if (!arr.length){
-        panel.innerHTML = `<div class="w-msg">Works 데이터가 없습니다.<small>(section_id: ${sid} / /data/works.json 확인)</small></div>`;
-        return;
-      }
-
-      panel.innerHTML = `<div class="w-grid">${arr.map((w,i)=>this.cardHTML(w,i)).filter(Boolean).join("")}</div>`;
-
-      this.attachLazyDecode(panel);
-      this.setupObserver(panel);
-
-      // dataset-only open (다른 그림 열림 원천 차단)
-      $$(".w-card", panel).forEach(card => {
-        onTap(card, () => {
-          const idx = Number(card.getAttribute("data-idx") || "0");
-          this.currentIndex = isNaN(idx) ? 0 : idx;
-
-          const zoom = (card.getAttribute("data-zoom") || "").trim();
-          const cap  = (card.getAttribute("data-cap") || "").trim();
-
-          if (zoom) LIGHTBOX.open(zoom, cap);
-          this.preloadNeighborZoom();
-        });
-      });
-    },
-
-    preload(url){
-      if (!url) return;
-      const img = new Image();
-      img.decoding = "async";
-      img.src = url;
-    },
-
-    preloadNeighborZoom(){
-      const cards = this.currentCards();
-      const n = cards.length;
-      if (!n) return;
-
-      const i0 = clamp(this.currentIndex, 0, n-1);
-      const i1 = (i0 + 1) % n;
-      const i2 = (i0 - 1 + n) % n;
-
-      const z1 = (cards[i1]?.getAttribute("data-zoom") || "").trim();
-      const z2 = (cards[i2]?.getAttribute("data-zoom") || "").trim();
-      this.preload(z1); this.preload(z2);
-    },
-
-    step(delta){
-      const cards = this.currentCards();
-      const n = cards.length;
-      if (!n) return null;
-
-      this.currentIndex = (this.currentIndex + delta + n) % n;
-      const card = cards[this.currentIndex];
-      if (!card) return null;
-
-      return {
-        zoom: (card.getAttribute("data-zoom") || "").trim(),
-        cap:  (card.getAttribute("data-cap") || "").trim()
-      };
-    },
-
-    bindTabs(){
-      this.findTabs();
-      this.tabBtns.forEach(btn => {
-        const k = (btn.getAttribute("data-panel") || "").trim();
-        if (!k) return;
-        onTap(btn, () => this.renderPanel(k));
-      });
-    },
-
-    async init(){
-      this.findPanels();
-      this.bindTabs();
-      await this.load();
-
-      const active = this.tabBtns.find(b => b.classList.contains("active"));
-      const key = active ? (active.getAttribute("data-panel") || "pray") : "pray";
-      this.renderPanel(key);
-    }
-  };
-
-  /* =========================================================
-     6) Reports (open new window viewer + download link)
-  ========================================================= */
-  const REPORTS = {
-    list: [],
-    grid: null,
-    toggleBtn: null,
-    tabBtns: [],
-    filter: "all",
-    opened: false,
-
-    findUI(){
-      this.grid = $("#reportGrid");
-      this.toggleBtn = $("#reportsToggle");
-      this.tabBtns = $$('.r-tab[data-r]');
-    },
-
-    async load(){
-      const candidates = ["/data/reports.json","data/reports.json","/reports.json","reports.json"];
-      let lastErr = null;
-
-      for (const url of candidates){
-        try{
-          const res = await fetch(url + "?" + nowBust(), { cache:"no-store" });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          const json = await res.json();
-          const arr = Array.isArray(json) ? json : (Array.isArray(json?.reports) ? json.reports : []);
-          this.list = arr;
-          return true;
-        }catch(e){ lastErr = e; }
-      }
-
-      console.warn("[Reports] load failed:", lastErr);
-      this.list = [];
-      return false;
-    },
-
-    getTitleKR(r){ return safeText(r?.title_ko || r?.title_kr || ""); },
-    getSummaryKR(r){ return safeText(r?.summary_ko || r?.summary_kr || ""); },
-
-    titleHTML(r){
-      const kr = this.getTitleKR(r);
-      const en = safeText(r?.title_en || "");
-      if (LANG.mode==="english") return `<span class="en">${esc(en || kr)}</span>`;
-      if (LANG.mode==="hybrid"){
-        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
-        return `<span class="ko">${esc(kr || en)}</span>`;
-      }
-      return `<span class="ko">${esc(kr || en)}</span>`;
-    },
-
-    summaryHTML(r){
-      const kr = this.getSummaryKR(r);
-      const en = safeText(r?.summary_en || "");
-      if (LANG.mode==="english") return `<span class="en">${esc(en || kr)}</span>`;
-      if (LANG.mode==="hybrid"){
-        if (kr && en) return `<span class="ko">${esc(kr)}</span><br><span class="en">${esc(en)}</span>`;
-        return `<span class="ko">${esc(kr || en)}</span>`;
-      }
-      return `<span class="ko">${esc(kr || en)}</span>`;
-    },
-
-    mdURL(r){
-      return slash(r?.md_path || r?.path || r?.url || "");
-    },
-
-    matchFilter(r){
-      if (this.filter==="all") return true;
-      const cat = safeText(r?.category || r?.type || "").toLowerCase();
-      return cat === this.filter;
-    },
-
-    cardHTML(r){
-      const id = safeText(r?.id || r?.slug || "");
-      const url = this.mdURL(r);
-      return `
-        <article class="r-item" data-md="${esc(url)}" data-id="${esc(id)}">
-          <div class="t">${this.titleHTML(r)}</div>
-          <div class="m">${esc(id)}</div>
-          <div class="s">${this.summaryHTML(r)}</div>
-        </article>
-      `;
-    },
-
-    render(){
-      this.findUI();
-      if (!this.grid) return;
-
-      const filtered = this.list.filter(r => this.matchFilter(r));
-      if (!filtered.length){
-        this.grid.innerHTML = `<div class="w-msg">Reports 데이터가 없습니다.<small>(/data/reports.json 확인)</small></div>`;
-        return;
-      }
-
-      this.grid.innerHTML = filtered.map(r => this.cardHTML(r)).join("");
-
-      $$(".r-item", this.grid).forEach(card => {
-        onTap(card, () => {
-          const md = (card.getAttribute("data-md") || "").trim();
-          const id = (card.getAttribute("data-id") || "REPORT").trim();
-          const titleText = (card.querySelector(".t")?.textContent || id).trim();
-          this.openViewerWindow({ id, title:titleText, mdURL: md });
-        });
-      });
-    },
-
-    setOpen(open){
-      this.findUI();
-      this.opened = !!open;
-      if (!this.toggleBtn || !this.grid) return;
-
-      // BODY에 이미 display 제어가 있으면 그걸 존중하고, 없으면 여기서 토글
-      const isGrid = getComputedStyle(this.grid).display === "grid";
-      if (this.opened) {
-        this.grid.style.display = "grid";
-      } else {
-        // 원래 grid였다면 none, 아니라면 그대로
-        this.grid.style.display = isGrid ? "none" : "none";
-      }
-
-      this.toggleBtn.setAttribute("aria-expanded", this.opened ? "true" : "false");
-      // 버튼 문구는 BODY 원문 텍스트 보호를 위해 "data-label" 있으면 그것 우선
-      const openLabel  = this.toggleBtn.getAttribute("data-open-label")  || "Open Reports";
-      const closeLabel = this.toggleBtn.getAttribute("data-close-label") || "Close Reports";
-      this.toggleBtn.textContent = this.opened ? closeLabel : openLabel;
-    },
-
-    setFilter(f){
-      this.filter = (f==="theory" || f==="archive" || f==="practice") ? f : "all";
-      this.findUI();
-      this.tabBtns.forEach(b => b.classList.remove("is-active"));
-      const active = this.tabBtns.find(b => (b.getAttribute("data-r") || "") === this.filter);
-      if (active) active.classList.add("is-active");
-      this.render();
-    },
-
-    bind(){
-      this.findUI();
-      if (this.toggleBtn) onTap(this.toggleBtn, () => this.setOpen(!this.opened));
-      this.tabBtns.forEach(btn => {
-        const f = (btn.getAttribute("data-r") || "all").trim();
-        onTap(btn, () => this.setFilter(f));
-      });
-    },
-
-    viewerHTML({ title, mdURL }){
-      const t = esc(title || "Report");
-      const src = esc(mdURL || "");
-      const stamp = nowBust();
-
-      // *중요*: 새 창은 같은 origin에서 fetch 가능해야 함
-      // mdURL이 markdown이면 plain text로 렌더. html이면 iframe로 fallback.
-      return `<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="color-scheme" content="dark light"/>
-  <title>${t}</title>
-  <style>
-    :root{ color-scheme:dark light; }
-    body{
-      margin:0; padding:0;
-      background:#070A14; color:#E9E6DD;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    }
-    header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, rgba(7,10,20,.92), rgba(7,10,20,.70));
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid rgba(215,184,106,.22);
-      padding:14px 16px;
-    }
-    h1{ margin:0; font-size:16px; letter-spacing:.2px; color: rgba(215,184,106,.95); }
-    .bar{ margin-top:8px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    a.btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(215,184,106,.34);
-      color:rgba(215,184,106,.95);
-      text-decoration:none;
-      font-size:12px;
-      background: rgba(10,14,28,.55);
-    }
-    a.btn:active{ transform: translateY(1px); }
-    main{ padding:18px 16px 44px; }
-    pre{
-      margin:0;
-      white-space:pre-wrap;
-      word-break:break-word;
-      line-height:1.7;
-      font-size:14px;
-      color:#EDEAE2;
-    }
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:rgba(233,230,221,.70);
-    }
-    iframe{
-      width:100%; height: calc(100vh - 140px);
-      border:1px solid rgba(215,184,106,.18);
-      border-radius:14px;
-      background:#0A0E1C;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>${t}</h1>
-    <div class="bar">
-      <a class="btn" href="${src}?dl=1&v=${stamp}" download>download</a>
-      <a class="btn" href="${src}?v=${stamp}" target="_blank" rel="noopener">open source</a>
-    </div>
-  </header>
-  <main>
-    <pre id="txt">Loading…</pre>
-    <div class="hint" id="hint"></div>
-  </main>
-  <script>
-    (async () => {
-      const url = ${JSON.stringify(mdURL || "")};
-      const pre = document.getElementById("txt");
-      const hint = document.getElementById("hint");
-      if (!url) { pre.textContent = "No source path."; return; }
-
-      const isHtml = /\\.html?(\\?|#|$)/i.test(url);
-      if (isHtml){
-        // html이면 iframe로 표시 (원문 보존)
-        const main = document.querySelector("main");
-        main.innerHTML = '<iframe src="'+url+'" loading="eager"></iframe>';
-        return;
-      }
-
-      try{
-        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now().toString(36), { cache:'no-store' });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const txt = await res.text();
-        pre.textContent = txt;
-        hint.textContent = "";
-      }catch(e){
-        pre.textContent = "Failed to load the report source.";
-        hint.textContent = String(e && e.message ? e.message : e);
-      }
-    })();
-  </script>
-</body>
-</html>`;
-    },
-
-    openViewerWindow({ id, title, mdURL }){
-      const w = window.open("", "_blank", "noopener,noreferrer");
-      if (!w) return;
-      const html = this.viewerHTML({ title, mdURL });
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-      try { w.document.title = title || id || "Report"; } catch(e){}
-    },
-
-    async init(){
-      this.findUI();
-      this.bind();
-      await this.load();
-      this.render();
-
-      // 기본은 열림 상태로 두되, BODY가 이미 접힘이면 존중
-      if (this.grid){
-        const dsp = getComputedStyle(this.grid).display;
-        this.opened = (dsp !== "none");
-        if (this.toggleBtn) this.toggleBtn.setAttribute("aria-expanded", this.opened ? "true" : "false");
-      }
-    }
-  };
-
-  /* =========================================================
-     7) Bio Modal (open/close + local lang + slide)
-     - BODY 구조를 바꾸지 않기 위해 "존재하는 id/class만" 찾아서 동작
-  ========================================================= */
-  const BIO = {
-    modal:null,
-    openBtn:null,
-    closeBtn:null,
-    overlay:null,
-
-    localKey:"LF_BIO_LANG",
-    localMode:"korean",
-
-    // 내부 토글/슬라이드
-    kickerBtn:null,   // "국내외 개인전 28회" 버튼
-    slide:null,       // 펼침 영역
-    isOpen:false,
-
-    init(){
-      // 가능한 셀렉터들을 모두 시도(Body 변경 금지)
-      this.modal    = $("#bioModal") || $(".bio-modal") || $("#artistBio") || $("#bio");
-      this.openBtn  = $("#bioOpen")  || $("#bioBtn")    || $('[data-open="bio"]');
-      this.closeBtn = $("#bioClose") || $(".bio-close");
-      this.overlay  = $(".bio-overlay") || (this.modal ? this.modal.querySelector(".bio-overlay") : null);
-
-      // 슬라이드(요약줄)
-      this.kickerBtn = $("#expoKicker") || $(".expo-kicker") || (this.modal ? this.modal.querySelector('[data-bio="kicker"]') : null);
-      this.slide     = $("#bioSlide")  || $(".bio-slide")   || (this.modal ? this.modal.querySelector('[data-bio="slide"]') : null);
-
-      // 로컬 언어 버튼(바이오 모달 안)
-      const k = this.modal ? this.modal.querySelector('[data-bio-lang="korean"]') : null;
-      const e = this.modal ? this.modal.querySelector('[data-bio-lang="english"]') : null;
-      const h = this.modal ? this.modal.querySelector('[data-bio-lang="hybrid"]') : null;
-
-      // 모달 열기/닫기
-      onTap(this.openBtn, () => this.open());
-      onTap(this.closeBtn, () => this.close());
-
-      if (this.overlay){
-        this.overlay.addEventListener("click", () => this.close(), { passive:true });
-      }
-
-      document.addEventListener("keydown", (ev) => {
-        if (!this.isOpen) return;
-        if (ev.key === "Escape") this.close();
-      });
-
-      // 요약줄 → 슬라이드 토글
-      onTap(this.kickerBtn, () => this.toggleSlide());
-
-      // 로컬 언어: 있으면 연결
-      onTap(k, () => this.setLocalLang("korean"));
-      onTap(e, () => this.setLocalLang("english"));
-      onTap(h, () => this.setLocalLang("hybrid"));
-
-      // local restore
-      this.restoreLocalLang();
-    },
-
-    open(){
-      if (!this.modal) return;
-      this.modal.classList.add("is-open");
-      this.modal.setAttribute("aria-hidden","false");
-      this.isOpen = true;
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-    },
-
-    close(){
-      if (!this.modal) return;
-      this.modal.classList.remove("is-open");
-      this.modal.setAttribute("aria-hidden","true");
-      this.isOpen = false;
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    },
-
-    toggleSlide(){
-      if (!this.slide) return;
-      const open = !this.slide.classList.contains("is-open");
-      this.slide.classList.toggle("is-open", open);
-      // aria가 있으면 맞춰줌
-      if (this.kickerBtn) this.kickerBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    },
-
-    setLocalLang(mode){
-      const m = (mode==="english" || mode==="hybrid") ? mode : "korean";
-      this.localMode = m;
-
-      if (this.modal){
-        this.modal.classList.remove("korean","english","hybrid");
-        this.modal.classList.add(m);
-      }
-
-      try { localStorage.setItem(this.localKey, m); } catch(e) {}
-    },
-
-    restoreLocalLang(){
-      let saved = null;
-      try { saved = localStorage.getItem(this.localKey); } catch(e) {}
-      if (saved==="korean" || saved==="english" || saved==="hybrid") this.setLocalLang(saved);
-      else this.setLocalLang("korean");
-    }
-  };
-
-  /* =========================================================
-     8) Sound (Lumera Cosmic Resonance — WebAudio synth)
-     - 외부 mp3 없이 합성
-     - iOS 정책: 사용자 탭에서만 start()
-  ========================================================= */
-  const SOUND = {
-    ctx:null,
-    master:null,
-    analyser:null,
-    raf:0,
-
-    started:false,
-    unlocked:false,
-
-    // UI
-    btn:null,
-    fft:null,
-    fftCtx:null,
-    fftW:0,
-    fftH:0,
-    dpr:1,
-
-    init(){
-      // BODY에서 사운드 버튼/캔버스 id가 다를 수 있으니 후보를 넓게
-      this.btn = $("#soundBtn") || $("#audioBtn") || $('[data-sound="toggle"]');
-      this.fft = $("#fft") || $("#soundFFT") || $("#fftBar") || $("#soundVis");
-
-      if (this.fft){
-        this.fftCtx = this.fft.getContext("2d", { alpha:true });
-        this.resizeFFT();
-        window.addEventListener("resize", () => this.resizeFFT(), { passive:true });
-      }
-
-      onTap(this.btn, async () => {
-        if (!this.started) await this.start();
-        else this.toggleMute();
-      });
-    },
-
-    resizeFFT(){
-      if (!this.fft || !this.fftCtx) return;
-      this.dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      const rect = this.fft.getBoundingClientRect();
-      this.fftW = Math.max(1, Math.floor(rect.width * this.dpr));
-      this.fftH = Math.max(1, Math.floor(rect.height * this.dpr));
-      this.fft.width = this.fftW;
-      this.fft.height = this.fftH;
-    },
-
-    setBtnLabel(state){
-      if (!this.btn) return;
-      // BODY 텍스트 보호: data-label을 우선 사용
-      const onLabel  = this.btn.getAttribute("data-on-label")  || "Sound On";
-      const offLabel = this.btn.getAttribute("data-off-label") || "Sound Off";
-      // state: true = playing
-      this.btn.setAttribute("aria-pressed", state ? "true" : "false");
-      this.btn.textContent = state ? onLabel : offLabel;
-    },
-
-    async start(){
-      if (this.started) return;
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) { console.warn("[Sound] AudioContext not supported"); return; }
-
-      this.ctx = new AC({ latencyHint:"interactive" });
-
-      // iOS unlock: resume on first gesture
-      try { await this.ctx.resume(); } catch(e){}
-
-      // master
-      this.master = this.ctx.createGain();
-      this.master.gain.value = 0.62;
-
-      // gentle limiter
-      const comp = this.ctx.createDynamicsCompressor();
-      comp.threshold.value = -22;
-      comp.knee.value = 18;
-      comp.ratio.value = 3.5;
-      comp.attack.value = 0.012;
-      comp.release.value = 0.22;
-
-      // analyser
-      this.analyser = this.ctx.createAnalyser();
-      this.analyser.fftSize = 1024;
-      this.analyser.smoothingTimeConstant = 0.85;
-
-      // connect chain
-      this.master.connect(comp);
-      comp.connect(this.analyser);
-      this.analyser.connect(this.ctx.destination);
-
-      // build synth graph
-      this.buildCosmicResonance();
-
-      this.started = true;
-      this.setBtnLabel(true);
-      this.drawFFT();
-    },
-
-    toggleMute(){
-      if (!this.master) return;
-      const muted = this.master.gain.value < 0.02;
-      this.master.gain.setTargetAtTime(muted ? 0.62 : 0.0, this.ctx.currentTime, 0.02);
-      this.setBtnLabel(muted); // muted->on
-    },
-
-    buildCosmicResonance(){
-      const ctx = this.ctx;
-      if (!ctx || !this.master) return;
-
-      // ---- base drones (3 oscillators) ----
-      const mkOsc = (type, freq, gain) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = type;
-        o.frequency.value = freq;
-        g.gain.value = gain;
-        o.connect(g);
-        return { o, g };
-      };
-
-      const d1 = mkOsc("sine",      55.0, 0.10);
-      const d2 = mkOsc("triangle",  110.0, 0.06);
-      const d3 = mkOsc("sine",      220.0, 0.035);
-
-      // ---- slow LFO for drift ----
-      const lfo = ctx.createOscillator();
-      const lfoG = ctx.createGain();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.07;     // very slow
-      lfoG.gain.value = 6.0;          // cents-ish via detune
-      lfo.connect(lfoG);
-
-      // detune drift
-      lfoG.connect(d1.o.detune);
-      lfoG.connect(d2.o.detune);
-      lfoG.connect(d3.o.detune);
-
-      // ---- shimmer (very soft) ----
-      const sh = mkOsc("sine", 880.0, 0.010);
-      const sh2 = mkOsc("sine", 1320.0, 0.006);
-
-      // ---- noise bed (pink-ish via filtered white) ----
-      const noise = ctx.createBufferSource();
-      noise.loop = true;
-      const bufferSize = 2 * ctx.sampleRate;
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      // simple pink-ish: accumulate white with decay
-      let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
-      for (let i=0; i<bufferSize; i++){
-        const white = Math.random()*2-1;
-        b0 = 0.99886*b0 + white*0.0555179;
-        b1 = 0.99332*b1 + white*0.0750759;
-        b2 = 0.96900*b2 + white*0.1538520;
-        b3 = 0.86650*b3 + white*0.3104856;
-        b4 = 0.55000*b4 + white*0.5329522;
-        b5 = -0.7616*b5 - white*0.0168980;
-        const pink = b0+b1+b2+b3+b4+b5+b6 + white*0.5362;
-        b6 = white*0.115926;
-        output[i] = pink * 0.11;
-      }
-      noise.buffer = noiseBuffer;
-
-      const nFilter = ctx.createBiquadFilter();
-      nFilter.type = "lowpass";
-      nFilter.frequency.value = 900;
-      nFilter.Q.value = 0.7;
-
-      const nGain = ctx.createGain();
-      nGain.gain.value = 0.055;
-
-      noise.connect(nFilter);
-      nFilter.connect(nGain);
-
-      // ---- resonance space (delay + reverb-ish) ----
-      const delay = ctx.createDelay(1.2);
-      delay.delayTime.value = 0.28;
-
-      const fb = ctx.createGain();
-      fb.gain.value = 0.28;
-
-      const dFilter = ctx.createBiquadFilter();
-      dFilter.type = "lowpass";
-      dFilter.frequency.value = 1200;
-      dFilter.Q.value = 0.6;
-
-      delay.connect(fb);
-      fb.connect(dFilter);
-      dFilter.connect(delay);
-
-      const wet = ctx.createGain();
-      wet.gain.value = 0.26;
-
-      const dry = ctx.createGain();
-      dry.gain.value = 0.78;
-
-      // ---- gentle master EQ ----
-      const eq1 = ctx.createBiquadFilter();
-      eq1.type = "lowshelf";
-      eq1.frequency.value = 120;
-      eq1.gain.value = -2.5;
-
-      const eq2 = ctx.createBiquadFilter();
-      eq2.type = "highshelf";
-      eq2.frequency.value = 5200;
-      eq2.gain.value = -3.0;
-
-      // ---- routing ----
-      const sum = ctx.createGain();
-      sum.gain.value = 1.0;
-
-      d1.g.connect(sum);
-      d2.g.connect(sum);
-      d3.g.connect(sum);
-      sh.g.connect(sum);
-      sh2.g.connect(sum);
-      nGain.connect(sum);
-
-      // dry/wet split
-      sum.connect(dry);
-      sum.connect(delay);
-      delay.connect(wet);
-
-      // combine
-      const mix = ctx.createGain();
-      dry.connect(mix);
-      wet.connect(mix);
-
-      // eq -> master
-      mix.connect(eq1);
-      eq1.connect(eq2);
-      eq2.connect(this.master);
-
-      // ---- motion: shimmer slow tremolo ----
-      const trem = ctx.createOscillator();
-      const tremG = ctx.createGain();
-      trem.type = "sine";
-      trem.frequency.value = 0.12;
-      tremG.gain.value = 0.004;
-      trem.connect(tremG);
-      tremG.connect(sh.g.gain);
-      tremG.connect(sh2.g.gain);
-
-      // ---- start ----
-      const t0 = ctx.currentTime + 0.02;
-      [d1.o,d2.o,d3.o,sh.o,sh2.o,lfo,trem].forEach(o => o.start(t0));
-      noise.start(t0);
-
-      // fade in (quiet, cosmic)
-      this.master.gain.setValueAtTime(0.0001, t0);
-      this.master.gain.exponentialRampToValueAtTime(0.62, t0 + 1.6);
-    },
-
-    drawFFT(){
-      if (!this.analyser || !this.fftCtx || !this.fft) return;
-
-      const g = this.fftCtx;
-      const n = this.analyser.frequencyBinCount;
-      const data = new Uint8Array(n);
-
-      const draw = () => {
-        this.raf = requestAnimationFrame(draw);
-        this.analyser.getByteFrequencyData(data);
-
-        g.clearRect(0,0,this.fftW,this.fftH);
-
-        const bars = 40;
-        const step = Math.floor(n / bars);
-        const bw = this.fftW / bars;
-
-        for (let i=0; i<bars; i++){
-          const v = data[i*step] / 255;
-          const h = Math.max(2, v * this.fftH);
-          const x = i*bw + bw*0.14;
-          const y = this.fftH - h;
-
-          g.globalAlpha = 0.35 + v*0.50;
-          g.fillStyle = "rgba(215,184,106,.85)";
-          g.fillRect(x, y, bw*0.72, h);
-        }
-        g.globalAlpha = 1;
-      };
-
-      draw();
-    }
-  };
-
-  /* =========================================================
-     9) Global glue (lang change rerender)
-  ========================================================= */
-  function bindGlobalRerender(){
-    window.addEventListener("lf:lang", () => {
-      // Works / Reports는 언어에 따라 타이틀/요약 렌더가 바뀌므로 즉시 재렌더
-      WORKS.renderPanel(WORKS.currentKey);
-      REPORTS.render();
-    });
-  }
-
-  /* =========================================================
-     10) Boot
-  ========================================================= */
-  async function boot(){
-    try{
-      WAVES.init();
-
-      LANG.bindButtons();
-      LANG.restore();
-
-      NAV.findSections();
-      NAV.bind();
-
-      LIGHTBOX.find();
-      LIGHTBOX.bind((delta) => {
-        const next = WORKS.step(delta);
-        if (!next) return;
-        if (next.zoom) LIGHTBOX.open(next.zoom, next.cap);
-        WORKS.preloadNeighborZoom();
-      });
-
-      BIO.init();
-
-      await WORKS.init();
-      await REPORTS.init();
-
-      SOUND.init();
-
-      bindGlobalRerender();
-
-      // 초기 섹션 표시(기본 poem)
-      NAV.go("poem", false);
-
-    }catch(e){
-      console.error("[Lightflow Script] boot error:", e);
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once:true });
-  } else {
-    boot();
-  }
-})();
-</script>

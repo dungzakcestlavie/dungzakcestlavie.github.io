@@ -702,52 +702,51 @@
     }
 
     /* =========================================================
-       FFT + Controls (투명 사운드바)
+       COSMIC SOUND ORB (우주 표식 · 영원)
+       - 우측 하단 작은 원 하나로 C 공명 온/오프
     ========================================================= */
-    #fftBar{
+    #soundOrb{
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: calc(8px + var(--safe-bot));
-      height: 4px;
-      z-index: 70;
-      background: rgba(255,255,255,.03);
-      pointer-events:auto;
-      cursor:pointer;
-    }
-    #fftBar span{
-      display:block;
-      height:100%;
-      width:12%;
-      background: linear-gradient(90deg, rgba(215,184,106,.22), rgba(121,167,255,.28));
-      transition: width .10s linear, opacity .20s ease;
-      opacity:.55;
-    }
-
-    #ctrl{
-      position: fixed;
-      right: calc(14px + var(--safe-right));
-      bottom: calc(14px + var(--safe-bot) + 6px);
+      right: calc(16px + var(--safe-right));
+      bottom: calc(18px + var(--safe-bot));
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(215,184,106,.55);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.70),
+        0 0 18px rgba(215,184,106,.26);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(215,184,106,.75), rgba(7,10,20,0));
+      opacity: .60;
+      cursor: pointer;
       z-index: 71;
-      display:flex;
-      gap:10px;
+      transition:
+        opacity .25s ease,
+        transform .25s ease,
+        box-shadow .30s ease;
     }
-    .ctrlbtn{
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      appearance:none;
-      border: 1px solid rgba(215,184,106,.30);
-      background: rgba(0,0,0,0);
-      color: var(--gold2);
-      font-size: 18px;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.26);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+    #soundOrb:hover{
+      opacity: .95;
+      transform: translateY(-1px);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.80),
+        0 0 22px rgba(215,184,106,.36);
     }
-    .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
+    #soundOrb.is-on{
+      opacity: 1;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.85),
+        0 0 26px rgba(121,167,255,.65);
+    }
+    #soundOrb::after{
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:inherit;
+      border:1px solid rgba(7,10,20,.95);
+      box-shadow: 0 0 8px rgba(0,0,0,.7) inset;
+    }
 
     /* =========================================================
        Footer
@@ -807,14 +806,17 @@
        Reduced motion
     ========================================================= */
     @media (prefers-reduced-motion: reduce){
-      *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
-      #fftBar span{ transition:none !important; }
+      *{
+        scroll-behavior:auto !important;
+        transition:none !important;
+        animation:none !important;
+      }
     }
   </style>
 </head>
 
 <!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로)
+② BODY / HTML  (등작 원문 그대로 + 사운드 오브만 교체)
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -1068,12 +1070,8 @@ Numerous private collections worldwide.</p>
     <button id="lbClose" class="lb-close">✕</button>
   </div>
 
-  <!-- SOUND PLAYER -->
-  <div id="fftBar"><span></span></div>
-  <div id="ctrl">
-    <button id="soundBtn" class="ctrlbtn">✨</button>
-    <button id="soundStopBtn" class="ctrlbtn" disabled>🔇</button>
-  </div>
+  <!-- SOUND ORB (우주 표식 / 영원) -->
+  <div id="soundOrb" aria-label="Cosmic resonance" role="button"></div>
 
   <!-- FOOTER -->
   <footer>
@@ -1092,7 +1090,7 @@ Numerous private collections worldwide.</p>
 <!-- ============================================
 ③ SCRIPTS  (Lightflow ∮27 · script patch)
 - Nav / Lang / Works / Reports / Bio
-- Sound: C 공명 · 사운드바 클릭 토글
+- Sound: C 공명 · 우측 하단 영원 오브 클릭 토글
 - Waves: 코스믹 파동 배경
 ============================================ -->
 <script>
@@ -1591,71 +1589,56 @@ Numerous private collections worldwide.</p>
   }
 
   /* -------------------------------------------
-   * 7. Sound (투명·얇은 공명 사운드바)
-   *    - 사운드바 전체를 클릭해서 토글
-   *    - audio/lightflow_c_resonance.wav 사용
+   * 7. Sound (우주 표식 · 영원 오브)
+   *    - 우측 하단 작은 원 클릭 = C 공명 on/off
    * ---------------------------------------- */
   function initSound() {
-    const startBtn = $('#soundBtn');
-    const stopBtn  = $('#soundStopBtn');
-    const barWrap  = $('#fftBar');
-    const barFill  = barWrap ? barWrap.querySelector('span') : null;
-
-    if (!barWrap || !barFill) return;
-
-    // 화면에서는 아이콘 버튼 숨기기 (접근성/호환용으로만 유지)
-    if (startBtn) {
-      startBtn.style.display = 'none';
-    }
-    if (stopBtn) {
-      stopBtn.style.display = 'none';
-    }
-
-    barWrap.style.pointerEvents = 'auto';
-    barWrap.style.cursor = 'pointer';
+    const orb = $('#soundOrb');
+    if (!orb) return;
 
     const audio = new Audio('audio/lightflow_c_resonance.wav');
     audio.loop = true;
     audio.preload = 'auto';
 
     let playing  = false;
-    let fftTimer = null;
+    let pulseTimer = null;
 
-    function applyVisual() {
-      if (!playing) {
-        barFill.style.opacity = '0.55';
-        barFill.style.width   = '12%';
-      } else {
-        barFill.style.opacity = '0.95';
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function updateVisual() {
+      orb.classList.toggle('is-on', playing);
+      if (!playing && !prefersReduced) {
+        orb.style.transform = '';
       }
     }
 
-    function tick() {
-      if (!playing) return;
-      const w = 16 + Math.random() * 40; // 16~56%
-      barFill.style.width = w + '%';
+    function startPulse() {
+      if (prefersReduced) return;
+      if (pulseTimer) clearInterval(pulseTimer);
+      pulseTimer = setInterval(() => {
+        if (!playing) return;
+        const scale = 0.96 + Math.random() * 0.08;
+        orb.style.transform = 'scale(' + scale.toFixed(2) + ')';
+      }, 420);
     }
 
-    function startFFT() {
-      if (fftTimer) clearInterval(fftTimer);
-      fftTimer = setInterval(tick, 140);
-    }
-
-    function stopFFT() {
-      if (fftTimer) {
-        clearInterval(fftTimer);
-        fftTimer = null;
+    function stopPulse() {
+      if (pulseTimer) {
+        clearInterval(pulseTimer);
+        pulseTimer = null;
       }
-      barFill.style.width = '12%';
-      barFill.style.opacity = '0.55';
+      if (!prefersReduced) {
+        orb.style.transform = '';
+      }
     }
 
     async function playSound() {
       try {
         await audio.play();
         playing = true;
-        applyVisual();
-        startFFT();
+        updateVisual();
+        startPulse();
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
@@ -1666,7 +1649,8 @@ Numerous private collections worldwide.</p>
       audio.pause();
       audio.currentTime = 0;
       playing = false;
-      stopFFT();
+      stopPulse();
+      updateVisual();
     }
 
     function toggleSound() {
@@ -1677,19 +1661,15 @@ Numerous private collections worldwide.</p>
       }
     }
 
-    // 사운드바 전체를 토글 버튼처럼 사용
-    barWrap.addEventListener('click', toggleSound);
+    orb.addEventListener('click', toggleSound);
 
-    // 숨겨진 버튼도 동일 동작 (접근성)
-    if (startBtn) startBtn.addEventListener('click', toggleSound);
-    if (stopBtn)  stopBtn.addEventListener('click', toggleSound);
-
+    // 페이지 이탈 시 정지
     window.addEventListener('pagehide', () => {
       stopSound();
     });
 
     // 초기 상태: 정지
-    applyVisual();
+    updateVisual();
   }
 
   /* -------------------------------------------

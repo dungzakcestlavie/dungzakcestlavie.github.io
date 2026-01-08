@@ -1,9 +1,3 @@
-<!-- ==========================================================
-Lightflow ∮27 — FULL INDEX (SINGLE VIEW · WORKS/REPORTS JSON)
-① HEAD / STYLE
-② BODY / HTML
-③ SCRIPTS
-========================================================== -->
 <!doctype html>
 <html lang="ko">
 
@@ -12,7 +6,7 @@ Lightflow ∮27 — FULL INDEX (SINGLE VIEW · WORKS/REPORTS JSON)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=cover, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
@@ -1062,12 +1056,9 @@ Numerous private collections worldwide.</p>
 
 <!-- ============================================
 ③ SCRIPTS  (Lightflow ∮27 · script patch)
-- Nav: Poem / Works / Reports / Artist Bio 단일뷰
-- Lang: KR / EN / KR+EN (Lightbox·Bio까지 연동)
-- Works: data/works.json 1회 로드, 탭은 빠른 전환
-- Reports: data/reports.json 1회 로드, 카테고리 필터
-- Bio: 모달 KR/EN 로컬 토글 (KR 버튼 무반응 해결)
-- Sound: 투명·작은 공명 사운드바 + 무한 루프
+- Nav / Lang / Works / Reports / Bio
+- Sound: C 공명 · 사운드바 클릭 토글
+- Waves: 코스믹 파동 배경
 ============================================ -->
 <script>
 (function () {
@@ -1100,7 +1091,6 @@ Numerous private collections worldwide.</p>
     const navButtons = $$('nav.primary button');
     const sections   = $$('main > section');
     const bioBtn     = $('#tab-bio');
-    const bioModal   = $('#bio-modal');
 
     function showSection(id) {
       sections.forEach(sec => {
@@ -1122,7 +1112,7 @@ Numerous private collections worldwide.</p>
     showSection('poem');
 
     // Artist Bio 모달 열기
-    if (bioBtn && bioModal) {
+    if (bioBtn) {
       bioBtn.addEventListener('click', () => {
         openBioModal();
       });
@@ -1131,8 +1121,6 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 2. 전역 언어 토글 (KR / EN / KR+EN)
-   *     - body.korean / .english / .hybrid
-   *     - Lightbox 캡션도 이 상태를 사용
    * ---------------------------------------- */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1175,7 +1163,6 @@ Numerous private collections worldwide.</p>
       hyBtn.addEventListener('click', () => {
         setBodyLang('hy');
         activate(hyBtn);
-        // hybrid에서는 Bio는 기본 KR로 두되, 버튼으로 변경 가능
         updateOpenLightboxCaption();
       });
     }
@@ -1187,12 +1174,9 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 3. Works (data/works.json 1회 로드)
-   *   - 각 탭 panel-XXX 안에 w-grid 렌더
-   *   - 카드 클릭 → Lightbox
    * ---------------------------------------- */
   let worksLoaded = false;
-  let worksByPanel = {}; // panelKey → 배열
-
+  let worksByPanel = {};
   function initWorks() {
     const panelIds = ['pray', 'human', 'rebirth', 'exist', 'cosmos'];
     const idMap = { 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
@@ -1211,7 +1195,6 @@ Numerous private collections worldwide.</p>
       });
     });
 
-    // JSON 1회 로드
     safeJSONFetch('data/works.json')
       .then(json => {
         const list = Array.isArray(json)
@@ -1329,10 +1312,8 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
   /* -------------------------------------------
    * 4. Lightbox
-   *   - 현재 언어 상태에 맞춰 캡션 생성
-   *   - KR → KR 텍스트, EN → EN 텍스트, HY → 둘 다
    * ---------------------------------------- */
-  let lbOpenFrom = null; // 현재 열린 카드 element
+  let lbOpenFrom = null;
 
   function attachWorksLightbox() {
     const worksRoot = $('#works');
@@ -1369,7 +1350,6 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
       if (capKr && capEn) return capKr + '\n\n' + capEn;
       return capKr || capEn || '';
     }
-    // kr
     return capKr || capEn || '';
   }
 
@@ -1403,7 +1383,6 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
     lbOpenFrom = null;
   }
 
-  // 언어 버튼 눌렀을 때 이미 열린 Lightbox 캡션 업데이트
   function updateOpenLightboxCaption() {
     if (!lbOpenFrom) return;
     const lbCap = $('#lbCap');
@@ -1412,7 +1391,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 5. Reports (data/reports.json)
+   * 5. Reports
    * ---------------------------------------- */
   function initReports() {
     const grid = $('#reportGrid');
@@ -1490,7 +1469,6 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
         }).join('');
 
         grid.innerHTML = html;
-        // 기본: 열어두고 All 필터
         grid.style.display = 'grid';
         const defaultTab = tabs.find(b => b.dataset.r === 'all') || tabs[0];
         if (defaultTab) {
@@ -1505,20 +1483,15 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
   /* -------------------------------------------
    * 6. Artist Bio Modal
-   *    - KR 버튼 무반응 문제 해결
-   *    - Global Lang과 느슨하게 연동
    * ---------------------------------------- */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
 
-    // 현재 글로벌 언어에 맞춰 기본 bio 언어 세팅
     const cur = getLang();
     const lang = (cur === 'en') ? 'en' : 'kr';
     setBioLanguage(lang);
-
-    // 스크롤 잠금은 과도하지 않게, 기본 상태 유지
   }
 
   function closeBioModal() {
@@ -1583,13 +1556,13 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
       });
     });
 
-    // 초기 상태: 숨김
     modal.hidden = true;
   }
 
   /* -------------------------------------------
    * 7. Sound (투명·작은 공명 사운드바)
-   *    - /audio/lightflow_c_resonance.mp3 사용 (파일 업로드 필요)
+   *    - 사운드바 클릭 시 토글
+   *    - /audio/lightflow_c_resonance.wav 사용
    * ---------------------------------------- */
   function initSound() {
     const startBtn = $('#soundBtn');
@@ -1597,32 +1570,54 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
     const barWrap  = $('#fftBar');
     const barFill  = barWrap ? barWrap.querySelector('span') : null;
 
-    if (!startBtn || !stopBtn || !barWrap || !barFill) return;
+    if (!barWrap || !barFill) return;
 
-    // 사운드바 더 얇고 투명하게
-    barWrap.style.height = '1.5px';
-    barFill.style.background = 'rgba(215,184,106,0.10)';
+    // 화면에서는 버튼을 거의 보이지 않게 처리 (BODY 구조는 유지)
+    if (startBtn) {
+      startBtn.style.position = 'absolute';
+      startBtn.style.width = '1px';
+      startBtn.style.height = '1px';
+      startBtn.style.opacity = '0';
+      startBtn.style.pointerEvents = 'none';
+      startBtn.setAttribute('aria-hidden', 'true');
+    }
+    if (stopBtn) {
+      stopBtn.style.position = 'absolute';
+      stopBtn.style.width = '1px';
+      stopBtn.style.height = '1px';
+      stopBtn.style.opacity = '0';
+      stopBtn.style.pointerEvents = 'none';
+      stopBtn.setAttribute('aria-hidden', 'true');
+    }
 
-    const audio = new Audio('/audio/lightflow_c_resonance.mp3'); // TODO: 이 경로에 공명음 파일 업로드
+    // 사운드바: 더 얇고, 더 투명, 클릭 가능
+    barWrap.style.height = '2px';
+    barWrap.style.opacity = '0.35';
+    barWrap.style.pointerEvents = 'auto';
+    barWrap.style.cursor = 'pointer';
+    barFill.style.background = 'rgba(215,184,106,0.18)';
+
+    const audio = new Audio('/audio/lightflow_c_resonance.wav');
     audio.loop = true;
     audio.preload = 'auto';
 
-    let playing = false;
+    let playing  = false;
     let fftTimer = null;
 
-    function setButtonsState(isPlaying) {
-      playing = isPlaying;
-      startBtn.disabled = isPlaying;
-      stopBtn.disabled  = !isPlaying;
+    function setPlaying(on) {
+      playing = on;
     }
 
     function startFFT() {
-      if (!barFill) return;
       if (fftTimer) clearInterval(fftTimer);
       fftTimer = setInterval(() => {
-        const w = 8 + Math.random() * 24; // 8~32%
-        barFill.style.width = playing ? w + '%' : '0%';
-      }, 120);
+        if (!playing) {
+          barFill.style.width = '0%';
+          return;
+        }
+        const w = 6 + Math.random() * 18; // 6~24%
+        barFill.style.width = w + '%';
+      }, 140);
     }
 
     function stopFFT() {
@@ -1630,41 +1625,113 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
         clearInterval(fftTimer);
         fftTimer = null;
       }
-      if (barFill) barFill.style.width = '0%';
+      barFill.style.width = '0%';
     }
 
-    startBtn.addEventListener('click', async () => {
+    async function playSound() {
       try {
-        if (!playing) {
-          await audio.play();
-          setButtonsState(true);
-          startFFT();
-        }
+        await audio.play();
+        setPlaying(true);
+        startFFT();
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
-    });
+    }
 
-    stopBtn.addEventListener('click', () => {
+    function stopSound() {
       if (!playing) return;
       audio.pause();
       audio.currentTime = 0;
-      setButtonsState(false);
+      setPlaying(false);
       stopFFT();
-    });
+    }
+
+    function toggleSound() {
+      if (playing) {
+        stopSound();
+      } else {
+        playSound();
+      }
+    }
+
+    // 사운드바 전체를 토글 버튼처럼 사용
+    barWrap.addEventListener('click', toggleSound);
+
+    // 보이지 않는 start/stop 버튼에도 연결 (접근성/호환용)
+    if (startBtn) startBtn.addEventListener('click', toggleSound);
+    if (stopBtn)  stopBtn.addEventListener('click', toggleSound);
 
     window.addEventListener('pagehide', () => {
-      if (playing) {
-        audio.pause();
-        audio.currentTime = 0;
-        setButtonsState(false);
-        stopFFT();
-      }
+      stopSound();
     });
 
     // 초기 상태: 정지
-    setButtonsState(false);
+    setPlaying(false);
     stopFFT();
+  }
+
+  /* -------------------------------------------
+   * 7-1. Waves 배경 (코스믹 파동)
+   * ---------------------------------------- */
+  function initWaves() {
+    const canvas = document.getElementById('waves');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    let t = 0;
+    function draw() {
+      if (prefersReduced) return; // 움직임 최소화 설정 사용 시 정지 배경
+
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width  / dpr;
+      const h = canvas.height / dpr;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const gradients = [
+        { color: 'rgba(215,184,106,0.22)', amp: 28, freq: 0.0015, speed: 0.015 },
+        { color: 'rgba(121,167,255,0.20)', amp: 46, freq: 0.0011, speed: -0.010 },
+        { color: 'rgba(237,227,201,0.16)', amp: 18, freq: 0.0020, speed: 0.008 }
+      ];
+
+      gradients.forEach((g, idx) => {
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 8) {
+          const y = h * 0.25 + idx * 80 +
+            Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = g.color;
+        ctx.lineWidth = 1.4;
+        ctx.shadowColor = 'rgba(0,0,0,0.55)';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+      });
+
+      ctx.shadowBlur = 0;
+      t += 1;
+      requestAnimationFrame(draw);
+    }
+
+    if (!prefersReduced) {
+      requestAnimationFrame(draw);
+    }
   }
 
   /* -------------------------------------------
@@ -1677,7 +1744,11 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
+    try { initWaves(); }      catch (e) { console.error(e); }
   });
 
 })();
 </script>
+
+</body>
+</html>

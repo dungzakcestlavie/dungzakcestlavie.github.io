@@ -564,6 +564,8 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
+      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 32px);
+      overflow-y:auto;
     }
     .bio-head{
       display:flex; align-items:center; justify-content:space-between;
@@ -633,7 +635,7 @@
       transition: max-height .35s ease;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{ max-height: 1600px; }
+    .slide-wrap[data-open="true"]{ max-height: 4000px; }
     .bio-body{
       padding: 14px 14px;
       color: rgba(237,227,201,.88);
@@ -700,24 +702,26 @@
     }
 
     /* =========================================================
-       FFT + Controls (투명)
+       FFT + Controls (투명 사운드바)
     ========================================================= */
     #fftBar{
       position: fixed;
       left: 0;
       right: 0;
       bottom: calc(8px + var(--safe-bot));
-      height: 3px;
+      height: 4px;
       z-index: 70;
-      background: transparent !important;
-      pointer-events:none;
+      background: rgba(255,255,255,.03);
+      pointer-events:auto;
+      cursor:pointer;
     }
     #fftBar span{
       display:block;
       height:100%;
-      width:0%;
-      background: rgba(215,184,106,.16) !important;
-      transition: width .08s linear;
+      width:12%;
+      background: linear-gradient(90deg, rgba(215,184,106,.22), rgba(121,167,255,.28));
+      transition: width .10s linear, opacity .20s ease;
+      opacity:.55;
     }
 
     #ctrl{
@@ -1588,7 +1592,7 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 7. Sound (투명·얇은 공명 사운드바)
-   *    - 사운드바 클릭 시 토글
+   *    - 사운드바 전체를 클릭해서 토글
    *    - audio/lightflow_c_resonance.wav 사용
    * ---------------------------------------- */
   function initSound() {
@@ -1599,30 +1603,16 @@ Numerous private collections worldwide.</p>
 
     if (!barWrap || !barFill) return;
 
-    // 화면에서는 버튼을 거의 보이지 않게 처리 (BODY 구조는 유지)
+    // 화면에서는 아이콘 버튼 숨기기 (접근성/호환용으로만 유지)
     if (startBtn) {
-      startBtn.style.position = 'absolute';
-      startBtn.style.width = '1px';
-      startBtn.style.height = '1px';
-      startBtn.style.opacity = '0';
-      startBtn.style.pointerEvents = 'none';
-      startBtn.setAttribute('aria-hidden', 'true');
+      startBtn.style.display = 'none';
     }
     if (stopBtn) {
-      stopBtn.style.position = 'absolute';
-      stopBtn.style.width = '1px';
-      stopBtn.style.height = '1px';
-      stopBtn.style.opacity = '0';
-      stopBtn.style.pointerEvents = 'none';
-      stopBtn.setAttribute('aria-hidden', 'true');
+      stopBtn.style.display = 'none';
     }
 
-    // 사운드바: 더 얇고, 더 투명, 클릭 가능
-    barWrap.style.height = '3px';
-    barWrap.style.opacity = '0.7';
     barWrap.style.pointerEvents = 'auto';
     barWrap.style.cursor = 'pointer';
-    barFill.style.background = 'rgba(215,184,106,0.22)';
 
     const audio = new Audio('audio/lightflow_c_resonance.wav');
     audio.loop = true;
@@ -1631,20 +1621,24 @@ Numerous private collections worldwide.</p>
     let playing  = false;
     let fftTimer = null;
 
-    function setPlaying(on) {
-      playing = on;
+    function applyVisual() {
+      if (!playing) {
+        barFill.style.opacity = '0.55';
+        barFill.style.width   = '12%';
+      } else {
+        barFill.style.opacity = '0.95';
+      }
+    }
+
+    function tick() {
+      if (!playing) return;
+      const w = 16 + Math.random() * 40; // 16~56%
+      barFill.style.width = w + '%';
     }
 
     function startFFT() {
       if (fftTimer) clearInterval(fftTimer);
-      fftTimer = setInterval(() => {
-        if (!playing) {
-          barFill.style.width = '0%';
-          return;
-        }
-        const w = 6 + Math.random() * 18; // 6~24%
-        barFill.style.width = w + '%';
-      }, 140);
+      fftTimer = setInterval(tick, 140);
     }
 
     function stopFFT() {
@@ -1652,13 +1646,15 @@ Numerous private collections worldwide.</p>
         clearInterval(fftTimer);
         fftTimer = null;
       }
-      barFill.style.width = '0%';
+      barFill.style.width = '12%';
+      barFill.style.opacity = '0.55';
     }
 
     async function playSound() {
       try {
         await audio.play();
-        setPlaying(true);
+        playing = true;
+        applyVisual();
         startFFT();
       } catch (err) {
         console.warn('Audio play failed:', err);
@@ -1669,7 +1665,7 @@ Numerous private collections worldwide.</p>
       if (!playing) return;
       audio.pause();
       audio.currentTime = 0;
-      setPlaying(false);
+      playing = false;
       stopFFT();
     }
 
@@ -1684,7 +1680,7 @@ Numerous private collections worldwide.</p>
     // 사운드바 전체를 토글 버튼처럼 사용
     barWrap.addEventListener('click', toggleSound);
 
-    // 보이지 않는 start/stop 버튼에도 연결 (접근성/호환용)
+    // 숨겨진 버튼도 동일 동작 (접근성)
     if (startBtn) startBtn.addEventListener('click', toggleSound);
     if (stopBtn)  stopBtn.addEventListener('click', toggleSound);
 
@@ -1693,8 +1689,7 @@ Numerous private collections worldwide.</p>
     });
 
     // 초기 상태: 정지
-    setPlaying(false);
-    stopFFT();
+    applyVisual();
   }
 
   /* -------------------------------------------

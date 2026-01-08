@@ -105,6 +105,14 @@
     body.hybrid .ko,
     body.hybrid .en{ display:block !important; }
 
+    /* Bio 모달은 전역 언어 필터에서 독립 */
+    #bio-modal .bio-body.ko,
+    #bio-modal .bio-body.en,
+    #bio-modal .expo-kicker .ko,
+    #bio-modal .expo-kicker .en{
+      display:block !important;
+    }
+
     /* =========================================================
        Bio modal language (LOCAL)
     ========================================================= */
@@ -394,8 +402,7 @@
       margin-top:3px;
       font-size: 11.3px;
       color: rgba(237,227,201,.70);
-      line-height:1.18;
-      white-space: pre-line;
+      line-height:1.2;
       opacity: 0.95;
     }
 
@@ -415,15 +422,6 @@
         font-size: 10.4px;
         line-height: 1.14;
         opacity: 0.9;
-      }
-    }
-    /* 작은 모바일에서 한 단계 더 축소 */
-    @media (max-width: 480px){
-      .w-title{
-        font-size: 12.4px;
-      }
-      .w-sub{
-        font-size: 9.8px;
       }
     }
 
@@ -709,18 +707,16 @@
       left: 0;
       right: 0;
       bottom: calc(8px + var(--safe-bot));
-      height: 10px;               /* 클릭 영역 넓게 */
+      height: 3px;
       z-index: 70;
-      background: linear-gradient(90deg, rgba(215,184,106,.16), rgba(215,184,106,0));
+      background: transparent !important;
       pointer-events:none;
-      opacity:0.45;
     }
     #fftBar span{
       display:block;
-      height:2px;                 /* 실제 보이는 선 */
-      margin:4px 0;
+      height:100%;
       width:0%;
-      background: rgba(215,184,106,.65);
+      background: rgba(215,184,106,.16) !important;
       transition: width .08s linear;
     }
 
@@ -1089,11 +1085,11 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-</body>
-</html>
-
 <!-- ============================================
-③ SCRIPTS  (Lightflow ∮27 · script patch A안)
+③ SCRIPTS  (Lightflow ∮27 · script patch)
+- Nav / Lang / Works / Reports / Bio
+- Sound: C 공명 · 사운드바 클릭 토글
+- Waves: 코스믹 파동 배경
 ============================================ -->
 <script>
 (function () {
@@ -1156,7 +1152,6 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 2. 전역 언어 토글 (KR / EN / KR+EN)
-   *    - A안: Bio 모달은 독립 (초기 열릴 때만 동기화)
    * ---------------------------------------- */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1183,6 +1178,7 @@ Numerous private collections worldwide.</p>
       koBtn.addEventListener('click', () => {
         setBodyLang('kr');
         activate(koBtn);
+        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1190,6 +1186,7 @@ Numerous private collections worldwide.</p>
       enBtn.addEventListener('click', () => {
         setBodyLang('en');
         activate(enBtn);
+        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1327,12 +1324,8 @@ Numerous private collections worldwide.</p>
                 <span class="en">${titleEn}</span>
               </div>
               <div class="w-sub">
-                <span class="ko">
-${matKr || ''}${matKr && (sizeKr || year) ? '\n' : ''}${sizeKr || ''}${(sizeKr && year) ? '\n' : (!sizeKr && year ? '\n' : '')}${year || ''}
-                </span>
-                <span class="en">
-${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn && year) ? '\n' : (!sizeEn && year ? '\n' : '')}${year || ''}
-                </span>
+                <span class="ko">${(matKr && year) ? `${matKr} · ${year}` : (matKr || year || '')}</span>
+                <span class="en">${(matEn && year) ? `${matEn} · ${year}` : (matEn || year || '')}</span>
               </div>
             </div>
           </article>
@@ -1516,14 +1509,13 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 6. Artist Bio Modal (A안: 독립)
+   * 6. Artist Bio Modal
    * ---------------------------------------- */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
 
-    // 열릴 때 한 번만 전역 언어에 맞춰 초기화
     const cur = getLang();
     const lang = (cur === 'en') ? 'en' : 'kr';
     setBioLanguage(lang);
@@ -1538,16 +1530,23 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   function setBioLanguage(lang) {
     const modal = $('#bio-modal');
     if (!modal) return;
-    const value = (lang === 'en') ? 'en' : 'kr';
-    modal.setAttribute('data-bio', value);
+    modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
 
     const buttons = $$('#bio-modal .bio-lang .lang');
     buttons.forEach(btn => {
       const bLang = btn.getAttribute('data-bio-lang');
-      const active = (bLang === value || (!bLang && value === 'kr'));
+      const active = (bLang === lang || (!bLang && lang === 'kr'));
       btn.classList.toggle('active', active);
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
+  }
+
+  function syncBioLangToGlobal() {
+    const modal = $('#bio-modal');
+    if (!modal || modal.hidden) return;
+    const cur = getLang();
+    const lang = (cur === 'en') ? 'en' : 'kr';
+    setBioLanguage(lang);
   }
 
   function initBioModal() {
@@ -1588,9 +1587,9 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 7. Sound (투명·작은 공명 사운드바)
-   *    - 사운드바 전체 클릭 시 토글
-   *    - /audio/lightflow_c_resonance.wav
+   * 7. Sound (투명·얇은 공명 사운드바)
+   *    - 사운드바 클릭 시 토글
+   *    - audio/lightflow_c_resonance.wav 사용
    * ---------------------------------------- */
   function initSound() {
     const startBtn = $('#soundBtn');
@@ -1600,7 +1599,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
     if (!barWrap || !barFill) return;
 
-    // 화면에서는 버튼을 거의 보이지 않게 처리 (접근성용만 유지)
+    // 화면에서는 버튼을 거의 보이지 않게 처리 (BODY 구조는 유지)
     if (startBtn) {
       startBtn.style.position = 'absolute';
       startBtn.style.width = '1px';
@@ -1618,11 +1617,14 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
       stopBtn.setAttribute('aria-hidden', 'true');
     }
 
-    // 사운드바: 얇은 황금 선 + 클릭 가능
+    // 사운드바: 더 얇고, 더 투명, 클릭 가능
+    barWrap.style.height = '3px';
+    barWrap.style.opacity = '0.7';
     barWrap.style.pointerEvents = 'auto';
     barWrap.style.cursor = 'pointer';
+    barFill.style.background = 'rgba(215,184,106,0.22)';
 
-    const audio = new Audio('/audio/lightflow_c_resonance.wav');
+    const audio = new Audio('audio/lightflow_c_resonance.wav');
     audio.loop = true;
     audio.preload = 'auto';
 
@@ -1640,7 +1642,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
           barFill.style.width = '0%';
           return;
         }
-        const w = 8 + Math.random() * 18; // 8~26%
+        const w = 6 + Math.random() * 18; // 6~24%
         barFill.style.width = w + '%';
       }, 140);
     }
@@ -1696,7 +1698,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 8. Waves 배경 (코스믹 파동)
+   * 7-1. Waves 배경 (코스믹 파동)
    * ---------------------------------------- */
   function initWaves() {
     const canvas = document.getElementById('waves');
@@ -1760,7 +1762,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 9. 초기화
+   * 8. 초기화
    * ---------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
     try { initNav(); }        catch (e) { console.error(e); }
@@ -1774,3 +1776,6 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
 })();
 </script>
+
+</body>
+</html>

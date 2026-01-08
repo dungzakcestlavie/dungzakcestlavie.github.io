@@ -1061,493 +1061,359 @@ Numerous private collections worldwide.</p>
   </footer>
 
 <!-- ============================================
-③ SCRIPTS  (Lightflow ∮27 · 최종 script 패치)
-- Single View: Poem / Works / Reports 단일 화면
-- Works: data/works.json → 섹션별 카드 + Lightbox
-- Reports: data/reports.json → 카테고리/토글 + 새 탭 열기
-- Artist Bio: 상단 언어버튼 + Bio 모달 언어 연동
-- Sound: 투명·작은 공명 사운드 + fftBar 미세 파형
-- Waves: 배경 캔버스 파동
+③ SCRIPTS  (Lightflow ∮27 · script patch)
+- Nav: Poem / Works / Reports / Artist Bio 단일뷰
+- Lang: KR / EN / KR+EN (Lightbox·Bio까지 연동)
+- Works: data/works.json 1회 로드, 탭은 빠른 전환
+- Reports: data/reports.json 1회 로드, 카테고리 필터
+- Bio: 모달 KR/EN 로컬 토글 (KR 버튼 무반응 해결)
+- Sound: 투명·작은 공명 사운드바 + 무한 루프
 ============================================ -->
 <script>
 (function () {
   'use strict';
 
-  const $ = (sel, root = document) => root.querySelector(sel);
+  /* -------------------------------------------
+   * 0. 작은 헬퍼
+   * ---------------------------------------- */
+  const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  /* -------------------------------------------
-   * 0. PRIMARY NAV (Poem / Works / Reports / Bio)
-   * ---------------------------------------- */
-  function initPrimaryNav() {
-    const buttons = $$('nav.primary button');
-    const sections = {
-      poem: $('#poem'),
-      works: $('#works'),
-      reports: $('#reports')
-    };
-    const bioModal = $('#bio-modal');
-
-    function showSection(key) {
-      Object.keys(sections).forEach(k => {
-        if (!sections[k]) return;
-        sections[k].classList.toggle('is-active', k === key);
-      });
-      buttons.forEach(btn => {
-        const target = btn.getAttribute('data-target');
-        if (target === key) {
-          btn.classList.add('active');
-          btn.setAttribute('aria-current', 'page');
-        } else if (target) {
-          btn.classList.remove('active');
-          btn.removeAttribute('aria-current');
-        }
-      });
-    }
-
-    // 초기 상태: Poem
-    showSection('poem');
-
-    buttons.forEach(btn => {
-      const target = btn.getAttribute('data-target');
-      const id = btn.id;
-
-      // Artist Bio 버튼
-      if (id === 'tab-bio') {
-        btn.addEventListener('click', () => {
-          if (!bioModal) return;
-          openBioModalByCurrentLang();
-        });
-        return;
-      }
-
-      if (!target) return;
-      btn.addEventListener('click', () => {
-        showSection(target);
-      });
+  function safeJSONFetch(url) {
+    return fetch(url, { cache: 'no-store' }).then(res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
     });
   }
 
-  /* -------------------------------------------
-   * 1. LANGUAGE TOGGLE (KR / EN / KR+EN)
-   *    - body class: korean / english / hybrid
-   *    - Bio 모달 기본 언어에도 반영
-   * ---------------------------------------- */
-  function setBodyLanguage(mode) {
-    const body = document.body;
-    body.classList.remove('korean', 'english', 'hybrid');
-    if (mode === 'ko') body.classList.add('korean');
-    else if (mode === 'en') body.classList.add('english');
-    else body.classList.add('hybrid');
+  function getLang() {
+    const b = document.body;
+    if (b.classList.contains('english')) return 'en';
+    if (b.classList.contains('hybrid'))  return 'hy';
+    return 'kr';
   }
 
-  function initLanguageToggle() {
+  /* -------------------------------------------
+   * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
+   * ---------------------------------------- */
+  function initNav() {
+    const navButtons = $$('nav.primary button');
+    const sections   = $$('main > section');
+    const bioBtn     = $('#tab-bio');
+    const bioModal   = $('#bio-modal');
+
+    function showSection(id) {
+      sections.forEach(sec => {
+        sec.classList.toggle('is-active', sec.id === id);
+      });
+    }
+
+    navButtons.forEach(btn => {
+      const target = btn.dataset.target;
+      if (!target) return;
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showSection(target);
+      });
+    });
+
+    // 첫 로드: Poem
+    showSection('poem');
+
+    // Artist Bio 모달 열기
+    if (bioBtn && bioModal) {
+      bioBtn.addEventListener('click', () => {
+        openBioModal();
+      });
+    }
+  }
+
+  /* -------------------------------------------
+   * 2. 전역 언어 토글 (KR / EN / KR+EN)
+   *     - body.korean / .english / .hybrid
+   *     - Lightbox 캡션도 이 상태를 사용
+   * ---------------------------------------- */
+  function initLanguage() {
     const koBtn = $('#koBtn');
     const enBtn = $('#enBtn');
     const hyBtn = $('#hyBtn');
 
-    function updateActive(btn) {
-      [koBtn, enBtn, hyBtn].forEach(b => {
-        if (!b) return;
-        b.classList.toggle('active', b === btn);
-      });
+    function setBodyLang(mode) {
+      document.body.classList.remove('korean', 'english', 'hybrid');
+      if (mode === 'en') {
+        document.body.classList.add('english');
+      } else if (mode === 'hy') {
+        document.body.classList.add('hybrid');
+      } else {
+        document.body.classList.add('korean');
+      }
+    }
+
+    function activate(btn) {
+      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
     }
 
     if (koBtn) {
       koBtn.addEventListener('click', () => {
-        setBodyLanguage('ko');
-        updateActive(koBtn);
+        setBodyLang('kr');
+        activate(koBtn);
+        syncBioLangToGlobal();
+        updateOpenLightboxCaption();
       });
     }
     if (enBtn) {
       enBtn.addEventListener('click', () => {
-        setBodyLanguage('en');
-        updateActive(enBtn);
+        setBodyLang('en');
+        activate(enBtn);
+        syncBioLangToGlobal();
+        updateOpenLightboxCaption();
       });
     }
     if (hyBtn) {
       hyBtn.addEventListener('click', () => {
-        setBodyLanguage('hy');
-        updateActive(hyBtn);
+        setBodyLang('hy');
+        activate(hyBtn);
+        // hybrid에서는 Bio는 기본 KR로 두되, 버튼으로 변경 가능
+        updateOpenLightboxCaption();
       });
     }
 
-    // 초기 언어: 한국어
-    setBodyLanguage('ko');
+    // 초기 값: korean
+    setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
 
-  function getCurrentBodyLang() {
-    const body = document.body;
-    if (body.classList.contains('english')) return 'en';
-    if (body.classList.contains('hybrid')) return 'hy';
-    return 'ko';
-  }
-
   /* -------------------------------------------
-   * 2. ARTIST BIO MODAL
+   * 3. Works (data/works.json 1회 로드)
+   *   - 각 탭 panel-XXX 안에 w-grid 렌더
+   *   - 카드 클릭 → Lightbox
    * ---------------------------------------- */
-  function openBioModalByCurrentLang() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-
-    const lang = getCurrentBodyLang();
-    const bioLang = lang === 'en' ? 'en' : 'kr';
-    modal.dataset.bio = bioLang;
-
-    const btnKR = $('.bio-lang .lang[data-bio-lang="kr"]', modal);
-    const btnEN = $('.bio-lang .lang[data-bio-lang="en"]', modal);
-
-    if (btnKR && btnEN) {
-      if (bioLang === 'kr') {
-        btnKR.classList.add('active');
-        btnKR.setAttribute('aria-pressed', 'true');
-        btnEN.classList.remove('active');
-        btnEN.setAttribute('aria-pressed', 'false');
-      } else {
-        btnEN.classList.add('active');
-        btnEN.setAttribute('aria-pressed', 'true');
-        btnKR.classList.remove('active');
-        btnKR.setAttribute('aria-pressed', 'false');
-      }
-    }
-
-    modal.hidden = false;
-  }
-
-  function initBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-
-    const backdrop = $('.bio-backdrop', modal);
-    const closeBtn = $('.bio-close', modal);
-    const expoToggle = $('#expoToggle');
-    const expoSlide = $('#expoSlide');
-    const langButtons = $$('.bio-lang .lang', modal);
-
-    function close() {
-      modal.hidden = true;
-    }
-
-    if (backdrop) {
-      backdrop.addEventListener('click', close);
-    }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', close);
-    }
-    document.addEventListener('keydown', e => {
-      if (!modal.hidden && e.key === 'Escape') {
-        close();
-      }
-    });
-
-    if (expoToggle && expoSlide) {
-      expoToggle.addEventListener('click', () => {
-        const open = expoSlide.dataset.open === 'true';
-        expoSlide.dataset.open = open ? 'false' : 'true';
-        expoToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-      });
-    }
-
-    langButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tgt = btn.getAttribute('data-bio-lang') || 'kr';
-        modal.dataset.bio = tgt;
-
-        langButtons.forEach(b => {
-          const isActive = b === btn;
-          b.classList.toggle('active', isActive);
-          b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
-      });
-    });
-  }
-
-  /* -------------------------------------------
-   * 3. WORKS (data/works.json → 패널별 카드)
-   * ---------------------------------------- */
-  const WORK_SECTION_KEY_BY_ID = {
-    1: 'pray',
-    2: 'human',
-    3: 'rebirth',
-    4: 'exist',
-    5: 'cosmos'
-  };
-
-  function createWorkCard(item) {
-    const titleKr = item.title_kr || '';
-    const titleEn = item.title_en || '';
-    const materialKr = item.material_kr || '';
-    const materialEn = item.material_en || '';
-    const sizeKr = item.size_kr || '';
-    const sizeEn = item.size_en || '';
-    const year = item.year || '';
-    const imgStd = item.image || '';
-    const imgZoom = item.zoom || '';
-
-    const safeZoom = String(imgZoom).replace(/"/g, '&quot;');
-    const safeStd = String(imgStd).replace(/"/g, '&quot;');
-
-    return `
-      <article class="w-card"
-               data-zoom="${safeZoom}"
-               data-title-kr="${titleKr.replace(/"/g, '&quot;')}"
-               data-title-en="${titleEn.replace(/"/g, '&quot;')}">
-        <img class="w-thumb"
-             src="${safeStd}"
-             alt="${titleEn || titleKr || 'Artwork'}"
-             loading="lazy" />
-        <div class="w-meta">
-          <div class="w-title">
-            <span class="ko">${titleKr}</span>
-            <span class="en">${titleEn}</span>
-          </div>
-          <div class="w-sub">
-            <span class="ko">${materialKr}</span>
-            <span class="en">${materialEn}</span>
-            <br />
-            <span class="ko">${sizeKr}</span>
-            <span class="en">${sizeEn}</span>
-            ${year ? `<br /><span>${year}</span>` : ''}
-          </div>
-        </div>
-      </article>
-    `;
-  }
+  let worksLoaded = false;
+  let worksByPanel = {}; // panelKey → 배열
 
   function initWorks() {
-    const panelPray   = $('#panel-pray');
-    const panelHuman  = $('#panel-human');
-    const panelRebirth= $('#panel-rebirth');
-    const panelExist  = $('#panel-exist');
-    const panelCosmos = $('#panel-cosmos');
+    const panelIds = ['pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const idMap = { 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
 
-    if (!panelPray || !panelHuman || !panelRebirth || !panelExist || !panelCosmos) {
-      return;
-    }
+    const tabButtons = $$('.tabs .tab');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.panel;
+        if (!key) return;
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panelIds.forEach(p => {
+          const el = $('#panel-' + p);
+          if (el) el.classList.toggle('active', p === key);
+        });
+      });
+    });
 
-    fetch('data/works.json', { cache: 'no-store' })
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
+    // JSON 1회 로드
+    safeJSONFetch('data/works.json')
       .then(json => {
-        const works = Array.isArray(json.works) ? json.works : [];
-        const sectionsHTML = {
-          pray:   [],
-          human:  [],
-          rebirth:[],
-          exist:  [],
-          cosmos: []
-        };
+        const list = Array.isArray(json)
+          ? json
+          : (json.works || json.items || []);
+        if (!Array.isArray(list)) return;
 
-        works.forEach(w => {
-          const sid = Number(w.section_id || 0);
-          const key = WORK_SECTION_KEY_BY_ID[sid];
-          if (!key) return;
-          sectionsHTML[key].push(createWorkCard(w));
+        worksByPanel = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
+
+        list.forEach(item => {
+          let key = item.section || item.panel;
+          if (!key && item.section_id != null) {
+            const sid = Number(item.section_id);
+            key = idMap[sid] || 'pray';
+          }
+          if (!key || !worksByPanel[key]) key = 'pray';
+          worksByPanel[key].push(item);
         });
 
-        function inject(panel, arr) {
+        Object.keys(worksByPanel).forEach(key => {
+          const panel = $('#panel-' + key);
           if (!panel) return;
-          if (!arr || !arr.length) {
-            panel.innerHTML = `
-              <div class="w-msg">
-                <span class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</span>
-                <span class="en">No artworks have been registered in this section yet.</span>
-                <small>data/works.json 파일과 이미지 경로를 확인해주세요.</small>
-              </div>
-            `;
-            return;
-          }
-          panel.innerHTML = `<div class="w-grid">${arr.join('')}</div>`;
-        }
+          renderWorksPanel(panel, worksByPanel[key]);
+        });
 
-        inject(panelPray,   sectionsHTML.pray);
-        inject(panelHuman,  sectionsHTML.human);
-        inject(panelRebirth,sectionsHTML.rebirth);
-        inject(panelExist,  sectionsHTML.exist);
-        inject(panelCosmos, sectionsHTML.cosmos);
-
-        initWorksTabs();
-        initLightbox();     // 카드가 생긴 뒤에 Lightbox 바인딩
+        attachWorksLightbox();
+        worksLoaded = true;
       })
       .catch(err => {
         console.error('works.json load error:', err);
-        const msg = `
-          <div class="w-msg">
-            <span class="ko">작품 데이터를 불러오지 못했습니다. 나중에 다시 시도해주세요.</span>
-            <span class="en">Failed to load artwork data. Please try again later.</span>
-            <small>data/works.json 경로 및 GitHub Pages 배포 상태를 확인해주세요.</small>
-          </div>
-        `;
-        [panelPray, panelHuman, panelRebirth, panelExist, panelCosmos].forEach(p => {
-          if (p) p.innerHTML = msg;
+        const allPanels = ['pray','human','rebirth','exist','cosmos'];
+        allPanels.forEach(key => {
+          const panel = $('#panel-' + key);
+          if (!panel) return;
+          panel.innerHTML = `
+            <div class="w-msg">
+              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로와 파일 구성을 확인해 주세요.</div>
+              <div class="en">Unable to load artworks. Please check data/works.json path and structure.</div>
+              <small>GitHub Actions 로그에서 오류 메시지를 함께 확인해 주세요.</small>
+            </div>
+          `;
         });
       });
   }
 
-  function initWorksTabs() {
-    const tabs = $$('.tabs .tab');
-    const panels = {
-      pray:   $('#panel-pray'),
-      human:  $('#panel-human'),
-      rebirth:$('#panel-rebirth'),
-      exist:  $('#panel-exist'),
-      cosmos: $('#panel-cosmos')
-    };
-
-    function showPanel(key) {
-      Object.keys(panels).forEach(k => {
-        const panel = panels[k];
-        if (!panel) return;
-        panel.classList.toggle('active', k === key);
-      });
-      tabs.forEach(t => {
-        const k = t.getAttribute('data-panel');
-        t.classList.toggle('active', k === key);
-      });
+  function renderWorksPanel(panel, items) {
+    if (!panel) return;
+    if (!items || !items.length) {
+      panel.innerHTML = `
+        <div class="w-msg">
+          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+          <div class="en">No artworks have been registered in this section yet.</div>
+        </div>
+      `;
+      return;
     }
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const key = tab.getAttribute('data-panel');
-        if (!key) return;
-        showPanel(key);
-      });
-    });
+    const html = [
+      '<div class="w-grid">',
+      ...items.map(item => {
+        const id         = item.id || '';
+        const titleKr    = item.title_kr || '';
+        const titleEn    = item.title_en || '';
+        const matKr      = item.material_kr || '';
+        const matEn      = item.material_en || '';
+        const sizeKr     = item.size_kr || '';
+        const sizeEn     = item.size_en || '';
+        const year       = item.year || '';
+        const imgStd     = item.image || item.image_standard || '';
+        const imgZoom    = item.zoom  || item.image_zoom     || imgStd;
+        const safe = s => String(s).replace(/"/g, '&quot;');
 
-    // 초기: pray 섹션
-    showPanel('pray');
+        const captionKr = [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+        const captionEn = [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+
+        return `
+          <article class="w-card"
+                   data-id="${safe(id)}"
+                   data-img="${safe(imgZoom || imgStd)}"
+                   data-title-kr="${safe(titleKr)}"
+                   data-title-en="${safe(titleEn)}"
+                   data-mat-kr="${safe(matKr)}"
+                   data-mat-en="${safe(matEn)}"
+                   data-size-kr="${safe(sizeKr)}"
+                   data-size-en="${safe(sizeEn)}"
+                   data-year="${safe(year)}"
+                   data-cap-kr="${safe(captionKr)}"
+                   data-cap-en="${safe(captionEn)}">
+            <img class="w-thumb"
+                 src="${safe(imgStd)}"
+                 alt="${safe(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy" />
+            <div class="w-meta">
+              <div class="w-title">
+                <span class="ko">${titleKr}</span>
+                <span class="en">${titleEn}</span>
+              </div>
+              <div class="w-sub">
+                <span class="ko">
+${matKr || ''}${matKr && (sizeKr || year) ? '\n' : ''}${sizeKr || ''}${(sizeKr && year) ? '\n' : (!sizeKr && year ? '\n' : '')}${year || ''}
+                </span>
+                <span class="en">
+${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn && year) ? '\n' : (!sizeEn && year ? '\n' : '')}${year || ''}
+                </span>
+              </div>
+            </div>
+          </article>
+        `;
+      }),
+      '</div>'
+    ].join('');
+
+    panel.innerHTML = html;
   }
 
   /* -------------------------------------------
-   * 3-1. LIGHTBOX (Works 이미지 확대 + Arrow 키)
+   * 4. Lightbox
+   *   - 현재 언어 상태에 맞춰 캡션 생성
+   *   - KR → KR 텍스트, EN → EN 텍스트, HY → 둘 다
    * ---------------------------------------- */
-  function initLightbox() {
-    const lb = $('#lightbox');
+  let lbOpenFrom = null; // 현재 열린 카드 element
+
+  function attachWorksLightbox() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    worksRoot.addEventListener('click', e => {
+      const card = e.target.closest('.w-card');
+      if (!card) return;
+      openLightboxFromCard(card);
+    });
+
+    const lb   = $('#lightbox');
+    const btnX = $('#lbClose');
+    if (lb) {
+      lb.addEventListener('click', e => {
+        if (e.target === lb) closeLightbox();
+      });
+    }
+    if (btnX) {
+      btnX.addEventListener('click', closeLightbox);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  }
+
+  function buildCaptionForCard(card, mode) {
+    const capKr = card.getAttribute('data-cap-kr') || '';
+    const capEn = card.getAttribute('data-cap-en') || '';
+    if (mode === 'en') {
+      return capEn || capKr || '';
+    }
+    if (mode === 'hy') {
+      if (capKr && capEn) return capKr + '\n\n' + capEn;
+      return capKr || capEn || '';
+    }
+    // kr
+    return capKr || capEn || '';
+  }
+
+  function openLightboxFromCard(card) {
+    const lb    = $('#lightbox');
     const lbImg = $('#lbImg');
     const lbCap = $('#lbCap');
-    const lbClose = $('#lbClose');
-    if (!lb || !lbImg || !lbCap || !lbClose) return;
+    if (!lb || !lbImg || !lbCap) return;
 
-    let currentList = [];
-    let currentIndex = -1;
+    lbOpenFrom = card;
 
-    function openFromCard(card) {
-      const grid = card.closest('.w-grid') || card.parentElement;
-      const cards = $$('.w-card', grid || document);
-      currentList = cards;
+    const src  = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
+    const mode = getLang();
 
-      currentIndex = cards.indexOf(card);
-      if (currentIndex < 0) currentIndex = 0;
+    lbImg.src = src;
+    lbCap.textContent = buildCaptionForCard(card, mode);
 
-      showCurrent();
-      lb.classList.add('is-open');
-      lb.setAttribute('aria-hidden', 'false');
-    }
+    lb.classList.add('is-open');
+    lb.setAttribute('aria-hidden', 'false');
+  }
 
-    function showCurrent() {
-      if (!currentList.length || currentIndex < 0) return;
-      const card = currentList[currentIndex];
-      const zoom = card.getAttribute('data-zoom') || '';
-      const titleKr = card.getAttribute('data-title-kr') || '';
-      const titleEn = card.getAttribute('data-title-en') || '';
+  function closeLightbox() {
+    const lb    = $('#lightbox');
+    const lbImg = $('#lbImg');
+    const lbCap = $('#lbCap');
+    if (!lb) return;
+    lb.classList.remove('is-open');
+    lb.setAttribute('aria-hidden', 'true');
+    if (lbImg) lbImg.src = '';
+    if (lbCap) lbCap.textContent = '';
+    lbOpenFrom = null;
+  }
 
-      lbImg.src = zoom || '';
-      lbCap.innerHTML = `
-        <div class="ko">${titleKr}</div>
-        <div class="en">${titleEn}</div>
-      `;
-    }
-
-    function close() {
-      lb.classList.remove('is-open');
-      lb.setAttribute('aria-hidden', 'true');
-      currentList = [];
-      currentIndex = -1;
-      lbImg.src = '';
-    }
-
-    function next(delta) {
-      if (!currentList.length) return;
-      currentIndex = (currentIndex + delta + currentList.length) % currentList.length;
-      showCurrent();
-    }
-
-    // 카드 클릭
-    $$('.w-card').forEach(card => {
-      card.addEventListener('click', () => openFromCard(card));
-    });
-
-    // 동적으로 추가된 카드에도 대응
-    const works = $('#works');
-    if (works) {
-      const observer = new MutationObserver(() => {
-        $$('.w-card').forEach(card => {
-          if (!card.dataset.lbBound) {
-            card.dataset.lbBound = '1';
-            card.addEventListener('click', () => openFromCard(card));
-          }
-        });
-      });
-      observer.observe(works, { childList: true, subtree: true });
-    }
-
-    lbClose.addEventListener('click', close);
-    lb.addEventListener('click', e => {
-      if (e.target === lb) close();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (!lb.classList.contains('is-open')) return;
-      if (e.key === 'Escape') close();
-      else if (e.key === 'ArrowRight') next(1);
-      else if (e.key === 'ArrowLeft') next(-1);
-    });
+  // 언어 버튼 눌렀을 때 이미 열린 Lightbox 캡션 업데이트
+  function updateOpenLightboxCaption() {
+    if (!lbOpenFrom) return;
+    const lbCap = $('#lbCap');
+    if (!lbCap) return;
+    lbCap.textContent = buildCaptionForCard(lbOpenFrom, getLang());
   }
 
   /* -------------------------------------------
-   * 4. REPORTS (data/reports.json)
+   * 5. Reports (data/reports.json)
    * ---------------------------------------- */
-  function createReportCard(item) {
-    const titleKr = item.title_ko || '';
-    const titleEn = item.title_en || '';
-    const summaryKr = item.summary_ko || '';
-    const summaryEn = item.summary_en || '';
-    const id = item.id || '';
-    const year = item.year || '';
-    const category = (item.category || '').toLowerCase();
-    const mdPath = item.md_path || '';
-
-    const safePath = String(mdPath).replace(/"/g, '&quot;');
-
-    return `
-      <article class="r-item" data-category="${category}" data-md="${safePath}">
-        <div class="t">
-          <div class="ko">${titleKr}</div>
-          <div class="en">${titleEn}</div>
-        </div>
-        <div class="m">
-          <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
-        </div>
-        <div class="s">
-          <div class="ko">${summaryKr}</div>
-          <div class="en">${summaryEn}</div>
-        </div>
-        <div style="margin-top:8px;font-size:11px;opacity:.7">
-          <a href="${safePath}" target="_blank" rel="noopener">
-            open full report
-          </a>
-          &nbsp;·&nbsp;
-          <a href="${safePath}" download>
-            download
-          </a>
-        </div>
-      </article>
-    `;
-  }
-
   function initReports() {
     const grid = $('#reportGrid');
     if (!grid) return;
@@ -1555,258 +1421,263 @@ Numerous private collections worldwide.</p>
     const tabs = $$('.r-tab');
     const toggleBtn = $('#reportsToggle');
 
-    fetch('data/reports.json', { cache: 'no-store' })
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(json => {
-        const reports = Array.isArray(json.reports) ? json.reports : [];
-        if (!reports.length) {
-          grid.innerHTML = `
-            <div class="w-msg">
-              <span class="ko">등록된 미학 보고서가 아직 없습니다.</span>
-              <span class="en">No aesthetic reports have been registered yet.</span>
-            </div>
-          `;
-          return;
-        }
-        grid.innerHTML = reports.map(createReportCard).join('');
-
-        // 카드 클릭 시 새 탭으로 열기
-        $$('.r-item', grid).forEach(card => {
-          card.addEventListener('click', e => {
-            // a 클릭은 그대로 두고, 카드 배경 클릭만 처리
-            if (e.target.tagName.toLowerCase() === 'a') return;
-            const path = card.getAttribute('data-md');
-            if (!path) return;
-            window.open(path, '_blank', 'noopener');
-          });
-        });
-
-        // 카테고리 필터
-        function applyFilter(key) {
-          const k = key.toLowerCase();
-          $$('.r-item', grid).forEach(card => {
-            const cat = (card.dataset.category || '').toLowerCase();
-            if (!k || k === 'all' || k === cat) {
-              card.style.display = '';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-        }
-
-        tabs.forEach(tab => {
-          tab.addEventListener('click', () => {
-            const key = tab.getAttribute('data-r') || 'all';
-            tabs.forEach(t => t.classList.remove('is-active'));
-            tab.classList.add('is-active');
-            applyFilter(key);
-          });
-        });
-
-        // 기본 All
-        const defaultTab =
-          tabs.find(t => t.classList.contains('is-active')) || tabs[0];
-        if (defaultTab) defaultTab.click();
-
-        // 토글 버튼: grid show/hide
-        if (toggleBtn) {
-          toggleBtn.addEventListener('click', () => {
-            const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-            const next = !expanded;
-            toggleBtn.setAttribute('aria-expanded', String(next));
-            toggleBtn.textContent = next ? 'Close Reports' : 'Open Reports';
-            grid.style.display = next ? 'grid' : 'none';
-          });
-
-          // 최초 한 번 열기
-          toggleBtn.click();
+    function applyFilter(type) {
+      const items = $$('.r-item', grid);
+      items.forEach(item => {
+        const cat = (item.dataset.category || '').toLowerCase();
+        if (!type || type === 'all' || cat === type) {
+          item.style.display = '';
         } else {
-          // 토글 없으면 항상 보이기
-          grid.style.display = 'grid';
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = (btn.dataset.r || '').toLowerCase();
+        tabs.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        applyFilter(type);
+      });
+    });
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', String(!expanded));
+        grid.style.display = expanded ? 'none' : 'grid';
+      });
+    }
+
+    safeJSONFetch('data/reports.json')
+      .then(json => {
+        const list = Array.isArray(json)
+          ? json
+          : (json.reports || json.items || []);
+        if (!Array.isArray(list) || !list.length) return;
+
+        const html = list.map(item => {
+          const id        = item.id || '';
+          const year      = item.year || '';
+          const category  = (item.category || 'theory').toLowerCase();
+          const titleKr   = item.title_ko || item.title_kr || '';
+          const titleEn   = item.title_en || '';
+          const summaryKr = item.summary_ko || item.summary_kr || '';
+          const summaryEn = item.summary_en || '';
+          const href      = item.url || item.link || item.md_path || '#';
+
+          return `
+            <article class="r-item" data-category="${category}">
+              <div class="t">
+                <span class="ko">${titleKr}</span>
+                <span class="en">${titleEn}</span>
+              </div>
+              <div class="m">
+                <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
+              </div>
+              <div class="s">
+                <span class="ko">${summaryKr}</span>
+                <span class="en">${summaryEn}</span>
+              </div>
+              <a href="${href}" target="_blank" rel="noopener"
+                 style="display:inline-block;margin-top:10px;font-size:11px;text-decoration:underline;">
+                <span class="ko">전체 보기 (새 창)</span>
+                <span class="en">Open full report (new tab)</span>
+              </a>
+            </article>
+          `;
+        }).join('');
+
+        grid.innerHTML = html;
+        // 기본: 열어두고 All 필터
+        grid.style.display = 'grid';
+        const defaultTab = tabs.find(b => b.dataset.r === 'all') || tabs[0];
+        if (defaultTab) {
+          defaultTab.classList.add('is-active');
+          applyFilter((defaultTab.dataset.r || 'all').toLowerCase());
         }
       })
       .catch(err => {
         console.error('reports.json load error:', err);
-        grid.innerHTML = `
-          <div class="w-msg">
-            <span class="ko">미학 보고서를 불러오지 못했습니다.</span>
-            <span class="en">Failed to load aesthetic reports.</span>
-            <small>data/reports.json 경로를 확인해주세요.</small>
-          </div>
-        `;
       });
   }
 
   /* -------------------------------------------
-   * 5. SOUND (투명·작은 공명 사운드)
-   *    - #soundBtn, #soundStopBtn
-   *    - #fftBar span 너비를 미세하게 변조
+   * 6. Artist Bio Modal
+   *    - KR 버튼 무반응 문제 해결
+   *    - Global Lang과 느슨하게 연동
    * ---------------------------------------- */
-  function initSound() {
-    const playBtn = $('#soundBtn');
-    const stopBtn = $('#soundStopBtn');
-    const fftBar = $('#fftBar span');
+  function openBioModal() {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+    modal.hidden = false;
 
-    if (!playBtn || !stopBtn || !fftBar) return;
+    // 현재 글로벌 언어에 맞춰 기본 bio 언어 세팅
+    const cur = getLang();
+    const lang = (cur === 'en') ? 'en' : 'kr';
+    setBioLanguage(lang);
 
-    // 공명 사운드 오디오 요소 동적 생성
-    const audio = document.createElement('audio');
-    audio.id = 'lf-audio';
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.volume = 0.26; // 미세 공명
+    // 스크롤 잠금은 과도하지 않게, 기본 상태 유지
+  }
 
-    // 등작이 업로드할 파일 경로 (필요 시 변경 가능)
-    const src1 = document.createElement('source');
-    src1.src = 'media/lightflow-resonance.m4a';
-    src1.type = 'audio/mp4';
+  function closeBioModal() {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+    modal.hidden = true;
+  }
 
-    const src2 = document.createElement('source');
-    src2.src = 'media/lightflow-resonance.ogg';
-    src2.type = 'audio/ogg';
+  function setBioLanguage(lang) {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+    modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
 
-    audio.appendChild(src1);
-    audio.appendChild(src2);
-    audio.style.display = 'none';
-    document.body.appendChild(audio);
+    const buttons = $$('#bio-modal .bio-lang .lang');
+    buttons.forEach(btn => {
+      const bLang = btn.getAttribute('data-bio-lang');
+      const active = (bLang === lang || (!bLang && lang === 'kr'));
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
 
-    let playing = false;
-    let rafId = null;
+  function syncBioLangToGlobal() {
+    const modal = $('#bio-modal');
+    if (!modal || modal.hidden) return;
+    const cur = getLang();
+    const lang = (cur === 'en') ? 'en' : 'kr';
+    setBioLanguage(lang);
+  }
 
-    function animateFFT() {
-      if (!playing) {
-        fftBar.style.width = '0%';
-        return;
-      }
-      const t = performance.now();
-      // 3개의 서로 다른 주파수 기반 미세 변조
-      const v1 = (Math.sin(t / 480) + 1) / 2;   // 0~1
-      const v2 = (Math.sin(t / 1270 + 1.7) + 1) / 2;
-      const v3 = (Math.sin(t / 2210 + 0.3) + 1) / 2;
-      const v = (v1 * 0.55 + v2 * 0.3 + v3 * 0.15); // 가중 합
+  function initBioModal() {
+    const modal    = $('#bio-modal');
+    if (!modal) return;
+    const backdrop = $('.bio-backdrop', modal);
+    const closeBtn = $('.bio-close', modal);
+    const expoBtn  = $('#expoToggle');
+    const expoWrap = $('#expoSlide');
+    const langBtns = $$('#bio-modal .bio-lang .lang');
 
-      const width = 6 + v * 28; // 6% ~ 34%
-      fftBar.style.width = width.toFixed(1) + '%';
+    if (backdrop) {
+      backdrop.addEventListener('click', closeBioModal);
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeBioModal);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !modal.hidden) closeBioModal();
+    });
 
-      rafId = requestAnimationFrame(animateFFT);
+    if (expoBtn && expoWrap) {
+      expoBtn.addEventListener('click', () => {
+        const isOpen = expoWrap.getAttribute('data-open') === 'true';
+        expoWrap.setAttribute('data-open', isOpen ? 'false' : 'true');
+        expoBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      });
     }
 
-    async function start() {
+    langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-bio-lang') || 'kr';
+        setBioLanguage(lang);
+      });
+    });
+
+    // 초기 상태: 숨김
+    modal.hidden = true;
+  }
+
+  /* -------------------------------------------
+   * 7. Sound (투명·작은 공명 사운드바)
+   *    - /audio/lightflow_c_resonance.mp3 사용 (파일 업로드 필요)
+   * ---------------------------------------- */
+  function initSound() {
+    const startBtn = $('#soundBtn');
+    const stopBtn  = $('#soundStopBtn');
+    const barWrap  = $('#fftBar');
+    const barFill  = barWrap ? barWrap.querySelector('span') : null;
+
+    if (!startBtn || !stopBtn || !barWrap || !barFill) return;
+
+    // 사운드바 더 얇고 투명하게
+    barWrap.style.height = '1.5px';
+    barFill.style.background = 'rgba(215,184,106,0.10)';
+
+    const audio = new Audio('/audio/lightflow_c_resonance.mp3'); // TODO: 이 경로에 공명음 파일 업로드
+    audio.loop = true;
+    audio.preload = 'auto';
+
+    let playing = false;
+    let fftTimer = null;
+
+    function setButtonsState(isPlaying) {
+      playing = isPlaying;
+      startBtn.disabled = isPlaying;
+      stopBtn.disabled  = !isPlaying;
+    }
+
+    function startFFT() {
+      if (!barFill) return;
+      if (fftTimer) clearInterval(fftTimer);
+      fftTimer = setInterval(() => {
+        const w = 8 + Math.random() * 24; // 8~32%
+        barFill.style.width = playing ? w + '%' : '0%';
+      }, 120);
+    }
+
+    function stopFFT() {
+      if (fftTimer) {
+        clearInterval(fftTimer);
+        fftTimer = null;
+      }
+      if (barFill) barFill.style.width = '0%';
+    }
+
+    startBtn.addEventListener('click', async () => {
       try {
-        if (playing) return;
-        await audio.play();
-        playing = true;
-        playBtn.disabled = true;
-        stopBtn.disabled = false;
-        fftBar.style.transition = 'width .08s linear';
-        if (rafId === null) {
-          rafId = requestAnimationFrame(animateFFT);
+        if (!playing) {
+          await audio.play();
+          setButtonsState(true);
+          startFFT();
         }
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
-    }
+    });
 
-    function stop() {
+    stopBtn.addEventListener('click', () => {
       if (!playing) return;
       audio.pause();
       audio.currentTime = 0;
-      playing = false;
-      playBtn.disabled = false;
-      stopBtn.disabled = true;
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-      fftBar.style.width = '0%';
-    }
-
-    playBtn.addEventListener('click', start);
-    stopBtn.addEventListener('click', stop);
-
-    // 페이지 떠날 때 자동 정지
-    window.addEventListener('pagehide', stop);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') stop();
+      setButtonsState(false);
+      stopFFT();
     });
-  }
 
-  /* -------------------------------------------
-   * 6. WAVES (배경 파동 캔버스)
-   * ---------------------------------------- */
-  function initWaves() {
-    const canvas = $('#waves');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    const waves = [
-      { amp: 18, len: 420, speed: 0.00045, phase: 0 },
-      { amp: 10, len: 260, speed: -0.00032, phase: Math.PI / 2 },
-      { amp: 6,  len: 180, speed: 0.00027, phase: Math.PI / 3 }
-    ];
-
-    function draw(t) {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      ctx.clearRect(0, 0, w, h);
-
-      ctx.save();
-      const grd = ctx.createLinearGradient(0, 0, w, h);
-      grd.addColorStop(0, 'rgba(215,184,106,0.06)');
-      grd.addColorStop(0.5, 'rgba(121,167,255,0.10)');
-      grd.addColorStop(1, 'rgba(0,0,0,0.0)');
-      ctx.strokeStyle = grd;
-      ctx.lineWidth = 1.1;
-
-      const midY = h * 0.45;
-
-      ctx.beginPath();
-      for (let x = 0; x <= w; x += 6) {
-        let y = 0;
-        waves.forEach(wv => {
-          const k = (x / w) * (w / wv.len);
-          const phase = wv.phase + t * wv.speed;
-          y += Math.sin(k * 2 * Math.PI + phase) * wv.amp;
-        });
-        const yy = midY + y;
-        if (x === 0) ctx.moveTo(x, yy);
-        else ctx.lineTo(x, yy);
+    window.addEventListener('pagehide', () => {
+      if (playing) {
+        audio.pause();
+        audio.currentTime = 0;
+        setButtonsState(false);
+        stopFFT();
       }
-      ctx.stroke();
-      ctx.restore();
+    });
 
-      requestAnimationFrame(draw);
-    }
-
-    requestAnimationFrame(draw);
+    // 초기 상태: 정지
+    setButtonsState(false);
+    stopFFT();
   }
 
   /* -------------------------------------------
-   * 7. INIT
+   * 8. 초기화
    * ---------------------------------------- */
-  document.addEventListener('DOMContentLoaded', function () {
-    try { initPrimaryNav(); } catch (e) { console.error(e); }
-    try { initLanguageToggle(); } catch (e) { console.error(e); }
-    try { initBioModal(); } catch (e) { console.error(e); }
-    try { initWorks(); } catch (e) { console.error(e); }
-    try { initReports(); } catch (e) { console.error(e); }
-    try { initSound(); } catch (e) { console.error(e); }
-    try { initWaves(); } catch (e) { console.error(e); }
+  document.addEventListener('DOMContentLoaded', () => {
+    try { initNav(); }        catch (e) { console.error(e); }
+    try { initLanguage(); }   catch (e) { console.error(e); }
+    try { initWorks(); }      catch (e) { console.error(e); }
+    try { initReports(); }    catch (e) { console.error(e); }
+    try { initBioModal(); }   catch (e) { console.error(e); }
+    try { initSound(); }      catch (e) { console.error(e); }
   });
+
 })();
 </script>

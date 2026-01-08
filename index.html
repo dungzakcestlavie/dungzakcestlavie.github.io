@@ -417,6 +417,15 @@
         opacity: 0.9;
       }
     }
+    /* 작은 모바일에서 한 단계 더 축소 */
+    @media (max-width: 480px){
+      .w-title{
+        font-size: 12.4px;
+      }
+      .w-sub{
+        font-size: 9.8px;
+      }
+    }
 
     .w-msg{
       padding: 16px;
@@ -699,17 +708,19 @@
       position: fixed;
       left: 0;
       right: 0;
-      bottom: calc(0px + var(--safe-bot));
-      height: 3px;
+      bottom: calc(8px + var(--safe-bot));
+      height: 10px;               /* 클릭 영역 넓게 */
       z-index: 70;
-      background: transparent !important;
+      background: linear-gradient(90deg, rgba(215,184,106,.16), rgba(215,184,106,0));
       pointer-events:none;
+      opacity:0.45;
     }
     #fftBar span{
       display:block;
-      height:100%;
+      height:2px;                 /* 실제 보이는 선 */
+      margin:4px 0;
       width:0%;
-      background: rgba(215,184,106,.16) !important;
+      background: rgba(215,184,106,.65);
       transition: width .08s linear;
     }
 
@@ -1078,11 +1089,11 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
+</body>
+</html>
+
 <!-- ============================================
-③ SCRIPTS  (Lightflow ∮27 · script patch)
-- Nav / Lang / Works / Reports / Bio
-- Sound: C 공명 · 사운드바 클릭 토글
-- Waves: 코스믹 파동 배경
+③ SCRIPTS  (Lightflow ∮27 · script patch A안)
 ============================================ -->
 <script>
 (function () {
@@ -1145,6 +1156,7 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 2. 전역 언어 토글 (KR / EN / KR+EN)
+   *    - A안: Bio 모달은 독립 (초기 열릴 때만 동기화)
    * ---------------------------------------- */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1171,7 +1183,6 @@ Numerous private collections worldwide.</p>
       koBtn.addEventListener('click', () => {
         setBodyLang('kr');
         activate(koBtn);
-        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1179,7 +1190,6 @@ Numerous private collections worldwide.</p>
       enBtn.addEventListener('click', () => {
         setBodyLang('en');
         activate(enBtn);
-        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1506,13 +1516,14 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 6. Artist Bio Modal
+   * 6. Artist Bio Modal (A안: 독립)
    * ---------------------------------------- */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
 
+    // 열릴 때 한 번만 전역 언어에 맞춰 초기화
     const cur = getLang();
     const lang = (cur === 'en') ? 'en' : 'kr';
     setBioLanguage(lang);
@@ -1527,23 +1538,16 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   function setBioLanguage(lang) {
     const modal = $('#bio-modal');
     if (!modal) return;
-    modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
+    const value = (lang === 'en') ? 'en' : 'kr';
+    modal.setAttribute('data-bio', value);
 
     const buttons = $$('#bio-modal .bio-lang .lang');
     buttons.forEach(btn => {
       const bLang = btn.getAttribute('data-bio-lang');
-      const active = (bLang === lang || (!bLang && lang === 'kr'));
+      const active = (bLang === value || (!bLang && value === 'kr'));
       btn.classList.toggle('active', active);
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
-  }
-
-  function syncBioLangToGlobal() {
-    const modal = $('#bio-modal');
-    if (!modal || modal.hidden) return;
-    const cur = getLang();
-    const lang = (cur === 'en') ? 'en' : 'kr';
-    setBioLanguage(lang);
   }
 
   function initBioModal() {
@@ -1585,8 +1589,8 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
   /* -------------------------------------------
    * 7. Sound (투명·작은 공명 사운드바)
-   *    - 사운드바 클릭 시 토글
-   *    - /audio/lightflow_c_resonance.wav 사용
+   *    - 사운드바 전체 클릭 시 토글
+   *    - /audio/lightflow_c_resonance.wav
    * ---------------------------------------- */
   function initSound() {
     const startBtn = $('#soundBtn');
@@ -1596,7 +1600,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
     if (!barWrap || !barFill) return;
 
-    // 화면에서는 버튼을 거의 보이지 않게 처리 (BODY 구조는 유지)
+    // 화면에서는 버튼을 거의 보이지 않게 처리 (접근성용만 유지)
     if (startBtn) {
       startBtn.style.position = 'absolute';
       startBtn.style.width = '1px';
@@ -1614,12 +1618,9 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
       stopBtn.setAttribute('aria-hidden', 'true');
     }
 
-    // 사운드바: 더 얇고, 더 투명, 클릭 가능
-    barWrap.style.height = '2px';
-    barWrap.style.opacity = '0.35';
+    // 사운드바: 얇은 황금 선 + 클릭 가능
     barWrap.style.pointerEvents = 'auto';
     barWrap.style.cursor = 'pointer';
-    barFill.style.background = 'rgba(215,184,106,0.18)';
 
     const audio = new Audio('/audio/lightflow_c_resonance.wav');
     audio.loop = true;
@@ -1639,7 +1640,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
           barFill.style.width = '0%';
           return;
         }
-        const w = 6 + Math.random() * 18; // 6~24%
+        const w = 8 + Math.random() * 18; // 8~26%
         barFill.style.width = w + '%';
       }, 140);
     }
@@ -1695,7 +1696,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 7-1. Waves 배경 (코스믹 파동)
+   * 8. Waves 배경 (코스믹 파동)
    * ---------------------------------------- */
   function initWaves() {
     const canvas = document.getElementById('waves');
@@ -1759,7 +1760,7 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
   }
 
   /* -------------------------------------------
-   * 8. 초기화
+   * 9. 초기화
    * ---------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
     try { initNav(); }        catch (e) { console.error(e); }
@@ -1773,6 +1774,3 @@ ${matEn || ''}${matEn && (sizeEn || year) ? '\n' : ''}${sizeEn || ''}${(sizeEn &
 
 })();
 </script>
-
-</body>
-</html>

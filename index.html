@@ -706,48 +706,34 @@
     ========================================================= */
     #fftBar{
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: calc(8px + var(--safe-bot));
-      height: 4px;
+      right: calc(16px + var(--safe-right));
+      bottom: calc(70px + var(--safe-bot));
+      width: 72px;          /* 작게 */
+      height: 3px;          /* 아주 얇게 */
+      border-radius: 999px;
       z-index: 70;
-      background: rgba(255,255,255,.03);
+      background: rgba(255,255,255,.05);
+      opacity: .35;         /* 살짝만 보이게 */
       pointer-events:auto;
       cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.30);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
     }
     #fftBar span{
       display:block;
       height:100%;
-      width:12%;
-      background: linear-gradient(90deg, rgba(215,184,106,.22), rgba(121,167,255,.28));
+      width:18%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(215,184,106,.35), rgba(121,167,255,.40));
       transition: width .10s linear, opacity .20s ease;
-      opacity:.55;
+      opacity:.7;
     }
 
+    /* 오른쪽 컨트롤 아이콘은 화면에 보이지 않도록 */
     #ctrl{
-      position: fixed;
-      right: calc(14px + var(--safe-right));
-      bottom: calc(14px + var(--safe-bot) + 6px);
-      z-index: 71;
-      display:flex;
-      gap:10px;
+      display:none;
     }
-    .ctrlbtn{
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      appearance:none;
-      border: 1px solid rgba(215,184,106,.30);
-      background: rgba(0,0,0,0);
-      color: var(--gold2);
-      font-size: 18px;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.26);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .ctrlbtn[disabled]{ opacity:.5; cursor:not-allowed; }
 
     /* =========================================================
        Footer
@@ -980,7 +966,7 @@
           <br><p><strong>국외 주요전시</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
           <p>2015 모스크바 국제공항 『삶과 예술의 간격』, 모스크바, 러시아</p>
-          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 & 전시, 베트남</p>
+          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 &amp; 전시, 베트남</p>
           <p>2011 Open Art in Amsterdam, 네덜란드</p>
           <p>2006 Linka Gallery, 암스테르담, 네덜란드</p>
           <p>2005 Lune Cafe, 몽파르나스, 파리, 프랑스</p>
@@ -1429,7 +1415,7 @@ Numerous private collections worldwide.</p>
     if (!grid) return;
 
     const tabs = $$('.r-tab');
-    const toggleBtn = $('#reportsToggle');
+    theToggle = $('#reportsToggle');
 
     function applyFilter(type) {
       const items = $$('.r-item', grid);
@@ -1452,10 +1438,10 @@ Numerous private collections worldwide.</p>
       });
     });
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        toggleBtn.setAttribute('aria-expanded', String(!expanded));
+    if (theToggle) {
+      theToggle.addEventListener('click', () => {
+        const expanded = theToggle.getAttribute('aria-expanded') === 'true';
+        theToggle.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
       });
     }
@@ -1623,16 +1609,16 @@ Numerous private collections worldwide.</p>
 
     function applyVisual() {
       if (!playing) {
-        barFill.style.opacity = '0.55';
-        barFill.style.width   = '12%';
+        barFill.style.opacity = '0.7';
+        barFill.style.width   = '18%';
       } else {
-        barFill.style.opacity = '0.95';
+        barFill.style.opacity = '1';
       }
     }
 
     function tick() {
       if (!playing) return;
-      const w = 16 + Math.random() * 40; // 16~56%
+      const w = 20 + Math.random() * 32; // 20~52%
       barFill.style.width = w + '%';
     }
 
@@ -1646,8 +1632,8 @@ Numerous private collections worldwide.</p>
         clearInterval(fftTimer);
         fftTimer = null;
       }
-      barFill.style.width = '12%';
-      barFill.style.opacity = '0.55';
+      barFill.style.width = '18%';
+      barFill.style.opacity = '0.7';
     }
 
     async function playSound() {

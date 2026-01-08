@@ -1,14 +1,14 @@
 <!-- ==========================================================
-Lightflow ∮27 — FINAL STABLE (3-PART)
-① HEAD / STYLE  (BASE 유지 + “단일 섹션 뷰”/사운드바 투명 보강)
-② BODY / HTML   (등작 원문 그대로 유지)
+Lightflow ∮27 — FINAL STABLE (3-PART)  ✅ FULL CODE
+① HEAD / STYLE  (재설계: “번짐 없는 금빛” + 기본 안정 + 섹션 기본 Poem 표시)
+② BODY / HTML   (등작 원문 그대로 유지 — 아래 BODY는 그대로 복붙)
 ③ SCRIPTS       (단일 섹션 뷰 + Works/Reports + Bio + Waves + Sound)
 ========================================================== -->
 <!doctype html>
 <html lang="ko">
 
 <!-- ==========================================================
-① HEAD / STYLE  (BASE + FIX)
+① HEAD / STYLE  (RE-DESIGN + FIX)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -68,10 +68,10 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       --maxw: 1120px;
 
       /* 금빛 “단단함(번짐 없음)” 엣지 */
-      --gold-edge: rgba(0,0,0,.70);
-      --gold-edge2: rgba(0,0,0,.42);
+      --gold-edge: rgba(0,0,0,.72);
+      --gold-edge2: rgba(0,0,0,.46);
 
-      /* 버튼 크기 튜닝 */
+      /* 버튼 크기 */
       --btnH: 40px;
       --btnPadX: 12px;
       --btnFont: 12.6px;
@@ -89,8 +89,6 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing:.2px;
       overflow-x:hidden;
-      padding-left: 0;
-      padding-right: 0;
     }
 
     header, main, footer{
@@ -113,11 +111,9 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
 
     /* =========================================================
        Bio modal language (LOCAL)
-       - BODY 원문은 그대로 두고, 모달 내부만 별도 표시 제어
     ========================================================= */
     #bio-modal[data-bio="kr"] .bio-body.en,
     #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
-
     #bio-modal[data-bio="en"] .bio-body.ko,
     #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
 
@@ -135,7 +131,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
     }
 
     /* =========================================================
-       Header / Nav (CENTER FIX + SIZE TUNE)
+       Header / Nav (CENTER FIX + “선명하지만 번짐 없음”)
     ========================================================= */
     header{
       position:sticky;
@@ -158,13 +154,12 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
     }
 
     header .brand{
-      font-weight: 900;
+      font-weight: 950;
       color: var(--gold2);
       letter-spacing: .72px;
       font-size: 15px;
       line-height: 1.25;
-
-      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      -webkit-text-stroke: .36px rgba(0,0,0,.38);
       text-shadow:
         0 1px 0 var(--gold-edge),
         0 -1px 0 var(--gold-edge2);
@@ -195,7 +190,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       color: var(--gold2);
       padding: 8px var(--btnPadX);
       border-radius: var(--btnRadius);
-      font-weight: 900;
+      font-weight: 950;
       font-size: var(--btnFont);
       cursor:pointer;
       transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
@@ -235,7 +230,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       color: rgba(237,227,201,.92);
       padding: 7px 11px;
       border-radius: var(--btnRadius);
-      font-weight: 900;
+      font-weight: 950;
       font-size: 12px;
       cursor:pointer;
       min-height: 38px;
@@ -274,12 +269,13 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
     }
 
     /* =========================================================
-       ✅ SINGLE SECTION VIEW (Poem/Works/Reports 한 번에 하나만)
-       - JS가 .is-active를 붙였다 뗐다.
-       - 이 CSS가 없으면 “한 창에 다 뜸” 현상이 발생.
+       ✅ SINGLE SECTION VIEW (기본: Poem은 보이게)
+       - JS가 .is-active를 붙였다 뗀다.
+       - JS 로딩 전 “하얀 빈 화면” 방지: #poem 기본 노출
     ========================================================= */
     main > section{ display:none; }
     main > section.is-active{ display:block; }
+    #poem{ display:block; } /* ✅ JS 전에도 Poem은 기본 표시 */
 
     /* =========================================================
        POEM
@@ -329,7 +325,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       color:rgba(237,227,201,.90);
       border-radius: 999px;
       padding: 8px 12px;
-      font-weight:900;
+      font-weight:950;
       font-size:12.2px;
       cursor:pointer;
       min-height: 38px;
@@ -389,7 +385,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       border-top:1px solid rgba(255,255,255,.045);
     }
     .w-title{
-      font-weight: 900;
+      font-weight: 950;
       color: rgba(237,227,201,.94);
       line-height:1.35;
       font-size: 13px;
@@ -442,7 +438,7 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       color: rgba(237,227,201,.88);
       border-radius: 999px;
       padding:8px 12px;
-      font-weight:900;
+      font-weight:950;
       font-size:12.2px;
       cursor:pointer;
       min-height: 38px;
@@ -518,6 +514,12 @@ Lightflow ∮27 — FINAL STABLE (3-PART)
       color: rgba(237,227,201,.78);
       line-height:1.55;
       white-space: pre-line;
+    }
+
+    /* ✅ viewer 영역: BODY에 있으니 스타일 제공 */
+    .r-viewer{
+      margin-top: 12px;
+      display:none;
     }
 
     /* =========================================================
@@ -1065,10 +1067,10 @@ Numerous private collections worldwide.</p>
 
   <!-- ==========================================================
   ③ SCRIPTS  (FINAL)
-  - ✅ Poem/Works/Reports: “한 번에 하나만” 보이게 (.is-active)
+  - ✅ Poem/Works/Reports: “한 번에 하나만” 보이게
   - ✅ Works/Reports: 다중 경로 + 캐시버스트 + 실패 메시지
   - ✅ Bio: 모달 내부 KR/EN 강제 분리(전역 언어와 독립)
-  - ✅ Sound: iOS unlock + 실제 파일 경로 다중 시도 + FFT “투명/어둡게”
+  - ✅ Sound: iOS unlock + 실제 파일 경로 다중 시도 + FFT 투명 유지
   - ✅ Waves: 안정 렌더
   ========================================================== -->
   <script>
@@ -1125,8 +1127,8 @@ Numerous private collections worldwide.</p>
       if(!panelEl) return;
       panelEl.innerHTML = `
         <div class="w-msg">
-          <div class="ko" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleKo)}</div>
-          <div class="en" style="font-weight:900;margin-bottom:6px">${escapeHTML(titleEn)}</div>
+          <div class="ko" style="font-weight:950;margin-bottom:6px">${escapeHTML(titleKo)}</div>
+          <div class="en" style="font-weight:950;margin-bottom:6px">${escapeHTML(titleEn)}</div>
           <div style="opacity:.9;line-height:1.6;white-space:pre-wrap">${escapeHTML(details || "")}</div>
           <small class="ko">관리: JSON 경로 / GitHub Pages 배포 / 파일명 대소문자를 확인하세요.</small>
           <small class="en">Check JSON path / GitHub Pages deploy / filename case-sensitivity.</small>
@@ -1152,7 +1154,7 @@ Numerous private collections worldwide.</p>
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      // ✅ 기본: poem만 (CSS + JS 둘 다로 확실히)
+      // ✅ 기본: poem
       if(map.poem) setActive("poem");
 
       navBtns.forEach(btn=>{
@@ -1213,7 +1215,7 @@ Numerous private collections worldwide.</p>
           b.setAttribute("aria-pressed", on ? "true" : "false");
         });
 
-        // ✅ 전역 body 언어와 완전 분리: 모달 내부는 강제 display 제어
+        // ✅ 전역 언어와 독립
         bioKoEls.forEach(el => el.style.display = (lang==="kr") ? "" : "none");
         bioEnEls.forEach(el => el.style.display = (lang==="en") ? "" : "none");
       }
@@ -1624,8 +1626,8 @@ Numerous private collections worldwide.</p>
       if(filtered.length === 0){
         grid.innerHTML = `
           <div class="w-msg" style="grid-column:1/-1">
-            <div class="ko" style="font-weight:900;margin-bottom:6px">보고서 목록이 비어있습니다</div>
-            <div class="en" style="font-weight:900;margin-bottom:6px">Reports list is empty</div>
+            <div class="ko" style="font-weight:950;margin-bottom:6px">보고서 목록이 비어있습니다</div>
+            <div class="en" style="font-weight:950;margin-bottom:6px">Reports list is empty</div>
             <div style="opacity:.9;line-height:1.6">reports.json 데이터/카테고리 키(theory/archive/practice)를 확인하세요.</div>
           </div>
         `;
@@ -1698,8 +1700,6 @@ Numerous private collections worldwide.</p>
       const btn = qs("#soundBtn");
       const stopBtn = qs("#soundStopBtn");
       const bar = qs("#fftBar span");
-
-      // ✅ 밝기 강제 (CSS도 있지만 혹시 덮어씌워질 때 대비)
       if(bar) bar.style.background = "rgba(215,184,106,0.16)";
 
       const AUDIO_CANDIDATES = [
@@ -1757,7 +1757,7 @@ Numerous private collections worldwide.</p>
               lastGoodSrc = url;
               return url;
             }
-          }catch(_e){ /* continue */ }
+          }catch(_e){}
         }
         return null;
       }
@@ -1778,13 +1778,11 @@ Numerous private collections worldwide.</p>
       }
 
       async function start(){
-        // iOS: 사용자 클릭에서 AudioContext resume 필수
         if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
         try{ await ctx.resume(); }catch(_e){}
 
         const a = await ensureAudio();
         if(!a){
-          // 파일이 없으면 “가짜 펄스”만 보여주고 안내는 콘솔로.
           cancelAnimationFrame(raf);
           let x = 0;
           const pulse = () => {
@@ -1807,12 +1805,8 @@ Numerous private collections worldwide.</p>
           analyser.connect(ctx.destination);
         }
 
-        try{
-          await a.play();
-        }catch(e){
-          console.warn("[Sound] play blocked:", e);
-          return;
-        }
+        try{ await a.play(); }
+        catch(e){ console.warn("[Sound] play blocked:", e); return; }
 
         if(stopBtn) stopBtn.disabled = false;
         cancelAnimationFrame(raf);
@@ -1825,7 +1819,7 @@ Numerous private collections worldwide.</p>
 
     /* ---------------- Boot ---------------- */
     document.addEventListener("DOMContentLoaded", async () => {
-      initSingleViewSections();  // ✅ Poem/Works/Reports “한 번에 하나만”
+      initSingleViewSections();
       initLanguage();
       initBio();
       initWaves();

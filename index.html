@@ -1087,12 +1087,6 @@ Numerous private collections worldwide.</p>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-<!-- ============================================
-③ SCRIPTS  (Lightflow ∮27 · script patch)
-- Nav / Lang / Works / Reports / Bio
-- Sound: C 공명 · 우측 하단 영원 오브 클릭 토글
-- Waves: 코스믹 파동 배경
-============================================ -->
 <script>
 (function () {
   'use strict';
@@ -1590,15 +1584,17 @@ Numerous private collections worldwide.</p>
 
   /* -------------------------------------------
    * 7. Sound (우주 표식 · 영원 오브)
-   *    - 우측 하단 작은 원 클릭 = C 공명 on/off
+   *    - 프라하 곡으로 변경
    * ---------------------------------------- */
   function initSound() {
     const orb = $('#soundOrb');
     if (!orb) return;
 
-    const audio = new Audio('audio/lightflow_c_resonance.wav');
+    // ✅ 여기만 프라하 mp3로 변경
+    const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
     audio.preload = 'auto';
+    audio.volume = 0.18; // 필요하면 여기서 조정
 
     let playing  = false;
     let pulseTimer = null;
@@ -1751,6 +1747,3 @@ Numerous private collections worldwide.</p>
 
 })();
 </script>
-
-</body>
-</html>

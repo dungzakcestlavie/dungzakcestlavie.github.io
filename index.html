@@ -1541,28 +1541,28 @@
 
   /* -------------------------------------------
    * 6. Artist Bio Modal
+   *    - B형 스크롤 문제 해결:
+   *      · 열릴 때마다 카드 스크롤을 맨 위로
+   *      · 전시 리스트는 항상 접힌 상태로 시작
    * ---------------------------------------- */
-
-  // ✅ 수정: 모달을 열 때마다 스크롤을 맨 위로, 전시 리스트는 접힌 상태로 시작
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
 
-    // 카드 스크롤을 항상 맨 위로 초기화
+    // 카드 내부 스크롤 리셋 (재클릭 시 항상 "작가 소개"부터 보이게)
     const card = $('.bio-card', modal);
-    if (card) {
-      card.scrollTop = 0;
-    }
+    if (card) card.scrollTop = 0;
 
-    // 현재 전역 언어 기준으로 KR / EN 동기화
+    // 현재 전역 언어에 맞춰 KR/EN 결정
     const cur  = getLang();
     const lang = (cur === 'en') ? 'en' : 'kr';
     setBioLanguage(lang);
 
-    // 요약 줄(국내외 개인전 29회)은 기본적으로 "접힌 상태"
     const expoWrap = $('#expoSlide');
     const expoBtn  = $('#expoToggle');
+
+    // 전시 리스트는 기본적으로 접힘 상태로 시작
     if (expoWrap && expoBtn) {
       expoWrap.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
@@ -1616,11 +1616,16 @@
       if (e.key === 'Escape' && !modal.hidden) closeBioModal();
     });
 
+    // 전시 리스트: 클릭 시에만 펼쳐지도록 (기본은 접힘)
     if (expoBtn && expoWrap) {
+      expoWrap.setAttribute('data-open', 'false');
+      expoBtn.setAttribute('aria-expanded', 'false');
+
       expoBtn.addEventListener('click', () => {
         const isOpen = expoWrap.getAttribute('data-open') === 'true';
-        expoWrap.setAttribute('data-open', isOpen ? 'false' : 'true');
-        expoBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        const next   = !isOpen;
+        expoWrap.setAttribute('data-open', next ? 'true' : 'false');
+        expoBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
       });
     }
 
@@ -1717,7 +1722,9 @@
   }
 
   /* -------------------------------------------
-   * 7-1. Waves 배경 (코스믹 파동)
+   * 7-1. Waves 배경 (코스믹 파동 · 경량화 버전)
+   *      - 샘플 간격/라인 수 조절로 GPU 부하 감소
+   *      - 탭 비활성화 시 애니메이션 일시 정지
    * ---------------------------------------- */
   function initWaves() {
     const canvas = document.getElementById('waves');
@@ -1737,9 +1744,16 @@
     }
 
     resize();
-    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('resize', resize);
 
     let t = 0;
+    let animId = null;
+
+    const gradients = [
+      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
+      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
+    ];
+
     function draw() {
       if (prefersReduced) return;
 
@@ -1749,35 +1763,43 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      const gradients = [
-        { color: 'rgba(215,184,106,0.22)', amp: 28, freq: 0.0015, speed: 0.015 },
-        { color: 'rgba(121,167,255,0.20)', amp: 46, freq: 0.0011, speed: -0.010 },
-        { color: 'rgba(237,227,201,0.16)', amp: 18, freq: 0.0020, speed: 0.008 }
-      ];
-
       gradients.forEach((g, idx) => {
         ctx.beginPath();
-        for (let x = 0; x <= w; x += 8) {
+        // x 스텝을 10px로 늘려 연산량 감소
+        for (let x = 0; x <= w; x += 10) {
           const y = h * 0.25 + idx * 80 +
             Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
         ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.4;
-        ctx.shadowColor = 'rgba(0,0,0,0.55)';
-        ctx.shadowBlur = 10;
+        ctx.lineWidth = 1.3;
+        ctx.shadowColor = 'rgba(0,0,0,0.50)';
+        ctx.shadowBlur = 8;
         ctx.stroke();
       });
 
       ctx.shadowBlur = 0;
       t += 1;
-      requestAnimationFrame(draw);
+      animId = requestAnimationFrame(draw);
     }
 
     if (!prefersReduced) {
-      requestAnimationFrame(draw);
+      animId = requestAnimationFrame(draw);
     }
+
+    // 다른 탭으로 이동했을 때 정지 -> 복귀 시 재시작 (배터리/성능 절약)
+    document.addEventListener('visibilitychange', () => {
+      if (prefersReduced) return;
+      if (document.hidden) {
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      } else if (!animId) {
+        animId = requestAnimationFrame(draw);
+      }
+    });
   }
 
   /* -------------------------------------------
@@ -1795,5 +1817,3 @@
 
 })();
 </script>
-
-   

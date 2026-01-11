@@ -1147,26 +1147,13 @@ body.modal-open{ overflow:hidden; }
     return 'kr';
   }
 
-  // CSS 변수로 정의한 safe-area 값 읽기
-  function getSafeInset(varName) {
-    const cs = getComputedStyle(document.documentElement);
-    const v  = cs.getPropertyValue(varName);
-    const n  = parseFloat(v);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  // 모달 열릴 때 배경 스크롤 잠그기
-  function lockBodyScroll(lock) {
-    document.body.classList.toggle('modal-open', !!lock);
-  }
-
   /* -------------------------------------------
    * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
+   *    - 지금은 모두 섹션 전환 방식
    * ---------------------------------------- */
   function initNav() {
     const navButtons = $$('nav.primary button');
     const sections   = $$('main > section');
-    const bioBtn     = $('#tab-bio');
 
     function showSection(id) {
       sections.forEach(sec => {
@@ -1180,23 +1167,17 @@ body.modal-open{ overflow:hidden; }
       btn.addEventListener('click', () => {
         navButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        showSection(target);
+        showSection(target); // Artist Bio 포함: target="bio"
       });
     });
 
-    // 첫 로드: Poem
+    // 첫 로드: Poem 섹션
     showSection('poem');
-
-    // Artist Bio 모달 열기
-    if (bioBtn) {
-      bioBtn.addEventListener('click', () => {
-        openBioModal();
-      });
-    }
   }
 
   /* -------------------------------------------
    * 2. 전역 언어 토글 (KR / EN / KR+EN)
+   *    - body 클래스만 바꾸고, .ko/.en 표시를 CSS에서 처리
    * ---------------------------------------- */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1223,7 +1204,6 @@ body.modal-open{ overflow:hidden; }
       koBtn.addEventListener('click', () => {
         setBodyLang('kr');
         activate(koBtn);
-        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1231,7 +1211,6 @@ body.modal-open{ overflow:hidden; }
       enBtn.addEventListener('click', () => {
         setBodyLang('en');
         activate(enBtn);
-        syncBioLangToGlobal();
         updateOpenLightboxCaption();
       });
     }
@@ -1554,130 +1533,24 @@ body.modal-open{ overflow:hidden; }
   }
 
   /* -------------------------------------------
-   * 6. Artist Bio Modal
-   *    - 카드 높이 JS로 재계산
-   *    - 열릴 때마다 스크롤 맨 위
-   *    - 전시 리스트는 항상 접힌 상태로 시작
+   * 6. Artist Bio 요약 토글 (모달 없음)
+   *    - 전시 요약 버튼 한 번에 펼치기/접기
    * ---------------------------------------- */
+  function initBioSummary() {
+    const btn   = $('#expoToggle');
+    const block = $('#expoSlide');
+    if (!btn || !block) return;
 
-  function updateBioCardHeight() {
-    const card = document.querySelector('#bio-modal .bio-card');
-    if (!card) return;
+    // 기본: 접힘 상태
+    block.setAttribute('data-open', 'false');
+    btn.setAttribute('aria-expanded', 'false');
 
-    const safeTop = getSafeInset('--safe-top');
-    const safeBot = getSafeInset('--safe-bot');
-    const vh      = window.innerHeight || document.documentElement.clientHeight;
-    const max     = vh - safeTop - safeBot - 32;
-
-    if (max > 0) {
-      card.style.maxHeight = max + 'px';
-      card.style.webkitOverflowScrolling = 'touch';
-    }
-  }
-
-  function openBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-
-    modal.classList.add('is-open');
-    lockBodyScroll(true);
-
-    const card = $('.bio-card', modal);
-    if (card) {
-      card.scrollTop = 0;
-    }
-
-    updateBioCardHeight();
-
-    const cur  = getLang();
-    const lang = (cur === 'en') ? 'en' : 'kr';
-    setBioLanguage(lang);
-
-    const expoWrap = $('#expoSlide');
-    const expoBtn  = $('#expoToggle');
-    if (expoWrap && expoBtn) {
-      expoWrap.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-    }
-  }
-
-  function closeBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-    modal.classList.remove('is-open');
-    lockBodyScroll(false);
-  }
-
-  function setBioLanguage(lang) {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-    modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
-
-    const buttons = $$('#bio-modal .bio-lang .lang');
-    buttons.forEach(btn => {
-      const bLang = btn.getAttribute('data-bio-lang');
-      const active = (bLang === lang || (!bLang && lang === 'kr'));
-      btn.classList.toggle('active', active);
-      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    btn.addEventListener('click', () => {
+      const isOpen = block.getAttribute('data-open') === 'true';
+      const next   = !isOpen;
+      block.setAttribute('data-open', next ? 'true' : 'false');
+      btn.setAttribute('aria-expanded', next ? 'true' : 'false');
     });
-  }
-
-  function syncBioLangToGlobal() {
-    const modal = $('#bio-modal');
-    if (!modal || !modal.classList.contains('is-open')) return;
-    const cur = getLang();
-    const lang = (cur === 'en') ? 'en' : 'kr';
-    setBioLanguage(lang);
-  }
-
-  function initBioModal() {
-    const modal    = $('#bio-modal');
-    if (!modal) return;
-
-    const backdrop = $('.bio-backdrop', modal);
-    const closeBtn = $('.bio-close', modal);
-    const expoBtn  = $('#expoToggle');
-    const expoWrap = $('#expoSlide');
-    const langBtns = $$('#bio-modal .bio-lang .lang');
-
-    if (backdrop) {
-      backdrop.addEventListener('click', (e) => {
-        if (e.target === backdrop) closeBioModal();
-      });
-    }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeBioModal);
-    }
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeBioModal();
-      }
-    });
-
-    // 전시 리스트: 버튼 클릭 시 펼침/접힘
-    if (expoBtn && expoWrap) {
-      expoWrap.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-
-      expoBtn.addEventListener('click', () => {
-        const isOpen = expoWrap.getAttribute('data-open') === 'true';
-        const next   = !isOpen;
-        expoWrap.setAttribute('data-open', next ? 'true' : 'false');
-        expoBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
-      });
-    }
-
-    langBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const lang = btn.getAttribute('data-bio-lang') || 'kr';
-        setBioLanguage(lang);
-      });
-    });
-
-    // 처음 로드 시에도 한 번 계산, 이후 리사이즈/회전 시 재계산
-    updateBioCardHeight();
-    window.addEventListener('resize', updateBioCardHeight);
-    window.addEventListener('orientationchange', updateBioCardHeight);
   }
 
   /* -------------------------------------------
@@ -1843,13 +1716,13 @@ body.modal-open{ overflow:hidden; }
    * 8. 초기화
    * ---------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); }        catch (e) { console.error(e); }
-    try { initLanguage(); }   catch (e) { console.error(e); }
-    try { initWorks(); }      catch (e) { console.error(e); }
-    try { initReports(); }    catch (e) { console.error(e); }
-    try { initBioModal(); }   catch (e) { console.error(e); }
-    try { initSound(); }      catch (e) { console.error(e); }
-    try { initWaves(); }      catch (e) { console.error(e); }
+    try { initNav(); }         catch (e) { console.error(e); }
+    try { initLanguage(); }    catch (e) { console.error(e); }
+    try { initWorks(); }       catch (e) { console.error(e); }
+    try { initReports(); }     catch (e) { console.error(e); }
+    try { initBioSummary(); }  catch (e) { console.error(e); }
+    try { initSound(); }       catch (e) { console.error(e); }
+    try { initWaves(); }       catch (e) { console.error(e); }
   });
 
 })();

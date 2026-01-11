@@ -1,6 +1,8 @@
+<!doctype html>
+<html lang="ko">
+
 <!-- ==========================================================
-Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
-① HEAD / STYLE
+① HEAD / STYLE  (Lightflow ∮27 · Bio/전시 리스트 개선 패치)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -9,73 +11,22 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
-  <!-- 기본 SEO -->
   <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
-  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE의 공식 사이트. 회화, 미학 보고서(DCAR), Artist Bio, 국내외 개인전 전시 이력과 소장·저서 정보를 통합한 LIGHTFLOW · LIGHT · MEMORY · BEING 아카이브." />
-  <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta name="author" content="등작 燈酌 DUNGZAK CESTLAVIE" />
+  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
 
   <link rel="canonical" href="https://dungzak.art/" />
-  <link rel="icon" href="/favicon.ico" />
 
-  <!-- OG / Facebook / Kakao -->
+  <!-- OG / Twitter -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
-  <meta property="og:description" content="Artist Bio, 국내외 전시·소장·저서, DCAR 미학 보고서, 작품 아카이브를 한눈에 볼 수 있는 등작의 공식 웹사이트." />
+  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
   <meta property="og:url" content="https://dungzak.art/" />
-  <meta property="og:site_name" content="등작 燈酌 DUNGZAK CESTLAVIE" />
-  <meta property="og:locale" content="ko_KR" />
-  <!-- 실제 OG 이미지 준비되면 아래 주석 해제 -->
   <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
-
-  <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
-  <meta name="twitter:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 회화, DCAR, Artist Bio, 전시 아카이브를 담은 공식 사이트." />
-  <!-- <meta name="twitter:image" content="https://dungzak.art/images/og.jpg" /> -->
 
-  <!-- Google Translate 바 차단 -->
+  <!-- Google Translate bar 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
-
-  <!-- 구조화 데이터: Artist + WebSite -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": "https://dungzak.art/#artist",
-        "name": "DUNGZAK CESTLAVIE",
-        "alternateName": "등작 燈酌 DUNGZAK CESTLAVIE",
-        "description": "Korean contemporary artist exploring Light, Memory, and Being through painting and the DCAR aesthetic report series.",
-        "url": "https://dungzak.art/",
-        "image": "https://dungzak.art/images/og.jpg",
-        "jobTitle": "Contemporary Artist",
-        "nationality": "Republic of Korea",
-        "sameAs": [
-          "https://instagram.com/dungzakcestlavie",
-          "https://youtube.com/@dungzakcestlavie",
-          "https://flickr.com/photos/dungzak"
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://dungzak.art/#website",
-        "url": "https://dungzak.art/",
-        "name": "등작 燈酌 DUNGZAK CESTLAVIE · Lightflow",
-        "description": "Official archive of paintings, DCAR aesthetic reports, Artist Bio, exhibitions, collections, and publications by DUNGZAK CESTLAVIE.",
-        "publisher": {
-          "@id": "https://dungzak.art/#artist"
-        },
-        "inLanguage": [
-          "ko",
-          "en"
-        ]
-      }
-    ]
-  }
-  </script>
 
   <style>
     /* =========================================================
@@ -110,7 +61,7 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
 
       --maxw: 1120px;
 
-      /* 금빛 엣지(번짐 없는 선명함) */
+      /* 금빛 “단단함(번짐 없음)” 엣지 */
       --gold-edge: rgba(0,0,0,.70);
       --gold-edge2: rgba(0,0,0,.42);
 
@@ -147,7 +98,7 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
     img{ max-width:100%; display:block; }
 
     /* =========================================================
-       Language visibility (GLOBAL: 본문/캡션)
+       Language visibility (GLOBAL)
     ========================================================= */
     .ko,.en{ display:block; }
     body.korean .en{ display:none !important; }
@@ -156,15 +107,13 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
     body.hybrid .en{ display:block !important; }
 
     /* =========================================================
-       ✅ Artist Bio 모달은 전역 언어 필터에서 분리
-       - KR 모드에서도 전시·소장·저서 전체가 항상 살아있게
+       Bio modal 언어는 전역 필터에서 완전히 분리
     ========================================================= */
     #bio-modal .ko,
     #bio-modal .en{
       display:block !important;
     }
 
-    /* Bio 모달 안에서는 data-bio로만 언어 전환 */
     #bio-modal[data-bio="kr"] .en{
       display:none !important;
     }
@@ -326,9 +275,7 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       overflow:hidden;
     }
 
-    /* =========================================================
-       ✅ SINGLE SECTION VIEW
-    ========================================================= */
+    /* SINGLE SECTION VIEW */
     main > section{ display:none; }
     main > section.is-active{ display:block; }
 
@@ -357,7 +304,7 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
     .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
 
     /* =========================================================
-       WORKS (모바일 캡션 축소)
+       WORKS
     ========================================================= */
     #works{
       padding: 18px;
@@ -608,24 +555,27 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
+
+    /* PATCH: 세로 공간 조금 더 확보 (bottom 여백 줄이기) */
     .bio-card{
       position:relative;
       max-width: 980px;
-      width: calc(100% - 28px);
-      margin: calc(18px + var(--safe-top)) auto calc(18px + var(--safe-bot));
-      background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.92));
+      width: calc(100% - 24px);
+      margin: calc(14px + var(--safe-top)) auto calc(10px + var(--safe-bot));
+      background: linear-gradient(180deg, rgba(10,16,34,.92), rgba(5,8,18,.94));
       border:1px solid rgba(215,184,106,.18);
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 32px);
+      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 20px);
       overflow-y:auto;
       -webkit-overflow-scrolling: touch;
     }
+
     .bio-head{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-      padding: 14px 14px;
+      padding: 12px 14px;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
     .bio-head h2{
@@ -643,11 +593,11 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       background: rgba(255,255,255,.02);
       color: rgba(237,227,201,.88);
       border-radius: 999px;
-      padding:7px 10px;
+      padding:6px 10px;
       font-weight:950;
       font-size:12px;
       cursor:pointer;
-      min-height: 36px;
+      min-height: 34px;
       box-shadow: 0 8px 18px rgba(0,0,0,.24);
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
       touch-action: manipulation;
@@ -662,8 +612,8 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       border:1px solid rgba(215,184,106,.30);
       background: rgba(255,255,255,.02);
       color: var(--gold2);
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 14px;
       cursor:pointer;
       font-size: 18px;
@@ -680,13 +630,12 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       border-bottom:1px solid rgba(255,255,255,.05);
       background: rgba(255,255,255,.02);
       color: rgba(237,227,201,.92);
-      padding: 12px 14px;
+      padding: 10px 14px;
       font-weight: 950;
       cursor:pointer;
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
-    /* ▶ 전시 리스트: max-height 애니메이션 제거 (즉시 열기/닫기) */
     .slide-wrap{
       display:none;
       border-bottom:1px solid rgba(255,255,255,.05);
@@ -695,19 +644,27 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
       display:block;
     }
 
+    /* PATCH: Bio 본문 간격·아래 여백 압축 */
     .bio-body{
-      padding: 14px 14px;
+      padding: 10px 14px 12px;
       color: rgba(237,227,201,.88);
-      line-height: 1.7;
-      font-size: 13.5px; /* Bio 본문 살짝 축소 */
+      line-height: 1.6;
+      font-size: 13.4px;
     }
-    .bio-body p{ margin: 10px 0; }
+    .bio-body p{
+      margin: 6px 0;
+    }
     .bio-body strong{ color: var(--gold2); }
+
+    /* 마지막 bio-body는 아래 패딩을 조금 더 줄여서 데드 스페이스 최소화 */
+    .slide-wrap .bio-body:last-of-type{
+      padding-bottom: 8px;
+    }
 
     @media (min-width: 900px){
       .bio-body{
         font-size: 14px;
-        line-height: 1.75;
+        line-height: 1.7;
       }
     }
 
@@ -770,7 +727,7 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
     }
 
     /* =========================================================
-       COSMIC SOUND ORB (C 공명)
+       COSMIC SOUND ORB
     ========================================================= */
     #soundOrb{
       position: fixed;
@@ -879,6 +836,20 @@ Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
         scroll-behavior:auto !important;
         transition:none !important;
         animation:none !important;
+      }
+    }
+
+    /* 키 작은 화면(아이폰 등)에서 Bio 좀 더 압축 */
+    @media (max-height: 740px){
+      .bio-card{
+        max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 12px);
+      }
+      .bio-body{
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .bio-body p{
+        margin: 5px 0;
       }
     }
 

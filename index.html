@@ -1,8 +1,6 @@
-<!doctype html>
-<html lang="ko">
-
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮27 · 안정 패치 + Bio 하단 여유)
+Lightflow ∮27 — FINAL STABLE (ARTIST BIO · LANG · SOUND)
+① HEAD / STYLE
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -11,22 +9,73 @@
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
+  <!-- 기본 SEO -->
   <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
-  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
+  <meta name="description" content="등작 燈酌 DUNGZAK CESTLAVIE의 공식 사이트. 회화, 미학 보고서(DCAR), Artist Bio, 국내외 개인전 전시 이력과 소장·저서 정보를 통합한 LIGHTFLOW · LIGHT · MEMORY · BEING 아카이브." />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="author" content="등작 燈酌 DUNGZAK CESTLAVIE" />
 
   <link rel="canonical" href="https://dungzak.art/" />
+  <link rel="icon" href="/favicon.ico" />
 
-  <!-- OG / Twitter -->
+  <!-- OG / Facebook / Kakao -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
-  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
+  <meta property="og:description" content="Artist Bio, 국내외 전시·소장·저서, DCAR 미학 보고서, 작품 아카이브를 한눈에 볼 수 있는 등작의 공식 웹사이트." />
   <meta property="og:url" content="https://dungzak.art/" />
+  <meta property="og:site_name" content="등작 燈酌 DUNGZAK CESTLAVIE" />
+  <meta property="og:locale" content="ko_KR" />
+  <!-- 실제 OG 이미지 준비되면 아래 주석 해제 -->
   <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
-  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Google Translate bar 차단 -->
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
+  <meta name="twitter:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 회화, DCAR, Artist Bio, 전시 아카이브를 담은 공식 사이트." />
+  <!-- <meta name="twitter:image" content="https://dungzak.art/images/og.jpg" /> -->
+
+  <!-- Google Translate 바 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
+
+  <!-- 구조화 데이터: Artist + WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://dungzak.art/#artist",
+        "name": "DUNGZAK CESTLAVIE",
+        "alternateName": "등작 燈酌 DUNGZAK CESTLAVIE",
+        "description": "Korean contemporary artist exploring Light, Memory, and Being through painting and the DCAR aesthetic report series.",
+        "url": "https://dungzak.art/",
+        "image": "https://dungzak.art/images/og.jpg",
+        "jobTitle": "Contemporary Artist",
+        "nationality": "Republic of Korea",
+        "sameAs": [
+          "https://instagram.com/dungzakcestlavie",
+          "https://youtube.com/@dungzakcestlavie",
+          "https://flickr.com/photos/dungzak"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://dungzak.art/#website",
+        "url": "https://dungzak.art/",
+        "name": "등작 燈酌 DUNGZAK CESTLAVIE · Lightflow",
+        "description": "Official archive of paintings, DCAR aesthetic reports, Artist Bio, exhibitions, collections, and publications by DUNGZAK CESTLAVIE.",
+        "publisher": {
+          "@id": "https://dungzak.art/#artist"
+        },
+        "inLanguage": [
+          "ko",
+          "en"
+        ]
+      }
+    ]
+  }
+  </script>
 
   <style>
     /* =========================================================
@@ -61,7 +110,7 @@
 
       --maxw: 1120px;
 
-      /* 금빛 “단단함(번짐 없음)” 엣지 */
+      /* 금빛 엣지(번짐 없는 선명함) */
       --gold-edge: rgba(0,0,0,.70);
       --gold-edge2: rgba(0,0,0,.42);
 
@@ -98,7 +147,7 @@
     img{ max-width:100%; display:block; }
 
     /* =========================================================
-       Language visibility (GLOBAL)
+       Language visibility (GLOBAL: 본문/캡션)
     ========================================================= */
     .ko,.en{ display:block; }
     body.korean .en{ display:none !important; }
@@ -106,22 +155,22 @@
     body.hybrid .ko,
     body.hybrid .en{ display:block !important; }
 
-    /* Bio 모달은 전역 언어 필터에서 독립 */
-    #bio-modal .bio-body.ko,
-    #bio-modal .bio-body.en,
-    #bio-modal .expo-kicker .ko,
-    #bio-modal .expo-kicker .en{
+    /* =========================================================
+       ✅ Artist Bio 모달은 전역 언어 필터에서 분리
+       - KR 모드에서도 전시·소장·저서 전체가 항상 살아있게
+    ========================================================= */
+    #bio-modal .ko,
+    #bio-modal .en{
       display:block !important;
     }
 
-    /* =========================================================
-       Bio modal language (LOCAL)
-    ========================================================= */
-    #bio-modal[data-bio="kr"] .bio-body.en,
-    #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
-
-    #bio-modal[data-bio="en"] .bio-body.ko,
-    #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
+    /* Bio 모달 안에서는 data-bio로만 언어 전환 */
+    #bio-modal[data-bio="kr"] .en{
+      display:none !important;
+    }
+    #bio-modal[data-bio="en"] .ko{
+      display:none !important;
+    }
 
     /* =========================================================
        Waves canvas
@@ -279,7 +328,6 @@
 
     /* =========================================================
        ✅ SINGLE SECTION VIEW
-       (Poem / Works / Reports 중 하나만 보이게)
     ========================================================= */
     main > section{ display:none; }
     main > section.is-active{ display:block; }
@@ -309,7 +357,7 @@
     .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
 
     /* =========================================================
-       WORKS
+       WORKS (모바일 캡션 축소)
     ========================================================= */
     #works{
       padding: 18px;
@@ -570,7 +618,7 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 10px);
+      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 32px);
       overflow-y:auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -638,24 +686,30 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
+    /* ▶ 전시 리스트: max-height 애니메이션 제거 (즉시 열기/닫기) */
     .slide-wrap{
-      max-height: 0;
-      overflow:hidden;
-      transition: max-height .35s ease;
+      display:none;
       border-bottom:1px solid rgba(255,255,255,.05);
-      display:block;            /* ← 사파리용 안전 모드 */
     }
     .slide-wrap[data-open="true"]{
-      max-height: 5000px;       /* 충분히 크게 */
+      display:block;
     }
 
     .bio-body{
-      padding: 14px 14px 32px;  /* ← 하단 여유 크게 (저서 끝까지 보이게) */
+      padding: 14px 14px;
       color: rgba(237,227,201,.88);
       line-height: 1.7;
+      font-size: 13.5px; /* Bio 본문 살짝 축소 */
     }
     .bio-body p{ margin: 10px 0; }
     .bio-body strong{ color: var(--gold2); }
+
+    @media (min-width: 900px){
+      .bio-body{
+        font-size: 14px;
+        line-height: 1.75;
+      }
+    }
 
     /* =========================================================
        LIGHTBOX
@@ -716,7 +770,7 @@
     }
 
     /* =========================================================
-       COSMIC SOUND ORB
+       COSMIC SOUND ORB (C 공명)
     ========================================================= */
     #soundOrb{
       position: fixed;

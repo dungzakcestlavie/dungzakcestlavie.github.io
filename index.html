@@ -811,7 +811,8 @@
         transition:none !important;
         animation:none !important;
       }
-    }
+    } /* 모달 열릴 때 배경 스크롤 락 */
+body.modal-open{ overflow:hidden; }
   </style>
 </head>
 
@@ -1144,6 +1145,19 @@
     if (b.classList.contains('english')) return 'en';
     if (b.classList.contains('hybrid'))  return 'hy';
     return 'kr';
+  }
+
+  // CSS 변수로 정의한 safe-area 값 읽기
+  function getSafeInset(varName) {
+    const cs = getComputedStyle(document.documentElement);
+    const v  = cs.getPropertyValue(varName);
+    const n  = parseFloat(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  // 모달 열릴 때 배경 스크롤 잠그기
+  function lockBodyScroll(lock) {
+    document.body.classList.toggle('modal-open', !!lock);
   }
 
   /* -------------------------------------------
@@ -1542,17 +1556,39 @@
   /* -------------------------------------------
    * 6. Artist Bio Modal
    *    - B형 스크롤 문제 해결:
-   *      · 열릴 때마다 카드 스크롤을 맨 위로
+   *      · 카드 높이를 JS로 재계산
+   *      · 열릴 때마다 스크롤 맨 위로
    *      · 전시 리스트는 항상 접힌 상태로 시작
    * ---------------------------------------- */
+
+  // 브라우저/앱별 safe-area + 100vh 차이를 보정해서 bio-card 높이 맞추기
+  function updateBioCardHeight() {
+    const card = document.querySelector('#bio-modal .bio-card');
+    if (!card) return;
+
+    const safeTop = getSafeInset('--safe-top');
+    const safeBot = getSafeInset('--safe-bot');
+    const vh      = window.innerHeight || document.documentElement.clientHeight;
+    const max     = vh - safeTop - safeBot - 32; // 위·아래 여백
+
+    if (max > 0) {
+      card.style.maxHeight = max + 'px';
+      card.style.webkitOverflowScrolling = 'touch';
+    }
+  }
+
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
+    lockBodyScroll(true); // 배경 스크롤 잠금
 
-    // 카드 내부 스크롤 리셋 (재클릭 시 항상 "작가 소개"부터 보이게)
     const card = $('.bio-card', modal);
-    if (card) card.scrollTop = 0;
+    if (card) {
+      card.scrollTop = 0; // 항상 작가 소개 맨 위에서 시작
+    }
+
+    updateBioCardHeight();
 
     // 현재 전역 언어에 맞춰 KR/EN 결정
     const cur  = getLang();
@@ -1562,7 +1598,7 @@
     const expoWrap = $('#expoSlide');
     const expoBtn  = $('#expoToggle');
 
-    // 전시 리스트는 기본적으로 접힘 상태로 시작
+    // 전시 리스트는 기본적으로 접힘 상태
     if (expoWrap && expoBtn) {
       expoWrap.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
@@ -1573,6 +1609,7 @@
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = true;
+    lockBodyScroll(false); // 배경 스크롤 다시 허용
   }
 
   function setBioLanguage(lang) {
@@ -1637,6 +1674,11 @@
     });
 
     modal.hidden = true;
+
+    // 처음 로드 시에도 한 번 계산, 이후 리사이즈/회전 시 재계산
+    updateBioCardHeight();
+    window.addEventListener('resize', updateBioCardHeight);
+    window.addEventListener('orientationchange', updateBioCardHeight);
   }
 
   /* -------------------------------------------
@@ -1723,8 +1765,6 @@
 
   /* -------------------------------------------
    * 7-1. Waves 배경 (코스믹 파동 · 경량화 버전)
-   *      - 샘플 간격/라인 수 조절로 GPU 부하 감소
-   *      - 탭 비활성화 시 애니메이션 일시 정지
    * ---------------------------------------- */
   function initWaves() {
     const canvas = document.getElementById('waves');
@@ -1765,7 +1805,6 @@
 
       gradients.forEach((g, idx) => {
         ctx.beginPath();
-        // x 스텝을 10px로 늘려 연산량 감소
         for (let x = 0; x <= w; x += 10) {
           const y = h * 0.25 + idx * 80 +
             Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
@@ -1788,7 +1827,6 @@
       animId = requestAnimationFrame(draw);
     }
 
-    // 다른 탭으로 이동했을 때 정지 -> 복귀 시 재시작 (배터리/성능 절약)
     document.addEventListener('visibilitychange', () => {
       if (prefersReduced) return;
       if (document.hidden) {

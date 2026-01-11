@@ -816,7 +816,7 @@
 </head>
 
 <!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로 + 사운드 오브만 교체)
+② BODY / HTML  (등작 원문 그대로 + 구조만 정리)
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -940,7 +940,7 @@
     </section>
   </main>
 
-    <!-- ARTIST BIO MODAL -->
+  <!-- ARTIST BIO MODAL -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -957,16 +957,31 @@
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
+      <!-- 🔹 INTRO (예전처럼, 첫 화면에 바로 보이는 작가 소개) -->
+      <div class="bio-body ko">
+        <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
+        <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
+        <p>서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등지에서 회화와 다매체 프로젝트를 선보여 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 ‘빛의 윤리’와 ‘존재 감응의 미학’을 구축해왔다.</p>
+        <p>등작의 작품은 기도문이자 기록이며, 상처 이후에 남는 따뜻함과 지워지지 않는 기억의 지속, 그리고 인간 존엄에 대한 조용한 선언이다. 그의 예술 세계는 ‘고통 이후의 빛’, ‘기억이 스스로를 복원하는 순간’, ‘존재가 다시 깨어나는 호흡’을 중심으로 확장된다.</p>
+      </div>
+
+      <div class="bio-body en">
+        <p>DUNGZAK CESTLAVIE is a Korean contemporary artist whose practice centers on the triad “Light · Memory · Being.”</p>
+        <p>His paintings trace emotional residues, the genesis of light passing through wounds, and cycles of disappearance and rebirth. Beyond image or color, his work expands into an ethics of light and the dignity of memory.</p>
+        <p>Based in Seoul, he has developed painting and multi-media projects across Berlin, Paris, Amsterdam, Warsaw, and Moscow, integrating text, sound, video, and archival structures.</p>
+        <p>Each work is both prayer and record: a quiet declaration of human dignity, the warmth that follows wounding, and the breath by which being reawakens.</p>
+      </div>
+
+      <!-- 🔹 EXPO KICKER (요약 줄) -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
+      <!-- 🔹 EXPO SLIDE (전시 / 소장 / 저서 리스트 – 클릭 시 펼침) -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
 
-        <!-- =========================
-             BIO · KOREAN
-        ========================== -->
+        <!-- BIO · KOREAN (전시/소장/저서) -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 인천, 대한민국</p>
@@ -1021,9 +1036,7 @@
           <p>《우리를 위해 기도해 주세요》(2026)</p>
         </div>
 
-        <!-- =========================
-             BIO · ENGLISH
-        ========================== -->
+        <!-- BIO · ENGLISH (전시/소장/저서) -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
@@ -1078,27 +1091,10 @@
           <p><em>Pray for Us</em> (2026)</p>
         </div>
 
-        <!-- =========================
-             BIO · TEXT (INTRO)
-        ========================== -->
-        <div class="bio-body ko">
-          <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
-          <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
-          <p>서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등지에서 회화와 다매체 프로젝트를 선보여 왔으며, 회화·텍스트·사운드·영상·아카이브를 통합해 ‘빛의 윤리’와 ‘존재 감응의 미학’을 구축해왔다.</p>
-          <p>등작의 작품은 기도문이자 기록이며, 상처 이후에 남는 따뜻함과 지워지지 않는 기억의 지속, 그리고 인간 존엄에 대한 조용한 선언이다. 그의 예술 세계는 ‘고통 이후의 빛’, ‘기억이 스스로를 복원하는 순간’, ‘존재가 다시 깨어나는 호흡’을 중심으로 확장된다.</p>
-        </div>
-
-        <div class="bio-body en">
-          <p>DUNGZAK CESTLAVIE is a Korean contemporary artist whose practice centers on the triad “Light · Memory · Being.”</p>
-          <p>His paintings trace emotional residues, the genesis of light passing through wounds, and cycles of disappearance and rebirth. Beyond image or color, his work expands into an ethics of light and the dignity of memory.</p>
-          <p>Based in Seoul, he has developed painting and multi-media projects across Berlin, Paris, Amsterdam, Warsaw, and Moscow, integrating text, sound, video, and archival structures.</p>
-          <p>Each work is both prayer and record: a quiet declaration of human dignity, the warmth that follows wounding, and the breath by which being reawakens.</p>
-        </div>
-
       </div> <!-- /.slide-wrap -->
     </div>   <!-- /.bio-card -->
   </div>     <!-- /#bio-modal -->
-  </div>
+
   <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
@@ -1125,7 +1121,6 @@
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 </body>
-</html>
 
 <script>
 (function () {

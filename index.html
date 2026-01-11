@@ -1163,7 +1163,7 @@ body.modal-open{ overflow:hidden; }
     // Poem / Works / Reports
     navButtons.forEach(btn => {
       const target = btn.dataset.target;
-      if (!target) return; // Artist Bio는 여기서 제외
+      if (!target) return; // Artist Bio 제외
       btn.addEventListener('click', () => {
         navButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -1171,7 +1171,7 @@ body.modal-open{ overflow:hidden; }
       });
     });
 
-    // Artist Bio = 모달 전용
+    // Artist Bio = 모달
     const bioTab = $('#tab-bio');
     if (bioTab) {
       bioTab.addEventListener('click', () => {
@@ -1179,7 +1179,7 @@ body.modal-open{ overflow:hidden; }
       });
     }
 
-    // 첫 로드: Poem 섹션
+    // 첫 로드
     showSection('poem');
   }
 
@@ -1193,13 +1193,9 @@ body.modal-open{ overflow:hidden; }
 
     function setBodyLang(mode) {
       document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en') {
-        document.body.classList.add('english');
-      } else if (mode === 'hy') {
-        document.body.classList.add('hybrid');
-      } else {
-        document.body.classList.add('korean');
-      }
+      if (mode === 'en')      document.body.classList.add('english');
+      else if (mode === 'hy') document.body.classList.add('hybrid');
+      else                    document.body.classList.add('korean');
     }
 
     function activate(btn) {
@@ -1229,7 +1225,7 @@ body.modal-open{ overflow:hidden; }
       });
     }
 
-    // 초기 값: korean
+    // 초기
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
@@ -1565,6 +1561,7 @@ body.modal-open{ overflow:hidden; }
     // 기본 언어: KR
     modal.dataset.bio = 'kr';
 
+    // 상단 KR / EN 토글
     const langBtns = $$('.bio-lang .lang', modal);
     langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1572,8 +1569,9 @@ body.modal-open{ overflow:hidden; }
         modal.dataset.bio = mode;
 
         langBtns.forEach(b => {
-          b.classList.toggle('active', b === btn);
-          b.setAttribute('aria-pressed', String(b === btn));
+          const active = b === btn;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', String(active));
         });
       });
     });
@@ -1594,18 +1592,18 @@ body.modal-open{ overflow:hidden; }
       if (e.key === 'Escape') closeBioModal();
     });
 
-    // 요약 슬라이드(전시/소장/저서) 토글
-    const btn   = $('#expoToggle');
-    const block = $('#expoSlide');
-    if (btn && block) {
-      block.setAttribute('data-open', 'false');
-      btn.setAttribute('aria-expanded', 'false');
+    // 전시/소장/저서 슬라이드 토글
+    const expoBtn   = $('#expoToggle');
+    const expoBlock = $('#expoSlide');
+    if (expoBtn && expoBlock) {
+      expoBlock.setAttribute('data-open', 'false');
+      expoBtn.setAttribute('aria-expanded', 'false');
 
-      btn.addEventListener('click', () => {
-        const isOpen = block.getAttribute('data-open') === 'true';
+      expoBtn.addEventListener('click', () => {
+        const isOpen = expoBlock.getAttribute('data-open') === 'true';
         const next   = !isOpen;
-        block.setAttribute('data-open', next ? 'true' : 'false');
-        btn.setAttribute('aria-expanded', next ? 'true' : 'false');
+        expoBlock.setAttribute('data-open', next ? 'true' : 'false');
+        expoBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
       });
     }
   }
@@ -1676,11 +1674,8 @@ body.modal-open{ overflow:hidden; }
     }
 
     function toggleSound() {
-      if (playing) {
-        stopSound();
-      } else {
-        playSound();
-      }
+      if (playing) stopSound();
+      else playSound();
     }
 
     orb.addEventListener('click', toggleSound);

@@ -2,7 +2,7 @@
 <html lang="ko">
 
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮27 · Bio/전시 리스트 개선 패치)
+① HEAD / STYLE  (Lightflow ∮27 · Bio/전시 리스트 개선 패치 · A/B 모드)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -546,6 +546,8 @@
 
     /* =========================================================
        BIO MODAL
+       - 데스크톱: 카드 모드(B)
+       - 모바일: 전체 화면 읽기 모드(A, 100dvh)
     ========================================================= */
     #bio-modal[hidden]{ display:none !important; }
     #bio-modal{ position: fixed; inset:0; z-index: 50; }
@@ -556,7 +558,7 @@
       -webkit-backdrop-filter: blur(8px);
     }
 
-    /* PATCH: 세로 공간 조금 더 확보 (bottom 여백 줄이기) */
+    /* 기본값 = 데스크톱/태블릿 카드 모드(B) */
     .bio-card{
       position:relative;
       max-width: 980px;
@@ -567,7 +569,8 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 20px);
+      /* 100vh → 100dvh 로 교체 (iOS 주소창 문제 회피) */
+      max-height: calc(100dvh - var(--safe-top) - var(--safe-bot) - 20px);
       overflow-y:auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -665,6 +668,30 @@
       .bio-body{
         font-size: 14px;
         line-height: 1.7;
+      }
+    }
+
+    /* --- A 모드: 모바일에서는 전체 화면 읽기(100dvh) --- */
+    @media (max-width: 768px){
+      .bio-card{
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        /* 뷰포트 전체를 Bio로 꽉 채우기 */
+        height: 100dvh;
+        max-height: 100dvh;
+      }
+    }
+
+    /* 키 작은 화면(아이폰 등)에서 폰트·간격만 미세 압축 */
+    @media (max-height: 740px){
+      .bio-body{
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .bio-body p{
+        margin: 5px 0;
       }
     }
 
@@ -836,20 +863,6 @@
         scroll-behavior:auto !important;
         transition:none !important;
         animation:none !important;
-      }
-    }
-
-    /* 키 작은 화면(아이폰 등)에서 Bio 좀 더 압축 */
-    @media (max-height: 740px){
-      .bio-card{
-        max-height: calc(100vh - var(--safe-top) - var(--safe-bot) - 12px);
-      }
-      .bio-body{
-        font-size: 13px;
-        line-height: 1.55;
-      }
-      .bio-body p{
-        margin: 5px 0;
       }
     }
 

@@ -816,7 +816,7 @@
 </head>
 
 <!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로 + 구조만 정리)
+② BODY / HTML  (등작 원문 그대로 + 사운드 오브만 교체)
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -940,7 +940,7 @@
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL -->
+    <!-- ARTIST BIO MODAL -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -1098,7 +1098,7 @@
       </div> <!-- /.slide-wrap -->
     </div>   <!-- /.bio-card -->
   </div>     <!-- /#bio-modal -->
-
+  </div>
   <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
@@ -1125,6 +1125,7 @@
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 </body>
+</html>
 
 <script>
 (function () {
@@ -1546,14 +1547,41 @@
   /* -------------------------------------------
    * 6. Artist Bio Modal
    * ---------------------------------------- */
+
+  // ✅ 수정된 부분: 모달 열릴 때 바로 "작가 소개"가 보이도록 스크롤
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
     modal.hidden = false;
 
-    const cur = getLang();
+    // 현재 전역 언어에 맞춰 KR/EN 결정
+    const cur  = getLang();
     const lang = (cur === 'en') ? 'en' : 'kr';
     setBioLanguage(lang);
+
+    const expoWrap = $('#expoSlide');
+    const expoBtn  = $('#expoToggle');
+
+    // 슬라이드 영역을 항상 펼친 상태로
+    if (expoWrap && expoBtn) {
+      expoWrap.setAttribute('data-open', 'true');
+      expoBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    // 현재 언어의 "작가 소개" 블록(마지막 bio-body)을 첫 화면에 보이게
+    const selector = (lang === 'en')
+      ? '#bio-modal .bio-body.en'
+      : '#bio-modal .bio-body.ko';
+
+    const bodies = $$(selector);
+    const intro  = bodies[bodies.length - 1]; // 마지막 블록 = 소개
+
+    if (intro) {
+      intro.scrollIntoView({
+        block: 'start',
+        behavior: 'auto'
+      });
+    }
   }
 
   function closeBioModal() {
@@ -1565,23 +1593,8 @@
   function setBioLanguage(lang) {
     const modal = $('#bio-modal');
     if (!modal) return;
-
-    // data-bio 속성 (기존 CSS 대응)
     modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
 
-    // ✅ JS에서 직접 bio-body 표시/숨김 제어 (CSS 없어도 동작)
-    const bodiesKo = $$('#bio-modal .bio-body.ko');
-    const bodiesEn = $$('#bio-modal .bio-body.en');
-
-    if (lang === 'en') {
-      bodiesKo.forEach(el => { el.style.display = 'none'; });
-      bodiesEn.forEach(el => { el.style.display = ''; });
-    } else {
-      bodiesKo.forEach(el => { el.style.display = ''; });
-      bodiesEn.forEach(el => { el.style.display = 'none'; });
-    }
-
-    // 버튼 상태 업데이트
     const buttons = $$('#bio-modal .bio-lang .lang');
     buttons.forEach(btn => {
       const bLang = btn.getAttribute('data-bio-lang');
@@ -1638,7 +1651,7 @@
 
   /* -------------------------------------------
    * 7. Sound (우주 표식 · 영원 오브)
-   *    - 프라하 곡으로 변경
+   *    - 프라하 곡
    * ---------------------------------------- */
   function initSound() {
     const orb = $('#soundOrb');
@@ -1711,9 +1724,11 @@
     }
 
     orb.addEventListener('click', toggleSound);
+
     window.addEventListener('pagehide', () => {
       stopSound();
     });
+
     updateVisual();
   }
 

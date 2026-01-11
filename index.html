@@ -1149,7 +1149,8 @@ body.modal-open{ overflow:hidden; }
 
   /* -------------------------------------------
    * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
-   *    - 지금은 모두 섹션 전환 방식
+   *    - Poem/Works/Reports = 섹션 전환
+   *    - Artist Bio = 모달 열기
    * ---------------------------------------- */
   function initNav() {
     const navButtons = $$('nav.primary button');
@@ -1161,15 +1162,24 @@ body.modal-open{ overflow:hidden; }
       });
     }
 
+    // Poem / Works / Reports
     navButtons.forEach(btn => {
       const target = btn.dataset.target;
-      if (!target) return;
+      if (!target) return; // Artist Bio는 여기서 제외
       btn.addEventListener('click', () => {
         navButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        showSection(target); // Artist Bio 포함: target="bio"
+        showSection(target);
       });
     });
+
+    // Artist Bio = 모달 전용
+    const bioTab = $('#tab-bio');
+    if (bioTab) {
+      bioTab.addEventListener('click', () => {
+        openBioModal();
+      });
+    }
 
     // 첫 로드: Poem 섹션
     showSection('poem');
@@ -1177,7 +1187,6 @@ body.modal-open{ overflow:hidden; }
 
   /* -------------------------------------------
    * 2. 전역 언어 토글 (KR / EN / KR+EN)
-   *    - body 클래스만 바꾸고, .ko/.en 표시를 CSS에서 처리
    * ---------------------------------------- */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1533,24 +1542,77 @@ body.modal-open{ overflow:hidden; }
   }
 
   /* -------------------------------------------
-   * 6. Artist Bio 요약 토글 (모달 없음)
-   *    - 전시 요약 버튼 한 번에 펼치기/접기
+   * 6. Artist Bio 모달 + 요약 토글
    * ---------------------------------------- */
-  function initBioSummary() {
+  function openBioModal() {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeBioModal() {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  function initBioModal() {
+    const modal = $('#bio-modal');
+    if (!modal) return;
+
+    // 기본 언어: KR
+    modal.dataset.bio = 'kr';
+
+    const langBtns = $$('.bio-lang .lang', modal);
+    langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.bioLang || 'kr';
+        modal.dataset.bio = mode;
+
+        langBtns.forEach(b => {
+          b.classList.toggle('active', b === btn);
+          b.setAttribute('aria-pressed', String(b === btn));
+        });
+      });
+    });
+
+    const closeBtn  = $('.bio-close', modal);
+    const backdrop  = $('.bio-backdrop', modal);
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeBioModal);
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', e => {
+        if (e.target === backdrop) closeBioModal();
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeBioModal();
+    });
+
+    // 요약 슬라이드(전시/소장/저서) 토글
     const btn   = $('#expoToggle');
     const block = $('#expoSlide');
-    if (!btn || !block) return;
 
-    // 기본: 접힘 상태
-    block.setAttribute('data-open', 'false');
-    btn.setAttribute('aria-expanded', 'false');
+    const btn   = $('#expoToggle');
+    const block = $('#expoSlide');
+    if (btn && block) {
+      block.setAttribute('data-open', 'false');
+      btn.setAttribute('aria-expanded', 'false');
 
-    btn.addEventListener('click', () => {
-      const isOpen = block.getAttribute('data-open') === 'true';
-      const next   = !isOpen;
-      block.setAttribute('data-open', next ? 'true' : 'false');
-      btn.setAttribute('aria-expanded', next ? 'true' : 'false');
-    });
+      btn.addEventListener('click', () => {
+        const isOpen = block.getAttribute('data-open') === 'true';
+        const next   = !isOpen;
+        block.setAttribute('data-open', next ? 'true' : 'false');
+        btn.setAttribute('aria-expanded', next ? 'true' : 'false');
+      });
+    }
   }
 
   /* -------------------------------------------
@@ -1720,7 +1782,7 @@ body.modal-open{ overflow:hidden; }
     try { initLanguage(); }    catch (e) { console.error(e); }
     try { initWorks(); }       catch (e) { console.error(e); }
     try { initReports(); }     catch (e) { console.error(e); }
-    try { initBioSummary(); }  catch (e) { console.error(e); }
+    try { initBioModal(); }    catch (e) { console.error(e); }
     try { initSound(); }       catch (e) { console.error(e); }
     try { initWaves(); }       catch (e) { console.error(e); }
   });

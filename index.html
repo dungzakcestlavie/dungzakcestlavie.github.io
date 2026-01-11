@@ -816,7 +816,7 @@
 </head>
 
 <!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로 + 사운드 오브만 교체)
+② BODY / HTML  (등작 원문 그대로 + 구조만 정리)
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -940,7 +940,7 @@
     </section>
   </main>
 
-    <!-- ARTIST BIO MODAL -->
+  <!-- ARTIST BIO MODAL -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -1098,7 +1098,7 @@
       </div> <!-- /.slide-wrap -->
     </div>   <!-- /.bio-card -->
   </div>     <!-- /#bio-modal -->
-  </div>
+
   <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
@@ -1125,7 +1125,6 @@
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 </body>
-</html>
 
 <script>
 (function () {
@@ -1566,8 +1565,23 @@
   function setBioLanguage(lang) {
     const modal = $('#bio-modal');
     if (!modal) return;
+
+    // data-bio 속성 (기존 CSS 대응)
     modal.setAttribute('data-bio', lang === 'en' ? 'en' : 'kr');
 
+    // ✅ JS에서 직접 bio-body 표시/숨김 제어 (CSS 없어도 동작)
+    const bodiesKo = $$('#bio-modal .bio-body.ko');
+    const bodiesEn = $$('#bio-modal .bio-body.en');
+
+    if (lang === 'en') {
+      bodiesKo.forEach(el => { el.style.display = 'none'; });
+      bodiesEn.forEach(el => { el.style.display = ''; });
+    } else {
+      bodiesKo.forEach(el => { el.style.display = ''; });
+      bodiesEn.forEach(el => { el.style.display = 'none'; });
+    }
+
+    // 버튼 상태 업데이트
     const buttons = $$('#bio-modal .bio-lang .lang');
     buttons.forEach(btn => {
       const bLang = btn.getAttribute('data-bio-lang');
@@ -1630,11 +1644,10 @@
     const orb = $('#soundOrb');
     if (!orb) return;
 
-    // ✅ 여기만 프라하 mp3로 변경
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
     audio.preload = 'auto';
-    audio.volume = 0.18; // 필요하면 여기서 조정
+    audio.volume = 0.18;
 
     let playing  = false;
     let pulseTimer = null;
@@ -1698,13 +1711,9 @@
     }
 
     orb.addEventListener('click', toggleSound);
-
-    // 페이지 이탈 시 정지
     window.addEventListener('pagehide', () => {
       stopSound();
     });
-
-    // 초기 상태: 정지
     updateVisual();
   }
 
@@ -1733,7 +1742,7 @@
 
     let t = 0;
     function draw() {
-      if (prefersReduced) return; // 움직임 최소화 설정 사용 시 정지 배경
+      if (prefersReduced) return;
 
       const dpr = window.devicePixelRatio || 1;
       const w = canvas.width  / dpr;

@@ -1230,7 +1230,7 @@
     const bioTab = $('#tab-bio');
     if (bioTab) {
       bioTab.addEventListener('click', () => {
-        openBioModal();
+        openBioModal(); // 재클릭 시에도 항상 초기 "작가 소개" 상태로 리셋
       });
     }
 
@@ -1507,7 +1507,7 @@
     if (!grid) return;
 
     const tabs = $$('.r-tab');
-    a const toggleBtn = $('#reportsToggle');
+    const toggleBtn = $('#reportsToggle');
 
     function applyFilter(type) {
       const items = $$('.r-item', grid);
@@ -1597,24 +1597,28 @@
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    // 모달 보이기
-    modal.hidden = false;
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-
-    // 🔹 모달 열 때마다 스크롤 맨 위로
+    // 모달 열릴 때마다 항상 "작가 소개" 상태로 리셋
+    // 1) 스크롤 맨 위로
     const card = $('.bio-card', modal);
     if (card) {
       card.scrollTop = 0;
     }
 
-    // 🔹 전시/소장/저서 슬라이드 항상 닫힌 상태로 리셋
+    // 2) 전시/소장/저서 슬라이드 접기
     const expoBlock = $('#expoSlide');
     const expoBtn   = $('#expoToggle');
     if (expoBlock && expoBtn) {
       expoBlock.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
     }
+
+    // 3) (선택) Bio 언어는 기존 선택 유지 – 등작이 KR/EN 중에서 고른 상태를 존중
+    //    필요하면 아래 주석 해제해서 항상 KR으로 리셋 가능.
+    // modal.dataset.bio = 'kr';
+
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
   }
 
   function closeBioModal() {

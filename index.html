@@ -2,7 +2,7 @@
 <html lang="ko">
 
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮27 · 안정 패치)
+① HEAD / STYLE  (Lightflow ∮27 · Bio/전시 리스트 개선 패치)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -106,22 +106,22 @@
     body.hybrid .ko,
     body.hybrid .en{ display:block !important; }
 
-    /* Bio 모달은 전역 언어 필터에서 독립 */
-    #bio-modal .bio-body.ko,
-    #bio-modal .bio-body.en,
-    #bio-modal .expo-kicker .ko,
-    #bio-modal .expo-kicker .en{
+    /* =========================================================
+       Bio modal 언어는 전역 필터에서 완전히 분리
+       (KR 모드에서도 전시 리스트 전체가 항상 살아있도록)
+    ========================================================= */
+    #bio-modal .ko,
+    #bio-modal .en{
       display:block !important;
     }
 
-    /* =========================================================
-       Bio modal language (LOCAL)
-    ========================================================= */
-    #bio-modal[data-bio="kr"] .bio-body.en,
-    #bio-modal[data-bio="kr"] .expo-kicker .en{ display:none !important; }
-
-    #bio-modal[data-bio="en"] .bio-body.ko,
-    #bio-modal[data-bio="en"] .expo-kicker .ko{ display:none !important; }
+    /* Bio modal 내부 언어 토글만 로컬로 적용 */
+    #bio-modal[data-bio="kr"] .en{
+      display:none !important;
+    }
+    #bio-modal[data-bio="en"] .ko{
+      display:none !important;
+    }
 
     /* =========================================================
        Waves canvas
@@ -638,20 +638,30 @@
       text-shadow: 0 1px 0 rgba(0,0,0,.58);
     }
 
+    /* ▶ 전시 리스트: max-height 애니메이션 제거, 즉시 열고 닫힘 */
     .slide-wrap{
-      max-height: 0px;
-      overflow:hidden;
-      transition: max-height .35s ease;
+      display:none;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{ max-height: 4000px; }
+    .slide-wrap[data-open="true"]{
+      display:block;
+    }
+
     .bio-body{
       padding: 14px 14px;
       color: rgba(237,227,201,.88);
       line-height: 1.7;
+      font-size: 13.5px; /* 한글 작가 소개 살짝 축소 */
     }
     .bio-body p{ margin: 10px 0; }
     .bio-body strong{ color: var(--gold2); }
+
+    @media (min-width: 900px){
+      .bio-body{
+        font-size: 14px;
+        line-height: 1.75;
+      }
+    }
 
     /* =========================================================
        LIGHTBOX

@@ -1,1148 +1,1184 @@
+<!-- ==========================================================
+Lightflow ∮27 — ADMIN Ω (Works / Reports JSON Manager)
+① HEAD / STYLE
+② BODY / HTML
+③ SCRIPTS
+========================================================== -->
 <!doctype html>
-<html lang="ko" translate="no">
+<html lang="ko">
+
+<!-- ==========================================================
+① HEAD / STYLE  (Index ∮27 디자인에 맞춘 Admin)
+========================================================== -->
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.32 — Lightflow ∮21 Manager</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
-  <meta name="description" content="Admin Ω.32 — Works & Aesthetic Reports (DCAR) Manager for dungzak.art · Lightflow ∮21" />
+  <meta name="theme-color" content="#070A14" />
+  <meta name="format-detection" content="telephone=no,address=no,email=no" />
+
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Admin Ω</title>
+  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — Admin Ω · Works & DCAR JSON Manager" />
+
+  <link rel="canonical" href="https://dungzak.art/" />
+
+  <!-- OG / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="등작 ∮27 · Admin Ω" />
+  <meta property="og:description" content="Works / DCAR Reports JSON Manager" />
+  <meta property="og:url" content="https://dungzak.art/admin.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Translate bar 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
 
   <style>
-  :root{
-    --bg:#070c1a;
-    --fg:#eaf0ff;
-    --gold:#e6c777;
-    --gold-soft:rgba(230,199,119,.18);
-    --muted:#9fb0e3;
-    --panel:#0f1630;
-    --line:#222b55;
-    --max:1180px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    background:radial-gradient(circle at top,#101633 0,#050712 55%,#02030a 100%);
-    color:var(--fg);
-    font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
-    letter-spacing:.01em;
-    overflow-x:hidden;
-  }
+    /* =========================================================
+       Base / Reset — index와 동일 팔레트
+    ========================================================= */
+    :root{
+      --bg0:#050812;
+      --bg1:#070A14;
+      --bg2:#0A1022;
 
-  /* HEADER */
-  header{
-    position:sticky;top:0;z-index:10;
-    padding:10px 14px 8px;
-    background:
-      linear-gradient(180deg,rgba(9,14,30,.96),rgba(9,14,30,.86)),
-      repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,.04) 0,
-        rgba(255,255,255,.04) 1px,
-        transparent 1px,
-        transparent 4px
-      );
-    border-bottom:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(12px);
-  }
-  .brand-wrap{
-    max-width:var(--max);
-    margin:0 auto;
-  }
-  .brand-title{
-    font-weight:900;
-    color:var(--gold);
-    font-size:clamp(18px,4.4vw,22px);
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    text-shadow:0 0 18px rgba(230,199,119,.55);
-  }
-  .brand-sub{
-    margin-top:2px;
-    font-size:11px;
-    color:#c4d2ff;
-    letter-spacing:.18em;
-  }
-  .nav-tabs{
-    display:flex;flex-wrap:wrap;
-    gap:8px;margin-top:10px;
-  }
-  .nav-tabs button{
-    all:unset;cursor:pointer;
-    padding:6px 12px;
-    border-radius:999px;
-    border:1px solid rgba(140,165,230,.35);
-    font-size:12px;font-weight:700;
-    color:#eaf0ff;
-    background:radial-gradient(circle at top,rgba(230,199,119,.12),rgba(9,14,30,0));
-  }
-  .nav-tabs button.active{
-    background:linear-gradient(180deg,#f7e4a5,#e6c777);
-    color:#0a1230;
-    border-color:#f0de98;
-    box-shadow:0 0 16px rgba(230,199,119,.5);
-  }
+      --gold:#D7B86A;
+      --gold2:#E9D59B;
+      --blue:#79A7FF;
 
-  /* LAYOUT */
-  main{max-width:var(--max);margin:0 auto;padding:18px 12px 72px}
-  section.admin-block{
-    margin-bottom:20px;
-    border-radius:16px;
-    background:
-      radial-gradient(circle at top,rgba(230,199,119,.07),rgba(5,7,20,.9));
-    border:1px solid rgba(46,62,120,.9);
-    box-shadow:0 8px 26px rgba(0,0,0,.45);
-    padding:14px 12px 18px;
-  }
-  section.admin-block.hidden{display:none}
+      --ink:#EDE3C9;
+      --muted:rgba(237,227,201,.72);
+      --muted2:rgba(237,227,201,.55);
 
-  .block-head{
-    display:flex;flex-wrap:wrap;
-    justify-content:space-between;
-    gap:8px;align-items:flex-end;
-    margin-bottom:8px;
-  }
-  .block-head h2{
-    margin:0;
-    font-size:17px;
-    font-weight:800;
-    color:var(--gold);
-  }
-  .block-head small{
-    font-size:11px;color:var(--muted);
-  }
+      --card:rgba(255,255,255,.035);
+      --card2:rgba(255,255,255,.055);
+      --line:rgba(215,184,106,.22);
+      --line2:rgba(121,167,255,.18);
 
-  .hint{
-    font-size:12px;color:var(--muted);
-    margin-bottom:8px;
-  }
-  .hint strong{color:#ffdf99}
+      --shadow: 0 16px 40px rgba(0,0,0,.45);
+      --shadow2: 0 10px 26px rgba(0,0,0,.35);
+      --r:18px;
 
-  .flex-row{display:flex;flex-wrap:wrap;gap:14px;}
-  .col-half{flex:1 1 320px;min-width:0;}
-  .panel{
-    background:linear-gradient(180deg,#0f1630,#050716);
-    border-radius:12px;
-    border:1px solid var(--line);
-    padding:10px 10px 12px;
-  }
-  .panel-title{
-    font-size:13px;font-weight:700;
-    color:#f4e8b3;
-    margin-bottom:6px;
-  }
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
 
-  label{
-    display:block;
-    font-size:12px;
-    margin:4px 0 2px;
-    color:#c8d4ff;
-  }
-  input[type="text"],
-  input[type="number"],
-  select,
-  textarea{
-    width:100%;
-    background:#050814;
-    border-radius:8px;
-    border:1px solid rgba(70,90,150,.9);
-    padding:6px 8px;
-    color:#eaf0ff;
-    font:12px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif;
-  }
-  textarea{
-    resize:vertical;
-    min-height:120px;
-    white-space:pre-wrap;
-  }
-  input::placeholder,
-  textarea::placeholder{
-    color:#6673a5;
-    font-size:11px;
-  }
+      --maxw: 1200px;
 
-  .small-row{display:flex;gap:8px;}
-  .small-row > div{flex:1;}
+      --gold-edge: rgba(0,0,0,.70);
+      --gold-edge2: rgba(0,0,0,.42);
 
-  .btn-row{
-    display:flex;flex-wrap:wrap;
-    gap:8px;margin-top:8px;
-  }
-  button.btn{
-    border-radius:999px;
-    border:1px solid rgba(130,150,220,.7);
-    padding:6px 12px;
-    background:#101735;
-    color:#eaf0ff;
-    font-size:12px;font-weight:700;
-    cursor:pointer;
-  }
-  button.btn.primary{
-    background:linear-gradient(180deg,var(--gold),#f2df9a);
-    color:#09102a;
-    border-color:#f0de98;
-    box-shadow:0 0 12px rgba(230,199,119,.5);
-  }
-  button.btn.danger{
-    border-color:rgba(255,90,105,.8);
-    color:#ffb0ba;
-  }
-  button.btn:disabled{
-    opacity:.45;cursor:not-allowed;
-  }
+      --btnH: 40px;
+      --btnPadX: 12px;
+      --btnFont: 12.6px;
+      --btnRadius: 999px;
+    }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:11px;
-  }
-  thead{background:#111738}
-  th,td{
-    border-bottom:1px solid rgba(40,54,110,.8);
-    padding:4px 5px;
-    text-align:left;
-    vertical-align:top;
-  }
-  th{color:#cfd7ff;font-weight:700;}
-  td{color:#d9e1ff;}
-  tr:nth-child(even){background:rgba(8,14,40,.7);}
-  tr:hover{background:rgba(40,60,130,.55);}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
 
-  .tag{
-    display:inline-block;
-    padding:1px 6px;
-    border-radius:999px;
-    border:1px solid rgba(150,175,255,.7);
-    font-size:10px;
-    color:#cfe0ff;
-    margin-right:4px;
-  }
-  .tag-sec{
-    border-color:rgba(230,199,119,.7);
-    color:#f4e8b3;
-  }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing:.2px;
+      overflow-x:hidden;
+    }
 
-  .out-area{
-    margin-top:10px;
-  }
-  .out-area label{margin-bottom:4px;}
-  textarea.out{
-    font-family:ui-monospace,Menlo,Consolas,monospace;
-    font-size:11px;
-    min-height:160px;
-    background:#050814;
-  }
+    header, main, footer{
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+    }
 
-  .error-msg{
-    color:#ff6b7b;
-    font-size:11px;
-    margin-top:4px;
-  }
+    a{ color:var(--gold2); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    img{ max-width:100%; display:block; }
 
-  /* 이미지 리사이즈 결과 */
-  .img-result-list{
-    margin-top:8px;
-    font-size:11px;
-    max-height:180px;
-    overflow:auto;
-    border-radius:8px;
-    border:1px solid rgba(70,90,150,.6);
-    background:#050814;
-    padding:6px 8px;
-  }
-  .img-result-item{
-    margin-bottom:6px;
-  }
-  .img-result-item a{
-    text-decoration:none;
-    color:#b6c9ff;
-  }
-  .img-result-item a:hover{
-    color:#fff;
-  }
+    /* =========================================================
+       Waves canvas (index와 동일)
+    ========================================================= */
+    #waves{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:-2;
+      pointer-events:none;
+      opacity:1;
+    }
 
-  footer{
-    border-top:1px solid rgba(255,255,255,.08);
-    text-align:center;
-    padding:18px 12px 28px;
-    font-size:11px;
-    color:var(--muted);
-    background:#050814;
-  }
+    /* =========================================================
+       Header / Nav (Admin)
+    ========================================================= */
+    header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding-top: calc(10px + var(--safe-top));
+      padding-bottom: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(5,8,18,.94), rgba(5,8,18,.70));
+      border-bottom:1px solid rgba(215,184,106,.22);
+    }
+    header .brand,
+    header .brand-sub{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+    header .brand{
+      text-align:center;
+      font-weight: 900;
+      color: var(--gold2);
+      letter-spacing: .78px;
+      font-size: 15px;
+      line-height: 1.25;
+      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      text-shadow:
+        0 1px 0 var(--gold-edge),
+        0 -1px 0 var(--gold-edge2);
+    }
+    header .brand-sub{
+      margin-top: 4px;
+      font-size: 12px;
+      letter-spacing: .34px;
+      color: rgba(237,227,201,.78);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .brand-sub-left{
+      opacity:.92;
+    }
+    .brand-sub-right a{
+      font-size: 11.4px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(215,184,106,.35);
+      background: rgba(255,255,255,.02);
+      box-shadow: 0 8px 18px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+    }
 
-  @media(max-width:600px){
-    header{padding:8px 10px;}
-    .block-head{flex-direction:column;align-items:flex-start;}
-  }
+    nav.admin-nav{
+      max-width: var(--maxw);
+      margin: 12px auto 0;
+      padding: 0 18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:center;
+    }
+    nav.admin-nav button{
+      appearance:none;
+      border: 1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.028);
+      color: var(--gold2);
+      padding: 8px var(--btnPadX);
+      border-radius: var(--btnRadius);
+      font-weight: 900;
+      font-size: var(--btnFont);
+      cursor:pointer;
+      min-height: var(--btnH);
+      box-shadow: 0 8px 18px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.64);
+      touch-action: manipulation;
+      transition: transform .06s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    nav.admin-nav button:hover{
+      background: rgba(215,184,106,.08);
+      border-color: rgba(215,184,106,.52);
+      box-shadow: 0 10px 24px rgba(0,0,0,.36);
+    }
+    nav.admin-nav button.active{
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.78);
+      box-shadow: 0 12px 28px rgba(0,0,0,.40);
+    }
+    nav.admin-nav button:active{
+      transform: translateY(1px);
+    }
+
+    /* =========================================================
+       Main Layout (Admin)
+    ========================================================= */
+    main{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 18px 18px calc(24px + var(--safe-bot));
+    }
+    .admin-section{
+      display:none;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.04);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 16px 16px 18px;
+    }
+    .admin-section.active{
+      display:block;
+    }
+    .admin-section h2{
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .admin-section .desc{
+      margin: 4px 0 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height:1.6;
+    }
+
+    /* Controls row */
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .toolbar select,
+    .toolbar input[type="text"]{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(121,167,255,.26);
+      background: rgba(0,0,0,.40);
+      color: var(--ink);
+      font-size:12px;
+      min-height: 34px;
+    }
+    .toolbar button{
+      appearance:none;
+      border-radius:999px;
+      border:1px solid rgba(215,184,106,.40);
+      background: rgba(215,184,106,.10);
+      color:var(--gold2);
+      font-size:12px;
+      padding:7px 12px;
+      min-height: 34px;
+      cursor:pointer;
+      font-weight:900;
+      text-shadow: 0 1px 0 rgba(0,0,0,.60);
+      box-shadow: 0 8px 18px rgba(0,0,0,.30);
+      touch-action:manipulation;
+    }
+    .toolbar button.danger{
+      border-color: rgba(255,120,120,.70);
+      color:#ffdddd;
+    }
+    .toolbar button.secondary{
+      border-color: rgba(121,167,255,.45);
+      background: rgba(121,167,255,.12);
+      color:#eaf1ff;
+    }
+
+    /* Small label */
+    .hint{
+      font-size:11px;
+      color:var(--muted2);
+      margin-top:2px;
+    }
+
+    /* =========================================================
+       Works Table
+    ========================================================= */
+    .table-wrap{
+      margin-top: 10px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.05);
+      background: rgba(0,0,0,.35);
+      overflow:auto;
+      max-height: 60vh;
+      -webkit-overflow-scrolling:touch;
+    }
+    table.admin-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:11.5px;
+      min-width: 900px;
+    }
+    table.admin-table thead{
+      position:sticky;
+      top:0;
+      background: linear-gradient(180deg, rgba(10,16,34,.95), rgba(5,8,18,.98));
+      z-index:1;
+    }
+    table.admin-table th,
+    table.admin-table td{
+      border-bottom:1px solid rgba(255,255,255,.06);
+      padding:6px 6px;
+      text-align:left;
+      vertical-align:top;
+      color:rgba(237,227,201,.85);
+    }
+    table.admin-table th{
+      font-weight:700;
+      color:var(--gold2);
+      white-space:nowrap;
+      text-shadow: 0 1px 0 rgba(0,0,0,.65);
+    }
+    table.admin-table tr:nth-child(even) td{
+      background: rgba(255,255,255,.02);
+    }
+    table.admin-table tr.selected td{
+      background: rgba(121,167,255,.16);
+    }
+
+    table.admin-table input[type="text"],
+    table.admin-table textarea,
+    table.admin-table select{
+      width:100%;
+      box-sizing:border-box;
+      border-radius:6px;
+      border:1px solid rgba(121,167,255,.26);
+      background: rgba(0,0,0,.60);
+      color:var(--ink);
+      font-size:11px;
+      padding:4px 5px;
+      resize:vertical;
+    }
+    table.admin-table textarea{
+      min-height:40px;
+      max-height:120px;
+    }
+
+    .col-narrow{
+      width:50px;
+    }
+    .col-medium{
+      width:110px;
+    }
+
+    /* =========================================================
+       Reports textarea
+    ========================================================= */
+    .split{
+      display:grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
+      gap:12px;
+      margin-top: 8px;
+    }
+    @media (max-width: 900px){
+      .split{
+        grid-template-columns: 1fr;
+      }
+    }
+    .field-group{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.35);
+      padding:10px 12px;
+    }
+    .field-group h3{
+      margin:0 0 6px;
+      font-size:13px;
+      color:var(--gold2);
+    }
+    .field-group label{
+      display:block;
+      margin-top:6px;
+      font-size:11.5px;
+      color:var(--muted);
+    }
+    .field-group input[type="text"],
+    .field-group select{
+      width:100%;
+      padding:5px 7px;
+      border-radius:8px;
+      border:1px solid rgba(121,167,255,.26);
+      background: rgba(0,0,0,.60);
+      color:var(--ink);
+      font-size:11.5px;
+      min-height: 32px;
+      box-sizing:border-box;
+    }
+    .field-group textarea{
+      width:100%;
+      padding:6px 7px;
+      border-radius:8px;
+      border:1px solid rgba(121,167,255,.26);
+      background: rgba(0,0,0,.60);
+      color:var(--ink);
+      font-size:11.5px;
+      resize:vertical;
+      min-height:80px;
+      box-sizing:border-box;
+    }
+
+    /* =========================================================
+       Footer
+    ========================================================= */
+    footer{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 10px 18px calc(16px + var(--safe-bot));
+      font-size:11px;
+      color:var(--muted2);
+      text-align:center;
+    }
+    footer small{
+      display:block;
+      margin-top:4px;
+    }
+
+    /* =========================================================
+       Reduced motion
+    ========================================================= */
+    @media (prefers-reduced-motion: reduce){
+      *{
+        scroll-behavior:auto !important;
+        transition:none !important;
+        animation:none !important;
+      }
+    }
   </style>
-</head> <body>
-  <header>
-    <div class="brand-wrap">
-      <div class="brand-title">Admin Ω.32 · Lightflow ∮21 Manager</div>
-      <div class="brand-sub">등작 燈酌 DUNGZAK CESTLAVIE — dungzak.art Works & DCAR (로컬 전용 Admin)</div>
+</head>
 
-      <div class="nav-tabs" role="tablist">
-        <button type="button" class="active" data-tab="tab-intro">Intro</button>
-        <button type="button" data-tab="tab-works">Works</button>
-        <button type="button" data-tab="tab-reports">DCAR</button>
-      </div>
+<!-- ==========================================================
+② BODY / HTML  (Admin 전용 · 데이터 편집 뷰)
+========================================================== -->
+<body>
+  <!-- BACKGROUND -->
+  <canvas id="waves" aria-hidden="true"></canvas>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Admin Ω</div>
+    <div class="brand-sub">
+      <span class="brand-sub-left">Works / DCAR Reports JSON Manager · (local에서 편집 후 JSON 다운로드 → GitHub에 업로드)</span>
+      <span class="brand-sub-right">
+        <a href="index.html" target="_blank" rel="noopener">Open index (View Site)</a>
+      </span>
     </div>
+
+    <nav class="admin-nav" aria-label="Admin Navigation">
+      <button type="button" data-admin-target="works" class="active">Works Manager</button>
+      <button type="button" data-admin-target="reports">Reports Manager (DCAR)</button>
+      <button type="button" data-admin-target="tools">JSON Tools</button>
+    </nav>
   </header>
 
+  <!-- MAIN -->
   <main>
-    <!-- INTRO -->
-    <section id="tab-intro" class="admin-block">
-      <div class="block-head">
-        <h2>안내 · Intro</h2>
-      </div>
-      <p class="hint">
-        이 Admin Ω.32는 <strong>브라우저 안에서만 동작하는 오프라인 도구</strong>입니다.<br>
-        <strong>① Works → <code>data/works.json</code></strong> ·
-        <strong>② DCAR → <code>reports/reports.json</code> + 각 <code>DCAR-XX-2025.md</code></strong>를<br>
-        <strong>Lightflow ∮21 Index 구조에 정확히 맞춰</strong> 생성·편집 후 <strong>GitHub에 복사·붙여넣기</strong> 하는 용도입니다.
+    <!-- 1) WORKS MANAGER -->
+    <section id="admin-works" class="admin-section active">
+      <h2>Works Manager · 작품 아카이브 JSON</h2>
+      <p class="desc">
+        <span class="ko">
+          data/works.json을 불러와 섹션별로 편집합니다. 행을 수정하면 메모리 상에서 즉시 반영되며, 완료 후 "works.json 다운로드" 버튼으로 새 JSON 파일을 내려받아 GitHub에 업로드してください.
+        </span>
       </p>
-      <ul class="hint" style="list-style:disc;margin-left:18px">
-        <li><strong>삭제 버튼</strong>은 이 Admin 목록에서만 지웁니다. GitHub 실제 파일 삭제는 오빠가 직접!</li>
-        <li><strong>브라우저 LocalStorage</strong>에 임시 저장되므로, 같은 기기/브라우저에서는 새로고침해도 목록이 유지됩니다.</li>
-        <li><strong>미학 보고서 본문</strong>은 ‘한·영 혼용 텍스트’를 그대로 큰 박스에 붙여넣고, 결과를 MD 파일에 복사하면 됩니다.</li>
-        <li>Index ∮21의 Works Loader / Reports 모듈은<br>
-          <code>works.json</code>의 <strong>5개 섹션 키</strong>와<br>
-          <code>reports.json</code>의 <strong>reports 배열 + md_path</strong>를 그대로 사용합니다.
-        </li>
-      </ul>
+
+      <div class="toolbar">
+        <label>
+          <select id="worksSectionFilter">
+            <option value="all">섹션 전체 보기 (All Sections)</option>
+            <option value="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</option>
+            <option value="human">Ⅱ 인간 · Human Being</option>
+            <option value="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
+            <option value="exist">Ⅳ 존재의 회복 · Restoration of Being</option>
+            <option value="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
+          </select>
+        </label>
+
+        <button type="button" id="btnAddWork">행 추가 (Add Row)</button>
+        <button type="button" id="btnDeleteSelectedWork" class="danger">선택 행 삭제 (Delete Selected)</button>
+        <button type="button" id="btnDownloadWorks" class="secondary">works.json 다운로드</button>
+      </div>
+      <div class="hint">
+        * material_en은 자동으로 소문자로 정리됩니다. 이미지 경로는 <code>/images/standard/DZ-xxx.jpg</code> / <code>/images/zoom/DZ-xxx.jpg</code> 형식 권장.
+      </div>
+
+      <div class="table-wrap">
+        <table class="admin-table" id="worksTable">
+          <thead>
+            <tr>
+              <th class="col-narrow">선택</th>
+              <th class="col-medium">섹션</th>
+              <th>ID</th>
+              <th>제목 (KR)</th>
+              <th>Title (EN)</th>
+              <th>재료 (KR)</th>
+              <th>material_en</th>
+              <th>크기 (KR)</th>
+              <th>size_en</th>
+              <th class="col-medium">연도</th>
+              <th>image (standard)</th>
+              <th>zoom (optional)</th>
+            </tr>
+          </thead>
+          <tbody id="worksTableBody">
+          </tbody>
+        </table>
+      </div>
     </section>
 
-    <!-- WORKS MANAGER -->
-    <section id="tab-works" class="admin-block hidden">
-      <div class="block-head">
-        <h2>Works Manager — 작품 5섹션 관리</h2>
-        <small>섹션 키는 Index ∮21와 완전히 동일: Light & Memory / Human Being / Rebirth of Mind / Restoration of Being / Metaconsciousness of Light</small>
+    <!-- 2) REPORTS MANAGER -->
+    <section id="admin-reports" class="admin-section">
+      <h2>Reports Manager · DCAR / 미학 보고서 JSON</h2>
+      <p class="desc">
+        <span class="ko">
+          data/reports.json을 불러와 DCAR 시리즈를 관리합니다. 좌측 목록에서 보고서 선택 → 우측에서 내용 수정 후 저장 버튼으로 메모리 반영, 마지막에 "reports.json 다운로드"로 새 JSON 파일을 내려받아 GitHub에 업로드하십시오.
+        </span>
+      </p>
+
+      <div class="toolbar">
+        <button type="button" id="btnAddReport">보고서 추가 (Add Report)</button>
+        <button type="button" id="btnDeleteReport" class="danger">선택 보고서 삭제</button>
+        <button type="button" id="btnDownloadReports" class="secondary">reports.json 다운로드</button>
+      </div>
+      <div class="hint">
+        * DCAR-09 ~ DCAR-13은 이미 확정된 축이므로 ID / 제목을 변경하지 않도록 주의. 요약(summary_ko / summary_en)은 길게 작성해도 됩니다.
       </div>
 
-      <div class="flex-row">
-        <div class="col-half">
-          <div class="panel">
-            <div class="panel-title">작품 입력 / 수정</div>
-
-            <label for="wId">작품 ID (예: DZ-001)</label>
-            <input id="wId" type="text" placeholder="DZ-001 / DZ-010 등">
-
-            <label for="wSection">섹션 선택 (Index와 동일)</label>
-            <select id="wSection">
-              <option value="Light & Memory">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us (Light & Memory)</option>
-              <option value="Human Being">Ⅱ 인간 · Human Being</option>
-              <option value="Rebirth of Mind">Ⅲ 정신의 재탄생 · Rebirth of Mind</option>
-              <option value="Restoration of Being">Ⅳ 존재의 회복 · Restoration of Being</option>
-              <option value="Metaconsciousness of Light">Ⅴ 빛의 초의식 · Metaconsciousness of Light</option>
-            </select>
-
-            <div class="small-row">
-              <div>
-                <label for="wTitleKo">제목 (KR)</label>
-                <input id="wTitleKo" type="text" placeholder="우리를 위해 기도해 주세요">
-              </div>
-              <div>
-                <label for="wTitleEn">Title (EN)</label>
-                <input id="wTitleEn" type="text" placeholder="Pray for Us">
-              </div>
-            </div>
-
-            <div class="small-row">
-              <div>
-                <label for="wMatKo">재료 (KR)</label>
-                <input id="wMatKo" type="text" placeholder="Acrylic on Canvas">
-              </div>
-              <div>
-                <label for="wMatEn">Material (EN, 소문자)</label>
-                <input id="wMatEn" type="text" placeholder="acrylic on canvas">
-              </div>
-            </div>
-
-            <div class="small-row">
-              <div>
-                <label for="wSizeKo">사이즈 (KR)</label>
-                <input id="wSizeKo" type="text" placeholder="162.2×130.3cm">
-              </div>
-              <div>
-                <label for="wSizeEn">Size (EN)</label>
-                <input id="wSizeEn" type="text" placeholder="162.2 × 130.3 cm">
-              </div>
-            </div>
-
-            <div class="small-row">
-              <div>
-                <label for="wYear">연도 (Year)</label>
-                <input id="wYear" type="number" placeholder="2025">
-              </div>
-              <div>
-                <label for="wImage">이미지 파일명 (확장자 포함)</label>
-                <input id="wImage" type="text" placeholder="DZ-001.jpg">
-              </div>
-            </div>
-
-            <p class="hint" style="margin-top:4px">
-              ※ <strong>이미지 파일명</strong>은 <code>/images/standard</code>와 <code>/images/zoom</code> 폴더에<br>
-              <strong>같은 이름</strong>으로 올린다고 가정합니다.<br>
-              (예: <code>/images/standard/DZ-001.jpg</code>, <code>/images/zoom/DZ-001.jpg</code>)<br>
-              ▶ 아래 <strong>이미지 리사이즈 도구</strong>로 긴 변 4000px 이하로 줄여서 올리면 Index 로딩 속도가 훨씬 빨라집니다.
-            </p>
-
-            <div class="btn-row">
-              <button type="button" class="btn primary" id="wAddBtn">추가 / 업데이트</button>
-              <button type="button" class="btn" id="wResetBtn">폼 비우기</button>
-            </div>
-            <div id="wError" class="error-msg"></div>
+      <div class="split">
+        <!-- Left: list -->
+        <div class="field-group">
+          <h3>보고서 목록 (Reports List)</h3>
+          <div id="reportList" style="max-height:52vh;overflow:auto;-webkit-overflow-scrolling:touch;">
+            <!-- JS로 채움 -->
           </div>
         </div>
 
-        <div class="col-half">
-          <div class="panel" style="max-height:360px;overflow:auto">
-            <div class="panel-title">현재 작품 목록 (브라우저 LocalStorage 기준)</div>
-            <table id="wTable">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>섹션</th>
-                  <th>제목(KR/EN)</th>
-                  <th>연도</th>
-                  <th>이미지</th>
-                  <th>조작</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+        <!-- Right: editor -->
+        <div class="field-group">
+          <h3>선택한 보고서 편집 (Edit Selected Report)</h3>
+
+          <label>
+            ID
+            <input type="text" id="r_id" />
+          </label>
+          <label>
+            연도 (year)
+            <input type="text" id="r_year" />
+          </label>
+          <label>
+            카테고리 (category) — theory / archive / practice
+            <input type="text" id="r_category" />
+          </label>
+          <label>
+            제목 (KO)
+            <input type="text" id="r_title_ko" />
+          </label>
+          <label>
+            Title (EN)
+            <input type="text" id="r_title_en" />
+          </label>
+          <label>
+            요약 (summary_ko)
+            <textarea id="r_summary_ko"></textarea>
+          </label>
+          <label>
+            Summary (summary_en)
+            <textarea id="r_summary_en"></textarea>
+          </label>
+          <label>
+            md_path (또는 URL) — 예: reports/DCAR-09-2025.md
+            <input type="text" id="r_md_path" />
+          </label>
+
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" id="btnSaveReport">현재 보고서 변경사항 저장</button>
+            <span class="hint">* 저장 버튼은 메모리 내 배열에 반영합니다. 최종적으로 reports.json을 다운로드해야 GitHub에 업로드할 수 있습니다.</span>
           </div>
-        </div>
-      </div>
-
-      <div class="out-area">
-        <label for="wJsonOut">➜ <code>data/works.json</code>에 그대로 복사·붙여넣기 (Index ∮21 호환 구조)</label>
-        <textarea id="wJsonOut" class="out" spellcheck="false"></textarea>
-        <div class="btn-row">
-          <button type="button" class="btn" id="wImportBtn">JSON → 목록 불러오기</button>
-        </div>
-        <div id="wJsonError" class="error-msg"></div>
-      </div>
-
-      <div class="panel" style="margin-top:16px">
-        <div class="panel-title">이미지 리사이즈 · 긴 변 4000px 이하 자동 축소</div>
-        <p class="hint">
-          • 카메라/폰 원본과 이미 사이트에서 쓰고 있는 이미지 모두 다시 가볍게 만들 수 있습니다.<br>
-          • 긴 변이 <strong>4000px를 넘는 경우만</strong> 축소하고, <strong>JPEG(품질 0.9)</strong>로 저장합니다.<br>
-          • 변환된 이미지를 다운로드해 <code>/images/standard · /images/zoom</code>에 업로드하면<br>
-            Lightflow ∮21 Works 그리드가 훨씬 빠르게 뜹니다.
-        </p>
-        <label for="imgInput">이미지 선택 (여러 장 가능)</label>
-        <input id="imgInput" type="file" accept="image/*" multiple>
-
-        <div class="btn-row">
-          <button type="button" class="btn primary" id="imgResizeBtn">선택한 이미지 4000px로 리사이즈</button>
-        </div>
-        <div id="imgMsg" class="error-msg" style="min-height:14px"></div>
-
-        <div id="imgResult" class="img-result-list" aria-live="polite">
-          아직 변환된 이미지가 없습니다.
         </div>
       </div>
     </section>
 
-    <!-- REPORTS / DCAR MANAGER -->
-    <section id="tab-reports" class="admin-block hidden">
-      <div class="block-head">
-        <h2>DCAR Reports Manager — 미학 보고서 메타 관리</h2>
-        <small>Index ∮21 Reports 모듈과 동일한 <code>reports/reports.json</code> 구조 사용</small>
-      </div>
+    <!-- 3) JSON TOOLS -->
+    <section id="admin-tools" class="admin-section">
+      <h2>JSON Tools · 임시 작업 공간</h2>
+      <p class="desc">
+        <span class="ko">
+          아래 영역은 JSON 텍스트를 붙여넣고 포맷을 정리하거나, 브라우저에서 간단히 diff / 포맷 체크를 할 수 있는 임시 공간입니다.
+          실제 사이트에는 영향을 주지 않습니다.
+        </span>
+      </p>
 
-      <div class="flex-row">
-        <div class="col-half">
-          <div class="panel">
-            <div class="panel-title">보고서 정보 입력</div>
-
-            <label for="rId">보고서 ID (예: DCAR-10-2025)</label>
-            <input id="rId" type="text" placeholder="DCAR-10-2025">
-
-            <div class="small-row">
-              <div>
-                <label for="rCat">Category</label>
-                <select id="rCat">
-                  <option value="Theory">Theory</option>
-                  <option value="Archive">Archive</option>
-                  <option value="Practice">Practice</option>
-                </select>
-              </div>
-              <div>
-                <label for="rFile">MD 파일 이름 (예: DCAR-10-2025.md)</label>
-                <input id="rFile" type="text" placeholder="DCAR-10-2025.md">
-              </div>
-            </div>
-
-            <div class="small-row">
-              <div>
-                <label for="rTitleKo">제목 (KR)</label>
-                <input id="rTitleKo" type="text" placeholder="DCAR-10 — 감응의 파동장: 다층적 존재의 형성학">
-              </div>
-              <div>
-                <label for="rTitleEn">Title (EN)</label>
-                <input id="rTitleEn" type="text" placeholder="Aesthetic Report No.10 — Wavefields of Affect: A Multilayered Formation of Being">
-              </div>
-            </div>
-
-            <label for="rSumKo">요약 (KR) — 3–4문장</label>
-            <textarea id="rSumKo" placeholder="전쟁·플랫폼 자본주의·디지털 과잉 자극 속에서 정동이 파편화되는 시대..."></textarea>
-
-            <label for="rSumEn">Summary (EN) — 3–4 sentences</label>
-            <textarea id="rSumEn" placeholder="In an era of war, platform capitalism, and digital overstimulation..."></textarea>
-
-            <div class="btn-row">
-              <button type="button" class="btn primary" id="rAddBtn">추가 / 업데이트</button>
-              <button type="button" class="btn" id="rResetBtn">폼 비우기</button>
-            </div>
-            <div id="rError" class="error-msg"></div>
-          </div>
-
-          <div class="panel" style="margin-top:12px">
-            <div class="panel-title">본문 (KR+EN 혼용 무한 붙여넣기 · MD용)</div>
-            <label for="rBody">여기에 DCAR 전체 텍스트를 그대로 붙여넣기 (한/영 섞여 있어도 됨)</label>
-            <textarea id="rBody" style="min-height:220px" placeholder="# DCAR-10 — 감응의 파동장: 다층적 존재의 형성학&#10;&#10;등작 燈酌 DUNGZAK CESTLAVIE&#10;Lumera / Aesthetic Theorist&#10;..."></textarea>
-            <p class="hint" style="margin-top:4px">
-              ➜ 이 내용은 <code>/reports/DCAR-XX-2025.md</code> 파일 안에 그대로 복사·붙여넣기 하면 됩니다.<br>
-              (Admin은 텍스트를 보관·편집하는 용도일 뿐, GitHub에 자동 업로드하지 않습니다.)
-            </p>
+      <div class="split">
+        <div class="field-group">
+          <h3>입력 (Raw JSON)</h3>
+          <textarea id="jsonInput" placeholder="여기에 JSON 텍스트를 붙여넣으세요."></textarea>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" id="btnFormatJson">포맷 (Pretty Print)</button>
+            <button type="button" id="btnMinifyJson" class="secondary">Minify</button>
           </div>
         </div>
-
-        <div class="col-half">
-          <div class="panel" style="max-height:360px;overflow:auto">
-            <div class="panel-title">현재 DCAR 목록 (브라우저 LocalStorage 기준)</div>
-            <table id="rTable">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>제목 (KR)</th>
-                  <th>제목 (EN)</th>
-                  <th>Cat</th>
-                  <th>파일</th>
-                  <th>조작</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="panel" style="margin-top:12px">
-            <div class="panel-title">선택한 DCAR의 MD 전체 텍스트 (복사용)</div>
-            <textarea id="rMdOut" class="out" spellcheck="false" placeholder="DCAR를 선택 후 [MD] 버튼을 누르면 여기에 전체 MD 텍스트가 생성됩니다."></textarea>
-          </div>
+        <div class="field-group">
+          <h3>결과 (Formatted JSON)</h3>
+          <textarea id="jsonOutput" placeholder="포맷 결과가 여기에 표시됩니다."></textarea>
         </div>
-      </div>
-
-      <div class="out-area">
-        <label for="rJsonOut">➜ <code>reports/reports.json</code>에 그대로 복사·붙여넣기 (Index ∮21 호환 구조)</label>
-        <textarea id="rJsonOut" class="out" spellcheck="false"></textarea>
-        <div class="btn-row">
-          <button type="button" class="btn" id="rImportBtn">reports.json → 목록 불러오기</button>
-        </div>
-        <div id="rJsonError" class="error-msg"></div>
       </div>
     </section>
   </main>
 
+  <!-- FOOTER -->
   <footer>
-    © 2025 등작 燈酌 DUNGZAK CESTLAVIE · Admin Ω.32 — Lightflow ∮21
-  </footer>  <script>
-  // ============================
-  // Helpers
-  // ============================
-  const $  = (q, root=document) => root.querySelector(q);
-  const $$ = (q, root=document) => Array.from(root.querySelectorAll(q));
+    <div>등작 ∮27 · Admin Ω — 이 페이지는 로컬 브라우저 메모리에서만 동작하며, 서버 데이터를 직접 수정하지 않습니다.</div>
+    <small>1) data/works.json · data/reports.json 로드 → 2) 편집 → 3) 각각 JSON 다운로드 → 4) GitHub에 업로드.</small>
+  </footer>
+</body>
 
-  function saveLocal(key, value){
-    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
-  }
-  function loadLocal(key, fallback){
-    try{
-      const raw = localStorage.getItem(key);
-      if(!raw) return fallback;
-      const parsed = JSON.parse(raw);
-      return parsed ?? fallback;
-    }catch(e){ return fallback; }
+<!-- ==========================================================
+③ SCRIPTS  (Works / Reports / JSON 툴 + 파동 배경)
+========================================================== -->
+<script>
+(function(){
+  'use strict';
+
+  /* -------------------------------------------
+   * Helper
+   * ---------------------------------------- */
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  function safeJSONFetch(url){
+    return fetch(url, { cache: 'no-store' }).then(res => {
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    });
   }
 
-  // ============================
-  // Tab Navigation
-  // ============================
-  (function(){
-    const tabs = $$('.nav-tabs button');
-    tabs.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const id = btn.getAttribute('data-tab');
-        if(!id) return;
-        tabs.forEach(b=>b.classList.toggle('active', b===btn));
-        $$('main > section').forEach(sec=>{
-          sec.classList.toggle('hidden', sec.id !== id);
+  function downloadJSON(filename, data){
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /* -------------------------------------------
+   * Admin Nav
+   * ---------------------------------------- */
+  function initAdminNav(){
+    const buttons = $$('nav.admin-nav button');
+    const sections = $$('.admin-section');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.adminTarget;
+        if(!target) return;
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sections.forEach(sec => {
+          sec.classList.toggle('active', sec.id === 'admin-' + target);
         });
       });
     });
-  })();
-
-  // ============================
-  // Image Optimizer (4000px cap)
-  // ============================
-  const DZ_MAX_DIM = 4000;
-  const DZ_UPLOAD_MIME = 'image/jpeg';
-  const DZ_UPLOAD_QUALITY = 0.9;
-
-  function dzLoadImageFromFile(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload  = () => resolve(img);
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   }
 
-  async function dzDownscaleImageFile(file, maxDim = DZ_MAX_DIM){
-    if(!file.type.startsWith('image/')) return file;
+  /* -------------------------------------------
+   * WORKS MANAGER
+   * ---------------------------------------- */
+  let worksData = [];   // 전체 배열
+  function initWorksManager(){
+    const tbody = $('#worksTableBody');
+    const filterSelect = $('#worksSectionFilter');
+    const btnAdd = $('#btnAddWork');
+    const btnDel = $('#btnDeleteSelectedWork');
+    const btnDownload = $('#btnDownloadWorks');
 
-    const img = await dzLoadImageFromFile(file);
-    const w = img.naturalWidth  || img.width;
-    const h = img.naturalHeight || img.height;
-    const longest = Math.max(w, h);
-
-    if(longest <= maxDim){
-      return file;
+    function normalizeSection(key){
+      const k = (key || '').toLowerCase();
+      if (k === 'pray' || k === 'Ⅰ' || k === '1') return 'pray';
+      if (k === 'human' || k === 'ii' || k === '2') return 'human';
+      if (k === 'rebirth' || k === 'iii' || k === '3') return 'rebirth';
+      if (k === 'exist' || k === 'iv' || k === '4') return 'exist';
+      if (k === 'cosmos' || k === 'v' || k === '5') return 'cosmos';
+      return 'pray';
     }
 
-    const scale   = maxDim / longest;
-    const targetW = Math.round(w * scale);
-    const targetH = Math.round(h * scale);
+    function renderTable(){
+      if (!tbody) return;
+      const filter = filterSelect ? filterSelect.value : 'all';
+      const rows = worksData.map((item, idx) => {
+        const sec = normalizeSection(item.section || item.panel || item.section_id);
+        if (filter !== 'all' && sec !== filter) {
+          return '';
+        }
+        const esc = s => String(s ?? '').replace(/"/g, '&quot;');
 
-    const canvas = document.createElement('canvas');
-    canvas.width  = targetW;
-    canvas.height = targetH;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, targetW, targetH);
-    ctx.drawImage(img, 0, 0, targetW, targetH);
-
-    const blob = await new Promise(resolve => {
-      canvas.toBlob(
-        b => resolve(b),
-        DZ_UPLOAD_MIME,
-        DZ_UPLOAD_QUALITY
-      );
-    });
-
-    const safeName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-    return new File([blob], safeName, {
-      type: DZ_UPLOAD_MIME,
-      lastModified: Date.now()
-    });
-  }
-
-  async function dzPrepareUploadFiles(fileList, maxDim = DZ_MAX_DIM){
-    const files = Array.from(fileList || []);
-    const out   = [];
-    for(const f of files){
-      try{
-        const processed = await dzDownscaleImageFile(f, maxDim);
-        out.push({ original:f, processed });
-      }catch(err){
-        console.error('[DZ-RESIZE] error:', err);
-        out.push({ original:f, processed:f });
-      }
-    }
-    return out;
-  }
-
-  (function(){
-    const input = $('#imgInput');
-    const btn   = $('#imgResizeBtn');
-    const msg   = $('#imgMsg');
-    const resultBox = $('#imgResult');
-    if(!input || !btn || !msg || !resultBox) return;
-
-    function fmtSize(bytes){
-      if(bytes === 0) return '0 KB';
-      if(!bytes && bytes !== 0) return '';
-      const kb = bytes / 1024;
-      if(kb < 1024) return kb.toFixed(1) + ' KB';
-      return (kb/1024).toFixed(2) + ' MB';
+        return `
+          <tr data-index="${idx}">
+            <td class="col-narrow">
+              <input type="checkbox" class="row-select" />
+            </td>
+            <td class="col-medium">
+              <select class="w-section">
+                <option value="pray"${sec==='pray'?' selected':''}>pray</option>
+                <option value="human"${sec==='human'?' selected':''}>human</option>
+                <option value="rebirth"${sec==='rebirth'?' selected':''}>rebirth</option>
+                <option value="exist"${sec==='exist'?' selected':''}>exist</option>
+                <option value="cosmos"${sec==='cosmos'?' selected':''}>cosmos</option>
+              </select>
+            </td>
+            <td><input type="text" class="w-id" value="${esc(item.id || '')}" /></td>
+            <td><input type="text" class="w-title-kr" value="${esc(item.title_kr || '')}" /></td>
+            <td><input type="text" class="w-title-en" value="${esc(item.title_en || '')}" /></td>
+            <td><input type="text" class="w-mat-kr" value="${esc(item.material_kr || '')}" /></td>
+            <td><input type="text" class="w-mat-en" value="${esc(item.material_en || '')}" /></td>
+            <td><input type="text" class="w-size-kr" value="${esc(item.size_kr || '')}" /></td>
+            <td><input type="text" class="w-size-en" value="${esc(item.size_en || '')}" /></td>
+            <td class="col-medium"><input type="text" class="w-year" value="${esc(item.year || '')}" /></td>
+            <td><input type="text" class="w-image" value="${esc(item.image || item.image_standard || '')}" /></td>
+            <td><input type="text" class="w-zoom" value="${esc(item.zoom || item.image_zoom || '')}" /></td>
+          </tr>
+        `;
+      }).join('');
+      tbody.innerHTML = rows;
     }
 
-    function clearUrls(){
-      const links = resultBox.querySelectorAll('a[data-url]');
-      links.forEach(a => {
-        const u = a.getAttribute('data-url');
-        if(u) URL.revokeObjectURL(u);
+    function syncRowToData(tr){
+      const idx = Number(tr.dataset.index);
+      if (Number.isNaN(idx) || !worksData[idx]) return;
+      const item = worksData[idx];
+
+      const section = $('.w-section', tr)?.value || '';
+      const id      = $('.w-id', tr)?.value || '';
+      const tkr     = $('.w-title-kr', tr)?.value || '';
+      const ten     = $('.w-title-en', tr)?.value || '';
+      const mkr     = $('.w-mat-kr', tr)?.value || '';
+      let men       = $('.w-mat-en', tr)?.value || '';
+      const skr     = $('.w-size-kr', tr)?.value || '';
+      const sen     = $('.w-size-en', tr)?.value || '';
+      const year    = $('.w-year', tr)?.value || '';
+      const img     = $('.w-image', tr)?.value || '';
+      const zoom    = $('.w-zoom', tr)?.value || '';
+
+      // material_en은 소문자로 정리
+      men = (men || '').toLowerCase();
+
+      item.section     = section;
+      item.id          = id;
+      item.title_kr    = tkr;
+      item.title_en    = ten;
+      item.material_kr = mkr;
+      item.material_en = men;
+      item.size_kr     = skr;
+      item.size_en     = sen;
+      item.year        = year;
+      item.image       = img;
+      item.zoom        = zoom;
+    }
+
+    // 초기 로드
+    safeJSONFetch('data/works.json')
+      .then(json => {
+        const arr = Array.isArray(json) ? json : (json.works || json.items || []);
+        if (!Array.isArray(arr)) {
+          console.warn('works.json: 배열이 아닙니다.');
+          worksData = [];
+        } else {
+          worksData = arr.slice();
+        }
+        renderTable();
+      })
+      .catch(err => {
+        console.error('works.json load error:', err);
+        worksData = [];
+        renderTable();
+      });
+
+    // 변경 감지
+    if (tbody) {
+      tbody.addEventListener('change', e => {
+        const tr = e.target.closest('tr[data-index]');
+        if (!tr) return;
+        syncRowToData(tr);
+      });
+
+      // 클릭 시 선택 행 강조
+      tbody.addEventListener('click', e => {
+        const tr = e.target.closest('tr[data-index]');
+        if (!tr) return;
+        // 체크 박스 누른 경우는 따로, 전체 선택 토글
+        if (e.target.classList.contains('row-select')) {
+          tr.classList.toggle('selected', e.target.checked);
+        }
       });
     }
 
-    btn.addEventListener('click', async () => {
-      msg.textContent = '';
-      clearUrls();
-      const files = input.files;
-      if(!files || !files.length){
-        msg.textContent = '이미지 파일을 먼저 선택해 주세요.';
+    if (filterSelect) {
+      filterSelect.addEventListener('change', () => {
+        renderTable();
+      });
+    }
+
+    if (btnAdd) {
+      btnAdd.addEventListener('click', () => {
+        const newItem = {
+          id: '',
+          section: 'pray',
+          title_kr: '',
+          title_en: '',
+          material_kr: '',
+          material_en: '',
+          size_kr: '',
+          size_en: '',
+          year: '',
+          image: '',
+          zoom: ''
+        };
+        worksData.push(newItem);
+        renderTable();
+      });
+    }
+
+    if (btnDel) {
+      btnDel.addEventListener('click', () => {
+        const rows = $$('#worksTableBody tr');
+        const toDelete = [];
+        rows.forEach((tr, i) => {
+          const cb = $('.row-select', tr);
+          if (cb && cb.checked) {
+            toDelete.push(Number(tr.dataset.index));
+          }
+        });
+        if (!toDelete.length) return;
+        const keep = worksData.filter((_, idx) => !toDelete.includes(idx));
+        worksData = keep;
+        renderTable();
+      });
+    }
+
+    if (btnDownload) {
+      btnDownload.addEventListener('click', () => {
+        downloadJSON('works.json', worksData);
+      });
+    }
+  }
+
+  /* -------------------------------------------
+   * REPORTS MANAGER
+   * ---------------------------------------- */
+  let reportsData = [];
+  let currentReportIndex = -1;
+
+  function initReportsManager(){
+    const listRoot = $('#reportList');
+
+    const btnAdd       = $('#btnAddReport');
+    const btnDelete    = $('#btnDeleteReport');
+    const btnDownload  = $('#btnDownloadReports');
+    const btnSave      = $('#btnSaveReport');
+
+    const f_id         = $('#r_id');
+    const f_year       = $('#r_year');
+    const f_category   = $('#r_category');
+    const f_title_ko   = $('#r_title_ko');
+    const f_title_en   = $('#r_title_en');
+    const f_summary_ko = $('#r_summary_ko');
+    const f_summary_en = $('#r_summary_en');
+    const f_md_path    = $('#r_md_path');
+
+    function renderReportList(){
+      if (!listRoot) return;
+      const html = reportsData.map((item, idx) => {
+        const id   = item.id || '';
+        const year = item.year || '';
+        const tko  = item.title_ko || item.title_kr || '';
+        const ten  = item.title_en || '';
+        const cat  = (item.category || '').toLowerCase();
+        const active = idx === currentReportIndex;
+        return `
+          <button type="button"
+                  data-r-index="${idx}"
+                  style="
+                    width:100%;
+                    text-align:left;
+                    margin:2px 0;
+                    padding:6px 8px;
+                    border-radius:8px;
+                    border:1px solid ${active ? 'rgba(215,184,106,.80)' : 'rgba(255,255,255,.16)'};
+                    background:${active ? 'rgba(215,184,106,.16)' : 'rgba(0,0,0,.45)'};
+                    color:rgba(237,227,201,.92);
+                    font-size:11.5px;
+                    cursor:pointer;
+                    text-shadow:0 1px 0 rgba(0,0,0,.65);
+                  ">
+            <div><strong>${id}</strong> · ${year} · ${cat}</div>
+            <div style="margin-top:1px;">${tko}</div>
+            <div style="opacity:.75;font-size:11px;">${ten}</div>
+          </button>
+        `;
+      }).join('');
+      listRoot.innerHTML = html || '<div style="font-size:11.5px;color:rgba(237,227,201,.72);">아직 보고서 항목이 없습니다.</div>';
+    }
+
+    function loadReportToForm(idx){
+      currentReportIndex = idx;
+      const item = reportsData[idx];
+      if (!item) {
+        f_id.value = '';
+        f_year.value = '';
+        f_category.value = '';
+        f_title_ko.value = '';
+        f_title_en.value = '';
+        f_summary_ko.value = '';
+        f_summary_en.value = '';
+        f_md_path.value = '';
+        renderReportList();
         return;
       }
+      f_id.value         = item.id || '';
+      f_year.value       = item.year || '';
+      f_category.value   = item.category || '';
+      f_title_ko.value   = item.title_ko || item.title_kr || '';
+      f_title_en.value   = item.title_en || '';
+      f_summary_ko.value = item.summary_ko || item.summary_kr || '';
+      f_summary_en.value = item.summary_en || '';
+      f_md_path.value    = item.md_path || item.url || item.link || '';
+      renderReportList();
+    }
 
-      msg.textContent = '이미지 리사이즈 중입니다... (브라우저 내 처리)';
-      resultBox.textContent = '';
+    function saveFormToCurrent(){
+      if (currentReportIndex < 0 || !reportsData[currentReportIndex]) return;
+      const item = reportsData[currentReportIndex];
+      item.id         = f_id.value.trim();
+      item.year       = f_year.value.trim();
+      item.category   = f_category.value.trim() || 'theory';
+      item.title_ko   = f_title_ko.value.trim();
+      item.title_en   = f_title_en.value.trim();
+      item.summary_ko = f_summary_ko.value;
+      item.summary_en = f_summary_en.value;
+      item.md_path    = f_md_path.value.trim();
+      renderReportList();
+    }
 
-      try{
-        const processedList = await dzPrepareUploadFiles(files, DZ_MAX_DIM);
-        if(!processedList.length){
-          msg.textContent = '처리할 이미지가 없습니다.';
-          resultBox.textContent = '처리 결과가 없습니다.';
+    // 초기 로드
+    safeJSONFetch('data/reports.json')
+      .then(json => {
+        const arr = Array.isArray(json) ? json : (json.reports || json.items || []);
+        if (!Array.isArray(arr)) {
+          console.warn('reports.json: 배열이 아닙니다.');
+          reportsData = [];
+        } else {
+          reportsData = arr.slice();
+        }
+        if (reportsData.length > 0) {
+          currentReportIndex = 0;
+        }
+        renderReportList();
+        if (currentReportIndex >= 0) {
+          loadReportToForm(currentReportIndex);
+        }
+      })
+      .catch(err => {
+        console.error('reports.json load error:', err);
+        reportsData = [];
+        renderReportList();
+      });
+
+    // 리스트 클릭
+    if (listRoot) {
+      listRoot.addEventListener('click', e => {
+        const btn = e.target.closest('button[data-r-index]');
+        if (!btn) return;
+        const idx = Number(btn.dataset.rIndex);
+        if (Number.isNaN(idx)) return;
+        // 현재 내용 먼저 저장
+        saveFormToCurrent();
+        loadReportToForm(idx);
+      });
+    }
+
+    if (btnAdd) {
+      btnAdd.addEventListener('click', () => {
+        const nextIdx = reportsData.length;
+        const newItem = {
+          id: 'DCAR-XX-2025',
+          year: '2025',
+          category: 'theory',
+          title_ko: '',
+          title_en: '',
+          summary_ko: '',
+          summary_en: '',
+          md_path: ''
+        };
+        reportsData.push(newItem);
+        currentReportIndex = nextIdx;
+        renderReportList();
+        loadReportToForm(currentReportIndex);
+      });
+    }
+
+    if (btnDelete) {
+      btnDelete.addEventListener('click', () => {
+        if (currentReportIndex < 0) return;
+        reportsData.splice(currentReportIndex, 1);
+        if (reportsData.length === 0) {
+          currentReportIndex = -1;
+        } else if (currentReportIndex >= reportsData.length) {
+          currentReportIndex = reportsData.length - 1;
+        }
+        renderReportList();
+        if (currentReportIndex >= 0) {
+          loadReportToForm(currentReportIndex);
+        } else {
+          loadReportToForm(-1);
+        }
+      });
+    }
+
+    if (btnSave) {
+      btnSave.addEventListener('click', () => {
+        saveFormToCurrent();
+      });
+    }
+
+    if (btnDownload) {
+      btnDownload.addEventListener('click', () => {
+        // reports 키를 유지할지 여부는 현재 파일 구조에 따라 선택.
+        // 여기서는 단순 배열로 내보낸다 → 필요하면 GitHub에서 { "reports": [...] }로 감쌀 수 있음.
+        downloadJSON('reports.json', reportsData);
+      });
+    }
+  }
+
+  /* -------------------------------------------
+   * JSON TOOLS
+   * ---------------------------------------- */
+  function initJsonTools(){
+    const input  = $('#jsonInput');
+    const output = $('#jsonOutput');
+    const btnFmt = $('#btnFormatJson');
+    const btnMin = $('#btnMinifyJson');
+
+    if (btnFmt) {
+      btnFmt.addEventListener('click', () => {
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) {
+          output.value = '';
           return;
         }
-
-        const frag = document.createDocumentFragment();
-        processedList.forEach(({ original, processed }) => {
-          const url = URL.createObjectURL(processed);
-          const changed = (processed !== original);
-          const item = document.createElement('div');
-          item.className = 'img-result-item';
-          item.innerHTML = `
-            <div>
-              <strong>${processed.name}</strong>
-              ${changed
-                ? '<span style="color:#f4e8b3"> (리사이즈 완료)</span>'
-                : '<span style="color:#9fb0e3"> (원본 크기 유지)</span>'}
-            </div>
-            <div>
-              원본: ${original.name} (${fmtSize(original.size)}) → 결과: ${fmtSize(processed.size)}
-              &nbsp;|&nbsp;
-              <a href="${url}" data-url="${url}" download="${processed.name}">다운로드</a>
-            </div>
-          `;
-          frag.appendChild(item);
-        });
-
-        resultBox.textContent = '';
-        resultBox.appendChild(frag);
-        msg.textContent = '이미지 변환 완료. 파일을 저장한 뒤 /images/standard · /images/zoom에 업로드하세요.';
-      }catch(err){
-        console.error(err);
-        msg.textContent = '이미지 처리 중 오류가 발생했습니다. 다시 시도해 주세요.';
-        if(!resultBox.textContent.trim()){
-          resultBox.textContent = '오류로 인해 결과를 표시할 수 없습니다.';
+        try {
+          const obj = JSON.parse(text);
+          output.value = JSON.stringify(obj, null, 2);
+        } catch (e) {
+          output.value = '// JSON parse error: ' + e.message;
         }
-      }
-    });
-  })();
-
-  // ============================
-  // Works Manager (Lightflow ∮21 호환 works.json)
-  // ============================
-  const WORKS_STORAGE_KEY = 'dz_admin_works_v2';
-
-  let works = loadLocal(WORKS_STORAGE_KEY, []);
-
-  const wId      = $('#wId');
-  const wSection = $('#wSection');
-  const wTitleKo = $('#wTitleKo');
-  const wTitleEn = $('#wTitleEn');
-  const wMatKo   = $('#wMatKo');
-  const wMatEn   = $('#wMatEn');
-  const wSizeKo  = $('#wSizeKo');
-  const wSizeEn  = $('#wSizeEn');
-  const wYear    = $('#wYear');
-  const wImage   = $('#wImage');
-  const wTableBody = $('#wTable tbody');
-  const wJsonOut = $('#wJsonOut');
-  const wError   = $('#wError');
-  const wJsonError = $('#wJsonError');
-
-  const WORK_SECTION_KEYS = [
-    "Light & Memory",
-    "Human Being",
-    "Rebirth of Mind",
-    "Restoration of Being",
-    "Metaconsciousness of Light"
-  ];
-
-  function clearWorkForm(){
-    wId.value = '';
-    wTitleKo.value = '';
-    wTitleEn.value = '';
-    wMatKo.value = '';
-    wMatEn.value = '';
-    wSizeKo.value = '';
-    wSizeEn.value = '';
-    wYear.value = '';
-    wImage.value = '';
-    wError.textContent = '';
-  }
-
-  function renderWorksTable(){
-    if(!Array.isArray(works)) works = [];
-    wTableBody.innerHTML = works.map((w,i)=>`
-      <tr>
-        <td>${(w.id||'').replace(/</g,'&lt;')}</td>
-        <td><span class="tag tag-sec">${(w.section||'').replace(/</g,'&lt;')}</span></td>
-        <td>
-          ${(w.title_kr||'').replace(/</g,'&lt;')}<br>
-          <span style="color:#9fb0e3">${(w.title_en||'').replace(/</g,'&lt;')}</span>
-        </td>
-        <td>${(w.year||'').toString().replace(/</g,'&lt;')}</td>
-        <td>${(w.image||'').replace(/</g,'&lt;')}</td>
-        <td>
-          <button type="button" class="btn" data-w-edit="${i}">편집</button>
-          <button type="button" class="btn danger" data-w-del="${i}">삭제</button>
-        </td>
-      </tr>
-    `).join('');
-
-    // works.json: { "Light & Memory":[...], "Human Being":[...], ... } (Index ∮21 그대로)
-    const bySection = {
-      "Light & Memory": [],
-      "Human Being": [],
-      "Rebirth of Mind": [],
-      "Restoration of Being": [],
-      "Metaconsciousness of Light": []
-    };
-    works.forEach(w=>{
-      const key = WORK_SECTION_KEYS.includes(w.section) ? w.section : "Light & Memory";
-      bySection[key].push({
-        id: w.id || '',
-        title_kr: w.title_kr || '',
-        title_en: w.title_en || '',
-        material_kr: w.material_kr || '',
-        material_en: w.material_en || '',
-        size_kr: w.size_kr || '',
-        size_en: w.size_en || '',
-        year: w.year || '',
-        image: w.image || ''
-        // zoom 필드는 Index에서 optional로 처리하므로,
-        // 필요하면 JSON을 직접 편집해서 추가해도 동작함.
       });
-    });
-    wJsonOut.value = JSON.stringify(bySection, null, 2);
+    }
+
+    if (btnMin) {
+      btnMin.addEventListener('click', () => {
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) {
+          output.value = '';
+          return;
+        }
+        try {
+          const obj = JSON.parse(text);
+          output.value = JSON.stringify(obj);
+        } catch (e) {
+          output.value = '// JSON parse error: ' + e.message;
+        }
+      });
+    }
   }
 
-  function upsertWork(){
-    wError.textContent = '';
-    wJsonError.textContent = '';
+  /* -------------------------------------------
+   * Waves 배경 (index 경량 버전과 동일 계열)
+   * ---------------------------------------- */
+  function initWaves(){
+    const canvas = document.getElementById('waves');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    const id = (wId.value || '').trim();
-    const sec = wSection.value || 'Light & Memory';
-    const title_kr = (wTitleKo.value||'').trim();
-    const title_en = (wTitleEn.value||'').trim();
-    const mat_kr   = (wMatKo.value||'').trim();
-    const mat_en   = (wMatEn.value||'').trim();
-    const size_kr  = (wSizeKo.value||'').trim();
-    const size_en  = (wSizeEn.value||'').trim();
-    const year     = (wYear.value||'').toString().trim();
-    const image    = (wImage.value||'').trim();
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if(!id){
-      wError.textContent = '작품 ID는 반드시 입력해야 합니다.';
-      return;
+    function resize(){
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    if(!image){
-      wError.textContent = '이미지 파일명을 입력해야 합니다. (예: DZ-001.jpg)';
-      return;
-    }
+    resize();
+    window.addEventListener('resize', resize);
 
-    const idx = works.findIndex(x=>x.id === id);
-    const obj = {
-      id,
-      section: sec,
-      title_kr,
-      title_en,
-      material_kr: mat_kr,
-      material_en: mat_en,
-      size_kr,
-      size_en,
-      year,
-      image
-    };
+    let t = 0;
+    let animId = null;
 
-    if(idx >= 0){
-      works[idx] = obj;
-    }else{
-      works.push(obj);
-    }
+    const gradients = [
+      { color: 'rgba(215,184,106,0.18)', amp: 22, freq: 0.0015, speed: 0.014 },
+      { color: 'rgba(121,167,255,0.16)', amp: 34, freq: 0.0011, speed: -0.010 }
+    ];
 
-    saveLocal(WORKS_STORAGE_KEY, works);
-    renderWorksTable();
-  }
+    function draw(){
+      if (prefersReduced) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
 
-  function importWorksFromJson(){
-    wJsonError.textContent = '';
-    wError.textContent = '';
-    try{
-      const txt = (wJsonOut.value || '').trim();
-      if(!txt){
-        wJsonError.textContent = '불러올 JSON이 없습니다. GitHub의 works.json을 붙여넣고 다시 시도하세요.';
-        return;
-      }
-      const obj = JSON.parse(txt);
-      const list = [];
+      ctx.clearRect(0,0,w,h);
 
-      WORK_SECTION_KEYS.forEach(sec=>{
-        const arr = Array.isArray(obj[sec]) ? obj[sec] : [];
-        arr.forEach(item=>{
-          list.push({
-            id: item.id || '',
-            section: sec,
-            title_kr: item.title_kr || '',
-            title_en: item.title_en || '',
-            material_kr: item.material_kr || '',
-            material_en: item.material_en || '',
-            size_kr: item.size_kr || '',
-            size_en: item.size_en || '',
-            year: item.year || '',
-            image: item.image || ''
-          });
-        });
+      gradients.forEach((g, idx) => {
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 10) {
+          const y = h*0.25 + idx*90 +
+            Math.sin(x*g.freq + t*g.speed + idx) * g.amp;
+          if (x === 0) ctx.moveTo(x,y);
+          else ctx.lineTo(x,y);
+        }
+        ctx.strokeStyle = g.color;
+        ctx.lineWidth = 1.2;
+        ctx.shadowColor = 'rgba(0,0,0,0.45)';
+        ctx.shadowBlur = 6;
+        ctx.stroke();
       });
 
-      works = list;
-      saveLocal(WORKS_STORAGE_KEY, works);
-      renderWorksTable();
-      wJsonError.textContent = 'works.json에서 작품 목록을 불러왔습니다.';
-    }catch(err){
-      wJsonError.textContent = 'JSON 파싱에 실패했습니다. 형식을 다시 확인하세요.';
-    }
-  }
-
-  $('#wAddBtn').addEventListener('click', upsertWork);
-  $('#wResetBtn').addEventListener('click', clearWorkForm);
-  $('#wImportBtn').addEventListener('click', importWorksFromJson);
-
-  wTableBody.addEventListener('click', e=>{
-    const btn = e.target.closest('button');
-    if(!btn) return;
-    const editIdx = btn.getAttribute('data-w-edit');
-    const delIdx  = btn.getAttribute('data-w-del');
-
-    if(editIdx !== null && editIdx !== ''){
-      const i = Number(editIdx);
-      const w = works[i];
-      if(!w) return;
-      wId.value      = w.id || '';
-      wSection.value = w.section || 'Light & Memory';
-      wTitleKo.value = w.title_kr || '';
-      wTitleEn.value = w.title_en || '';
-      wMatKo.value   = w.material_kr || '';
-      wMatEn.value   = w.material_en || '';
-      wSizeKo.value  = w.size_kr || '';
-      wSizeEn.value  = w.size_en || '';
-      wYear.value    = w.year || '';
-      wImage.value   = w.image || '';
-      wError.textContent = '선택한 작품 정보를 불러왔습니다. 수정 후 "추가 / 업데이트"를 누르면 덮어씁니다.';
+      ctx.shadowBlur = 0;
+      t += 1;
+      animId = requestAnimationFrame(draw);
     }
 
-    if(delIdx !== null && delIdx !== ''){
-      const i = Number(delIdx);
-      const w = works[i];
-      if(!w) return;
-      const ok = confirm('이 작품을 목록에서 삭제할까요?\nID: '+(w.id||'')+'\n※ GitHub의 실제 파일은 직접 삭제해야 합니다.');
-      if(!ok) return;
-      works.splice(i,1);
-      saveLocal(WORKS_STORAGE_KEY, works);
-      renderWorksTable();
-    }
-  });
-
-  renderWorksTable();
-
-  // ============================
-  // DCAR / Reports Manager (reports.json 호환)
-  // ============================
-  const REPORTS_STORAGE_KEY = 'dz_admin_reports_v2';
-
-  let reports = loadLocal(REPORTS_STORAGE_KEY, []);
-
-  const rId     = $('#rId');
-  const rCat    = $('#rCat');
-  const rFile   = $('#rFile');
-  const rTitleK = $('#rTitleKo');
-  const rTitleE = $('#rTitleEn');
-  const rSumK   = $('#rSumKo');
-  const rSumE   = $('#rSumEn');
-  const rBody   = $('#rBody');
-  const rTableBody = $('#rTable tbody');
-  const rJsonOut   = $('#rJsonOut');
-  const rMdOut     = $('#rMdOut');
-  const rError     = $('#rError');
-  const rJsonError = $('#rJsonError');
-
-  function clearReportForm(){
-    rId.value = '';
-    rCat.value = 'Theory';
-    rFile.value = '';
-    rTitleK.value = '';
-    rTitleE.value = '';
-    rSumK.value = '';
-    rSumE.value = '';
-    rBody.value = '';
-    rError.textContent = '';
-  }
-
-  function renderReportsTable(){
-    if(!Array.isArray(reports)) reports = [];
-    rTableBody.innerHTML = reports.map((r,i)=>`
-      <tr>
-        <td>${(r.id||'').replace(/</g,'&lt;')}</td>
-        <td>${(r.title_ko||'').replace(/</g,'&lt;')}</td>
-        <td style="color:#9fb0e3">${(r.title_en||'').replace(/</g,'&lt;')}</td>
-        <td><span class="tag">${(r.category||'').replace(/</g,'&lt;')}</span></td>
-        <td>${(r.md_filename||'').replace(/</g,'&lt;')}</td>
-        <td>
-          <button type="button" class="btn" data-r-edit="${i}">편집</button>
-          <button type="button" class="btn" data-r-md="${i}">MD</button>
-          <button type="button" class="btn danger" data-r-del="${i}">삭제</button>
-        </td>
-      </tr>
-    `).join('');
-
-    // reports.json 출력: { reports:[ { id,category,title_ko,title_en,summary_ko,summary_en,md_path } ] }
-    const outList = reports.map(r=>({
-      id: r.id || '',
-      category: r.category || 'Theory',
-      title_ko: r.title_ko || '',
-      title_en: r.title_en || '',
-      summary_ko: r.summary_ko || '',
-      summary_en: r.summary_en || '',
-      md_path: '/reports/' + (r.md_filename || '')
-    }));
-    rJsonOut.value = JSON.stringify({ reports: outList }, null, 2);
-  }
-
-  function upsertReport(){
-    rError.textContent = '';
-    rJsonError.textContent = '';
-
-    const id    = (rId.value||'').trim();
-    const cat   = rCat.value || 'Theory';
-    const file  = (rFile.value||'').trim();
-    const tKo   = (rTitleK.value||'').trim();
-    const tEn   = (rTitleE.value||'').trim();
-    const sKo   = (rSumK.value||'').trim();
-    const sEn   = (rSumE.value||'').trim();
-    const body  = rBody.value || '';
-
-    if(!id){
-      rError.textContent = '보고서 ID는 반드시 입력해야 합니다. (예: DCAR-10-2025)';
-      return;
-    }
-    if(!file){
-      rError.textContent = 'MD 파일 이름을 입력해야 합니다. (예: DCAR-10-2025.md)';
-      return;
+    if (!prefersReduced) {
+      animId = requestAnimationFrame(draw);
     }
 
-    const idx = reports.findIndex(x=>x.id === id);
-    const obj = {
-      id,
-      category:cat,
-      md_filename:file,
-      title_ko:tKo,
-      title_en:tEn,
-      summary_ko:sKo,
-      summary_en:sEn,
-      body
-    };
-
-    if(idx >= 0){ reports[idx] = obj; }
-    else{ reports.push(obj); }
-
-    saveLocal(REPORTS_STORAGE_KEY, reports);
-    renderReportsTable();
-    rError.textContent = '저장되었습니다. (reports.json과 MD 내용은 아래 출력 영역에서 복사하세요.)';
-  }
-
-  function importReportsFromJson(){
-    rJsonError.textContent = '';
-    rError.textContent = '';
-    try{
-      const txt = (rJsonOut.value || '').trim();
-      if(!txt){
-        rJsonError.textContent = '불러올 JSON이 없습니다. GitHub의 reports.json을 붙여넣고 다시 시도하세요.';
-        return;
+    document.addEventListener('visibilitychange', () => {
+      if (prefersReduced) return;
+      if (document.hidden) {
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      } else if (!animId) {
+        animId = requestAnimationFrame(draw);
       }
-      const obj = JSON.parse(txt);
-      const arr = Array.isArray(obj.reports) ? obj.reports : [];
-      reports = arr.map(item=>({
-        id: item.id || '',
-        category: item.category || 'Theory',
-        md_filename: (item.md_path || '').replace(/^\/?reports\//,''),
-        title_ko: item.title_ko || '',
-        title_en: item.title_en || '',
-        summary_ko: item.summary_ko || '',
-        summary_en: item.summary_en || '',
-        body: '' // 본문은 개별 MD 파일에 붙여넣기
-      }));
-      saveLocal(REPORTS_STORAGE_KEY, reports);
-      renderReportsTable();
-      rMdOut.value = '';
-      rJsonError.textContent = 'reports.json에서 목록을 불러왔습니다.';
-    }catch(err){
-      rJsonError.textContent = 'JSON 파싱에 실패했습니다. 형식을 다시 확인하세요.';
-    }
+    });
   }
 
-  $('#rAddBtn').addEventListener('click', upsertReport);
-  $('#rResetBtn').addEventListener('click', clearReportForm);
-  $('#rImportBtn').addEventListener('click', importReportsFromJson);
-
-  rTableBody.addEventListener('click', e=>{
-    const btn = e.target.closest('button');
-    if(!btn) return;
-    const editIdx = btn.getAttribute('data-r-edit');
-    const delIdx  = btn.getAttribute('data-r-del');
-    const mdIdx   = btn.getAttribute('data-r-md');
-
-    if(editIdx !== null && editIdx !== ''){
-      const i = Number(editIdx);
-      const r = reports[i]; if(!r) return;
-      rId.value     = r.id || '';
-      rCat.value    = r.category || 'Theory';
-      rFile.value   = r.md_filename || '';
-      rTitleK.value = r.title_ko || '';
-      rTitleE.value = r.title_en || '';
-      rSumK.value   = r.summary_ko || '';
-      rSumE.value   = r.summary_en || '';
-      rBody.value   = r.body || '';
-      rError.textContent = '선택한 DCAR 정보를 불러왔습니다. 수정 후 "추가 / 업데이트"를 누르면 덮어씁니다.';
-    }
-
-    if(mdIdx !== null && mdIdx !== ''){
-      const i = Number(mdIdx);
-      const r = reports[i]; if(!r) return;
-      const headerLines = [];
-      if(r.title_ko) headerLines.push('# ' + r.title_ko);
-      if(r.title_en) headerLines.push('# ' + r.title_en);
-      if(r.id) headerLines.push('');
-      const base = headerLines.join('\\n');
-      const body = r.body || '';
-      rMdOut.value = body ? (base + '\\n\\n' + body) : (base + '\\n\\n(여기에 본문을 붙여넣으세요)');
-    }
-
-    if(delIdx !== null && delIdx !== ''){
-      const i = Number(delIdx);
-      const r = reports[i]; if(!r) return;
-      const ok = confirm('이 DCAR를 목록에서 삭제할까요?\nID: '+(r.id||'')+'\n※ GitHub의 실제 MD/JSON 파일은 직접 삭제해야 합니다.');
-      if(!ok) return;
-      reports.splice(i,1);
-      saveLocal(REPORTS_STORAGE_KEY, reports);
-      renderReportsTable();
-      rMdOut.value = '';
-    }
+  /* -------------------------------------------
+   * INIT
+   * ---------------------------------------- */
+  document.addEventListener('DOMContentLoaded', () => {
+    try { initAdminNav(); }      catch(e){ console.error(e); }
+    try { initWorksManager(); }  catch(e){ console.error(e); }
+    try { initReportsManager(); }catch(e){ console.error(e); }
+    try { initJsonTools(); }     catch(e){ console.error(e); }
+    try { initWaves(); }         catch(e){ console.error(e); }
   });
 
-  renderReportsTable();
-  </script>
-</body>
+})();
+</script>
 </html>

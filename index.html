@@ -1149,8 +1149,6 @@ body.modal-open{ overflow:hidden; }
 
   /* -------------------------------------------
    * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
-   *    - Poem/Works/Reports = 섹션 전환
-   *    - Artist Bio = 모달 열기
    * ---------------------------------------- */
   function initNav() {
     const navButtons = $$('nav.primary button');
@@ -1597,9 +1595,6 @@ body.modal-open{ overflow:hidden; }
     });
 
     // 요약 슬라이드(전시/소장/저서) 토글
-    const btn   = $('#expoToggle');
-    const block = $('#expoSlide');
-
     const btn   = $('#expoToggle');
     const block = $('#expoSlide');
     if (btn && block) {

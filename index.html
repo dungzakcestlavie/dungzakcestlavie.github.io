@@ -872,7 +872,7 @@
 </head>
 
 <!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로 + 구조만 정리)
+② BODY / HTML  (등작 원문 그대로 + 구조만 정리 + 사건 항목 B안)
 ========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
@@ -1060,7 +1060,7 @@
           <p><strong>국외 주요전시</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, 베를린, 독일</p>
           <p>2015 모스크바 국제공항 『삶과 예술의 간격』, 모스크바, 러시아</p>
-          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 & 전시, 베트남</p>
+          <p>2014 호찌민 중앙 경찰서, 즉흥 퍼포먼스 &amp; 전시, 베트남</p>
           <p>2011 Open Art in Amsterdam, 네덜란드</p>
           <p>2006 Linka Gallery, 암스테르담, 네덜란드</p>
           <p>2005 Lune Cafe, 몽파르나스, 파리, 프랑스</p>
@@ -1090,6 +1090,11 @@
           <p>《1 눈물은 절대 멈추지 않는다 — 예술가의 책무와 인간 욕망》(2022)</p>
           <p>《예술, 그 끝없는 사랑》(2024)</p>
           <p>《우리를 위해 기도해 주세요》(2026)</p>
+
+          <br>
+
+          <p><strong>사건</strong></p>
+          <p>2016년 폴란드 바르샤바 법정에서, 12년간 유럽과 한국을 오가며 활동해 온 행적과 유럽 측 증언을 바탕으로 ‘해양 에너지 사업가(Ocean Energy Businessman)’로 공식 인정받았다.</p>
         </div>
 
         <!-- BIO · ENGLISH (전시/소장/저서) -->
@@ -1106,7 +1111,7 @@
           <p>2009 Art Gallery You, Busan, Republic of Korea</p>
           <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
           <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project & Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+          <p>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
           <p>2000 Gallery Soho, Busan, Republic of Korea</p>
           <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
 
@@ -1115,7 +1120,7 @@
           <p><strong>Major International Exhibitions</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
           <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance & exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
+          <p>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
           <p>2011 Open Art in Amsterdam, Netherlands</p>
           <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
           <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
@@ -1145,6 +1150,11 @@
           <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
           <p><em>Art, the Endless Love</em> (2024)</p>
           <p><em>Pray for Us</em> (2026)</p>
+
+          <br>
+
+          <p><strong>Event</strong></p>
+          <p>In 2016, before the court in Warsaw, Poland, he was officially recognized as an “ocean energy businessman”, based on twelve years of work between Europe and Korea and supporting testimony from European partners.</p>
         </div>
 
       </div> <!-- /.slide-wrap -->
@@ -1230,7 +1240,7 @@
     const bioTab = $('#tab-bio');
     if (bioTab) {
       bioTab.addEventListener('click', () => {
-        openBioModal(); // 재클릭 시에도 항상 초기 "작가 소개" 상태로 리셋
+        openBioModal();
       });
     }
 
@@ -1596,26 +1606,6 @@
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
-
-    // 모달 열릴 때마다 항상 "작가 소개" 상태로 리셋
-    // 1) 스크롤 맨 위로
-    const card = $('.bio-card', modal);
-    if (card) {
-      card.scrollTop = 0;
-    }
-
-    // 2) 전시/소장/저서 슬라이드 접기
-    const expoBlock = $('#expoSlide');
-    const expoBtn   = $('#expoToggle');
-    if (expoBlock && expoBtn) {
-      expoBlock.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    // 3) (선택) Bio 언어는 기존 선택 유지 – 등작이 KR/EN 중에서 고른 상태를 존중
-    //    필요하면 아래 주석 해제해서 항상 KR으로 리셋 가능.
-    // modal.dataset.bio = 'kr';
-
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');

@@ -1602,13 +1602,38 @@
 
   /* -------------------------------------------
    * 6. Artist Bio 모달 + 요약 토글
+   *    → 매번 열 때 KR / 리스트 접힘 / 스크롤 맨 위로 리셋
    * ---------------------------------------- */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
+
+    // 1) 언어: KR로 초기화
+    modal.dataset.bio = 'kr';
+    const langBtns = $$('.bio-lang .lang', modal);
+    langBtns.forEach(btn => {
+      const isKr = (btn.dataset.bioLang || 'kr') === 'kr';
+      btn.classList.toggle('active', isKr);
+      btn.setAttribute('aria-pressed', String(isKr));
+    });
+
+    // 2) 전시/소장/저서 리스트: 항상 닫힌 상태로 초기화
+    const expoBtn   = $('#expoToggle');
+    const expoBlock = $('#expoSlide');
+    if (expoBtn && expoBlock) {
+      expoBlock.setAttribute('data-open', 'false');
+      expoBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // 3) 모달 열기 + 스크롤 맨 위로
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
+
+    const card = modal.querySelector('.bio-card');
+    if (card) {
+      card.scrollTop = 0;
+    }
   }
 
   function closeBioModal() {
@@ -1657,7 +1682,7 @@
       if (e.key === 'Escape') closeBioModal();
     });
 
-    // 전시/소장/저서 슬라이드 토글
+    // 전시/소장/저서 슬라이드 토글 (기본은 닫힘)
     const expoBtn   = $('#expoToggle');
     const expoBlock = $('#expoSlide');
     if (expoBtn && expoBlock) {

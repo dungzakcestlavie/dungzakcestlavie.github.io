@@ -1307,10 +1307,10 @@
   let worksByPanel = {};
 
   function initWorks() {
-    // 🔹 Origin 패널 추가
+    // 🔹 Origin 패널 포함
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
 
-    // section_id 기반 매핑에 origin(0) 추가
+    // section_id 기반 매핑 (0 = origin)
     const idMap = {
       0: 'origin',
       1: 'pray',
@@ -1366,7 +1366,7 @@
         Object.keys(worksByPanel).forEach(key => {
           const panel = $('#panel-' + key);
           if (!panel) return;
-          renderWorksPanel(panel, worksByPanel[key]);
+          renderWorksPanel(panel, worksByPanel[key], key);
         });
 
         attachWorksLightbox();
@@ -1389,8 +1389,11 @@
       });
   }
 
-  function renderWorksPanel(panel, items) {
+  // 🔹 Origin 패널만 "이미지 단독" / 나머지는 기존 캡션 유지
+  function renderWorksPanel(panel, items, key) {
     if (!panel) return;
+    const isOrigin = (key === 'origin');
+
     if (!items || !items.length) {
       panel.innerHTML = `
         <div class="w-msg">
@@ -1416,9 +1419,27 @@
         const imgZoom    = item.zoom  || item.image_zoom     || imgStd;
         const safe = s => String(s).replace(/"/g, '&quot;');
 
-        const captionKr = [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-        const captionEn = [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+        // Origin은 캡션 완전 제거를 위해 cap을 비워둠
+        const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+        const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
 
+        if (isOrigin) {
+          // 🔸 Origin: 이미지만 표시 (w-meta 없음)
+          return `
+            <article class="w-card w-card-origin"
+                     data-id="${safe(id)}"
+                     data-img="${safe(imgZoom || imgStd)}"
+                     data-cap-kr=""
+                     data-cap-en="">
+              <img class="w-thumb"
+                   src="${safe(imgStd)}"
+                   alt="${safe(titleEn || titleKr || 'Artwork')}"
+                   loading="lazy" />
+            </article>
+          `;
+        }
+
+        // 🔸 나머지 섹션: 기존 카드 구조 유지 (캡션 포함)
         return `
           <article class="w-card"
                    data-id="${safe(id)}"
@@ -1486,6 +1507,11 @@
   }
 
   function buildCaptionForCard(card, mode) {
+    // 🔹 Origin 카드에서는 Lightbox 캡션도 완전히 비움
+    if (card.closest('#panel-origin')) {
+      return '';
+    }
+
     const capKr = card.getAttribute('data-cap-kr') || '';
     const capEn = card.getAttribute('data-cap-en') || '';
     if (mode === 'en') {

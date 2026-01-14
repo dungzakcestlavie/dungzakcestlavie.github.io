@@ -316,6 +316,65 @@
       -webkit-text-stroke: .25px rgba(0,0,0,.28);
       text-shadow: 0 1px 0 rgba(0,0,0,.62);
     }
+
+    /* 기원 · Origins (섹션 A · 무제/무년도 · 이미지 25점) */
+    .origins-block{
+      margin-bottom: 18px;
+      padding: 14px 14px 18px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(5,7,16,.98));
+      border: 1px solid rgba(255,255,255,.05);
+      box-shadow: var(--shadow2);
+    }
+    .origins-title{
+      margin:0;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing:.32px;
+      color: var(--gold2);
+      -webkit-text-stroke: .25px rgba(0,0,0,.28);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+    }
+    .origins-title .en{
+      font-size: 13px;
+      opacity:.86;
+    }
+    .origins-note{
+      margin: 8px 0 10px;
+      font-size: 11.8px;
+      color: rgba(237,227,201,.75);
+    }
+    .origins-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+    .origins-card{
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.06);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,.04), rgba(5,7,16,.98));
+      box-shadow: 0 10px 24px rgba(0,0,0,.7);
+      cursor:pointer;
+    }
+    .origins-card img{
+      width:100%;
+      display:block;
+      object-fit:cover;
+      aspect-ratio:4/5;
+      background:rgba(0,0,0,.25);
+      transition: transform .18s ease;
+    }
+    .origins-card:hover img{
+      transform:scale(1.02);
+    }
+    @media (min-width: 900px){
+      .origins-grid{
+        grid-template-columns: repeat(5, minmax(0,1fr));
+        gap: 14px;
+      }
+    }
+
     .tabs{
       margin-top:14px;
       display:flex;
@@ -862,7 +921,7 @@
       *{
         scroll-behavior:auto !important;
         transition:none !important;
-        animation:none !important;
+        animation:none !Important;
       }
     }
 
@@ -954,6 +1013,18 @@
 
     <!-- 2) WORKS -->
     <section id="works">
+
+      <!-- 🔹 A 섹션: 기원 · Origins (1999–2025, 무제/무년도 · 이미지 25점) -->
+      <section id="origins-section" class="origins-block">
+        <h3 class="origins-title">
+          <span class="ko">기원 · Origins</span>
+          <span class="en">Origins</span>
+        </h3>
+        <p class="origins-note ko">1999–2025, 제목과 연도를 따로 붙이지 않은 25점의 이미지 기록.</p>
+        <p class="origins-note en">1999–2025, twenty-five image traces without individual titles or years.</p>
+        <div id="origins-grid" class="origins-grid"></div>
+      </section>
+
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
 
@@ -1111,761 +1182,657 @@
           <p>2009 Art Gallery You, Busan, Republic of Korea</p>
           <p>2005 Hoengseong Cultural Center, Gangwon-do, Republic of Korea</p>
           <p>2003 Space Kitchen, Seoul, Republic of Korea</p>
-          <p>2003 Seasonal Outdoor Project &amp; Exhibition, Hongdae Playground, Seoul, Republic of Korea</p>
+          <p>2003 Hongdae Playground Four Seasons Outdoor Exhibition, Seoul, Republic of Korea</p>
           <p>2000 Gallery Soho, Busan, Republic of Korea</p>
           <p>2000 Sewon Department Store, Busan, Republic of Korea</p>
 
           <br>
 
-          <p><strong>Major International Exhibitions</strong></p>
+          <p><strong>Major Exhibitions Abroad</strong></p>
           <p>2016 Berlin Mitte Live Concert Bar, Berlin, Germany</p>
-          <p>2015 Moscow International Airport, “The Distance Between Life and Art”, Moscow, Russia</p>
-          <p>2014 Improvised performance &amp; exhibition, Ho Chi Minh City Central Police Building, Vietnam</p>
-          <p>2011 Open Art in Amsterdam, Netherlands</p>
+          <p>2015 Moscow International Airport “The Distance Between Life and Art”, Moscow, Russia</p>
+          <p>2014 Ho Chi Minh Central Police Station, Improvised Performance &amp; Exhibition, Ho Chi Minh City, Vietnam</p>
+          <p>2011 Open Art in Amsterdam, Amsterdam, Netherlands</p>
           <p>2006 Linka Gallery, Amsterdam, Netherlands</p>
-          <p>2005 Lune Cafe, Montparnasse, Paris, France</p>
-          <p>2005 Exterior Wall Exhibition, Louvre Museum, Paris, France</p>
+          <p>2005 Lune Café, Montparnasse, Paris, France</p>
+          <p>2005 Louvre Museum Outer Wall Exhibition, Paris, France</p>
 
           <br>
 
-          <p><strong>Selected Other Exhibitions</strong></p>
-          <p>2025 Walking with Art in Iksan, Republic of Korea</p>
+          <p><strong>Selected Exhibitions</strong></p>
+          <p>2025 Walking with Art in Iksan, Iksan, Republic of Korea</p>
           <p>2025 Gallery 5 National Invitational Exhibition, Incheon, Republic of Korea</p>
-          <p>2024, 2025 Gugu Gallery Year-End Gift Exhibition, Seoul, Republic of Korea</p>
-          <p>2022 Two-person Exhibition (Kim Young-woo &amp; DUNGZAK CESTLAVIE), Artem Gallery, Seoul</p>
+          <p>2024, 2025 Gugu Gallery Year-end Gift Exhibition, Seoul, Republic of Korea</p>
+          <p>2022 Kim Young Woo &amp; DUNGZAK CESTLAVIE Two-person Exhibition, Artem Gallery, Seoul, Republic of Korea</p>
           <p>2004 Gwangju Biennale “The Stage”, Gwangju, Republic of Korea</p>
-          <p>2004 Summer Forest Art Festival “Art Vacation”, Hadaeri, Hoengseong-gun, Republic of Korea</p>
-          <p>2000 Two-person Exhibition (José Delgado &amp; DUNGZAK CESTLAVIE), Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
+          <p>2004 Hadaeri Forest Art Festival “Holiday of Art”, Hoengseong-gun, Republic of Korea</p>
+          <p>2000 José Delgado &amp; DUNGZAK CESTLAVIE Two-person Exhibition, Seomyeon Metro Art Museum, Busan, Republic of Korea</p>
 
           <br>
 
           <p><strong>Collections</strong></p>
           <p>
-            Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland; Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); Meritz Securities Co., Ltd., Republic of Korea; Numerous private collections worldwide.
+            Berlin City Hall; Humboldt Hospital; Notre-Dame Cathedral, Paris; Sciences Po Paris; National Institute of Medicine, Warsaw; a church in Tokyo, Japan; Ho Chi Minh Central Police Station, Vietnam; Van Gogh Museum, Amsterdam (portfolio); Museum of Modern Art, New York (portfolio); Meritz Securities; and numerous private collections in Korea and abroad
           </p>
 
           <br>
 
           <p><strong>Publications</strong></p>
-          <p><em>1 Tears Never Stop</em> — The Artist’s Duty and Human Desire (2022)</p>
+          <p><em>1 Tears Never Stop — The Responsibility of the Artist and Human Desire</em> (2022)</p>
           <p><em>Art, the Endless Love</em> (2024)</p>
           <p><em>Pray for Us</em> (2026)</p>
 
           <br>
 
           <p><strong>Event</strong></p>
-          <p>In 2016, before the court in Warsaw, Poland, he was officially recognized as an “ocean energy businessman”, based on twelve years of work between Europe and Korea and supporting testimony from European partners.</p>
+          <p>
+            In 2016, at a court in Warsaw, Poland, based on twelve years of activity between Europe and Korea and supporting testimony from Europe, he was officially recognized as an “Ocean Energy Businessman.”
+          </p>
         </div>
 
-      </div> <!-- /.slide-wrap -->
-    </div>   <!-- /.bio-card -->
-  </div>     <!-- /#bio-modal -->
+      </div><!-- /#expoSlide -->
+    </div><!-- /.bio-card -->
+  </div><!-- /#bio-modal -->
 
   <!-- LIGHTBOX -->
-  <div id="lightbox" aria-hidden="true">
+  <div id="lightbox" aria-modal="true" role="dialog" aria-hidden="true">
     <div class="lb-stage">
-      <img id="lbImg" alt="">
-      <div id="lbCap" class="lb-caption"></div>
+      <img id="lbImg" src="" alt="">
+      <div class="lb-caption" id="lbCaption"></div>
+      <button class="lb-close" type="button" aria-label="Close Lightbox">✕</button>
     </div>
-    <button id="lbClose" class="lb-close">✕</button>
   </div>
 
-  <!-- SOUND ORB (우주 표식 / 영원) -->
-  <div id="soundOrb" aria-label="Cosmic resonance" role="button"></div>
+  <!-- COSMIC SOUND ORB -->
+  <div id="soundOrb" aria-label="Toggle ambient sound" role="button"></div>
 
   <!-- FOOTER -->
   <footer>
     <div class="links">
-      <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
-      <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">MUSIC UNIVERSE</a>
-      <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">Naver Info</a>
+      <a href="https://www.instagram.com/dungzakcestlavie" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.youtube.com/@dungzakcestlavie" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener noreferrer">Flickr</a>
+      <a href="https://search.naver.com/search.naver?where=nexearch&query=%EB%93%B1%EC%9E%91%20%EB%AF%B8%EC%88%A0%EA%B0%80" target="_blank" rel="noopener noreferrer">Naver Info</a>
       <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
     </div>
-
-    <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
-    <small class="en">©DUNGZAK CESTLAVIE</small>
+    <small class="ko">© 등작 燈酌 DUNGZAK CESTLAVIE · Orchestrated with Lumera — 빛, 기억, 존재.</small>
+    <small class="en">© DUNGZAK CESTLAVIE · Orchestrated with Lumera — Light, Memory, and Being.</small>
   </footer>
-</body>
 
-<script>
-(function () {
-  'use strict';
+  <!-- ==========================================================
+  ③ SCRIPTS
+  ========================================================== -->
+  <script>
+    // ===== GLOBAL LANGUAGE TOGGLE =====
+    (function(){
+      const body = document.body;
+      const koBtn = document.getElementById('koBtn');
+      const enBtn = document.getElementById('enBtn');
+      const hyBtn = document.getElementById('hyBtn');
 
-  /* -------------------------------------------
-   * 0. 작은 헬퍼
-   * ---------------------------------------- */
-  const $  = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+      function setLang(mode){
+        body.classList.remove('korean','english','hybrid');
+        body.classList.add(mode);
 
-  function safeJSONFetch(url) {
-    return fetch(url, { cache: 'no-store' }).then(res => {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    });
-  }
+        koBtn.classList.toggle('active', mode === 'korean');
+        enBtn.classList.toggle('active', mode === 'english');
+        hyBtn.classList.toggle('active', mode === 'hybrid');
+      }
 
-  function getLang() {
-    const b = document.body;
-    if (b.classList.contains('english')) return 'en';
-    if (b.classList.contains('hybrid'))  return 'hy';
-    return 'kr';
-  }
+      koBtn.addEventListener('click', () => setLang('korean'));
+      enBtn.addEventListener('click', () => setLang('english'));
+      hyBtn.addEventListener('click', () => setLang('hybrid'));
 
-  /* -------------------------------------------
-   * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
-   * ---------------------------------------- */
-  function initNav() {
-    const navButtons = $$('nav.primary button');
-    const sections   = $$('main > section');
+      setLang('korean');
+    })();
 
-    function showSection(id) {
-      sections.forEach(sec => {
-        sec.classList.toggle('is-active', sec.id === id);
-      });
-    }
+    // ===== PRIMARY NAV (POEM / WORKS / REPORTS / BIO) =====
+    (function(){
+      const buttons = document.querySelectorAll('nav.primary button[data-target]');
+      const sections = document.querySelectorAll('main > section');
 
-    // Poem / Works / Reports
-    navButtons.forEach(btn => {
-      const target = btn.dataset.target;
-      if (!target) return; // Artist Bio 제외
-      btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        showSection(target);
-      });
-    });
-
-    // Artist Bio = 모달
-    const bioTab = $('#tab-bio');
-    if (bioTab) {
-      bioTab.addEventListener('click', () => {
-        openBioModal();
-      });
-    }
-
-    // 첫 로드
-    showSection('poem');
-  }
-
-  /* -------------------------------------------
-   * 2. 전역 언어 토글 (KR / EN / KR+EN)
-   * ---------------------------------------- */
-  function initLanguage() {
-    const koBtn = $('#koBtn');
-    const enBtn = $('#enBtn');
-    const hyBtn = $('#hyBtn');
-
-    function setBodyLang(mode) {
-      document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en')      document.body.classList.add('english');
-      else if (mode === 'hy') document.body.classList.add('hybrid');
-      else                    document.body.classList.add('korean');
-    }
-
-    function activate(btn) {
-      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-    }
-
-    if (koBtn) {
-      koBtn.addEventListener('click', () => {
-        setBodyLang('kr');
-        activate(koBtn);
-        updateOpenLightboxCaption();
-      });
-    }
-    if (enBtn) {
-      enBtn.addEventListener('click', () => {
-        setBodyLang('en');
-        activate(enBtn);
-        updateOpenLightboxCaption();
-      });
-    }
-    if (hyBtn) {
-      hyBtn.addEventListener('click', () => {
-        setBodyLang('hy');
-        activate(hyBtn);
-        updateOpenLightboxCaption();
-      });
-    }
-
-    // 초기
-    setBodyLang('kr');
-    if (koBtn) koBtn.classList.add('active');
-  }
-
-  /* -------------------------------------------
-   * 3. Works (data/works.json 1회 로드)
-   * ---------------------------------------- */
-  let worksLoaded = false;
-  let worksByPanel = {};
-  function initWorks() {
-    const panelIds = ['pray', 'human', 'rebirth', 'exist', 'cosmos'];
-    const idMap = { 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
-
-    const tabButtons = $$('.tabs .tab');
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const key = btn.dataset.panel;
-        if (!key) return;
-        tabButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        panelIds.forEach(p => {
-          const el = $('#panel-' + p);
-          if (el) el.classList.toggle('active', p === key);
+      function showSection(id){
+        sections.forEach(sec => {
+          sec.classList.toggle('is-active', sec.id === id);
         });
-      });
-    });
-
-    safeJSONFetch('data/works.json')
-      .then(json => {
-        const list = Array.isArray(json)
-          ? json
-          : (json.works || json.items || []);
-        if (!Array.isArray(list)) return;
-
-        worksByPanel = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-
-        list.forEach(item => {
-          let key = item.section || item.panel;
-          if (!key && item.section_id != null) {
-            const sid = Number(item.section_id);
-            key = idMap[sid] || 'pray';
+        buttons.forEach(btn => {
+          const active = btn.getAttribute('data-target') === id;
+          btn.classList.toggle('active', active);
+          if(active){
+            btn.setAttribute('aria-current', 'page');
+          }else{
+            btn.removeAttribute('aria-current');
           }
-          if (!key || !worksByPanel[key]) key = 'pray';
-          worksByPanel[key].push(item);
         });
+      }
 
-        Object.keys(worksByPanel).forEach(key => {
-          const panel = $('#panel-' + key);
-          if (!panel) return;
-          renderWorksPanel(panel, worksByPanel[key]);
-        });
-
-        attachWorksLightbox();
-        worksLoaded = true;
-      })
-      .catch(err => {
-        console.error('works.json load error:', err);
-        const allPanels = ['pray','human','rebirth','exist','cosmos'];
-        allPanels.forEach(key => {
-          const panel = $('#panel-' + key);
-          if (!panel) return;
-          panel.innerHTML = `
-            <div class="w-msg">
-              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로와 파일 구성을 확인해 주세요.</div>
-              <div class="en">Unable to load artworks. Please check data/works.json path and structure.</div>
-              <small>GitHub Actions 로그에서 오류 메시지를 함께 확인해 주세요.</small>
-            </div>
-          `;
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-target');
+          showSection(target);
         });
       });
-  }
 
-  function renderWorksPanel(panel, items) {
-    if (!panel) return;
-    if (!items || !items.length) {
-      panel.innerHTML = `
-        <div class="w-msg">
-          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
-          <div class="en">No artworks have been registered in this section yet.</div>
-        </div>
-      `;
-      return;
-    }
+      showSection('poem');
+    })();
 
-    const html = [
-      '<div class="w-grid">',
-      ...items.map(item => {
-        const id         = item.id || '';
-        const titleKr    = item.title_kr || '';
-        const titleEn    = item.title_en || '';
-        const matKr      = item.material_kr || '';
-        const matEn      = item.material_en || '';
-        const sizeKr     = item.size_kr || '';
-        const sizeEn     = item.size_en || '';
-        const year       = item.year || '';
-        const imgStd     = item.image || item.image_standard || '';
-        const imgZoom    = item.zoom  || item.image_zoom     || imgStd;
-        const safe = s => String(s).replace(/"/g, '&quot;');
+    // ===== WORKS JSON (Origins + Sections) =====
+    (function(){
+      const originsGrid = document.getElementById('origins-grid');
+      const panelMap = {
+        1: document.getElementById('panel-pray'),
+        2: document.getElementById('panel-human'),
+        3: document.getElementById('panel-rebirth'),
+        4: document.getElementById('panel-exist'),
+        5: document.getElementById('panel-cosmos')
+      };
 
-        const captionKr = [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-        const captionEn = [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+      fetch('data/works.json')
+        .then(r => r.json())
+        .then(data => {
+          // Origins (A1: JSON 기반)
+          if(data.origins && Array.isArray(data.origins)){
+            data.origins.forEach(item => {
+              const card = document.createElement('div');
+              card.className = 'origins-card';
+              card.dataset.image = item.zoom || item.image || '';
+              card.dataset.captionKo = item.caption_ko || '';
+              card.dataset.captionEn = item.caption_en || '';
+              const img = document.createElement('img');
+              img.src = item.image;
+              img.alt = '';
+              card.appendChild(img);
+              originsGrid.appendChild(card);
+            });
+          }
 
-        return `
-          <article class="w-card"
-                   data-id="${safe(id)}"
-                   data-img="${safe(imgZoom || imgStd)}"
-                   data-title-kr="${safe(titleKr)}"
-                   data-title-en="${safe(titleEn)}"
-                   data-mat-kr="${safe(matKr)}"
-                   data-mat-en="${safe(matEn)}"
-                   data-size-kr="${safe(sizeKr)}"
-                   data-size-en="${safe(sizeEn)}"
-                   data-year="${safe(year)}"
-                   data-cap-kr="${safe(captionKr)}"
-                   data-cap-en="${safe(captionEn)}">
-            <img class="w-thumb"
-                 src="${safe(imgStd)}"
-                 alt="${safe(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" />
-            <div class="w-meta">
-              <div class="w-title">
-                <span class="ko">${titleKr}</span>
-                <span class="en">${titleEn}</span>
-              </div>
-              <div class="w-sub">
-                <span class="ko">${(matKr && year) ? `${matKr} · ${year}` : (matKr || year || '')}</span>
-                <span class="en">${(matEn && year) ? `${matEn} · ${year}` : (matEn || year || '')}</span>
-              </div>
-            </div>
-          </article>
-        `;
-      }),
-      '</div>'
-    ].join('');
+          // Works (섹션 1–5)
+          if(data.works && Array.isArray(data.works)){
+            data.works.forEach(item => {
+              const panel = panelMap[item.section_id];
+              if(!panel) return;
+              const card = document.createElement('div');
+              card.className = 'w-card';
+              card.dataset.image = item.zoom || item.image || '';
+              card.dataset.captionKo =
+                (item.title_kr || '') + '\n' +
+                (item.material_kr || '') + '\n' +
+                (item.size_kr || '') + '\n' +
+                (item.year || '');
+              card.dataset.captionEn =
+                (item.title_en || '') + '\n' +
+                (item.material_en || '') + '\n' +
+                (item.size_en || '') + '\n' +
+                (item.year || '');
 
-    panel.innerHTML = html;
-  }
+              const img = document.createElement('img');
+              img.className = 'w-thumb';
+              img.src = item.image;
+              img.alt = item.title_kr || item.title_en || '';
 
-  /* -------------------------------------------
-   * 4. Lightbox
-   * ---------------------------------------- */
-  let lbOpenFrom = null;
+              const meta = document.createElement('div');
+              meta.className = 'w-meta';
 
-  function attachWorksLightbox() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
+              const title = document.createElement('div');
+              title.className = 'w-title';
+              const titleKo = document.createElement('span');
+              titleKo.className = 'ko';
+              titleKo.textContent = item.title_kr || '';
+              const titleEn = document.createElement('span');
+              titleEn.className = 'en';
+              titleEn.textContent = item.title_en || '';
+              title.appendChild(titleKo);
+              title.appendChild(titleEn);
 
-    worksRoot.addEventListener('click', e => {
-      const card = e.target.closest('.w-card');
-      if (!card) return;
-      openLightboxFromCard(card);
-    });
+              const sub = document.createElement('div');
+              sub.className = 'w-sub';
+              const line1 = document.createElement('div');
+              const line1Ko = document.createElement('span');
+              line1Ko.className = 'ko';
+              line1Ko.textContent = item.material_kr || '';
+              const line1En = document.createElement('span');
+              line1En.className = 'en';
+              line1En.textContent = item.material_en || '';
+              line1.appendChild(line1Ko);
+              line1.appendChild(line1En);
 
-    const lb   = $('#lightbox');
-    const btnX = $('#lbClose');
-    if (lb) {
+              const line2 = document.createElement('div');
+              const line2Ko = document.createElement('span');
+              line2Ko.className = 'ko';
+              line2Ko.textContent = item.size_kr || '';
+              const line2En = document.createElement('span');
+              line2En.className = 'en';
+              line2En.textContent = item.size_en || '';
+              line2.appendChild(line2Ko);
+              line2.appendChild(line2En);
+
+              const line3 = document.createElement('div');
+              line3.textContent = item.year || '';
+
+              sub.appendChild(line1);
+              sub.appendChild(line2);
+              sub.appendChild(line3);
+
+              meta.appendChild(title);
+              meta.appendChild(sub);
+
+              card.appendChild(img);
+              card.appendChild(meta);
+
+              panel.appendChild(card);
+            });
+          }
+
+          // 섹션에 카드가 하나도 없을 때 메시지
+          Object.values(panelMap).forEach(panel => {
+            if(panel && !panel.querySelector('.w-card')){
+              const msg = document.createElement('div');
+              msg.className = 'w-msg';
+              msg.innerHTML =
+                '<span class="ko">작품 데이터가 준비되는 중입니다.</span>' +
+                '<span class="en">Artwork data is being prepared.</span>';
+              panel.appendChild(msg);
+            }
+          });
+        })
+        .catch(() => {
+          Object.values(panelMap).forEach(panel => {
+            if(panel){
+              panel.innerHTML =
+                '<div class="w-msg">' +
+                '<span class="ko">작품 데이터를 불러오는 중 오류가 발생했습니다.</span>' +
+                '<span class="en">An error occurred while loading artworks.</span>' +
+                '</div>';
+            }
+          });
+        });
+
+      const tabs = document.querySelectorAll('.tabs .tab');
+      const tabpanels = document.querySelectorAll('.tabpanel');
+
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const panelId = 'panel-' + btn.dataset.panel;
+          tabs.forEach(b => b.classList.toggle('active', b === btn));
+          tabpanels.forEach(p => {
+            p.classList.toggle('active', p.id === panelId);
+          });
+        });
+      });
+    })();
+
+    // ===== REPORTS JSON =====
+    (function(){
+      const grid = document.getElementById('reportGrid');
+      const tabs = document.querySelectorAll('.r-tab');
+      const toggle = document.getElementById('reportsToggle');
+      let reportsData = [];
+      let open = false;
+      let currentFilter = 'all';
+
+      function render(){
+        grid.innerHTML = '';
+        const filtered = reportsData.filter(item => {
+          if(currentFilter === 'all') return true;
+          return item.category === currentFilter;
+        });
+
+        filtered.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'r-item';
+          div.dataset.slug = item.slug;
+
+          const t = document.createElement('div');
+          t.className = 't';
+          const tKo = document.createElement('div');
+          tKo.className = 'ko';
+          tKo.textContent = item.title_ko || '';
+          const tEn = document.createElement('div');
+          tEn.className = 'en';
+          tEn.textContent = item.title_en || '';
+          t.appendChild(tKo);
+          t.appendChild(tEn);
+
+          const m = document.createElement('div');
+          m.className = 'm';
+          m.textContent = item.id + ' · ' + (item.year || '') + ' · ' + (item.category || '');
+
+          const s = document.createElement('div');
+          s.className = 's';
+          const sKo = document.createElement('div');
+          sKo.className = 'ko';
+          sKo.textContent = item.summary_ko || '';
+          const sEn = document.createElement('div');
+          sEn.className = 'en';
+          sEn.textContent = item.summary_en || '';
+          s.appendChild(sKo);
+          s.appendChild(sEn);
+
+          div.appendChild(t);
+          div.appendChild(m);
+          div.appendChild(s);
+
+          div.addEventListener('click', () => {
+            if(item.md_path){
+              window.open(item.md_path, '_blank', 'noopener');
+            }
+          });
+
+          grid.appendChild(div);
+        });
+
+        if(!filtered.length){
+          const msg = document.createElement('div');
+          msg.className = 'w-msg';
+          msg.innerHTML =
+            '<span class="ko">해당 분류에 해당하는 보고서가 아직 없습니다.</span>' +
+            '<span class="en">No reports are available in this category yet.</span>';
+          grid.appendChild(msg);
+        }
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
+          currentFilter = tab.getAttribute('data-r') || 'all';
+          if(open) render();
+        });
+      });
+
+      toggle.addEventListener('click', () => {
+        open = !open;
+        grid.style.display = open ? 'grid' : 'none';
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.textContent = open ? 'Close Reports' : 'Open Reports';
+        if(open && !grid.dataset.loaded){
+          render();
+          grid.dataset.loaded = 'true';
+        }
+      });
+
+      fetch('data/reports.json')
+        .then(r => r.json())
+        .then(data => {
+          if(data.reports && Array.isArray(data.reports)){
+            reportsData = data.reports;
+          }
+        })
+        .catch(() => {
+          reportsData = [];
+        });
+    })();
+
+    // ===== ARTIST BIO MODAL =====
+    (function(){
+      const modal = document.getElementById('bio-modal');
+      const tabBio = document.getElementById('tab-bio');
+      const backdrop = modal.querySelector('.bio-backdrop');
+      const closeBtn = modal.querySelector('.bio-close');
+      const expoToggle = document.getElementById('expoToggle');
+      const expoSlide = document.getElementById('expoSlide');
+      const bioLangBtns = modal.querySelectorAll('.bio-lang .lang');
+
+      function openModal(){
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        modal.setAttribute('data-bio', 'kr');
+        expoSlide.setAttribute('data-open', 'false');
+        expoToggle.setAttribute('aria-expanded', 'false');
+        bioLangBtns.forEach(btn => {
+          const isKr = btn.getAttribute('data-bio-lang') === 'kr';
+          btn.classList.toggle('active', isKr);
+          btn.setAttribute('aria-pressed', isKr ? 'true' : 'false');
+        });
+      }
+
+      function closeModal(){
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+      }
+
+      tabBio.addEventListener('click', openModal);
+      backdrop.addEventListener('click', closeModal);
+      closeBtn.addEventListener('click', closeModal);
+
+      expoToggle.addEventListener('click', () => {
+        const isOpen = expoSlide.getAttribute('data-open') === 'true';
+        expoSlide.setAttribute('data-open', isOpen ? 'false' : 'true');
+        expoToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+      });
+
+      bioLangBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.getAttribute('data-bio-lang');
+          modal.setAttribute('data-bio', lang);
+          bioLangBtns.forEach(b => {
+            const active = b === btn;
+            b.classList.toggle('active', active);
+            b.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+        });
+      });
+
+      document.addEventListener('keydown', e => {
+        if(e.key === 'Escape' && !modal.hidden){
+          closeModal();
+        }
+      });
+    })();
+
+    // ===== LIGHTBOX =====
+    (function(){
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const lbCaption = document.getElementById('lbCaption');
+      const lbClose = lb.querySelector('.lb-close');
+
+      function openLightbox(imgSrc, koText, enText){
+        lbImg.src = imgSrc || '';
+        const langClass = document.body.classList.contains('english') ? 'en'
+                        : document.body.classList.contains('hybrid') ? 'hybrid'
+                        : 'ko';
+
+        if(langClass === 'english'){
+          lbCaption.textContent = enText || koText || '';
+        }else if(langClass === 'hybrid'){
+          lbCaption.textContent = (koText || '') + (koText && enText ? '\n\n' : '') + (enText || '');
+        }else{
+          lbCaption.textContent = koText || enText || '';
+        }
+
+        lb.classList.add('is-open');
+        document.body.classList.add('modal-open');
+      }
+
+      function closeLightbox(){
+        lb.classList.remove('is-open');
+        document.body.classList.remove('modal-open');
+        lbImg.src = '';
+      }
+
+      lbClose.addEventListener('click', closeLightbox);
       lb.addEventListener('click', e => {
-        if (e.target === lb) closeLightbox();
+        if(e.target === lb) closeLightbox();
       });
-    }
-    if (btnX) {
-      btnX.addEventListener('click', closeLightbox);
-    }
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeLightbox();
-    });
-  }
-
-  function buildCaptionForCard(card, mode) {
-    const capKr = card.getAttribute('data-cap-kr') || '';
-    const capEn = card.getAttribute('data-cap-en') || '';
-    if (mode === 'en') {
-      return capEn || capKr || '';
-    }
-    if (mode === 'hy') {
-      if (capKr && capEn) return capKr + '\n\n' + capEn;
-      return capKr || capEn || '';
-    }
-    return capKr || capEn || '';
-  }
-
-  function openLightboxFromCard(card) {
-    const lb    = $('#lightbox');
-    const lbImg = $('#lbImg');
-    const lbCap = $('#lbCap');
-    if (!lb || !lbImg || !lbCap) return;
-
-    lbOpenFrom = card;
-
-    const src  = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
-    const mode = getLang();
-
-    lbImg.src = src;
-    lbCap.textContent = buildCaptionForCard(card, mode);
-
-    lb.classList.add('is-open');
-    lb.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeLightbox() {
-    const lb    = $('#lightbox');
-    const lbImg = $('#lbImg');
-    const lbCap = $('#lbCap');
-    if (!lb) return;
-    lb.classList.remove('is-open');
-    lb.setAttribute('aria-hidden', 'true');
-    if (lbImg) lbImg.src = '';
-    if (lbCap) lbCap.textContent = '';
-    lbOpenFrom = null;
-  }
-
-  function updateOpenLightboxCaption() {
-    if (!lbOpenFrom) return;
-    const lbCap = $('#lbCap');
-    if (!lbCap) return;
-    lbCap.textContent = buildCaptionForCard(lbOpenFrom, getLang());
-  }
-
-  /* -------------------------------------------
-   * 5. Reports
-   * ---------------------------------------- */
-  function initReports() {
-    const grid = $('#reportGrid');
-    if (!grid) return;
-
-    const tabs = $$('.r-tab');
-    const toggleBtn = $('#reportsToggle');
-
-    function applyFilter(type) {
-      const items = $$('.r-item', grid);
-      items.forEach(item => {
-        const cat = (item.dataset.category || '').toLowerCase();
-        if (!type || type === 'all' || cat === type) {
-          item.style.display = '';
-        } else {
-          item.style.display = 'none';
+      document.addEventListener('keydown', e => {
+        if(e.key === 'Escape' && lb.classList.contains('is-open')){
+          closeLightbox();
         }
       });
-    }
 
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const type = (btn.dataset.r || '').toLowerCase();
-        tabs.forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        applyFilter(type);
+      document.addEventListener('click', e => {
+        const card = e.target.closest('.w-card, .origins-card');
+        if(!card) return;
+        const src = card.dataset.image || '';
+        const ko = card.dataset.captionKo || '';
+        const en = card.dataset.captionEn || '';
+        openLightbox(src, ko, en);
       });
-    });
+    })();
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        toggleBtn.setAttribute('aria-expanded', String(!expanded));
-        grid.style.display = expanded ? 'none' : 'grid';
-      });
-    }
+    // ===== COSMIC WAVES BACKGROUND =====
+    (function(){
+      const canvas = document.getElementById('waves');
+      if(!canvas || !canvas.getContext) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, t = 0;
 
-    safeJSONFetch('data/reports.json')
-      .then(json => {
-        const list = Array.isArray(json)
-          ? json
-          : (json.reports || json.items || []);
-        if (!Array.isArray(list) || !list.length) return;
+      function resize(){
+        w = canvas.width = window.innerWidth * window.devicePixelRatio;
+        h = canvas.height = window.innerHeight * window.devicePixelRatio;
+      }
+      window.addEventListener('resize', resize);
+      resize();
 
-        const html = list.map(item => {
-          const id        = item.id || '';
-          const year      = item.year || '';
-          const category  = (item.category || 'theory').toLowerCase();
-          const titleKr   = item.title_ko || item.title_kr || '';
-          const titleEn   = item.title_en || '';
-          const summaryKr = item.summary_ko || item.summary_kr || '';
-          const summaryEn = item.summary_en || '';
-          const href      = item.url || item.link || item.md_path || '#';
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        const cx = w / 2;
+        const cy = h * 0.32;
+        const lines = 3;
 
-          return `
-            <article class="r-item" data-category="${category}">
-              <div class="t">
-                <span class="ko">${titleKr}</span>
-                <span class="en">${titleEn}</span>
-              </div>
-              <div class="m">
-                <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
-              </div>
-              <div class="s">
-                <span class="ko">${summaryKr}</span>
-                <span class="en">${summaryEn}</span>
-              </div>
-              <a href="${href}" target="_blank" rel="noopener"
-                 style="display:inline-block;margin-top:10px;font-size:11px;text-decoration:underline;">
-                <span class="ko">전체 보기 (새 창)</span>
-                <span class="en">Open full report (new tab)</span>
-              </a>
-            </article>
-          `;
-        }).join('');
+        for(let j=0;j<lines;j++){
+          ctx.beginPath();
+          const alpha = 0.14 - j*0.03;
+          const amp = 26 + j*14;
+          const freq = 0.0014 + j*0.0005;
+          const phase = t*0.002 + j*1.2;
 
-        grid.innerHTML = html;
-        grid.style.display = 'grid';
-        const defaultTab = tabs.find(b => b.dataset.r === 'all') || tabs[0];
-        if (defaultTab) {
-          defaultTab.classList.add('is-active');
-          applyFilter((defaultTab.dataset.r || 'all').toLowerCase());
+          for(let x=0;x<w;x+=12){
+            const y = cy + Math.sin(x*freq + phase) * amp;
+            if(x===0) ctx.moveTo(x,y);
+            else ctx.lineTo(x,y);
+          }
+          const grad = ctx.createLinearGradient(0, cy-amp-30, 0, cy+amp+30);
+          grad.addColorStop(0, 'rgba(215,184,106,'+alpha+')');
+          grad.addColorStop(1, 'rgba(121,167,255,'+alpha+')');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
         }
-      })
-      .catch(err => {
-        console.error('reports.json load error:', err);
-      });
-  }
-
-  /* -------------------------------------------
-   * 6. Artist Bio 모달 + 요약 토글
-   *    → 매번 열 때 KR / 리스트 접힘 / 스크롤 맨 위로 리셋
-   * ---------------------------------------- */
-  function openBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-
-    // 1) 언어: KR로 초기화
-    modal.dataset.bio = 'kr';
-    const langBtns = $$('.bio-lang .lang', modal);
-    langBtns.forEach(btn => {
-      const isKr = (btn.dataset.bioLang || 'kr') === 'kr';
-      btn.classList.toggle('active', isKr);
-      btn.setAttribute('aria-pressed', String(isKr));
-    });
-
-    // 2) 전시/소장/저서 리스트: 항상 닫힌 상태로 초기화
-    const expoBtn   = $('#expoToggle');
-    const expoBlock = $('#expoSlide');
-    if (expoBtn && expoBlock) {
-      expoBlock.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    // 3) 모달 열기 + 스크롤 맨 위로
-    modal.hidden = false;
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-
-    const card = modal.querySelector('.bio-card');
-    if (card) {
-      card.scrollTop = 0;
-    }
-  }
-
-  function closeBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-    modal.hidden = true;
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
-  }
-
-  function initBioModal() {
-    const modal = $('#bio-modal');
-    if (!modal) return;
-
-    // 기본 언어: KR
-    modal.dataset.bio = 'kr';
-
-    // 상단 KR / EN 토글
-    const langBtns = $$('.bio-lang .lang', modal);
-    langBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mode = btn.dataset.bioLang || 'kr';
-        modal.dataset.bio = mode;
-
-        langBtns.forEach(b => {
-          const active = b === btn;
-          b.classList.toggle('active', active);
-          b.setAttribute('aria-pressed', String(active));
-        });
-      });
-    });
-
-    const closeBtn  = $('.bio-close', modal);
-    const backdrop  = $('.bio-backdrop', modal);
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeBioModal);
-    }
-    if (backdrop) {
-      backdrop.addEventListener('click', e => {
-        if (e.target === backdrop) closeBioModal();
-      });
-    }
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeBioModal();
-    });
-
-    // 전시/소장/저서 슬라이드 토글 (기본은 닫힘)
-    const expoBtn   = $('#expoToggle');
-    const expoBlock = $('#expoSlide');
-    if (expoBtn && expoBlock) {
-      expoBlock.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-
-      expoBtn.addEventListener('click', () => {
-        const isOpen = expoBlock.getAttribute('data-open') === 'true';
-        const next   = !isOpen;
-        expoBlock.setAttribute('data-open', next ? 'true' : 'false');
-        expoBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
-      });
-    }
-  }
-
-  /* -------------------------------------------
-   * 7. Sound (우주 표식 · 영원 오브)
-   * ---------------------------------------- */
-  function initSound() {
-    const orb = $('#soundOrb');
-    if (!orb) return;
-
-    const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.volume = 0.18;
-
-    let playing  = false;
-    let pulseTimer = null;
-
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function updateVisual() {
-      orb.classList.toggle('is-on', playing);
-      if (!playing && !prefersReduced) {
-        orb.style.transform = '';
+        t++;
+        requestAnimationFrame(draw);
       }
-    }
+      draw();
+    })();
 
-    function startPulse() {
-      if (prefersReduced) return;
-      if (pulseTimer) clearInterval(pulseTimer);
-      pulseTimer = setInterval(() => {
-        if (!playing) return;
-        const scale = 0.96 + Math.random() * 0.08;
-        orb.style.transform = 'scale(' + scale.toFixed(2) + ')';
-      }, 420);
-    }
+    // ===== COSMIC RESONANCE SOUND ORB =====
+    ;(function(){
+      const orb = document.getElementById('soundOrb');
+      if(!orb) return;
 
-    function stopPulse() {
-      if (pulseTimer) {
-        clearInterval(pulseTimer);
-        pulseTimer = null;
+      let audioCtx = null;
+      let gainNode = null;
+      let playing = false;
+      let source = null;
+
+      function createDrone(){
+        const oscA = audioCtx.createOscillator();
+        const oscB = audioCtx.createOscillator();
+        const oscC = audioCtx.createOscillator();
+
+        oscA.type = 'sine';
+        oscB.type = 'sine';
+        oscC.type = 'sine';
+
+        oscA.frequency.value = 129.81;   // C3 기준 미세 변곡
+        oscB.frequency.value = 194.18;   // G3 근처
+        oscC.frequency.value = 258.0;    // C4 살짝 위
+
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.08;
+        lfoGain.gain.value = 4.2;
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscA.frequency);
+
+        const lfo2 = audioCtx.createOscillator();
+        const lfo2Gain = audioCtx.createGain();
+        lfo2.type = 'sine';
+        lfo2.frequency.value = 0.043;
+        lfo2Gain.gain.value = 3.4;
+        lfo2.connect(lfo2Gain);
+        lfo2Gain.connect(oscB.frequency);
+
+        const merger = audioCtx.createGain();
+        oscA.connect(merger);
+        oscB.connect(merger);
+        oscC.connect(merger);
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1200;
+        filter.Q.value = 0.7;
+
+        merger.connect(filter);
+
+        const globalGain = audioCtx.createGain();
+        globalGain.gain.value = 0.0;
+
+        filter.connect(globalGain);
+        globalGain.connect(audioCtx.destination);
+
+        oscA.start();
+        oscB.start();
+        oscC.start();
+        lfo.start();
+        lfo2.start();
+
+        return { globalGain, oscA, oscB, oscC, lfo, lfo2 };
       }
-      if (!prefersReduced) {
-        orb.style.transform = '';
-      }
-    }
 
-    async function playSound() {
-      try {
-        await audio.play();
+      function start(){
+        if(playing) return;
+        if(!audioCtx){
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const d = createDrone();
+        gainNode = d.globalGain;
+        source = d;
+
+        const now = audioCtx.currentTime;
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.linearRampToValueAtTime(0.0, now);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + 4.0);
+
         playing = true;
-        updateVisual();
-        startPulse();
-      } catch (err) {
-        console.warn('Audio play failed:', err);
+        orb.classList.add('is-on');
       }
-    }
 
-    function stopSound() {
-      if (!playing) return;
-      audio.pause();
-      audio.currentTime = 0;
-      playing = false;
-      stopPulse();
-      updateVisual();
-    }
+      function stop(){
+        if(!playing || !audioCtx || !gainNode || !source) return;
+        const now = audioCtx.currentTime;
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, now);
+        gainNode.gain.linearRampToValueAtTime(0.0, now + 3.0);
 
-    function toggleSound() {
-      if (playing) stopSound();
-      else playSound();
-    }
+        setTimeout(() => {
+          try{
+            source.oscA.stop();
+            source.oscB.stop();
+            source.oscC.stop();
+            source.lfo.stop();
+            source.lfo2.stop();
+          }catch(e){}
+          source = null;
+        }, 3200);
 
-    orb.addEventListener('click', toggleSound);
+        playing = false;
+        orb.classList.remove('is-on');
+      }
 
-    window.addEventListener('pagehide', () => {
-      stopSound();
-    });
-
-    updateVisual();
-  }
-
-  /* -------------------------------------------
-   * 7-1. Waves 배경 (코스믹 파동 · 경량화 버전)
-   * ---------------------------------------- */
-  function initWaves() {
-    const canvas = document.getElementById('waves');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width  = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    let t = 0;
-    let animId = null;
-
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
-    ];
-
-    function draw() {
-      if (prefersReduced) return;
-
-      const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  / dpr;
-      const h = canvas.height / dpr;
-
-      ctx.clearRect(0, 0, w, h);
-
-      gradients.forEach((g, idx) => {
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += 10) {
-          const y = h * 0.25 + idx * 80 +
-            Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.3;
-        ctx.shadowColor = 'rgba(0,0,0,0.50)';
-        ctx.shadowBlur = 8;
-        ctx.stroke();
+      orb.addEventListener('click', () => {
+        if(!playing) start();
+        else stop();
       });
 
-      ctx.shadowBlur = 0;
-      t += 1;
-      animId = requestAnimationFrame(draw);
-    }
-
-    if (!prefersReduced) {
-      animId = requestAnimationFrame(draw);
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (prefersReduced) return;
-      if (document.hidden) {
-        if (animId) {
-          cancelAnimationFrame(animId);
-          animId = null;
+      document.addEventListener('visibilitychange', () => {
+        if(document.hidden && playing){
+          stop();
         }
-      } else if (!animId) {
-        animId = requestAnimationFrame(draw);
-      }
-    });
-  }
-
-  /* -------------------------------------------
-   * 8. 초기화
-   * ---------------------------------------- */
-  document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); }         catch (e) { console.error(e); }
-    try { initLanguage(); }    catch (e) { console.error(e); }
-    try { initWorks(); }       catch (e) { console.error(e); }
-    try { initReports(); }     catch (e) { console.error(e); }
-    try { initBioModal(); }    catch (e) { console.error(e); }
-    try { initSound(); }       catch (e) { console.error(e); }
-    try { initWaves(); }       catch (e) { console.error(e); }
-  });
-
-})();
-</script>
+      });
+    })();
+  </script>
+</body>
+</html>

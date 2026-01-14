@@ -871,9 +871,6 @@
   </style>
 </head>
 
-<!-- ==========================================================
-② BODY / HTML  (등작 원문 그대로 + 구조만 정리 + 사건 항목 B안)
-========================================================== -->
 <body class="korean">
   <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
@@ -958,6 +955,10 @@
       <h2 class="en">Artworks</h2>
 
       <div class="tabs" role="tablist">
+        <!-- 🔹 A. Origin 섹션 (새 탭) -->
+        <button type="button" class="tab" data-panel="origin">A 기원 · Origins</button>
+
+        <!-- 기존 Ⅰ~Ⅴ 섹션 그대로 유지 -->
         <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
         <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
         <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
@@ -965,6 +966,10 @@
         <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
 
+      <!-- 🔹 Origin 전용 패널 -->
+      <div id="panel-origin" class="tabpanel"></div>
+
+      <!-- 기존 패널들 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -1013,7 +1018,7 @@
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
-      <!-- 🔹 INTRO (예전처럼, 첫 화면에 바로 보이는 작가 소개) -->
+      <!-- 🔹 INTRO -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -1028,16 +1033,16 @@
         <p>Each work is both prayer and record: a quiet declaration of human dignity, the warmth that follows wounding, and the breath by which being reawakens.</p>
       </div>
 
-      <!-- 🔹 EXPO KICKER (요약 줄) -->
+      <!-- 🔹 EXPO KICKER -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- 🔹 EXPO SLIDE (전시 / 소장 / 저서 리스트 – 클릭 시 펼침) -->
+      <!-- 🔹 EXPO SLIDE -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
 
-        <!-- BIO · KOREAN (전시/소장/저서) -->
+        <!-- BIO · KOREAN -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 인천, 대한민국</p>
@@ -1097,7 +1102,7 @@
           <p>2016년 폴란드 바르샤바 법정에서, 12년간 유럽과 한국을 오가며 활동해 온 행적과 유럽 측 증언을 바탕으로 ‘해양 에너지 사업가(Ocean Energy Businessman)’로 공식 인정받았다.</p>
         </div>
 
-        <!-- BIO · ENGLISH (전시/소장/저서) -->
+        <!-- BIO · ENGLISH -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jeongsuk Gallery, Incheon, Republic of Korea</p>
@@ -1300,9 +1305,20 @@
    * ---------------------------------------- */
   let worksLoaded = false;
   let worksByPanel = {};
+
   function initWorks() {
-    const panelIds = ['pray', 'human', 'rebirth', 'exist', 'cosmos'];
-    const idMap = { 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
+    // 🔹 Origin 패널 추가
+    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+
+    // section_id 기반 매핑에 origin(0) 추가
+    const idMap = {
+      0: 'origin',
+      1: 'pray',
+      2: 'human',
+      3: 'rebirth',
+      4: 'exist',
+      5: 'cosmos'
+    };
 
     const tabButtons = $$('.tabs .tab');
     tabButtons.forEach(btn => {
@@ -1325,14 +1341,24 @@
           : (json.works || json.items || []);
         if (!Array.isArray(list)) return;
 
-        worksByPanel = { pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
+        // 🔹 Origin 포함 초기 구조
+        worksByPanel = {
+          origin: [],
+          pray: [],
+          human: [],
+          rebirth: [],
+          exist: [],
+          cosmos: []
+        };
 
         list.forEach(item => {
           let key = item.section || item.panel;
+
           if (!key && item.section_id != null) {
             const sid = Number(item.section_id);
             key = idMap[sid] || 'pray';
           }
+
           if (!key || !worksByPanel[key]) key = 'pray';
           worksByPanel[key].push(item);
         });
@@ -1348,7 +1374,7 @@
       })
       .catch(err => {
         console.error('works.json load error:', err);
-        const allPanels = ['pray','human','rebirth','exist','cosmos'];
+        const allPanels = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
         allPanels.forEach(key => {
           const panel = $('#panel-' + key);
           if (!panel) return;
@@ -1602,7 +1628,6 @@
 
   /* -------------------------------------------
    * 6. Artist Bio 모달 + 요약 토글
-   *    → 매번 열 때 KR / 리스트 접힘 / 스크롤 맨 위로 리셋
    * ---------------------------------------- */
   function openBioModal() {
     const modal = $('#bio-modal');

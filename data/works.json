@@ -180,6 +180,7 @@
       "image": "images/standard/DZ-012.jpg",
       "zoom": "images/zoom/DZ-012.jpg"
     },
+
     {
       "id": "DZ-013",
       "section_id": 1,
@@ -300,7 +301,6 @@
       "image": "images/standard/DZ-020.jpg",
       "zoom": "images/zoom/DZ-020.jpg"
     },
-
     {
       "id": "DZ-021",
       "section_id": 2,
@@ -348,6 +348,7 @@
       "description_kr": "",
       "description_en": ""
     },
+
     {
       "id": "DZ-024",
       "section_id": 2,
@@ -493,7 +494,6 @@
       "image": "images/standard/DZ-032.jpg",
       "zoom": "images/zoom/DZ-032.jpg"
     },
-
     {
       "id": "DZ-033",
       "section_id": 3,
@@ -554,7 +554,6 @@
       "image": "images/standard/DZ-037.jpg",
       "zoom": "images/zoom/DZ-037.jpg"
     },
-
     {
       "id": "DZ-034",
       "section_id": 4,
@@ -584,6 +583,22 @@
       "year": 1999,
       "image": "images/standard/DZ-038.jpg",
       "zoom": "images/zoom/DZ-038.jpg"
+    },
+
+    {
+      "id": "DZ-039",
+      "section_id": 5,
+      "section_kr": "V 빛의 초의식",
+      "section_en": "Metaconsciousness of Light",
+      "title_kr": "생명 : 숨결의 바램",
+      "title_en": "Life: The Aspiration of Breath",
+      "material_kr": "종이에 수채",
+      "material_en": "watercolour on paper",
+      "size_kr": "57 × 76 cm",
+      "size_en": "57 × 76 cm",
+      "year": 2026,
+      "image": "images/standard/DZ-039.jpg",
+      "zoom": "images/zoom/DZ-039.jpg"
     }
   ]
 }

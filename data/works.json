@@ -300,7 +300,7 @@
       "image": "images/standard/OR-020.jpg",
       "zoom": "images/zoom/OR-020.jpg"
     },
-        {
+    {
       "id": "OR-021",
       "section_id": 0,
       "section_kr": "A 기원",
@@ -600,7 +600,6 @@
       "image": "images/standard/OR-040.jpg",
       "zoom": "images/zoom/OR-040.jpg"
     },
-
     {
       "id": "DZ-001",
       "section_id": 1,
@@ -1153,9 +1152,7 @@
       "image": "images/standard/DZ-037.jpg",
       "zoom": "images/zoom/DZ-037.jpg"
     },
-    {
-  "works": [
-    {
+        {
       "id": "DZ-034",
       "section_id": 4,
       "section_kr": "IV 존재의 회복",

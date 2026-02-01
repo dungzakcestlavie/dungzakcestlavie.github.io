@@ -2,7 +2,7 @@
 <html lang="ko">
 
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮27 · Bio/전시 리스트 개선 패치 · A/B 모드)
+① HEAD / STYLE  (Lightflow ∮31 .Bio/전시 리스트 개선 패치 · A/B 모드)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -11,14 +11,14 @@
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
-  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮27 · Lightflow</title>
+  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮31 · Lightflow</title>
   <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
 
   <link rel="canonical" href="https://dungzak.art/" />
 
   <!-- OG / Twitter -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮27" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮31" />
   <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
   <meta property="og:url" content="https://dungzak.art/" />
   <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
@@ -694,124 +694,211 @@
         margin: 5px 0;
       }
     }
+/* =========================================================
+   LIGHTBOX  (PATCH: iOS에서 일부 작품만 위로 붙고 스크롤 생기는 문제 해결)
+========================================================= */
+#lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
 
-    /* =========================================================
-       LIGHTBOX
-    ========================================================= */
-    #lightbox{
-      position: fixed; inset:0; z-index: 60;
-      display:none;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    #lightbox.is-open{ display:block; }
-    .lb-stage{
-      position:absolute;
-      inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      gap: 12px;
-      padding-top: calc(var(--safe-top));
-    }
-    #lbImg{
-      max-width: min(1040px, 96vw);
-      max-height: min(78vh, 820px);
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow: var(--shadow);
-      background: rgba(0,0,0,.25);
-      object-fit: contain;
-      will-change: transform;
-    }
-    .lb-caption{
-      width: min(1040px, 96vw);
-      padding: 12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.06);
-      background: rgba(5,8,18,.62);
-      color: rgba(237,227,201,.88);
-      white-space: pre-wrap;
-      line-height:1.65;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
-    }
-    .lb-close{
-      position:absolute;
-      top: calc(14px + var(--safe-top));
-      right: calc(14px + var(--safe-right));
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      appearance:none;
-      border:1px solid rgba(215,184,106,.30);
-      background: rgba(255,255,255,.02);
-      color: var(--gold2);
-      font-size: 18px;
-      font-weight: 950;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.28);
-      touch-action: manipulation;
-    }
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
-    /* =========================================================
-       COSMIC SOUND ORB
-    ========================================================= */
-    #soundOrb{
-      position: fixed;
-      right: calc(16px + var(--safe-right));
-      bottom: calc(18px + var(--safe-bot));
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      border: 1px solid rgba(215,184,106,.55);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,.70),
-        0 0 18px rgba(215,184,106,.26);
-      background:
-        radial-gradient(circle at 30% 30%, rgba(215,184,106,.75), rgba(7,10,20,0));
-      opacity: .60;
-      cursor: pointer;
-      z-index: 71;
-      transition:
-        opacity .25s ease,
-        transform .25s ease,
-        box-shadow .30s ease;
-      touch-action: manipulation;
-    }
-    #soundOrb:hover{
-      opacity: .95;
-      transform: translateY(-1px);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,.80),
-        0 0 22px rgba(215,184,106,.36);
-    }
-    #soundOrb.is-on{
-      opacity: 1;
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,.85),
-        0 0 26px rgba(121,167,255,.65);
-    }
-    #soundOrb::after{
-      content:"";
-      position:absolute;
-      inset:6px;
-      border-radius:inherit;
-      border:1px solid rgba(7,10,20,.95);
-      box-shadow: 0 0 8px rgba(0,0,0,.7) inset;
-    }
+  /* 오버레이 자체 스크롤 금지 (iOS에서 전체가 밀리는 문제 방지) */
+  overflow: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: auto;
+}
+#lightbox.is-open{ display:block; }
 
-    /* =========================================================
-       Footer
-    ========================================================= */
-    footer{
-      max-width: var(--maxw);
-      margin: 18px auto 0;
-      padding: 14px 18px calc(16px + var(--safe-bot));
-      border-top:1px solid rgba(215,184,106,.16);
-      background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
-      border-radius: 18px;
-      text-align:center;
-    }
+/* stage = 중앙 정렬 컨테이너 (이미지 + 캡션을 화면 중앙에 고정) */
+.lb-stage{
+  position: absolute;
+  inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  /* 안전영역 보정 */
+  padding-top: var(--safe-top);
+
+  /* stage도 스크롤 금지 */
+  overflow: hidden;
+}
+
+/* 이미지: contain + 중앙 */
+#lbImg{
+  display: block;
+  width: auto;
+  height: auto;
+
+  max-width: min(1040px, 96vw);
+  max-height: calc(100% - 8px);
+
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: var(--shadow);
+
+  background: rgba(0,0,0,.25);
+
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* 캡션: 길면 캡션만 스크롤 */
+.lb-caption{
+  width: min(1040px, 96vw);
+
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+
+  background: rgba(5,8,18,.62);
+  color: rgba(237,227,201,.88);
+
+  white-space: pre-wrap;
+  line-height: 1.65;
+  text-shadow: 0 1px 0 rgba(0,0,0,.58);
+
+  max-height: 26vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* X 버튼: 언제나 상단 고정 */
+.lb-close{
+  position: fixed;
+  top: calc(14px + var(--safe-top));
+  right: calc(14px + var(--safe-right));
+
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+
+  appearance: none;
+  border: 1px solid rgba(215,184,106,.30);
+  background: rgba(255,255,255,.02);
+
+  color: var(--gold2);
+  font-size: 18px;
+  font-weight: 950;
+
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+
+  touch-action: manipulation;
+  z-index: 65;
+}
+
+/* 모바일에서 stage 인셋/캡션 높이 최적화 */
+@media (max-width: 768px){
+  .lb-stage{
+    inset: 12px 12px calc(12px + var(--safe-bot)) 12px;
+    gap: 10px;
+  }
+  #lbImg{
+    max-width: 96vw;
+    max-height: calc(100% - 10px);
+    border-radius: 14px;
+  }
+  .lb-caption{
+    max-height: 30vh;
+    padding: 11px 11px;
+    border-radius: 13px;
+  }
+  .lb-close{
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+  }
+}
+
+/* =========================================================
+   COSMIC SOUND ORB  (투명·작은·무사건·무한 루프)
+========================================================= */
+#soundOrb{
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + var(--safe-bot));
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(215,184,106,.22);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.78),
+    0 10px 22px rgba(0,0,0,.34);
+
+  background:
+    radial-gradient(circle at 30% 30%, rgba(215,184,106,.75), rgba(7,10,20,0));
+
+  opacity: .60;
+  cursor: pointer;
+  z-index: 71;
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    box-shadow .30s ease;
+
+  touch-action: manipulation;
+}
+
+#soundOrb:hover{
+  opacity: .95;
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.80),
+    0 0 22px rgba(215,184,106,.36),
+    0 10px 22px rgba(0,0,0,.34);
+}
+
+#soundOrb.is-on{
+  opacity: 1;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.85),
+    0 0 26px rgba(121,167,255,.65),
+    0 10px 22px rgba(0,0,0,.34);
+}
+
+#soundOrb::after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:inherit;
+  border:1px solid rgba(7,10,20,.95);
+  box-shadow: 0 0 8px rgba(0,0,0,.7) inset;
+}
+
+@media (max-width: 768px){
+  #soundOrb{
+    width: 42px;
+    height: 42px;
+    bottom: calc(14px + var(--safe-bot));
+  }
+} 
+
+/* =========================================================
+   Footer
+========================================================= */
+footer{
+  max-width: var(--maxw);
+  margin: 18px auto 0;
+  padding: 14px 18px calc(16px + var(--safe-bot));
+  border-top:1px solid rgba(215,184,106,.16);
+  background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
+  border-radius: 18px;
+  text-align:center;
+}
     footer .links{
       display:flex;
       flex-wrap:wrap;
@@ -877,7 +964,7 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮27</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE ∮31</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
@@ -1920,3 +2007,4 @@
 
 })();
 </script>
+</html>

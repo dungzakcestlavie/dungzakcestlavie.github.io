@@ -1947,8 +1947,13 @@
   }
 
   /* =========================================================
-     7) Sound (Cosmic Orb toggle)
-     - “투명 / 원형 / 수학적 / 5~6초 미세 공명”
+     7) Sound (Cosmic Orb toggle) — 개선 완성체
+     - "벌레같은 수학기호" 제거: 텍스트/아이콘 주입 없음
+     - 링(바깥 느낌) 유지: CSS의 ring/outline을 그대로 쓰고
+     - 상태는 class/aria만 제어
+     - 5~6초 미세 떨림(호흡): requestAnimationFrame + 저비용
+     - 링 색을 다르게: playing 상태에서 CSS 변수로 색을 전환(HEAD 수정 없이도
+       이미 CSS가 var(--sound-ring) 등을 쓰고 있다면 즉시 반영)
   ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
@@ -1956,21 +1961,98 @@
 
     // 접근성
     bar.setAttribute('tabindex', '0');
+    bar.setAttribute('role', 'button');
     bar.setAttribute('aria-pressed', 'false');
 
+    // 텍스트/기호 절대 넣지 않음
+    bar.textContent = '';
+
+    // 오디오
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
     audio.preload = 'auto';
     audio.volume = 0.18;
 
     let playing = false;
+    let raf = 0;
+    let last = 0;
+    let baseOpacity = null;
+
+    // ---- 미세 떨림(호흡) 파라미터 ----
+    // 5.6초 주기 / 아주 작은 변화(벌레 아님)
+    const periodMs = 5600;
+    const minOpacityDelta = 0.06;  // 투명도 미세 변화
+    const minScaleDelta   = 0.018; // 크기 미세 변화(링의 바깥 느낌만 살아있게)
+
+    // prefers-reduced-motion 고려
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function stopRaf() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      last = 0;
+      // transform/opacity 원복(깔끔)
+      bar.style.transform = '';
+      bar.style.opacity = (baseOpacity != null) ? baseOpacity : '';
+    }
+
+    function startRaf() {
+      if (prefersReduced) return;  // 움직임 최소화 모드면 호흡 애니메이션 없음
+      if (raf) return;
+
+      // 현재 opacity를 기준으로
+      if (baseOpacity == null) {
+        const cs = getComputedStyle(bar);
+        const o = parseFloat(cs.opacity);
+        baseOpacity = Number.isFinite(o) ? o : 1;
+      }
+
+      const tick = (ts) => {
+        if (!playing) { stopRaf(); return; }
+        if (!last) last = ts;
+
+        // 너무 자주 스타일 변경하지 않게 30fps로 제한
+        const dt = ts - last;
+        if (dt >= 33) {
+          last = ts;
+
+          // 0..1 진행률
+          const phase = (ts % periodMs) / periodMs;
+
+          // 부드러운 호흡 곡선(0~1~0)
+          const breath = 0.5 - 0.5 * Math.cos(phase * Math.PI * 2);
+
+          // 아주 미세하게만
+          const s = 1 + (breath - 0.5) * 2 * minScaleDelta;
+          const o = baseOpacity + (breath - 0.5) * 2 * minOpacityDelta;
+
+          bar.style.transform = `translateZ(0) scale(${s.toFixed(4)})`;
+          bar.style.opacity = String(Math.max(0, Math.min(1, o)));
+        }
+
+        raf = requestAnimationFrame(tick);
+      };
+
+      raf = requestAnimationFrame(tick);
+    }
 
     async function playSound() {
       try {
         await audio.play();
         playing = true;
+
+        // 상태 클래스
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
+
+        // 링 색(playing 상태에서만) — HEAD를 안 건드리되,
+        // 기존 CSS가 변수 기반이면 바로 반응.
+        // (변수 미사용 CSS여도 문제 없음: 그냥 무시됨)
+        bar.style.setProperty('--sound-ring', 'rgba(121,167,255,0.75)'); // 블루 계열
+        bar.style.setProperty('--sound-glow', 'rgba(121,167,255,0.22)');
+
+        startRaf();
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
@@ -1981,8 +2063,15 @@
       audio.pause();
       audio.currentTime = 0;
       playing = false;
+
       bar.classList.remove('is-on');
       bar.setAttribute('aria-pressed', 'false');
+
+      // 링 색 원복(기본 골드)
+      bar.style.setProperty('--sound-ring', 'rgba(215,184,106,0.72)');
+      bar.style.setProperty('--sound-glow', 'rgba(215,184,106,0.18)');
+
+      stopRaf();
     }
 
     function toggle() {
@@ -1990,9 +2079,9 @@
       else playSound();
     }
 
+    // 클릭/키보드
     bar.addEventListener('click', toggle);
 
-    // 키보드 토글(엔터/스페이스)
     bar.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -2000,8 +2089,19 @@
       }
     });
 
+    // 페이지 전환/백그라운드 대응
     window.addEventListener('pagehide', stopSound);
+
+    document.addEventListener('visibilitychange', () => {
+      // 숨김 시: 사운드는 유지(사용자 의도 유지)하되, 애니메이션만 중지
+      if (document.hidden) stopRaf();
+      else if (playing) startRaf();
+    });
+
+    // 초기 상태
     bar.classList.remove('is-on');
+    bar.style.setProperty('--sound-ring', 'rgba(215,184,106,0.72)');
+    bar.style.setProperty('--sound-glow', 'rgba(215,184,106,0.18)');
   }
 
   /* =========================================================

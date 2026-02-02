@@ -1,8 +1,5 @@
-<!doctype html>
-<html lang="ko">
-
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮31 .Bio/전시 리스트 개선 패치 · A/B 모드)
+① HEAD / STYLE  (Lightflow ∮31 · HEAD 완성체 : Sound Orb + Reports UX)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -83,6 +80,20 @@
 
       --text-edgeA: 0 1px 0 rgba(0,0,0,.70);
       --text-edgeB: 0 -1px 0 rgba(0,0,0,.42);
+
+      /* =========================================================
+         SOUND ORB (C resonance)
+         - 52px 고정 / 원형 / 문자링 / 5~6초 숨 / 재생 시 회전
+      ========================================================= */
+      --orb: 52px; /* 핵심: 52px */
+      --orb-ring: rgba(233,213,155,.38);
+      --orb-ring2: rgba(121,167,255,.26);
+      --orb-fill: rgba(5,8,18,.22);
+      --orb-shadow: 0 12px 30px rgba(0,0,0,.55);
+
+      /* Reports UX */
+      --report-accent: rgba(215,184,106,.22);
+      --report-accent2: rgba(121,167,255,.18);
     }
 
     *{ box-sizing:border-box; }
@@ -93,10 +104,7 @@
       background:
         radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
         linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
-
-      /* PATCH: 기본 텍스트를 더 금빛으로 */
       color: rgba(233,213,155,.86);
-
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing:.2px;
       overflow-x:hidden;
@@ -315,7 +323,6 @@
     .poem p{
       margin:10px 0;
       line-height:1.7;
-      /* PATCH: poem 본문 금빛 */
       color: rgba(233,213,155,.88);
       text-shadow: var(--text-edgeA), var(--gold-glowA);
     }
@@ -408,7 +415,6 @@
     }
     .w-title{
       font-weight: 500;
-      /* PATCH: works title 금빛 */
       color: rgba(233,213,155,.92);
       line-height:1.32;
       font-size: 14px;
@@ -419,7 +425,6 @@
     .w-sub{
       margin-top:3px;
       font-size: 11.3px;
-      /* PATCH: works sub 금빛 */
       color: rgba(233,213,155,.64);
       line-height:1.2;
       opacity: 0.95;
@@ -427,12 +432,8 @@
     }
 
     @media (max-width: 768px){
-      .w-card{
-        border-radius: 16px;
-      }
-      .w-meta{
-        padding: 7px 8px 16px;
-      }
+      .w-card{ border-radius: 16px; }
+      .w-meta{ padding: 7px 8px 16px; }
       .w-title{
         font-size: 13.2px;
         line-height: 1.16;
@@ -449,7 +450,6 @@
       border-radius: 14px;
       background: rgba(0,0,0,.18);
       border: 1px solid rgba(255,255,255,.05);
-      /* PATCH: works msg 금빛 */
       color: rgba(233,213,155,.78);
       text-shadow: var(--text-edgeA);
     }
@@ -462,6 +462,7 @@
 
     /* =========================================================
        REPORTS
+       - Open 버튼/링크를 “열고 싶게” 만드는 UX 강화 (HEAD only)
     ========================================================= */
     #reports{ padding:18px; }
     #reports h2{
@@ -509,19 +510,44 @@
       background: rgba(215,184,106,.08);
     }
 
+    /* 🔥 Reports Toggle = “열기 유도” 버튼 */
     .r-toggle{
       appearance:none;
-      border:1px solid rgba(215,184,106,.30);
-      background: rgba(215,184,106,.10);
+      border:1px solid rgba(215,184,106,.34);
+      background:
+        radial-gradient(120px 60px at 30% 20%, rgba(233,213,155,.20), rgba(0,0,0,0) 60%),
+        linear-gradient(180deg, rgba(215,184,106,.10), rgba(255,255,255,.02));
       color: var(--gold2);
       border-radius: 999px;
       padding:8px 12px;
       font-weight: 950;
       cursor:pointer;
       min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      box-shadow: 0 10px 26px rgba(0,0,0,.30);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
       touch-action: manipulation;
+      position: relative;
+      overflow: hidden;
+    }
+    .r-toggle::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(120px 60px at 20% 50%, rgba(121,167,255,.12), rgba(0,0,0,0) 70%);
+      opacity:.45;
+      pointer-events:none;
+      transition: opacity .25s ease;
+    }
+    .r-toggle:hover{
+      border-color: rgba(215,184,106,.70);
+      box-shadow: 0 12px 32px rgba(0,0,0,.36);
+      text-decoration:none;
+    }
+    .r-toggle:hover::after{ opacity:.75; }
+    .r-toggle:active{ transform: translateY(1px); }
+    .r-toggle:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
 
     .r-grid{
@@ -543,43 +569,90 @@
       border-radius: 16px;
       padding: 12px 12px;
       cursor:pointer;
-      transition: transform .10s ease, border-color .16s ease, background .16s ease;
+      transition: transform .10s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
       white-space: pre-line;
+      position: relative;
+      overflow: hidden;
+    }
+    .r-item::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(260px 120px at 10% 0%, rgba(215,184,106,.10), rgba(0,0,0,0) 60%),
+        radial-gradient(240px 120px at 90% 10%, rgba(121,167,255,.08), rgba(0,0,0,0) 62%);
+      opacity:.55;
+      pointer-events:none;
     }
     .r-item:hover{
       transform: translateY(-1px);
-      border-color: rgba(215,184,106,.28);
-      background: rgba(215,184,106,.05);
+      border-color: rgba(215,184,106,.30);
+      background: rgba(215,184,106,.045);
+      box-shadow: 0 14px 34px rgba(0,0,0,.40);
     }
     .r-item .t{
       font-weight: 950;
-      /* PATCH: report title 금빛 */
       color: rgba(233,213,155,.95);
       line-height:1.35;
       text-shadow: var(--text-edgeA), var(--gold-glowA), var(--gold-glowB);
+      position: relative;
+      z-index: 1;
     }
     .r-item .m{
       margin-top:6px;
       font-size:12px;
-      /* PATCH: report meta 금빛 */
       color: rgba(233,213,155,.62);
       font-family: ui-monospace, Menlo, Consolas, monospace;
       text-shadow: var(--text-edgeA);
+      position: relative;
+      z-index: 1;
     }
     .r-item .s{
       margin-top:10px;
       font-size:12px;
-      /* PATCH: report summary 금빛 */
       color: rgba(233,213,155,.78);
       line-height:1.55;
       white-space: pre-line;
       text-shadow: var(--text-edgeA), var(--gold-glowA);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ✅ 보고서 “전체보기 링크”를 버튼처럼 보이게 (BODY 수정 없이) */
+    .r-open{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-top: 10px;
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(215,184,106,.32);
+      background: rgba(255,255,255,.02);
+      color: var(--gold2);
+      font-weight: 950;
+      letter-spacing: .12px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.26);
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
+      text-decoration:none !important;
+      position: relative;
+      z-index: 1;
+      transition: transform .10s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+    }
+    .r-open:hover{
+      background: rgba(215,184,106,.12);
+      border-color: rgba(215,184,106,.72);
+      box-shadow: 0 14px 30px rgba(0,0,0,.34);
+      transform: translateY(-1px);
+    }
+    .r-open:active{ transform: translateY(0); }
+    .r-open:focus-visible{
+      outline:2px solid rgba(121,167,255,.55);
+      outline-offset:2px;
     }
 
     /* =========================================================
-       BIO MODAL
-       - 데스크톱: 카드 모드(B)
-       - 모바일: 전체 화면 읽기 모드(A, 100dvh)
+       BIO MODAL (원본 유지)
     ========================================================= */
     #bio-modal[hidden]{ display:none !important; }
     #bio-modal{ position: fixed; inset:0; z-index: 50; }
@@ -590,7 +663,6 @@
       -webkit-backdrop-filter: blur(8px);
     }
 
-    /* 기본값 = 데스크톱/태블릿 카드 모드(B) */
     .bio-card{
       position:relative;
       max-width: 980px;
@@ -663,7 +735,6 @@
       border:0;
       border-bottom:1px solid rgba(255,255,255,.05);
       background: rgba(255,255,255,.02);
-      /* PATCH: expo-kicker 금빛 */
       color: rgba(233,213,155,.90);
       padding: 10px 14px;
       font-weight: 950;
@@ -675,13 +746,10 @@
       display:none;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .slide-wrap[data-open="true"]{
-      display:block;
-    }
+    .slide-wrap[data-open="true"]{ display:block; }
 
     .bio-body{
       padding: 10px 14px 12px;
-      /* PATCH: bio-body 금빛 */
       color: rgba(233,213,155,.86);
       line-height: 1.6;
       font-size: 13.4px;
@@ -693,12 +761,8 @@
     .slide-wrap .bio-body:last-of-type{ padding-bottom: 8px; }
 
     @media (min-width: 900px){
-      .bio-body{
-        font-size: 14px;
-        line-height: 1.7;
-      }
+      .bio-body{ font-size: 14px; line-height: 1.7; }
     }
-
     @media (max-width: 768px){
       .bio-card{
         max-width: 100%;
@@ -709,12 +773,8 @@
         max-height: 100dvh;
       }
     }
-
     @media (max-height: 740px){
-      .bio-body{
-        font-size: 13px;
-        line-height: 1.55;
-      }
+      .bio-body{ font-size: 13px; line-height: 1.55; }
       .bio-body p{ margin: 5px 0; }
     }
 
@@ -726,11 +786,9 @@
       inset: 0;
       z-index: 60;
       display: none;
-
       background: rgba(0,0,0,.72);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-
       overflow: hidden;
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: auto;
@@ -740,16 +798,12 @@
     .lb-stage{
       position: absolute;
       inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
-
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-
       gap: 12px;
-
       padding-top: var(--safe-top);
-
       overflow: hidden;
     }
 
@@ -757,35 +811,26 @@
       display: block;
       width: auto;
       height: auto;
-
       max-width: min(1040px, 96vw);
       max-height: calc(100% - 8px);
-
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
-
       background: rgba(0,0,0,.25);
-
       object-fit: contain;
       margin: 0 auto;
     }
 
     .lb-caption{
       width: min(1040px, 96vw);
-
       padding: 12px 12px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.06);
-
       background: rgba(5,8,18,.62);
-      /* PATCH: caption 금빛 */
       color: rgba(233,213,155,.86);
-
       white-space: pre-wrap;
       line-height: 1.65;
       text-shadow: var(--text-edgeA), var(--gold-glowA);
-
       max-height: 26vh;
       overflow: auto;
       overscroll-behavior: contain;
@@ -796,22 +841,17 @@
       position: fixed;
       top: calc(14px + var(--safe-top));
       right: calc(14px + var(--safe-right));
-
       width: 46px;
       height: 46px;
       border-radius: 14px;
-
       appearance: none;
       border: 1px solid rgba(215,184,106,.30);
       background: rgba(255,255,255,.02);
-
       color: var(--gold2);
       font-size: 18px;
       font-weight: 950;
-
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.28);
-
       touch-action: manipulation;
       z-index: 65;
     }
@@ -839,40 +879,114 @@
     }
 
     /* =========================================================
-       COSMIC SOUND BAR (minimal · right)
+       COSMIC SOUND ORB (52px · right-bottom)
+       - BODY에는 #soundBar 1개만 있음 → CSS로 ‘원형/문자링’ 구성
     ========================================================= */
     #soundBar{
       position: fixed;
       right: calc(14px + var(--safe-right));
-      bottom: calc(18px + var(--safe-bot));
-      width: 44px;
-      height: 4px;
+      bottom: calc(16px + var(--safe-bot));
+      width: var(--orb);
+      height: var(--orb);
       border-radius: 999px;
-      background: linear-gradient(
-        90deg,
-        rgba(215,184,106,.55),
-        rgba(121,167,255,.45)
-      );
-      opacity: .35;
       cursor: pointer;
       z-index: 71;
+
+      background:
+        radial-gradient(circle at 50% 40%, rgba(233,213,155,.14), rgba(0,0,0,0) 55%),
+        radial-gradient(circle at 50% 70%, rgba(121,167,255,.10), rgba(0,0,0,0) 62%),
+        radial-gradient(circle at 50% 50%, var(--orb-fill), rgba(0,0,0,0) 72%);
+
       box-shadow:
-        0 0 0 1px rgba(0,0,0,.65),
-        0 0 12px rgba(215,184,106,.18);
-      transition:
-        opacity .25s ease,
-        box-shadow .3s ease,
-        transform .25s ease;
+        0 0 0 1px rgba(0,0,0,.75),
+        0 0 0 1.5px rgba(233,213,155,.18) inset,
+        var(--orb-shadow);
+
+      opacity: .62;
+      transition: opacity .25s ease, transform .25s ease, box-shadow .3s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
-    #soundBar.is-on{
+    /* 링(수학적 가장자리) */
+    #soundBar::before{
+      content:"";
+      position:absolute;
+      inset: -2px;
+      border-radius: 999px;
+      background:
+        conic-gradient(
+          from 0deg,
+          rgba(215,184,106,.42),
+          rgba(121,167,255,.26),
+          rgba(215,184,106,.18),
+          rgba(121,167,255,.30),
+          rgba(215,184,106,.42)
+        );
+      filter: blur(.2px);
       opacity: .85;
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,.8),
-        0 0 16px rgba(121,167,255,.55);
+      mask: radial-gradient(circle, transparent 63%, #000 64%);
+      -webkit-mask: radial-gradient(circle, transparent 63%, #000 64%);
+      pointer-events:none;
     }
 
-    #soundBar:hover{ opacity: .95; }
+    /* 문자링(∮) : “돌아가는 느낌” */
+    #soundBar::after{
+      content:"∮  ∮  ∮  ∮  ∮  ∮  ∮  ∮";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%);
+      width: calc(var(--orb) + 14px);
+      height: calc(var(--orb) + 14px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 999px;
+      font-weight: 950;
+      font-size: 12px;
+      letter-spacing: 1.8px;
+      color: rgba(233,213,155,.55);
+      text-shadow: 0 1px 0 rgba(0,0,0,.70);
+      opacity: .78;
+      pointer-events:none;
+      mask: radial-gradient(circle, transparent 56%, #000 57%);
+      -webkit-mask: radial-gradient(circle, transparent 56%, #000 57%);
+    }
+
+    /* 숨(5~6초) */
+    @keyframes orbBreath{
+      0%   { transform: scale(1);   opacity:.62; }
+      50%  { transform: scale(1.04); opacity:.78; }
+      100% { transform: scale(1);   opacity:.62; }
+    }
+    #soundBar{
+      animation: orbBreath 5.6s ease-in-out infinite;
+    }
+
+    /* ON 상태 = 더 선명 + 회전(문자링만) */
+    #soundBar.is-on{
+      opacity: .92;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.82),
+        0 0 0 1.5px rgba(121,167,255,.22) inset,
+        0 0 18px rgba(121,167,255,.38),
+        0 0 12px rgba(215,184,106,.18),
+        var(--orb-shadow);
+    }
+    @keyframes orbSpin{
+      from { transform: translate(-50%,-50%) rotate(0deg); }
+      to   { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+    #soundBar.is-on::after{
+      animation: orbSpin 6.0s linear infinite;
+      opacity: .92;
+      color: rgba(233,213,155,.70);
+    }
+
+    /* Hover/Active */
+    #soundBar:hover{ opacity: .95; transform: translateY(-1px); }
+    #soundBar:active{ transform: translateY(0); }
 
     /* =========================================================
        Footer
@@ -924,7 +1038,6 @@
     footer small{
       display:block;
       margin-top: 10px;
-      /* PATCH: footer small 금빛 */
       color: rgba(233,213,155,.66);
       letter-spacing:.2px;
       text-shadow: var(--text-edgeA);
@@ -939,6 +1052,8 @@
         transition:none !important;
         animation:none !important;
       }
+      #soundBar{ animation:none !important; }
+      #soundBar.is-on::after{ animation:none !important; }
     }
 
     body.modal-open{ overflow:hidden; }

@@ -70,6 +70,19 @@
       --btnPadX: 12px;
       --btnFont: 12.6px;
       --btnRadius: 999px;
+
+      /* =========================================================
+         GOLD TEXT GLOW SYSTEM (PATCH)
+         - 텍스트를 "금빛의 빛"으로 올리되 번짐/흐림 없이
+      ========================================================= */
+      --gold-ink: rgba(233,213,155,.92);   /* gold2 기반 */
+      --gold-ink2: rgba(215,184,106,.90);  /* gold 기반 */
+
+      --gold-glowA: 0 0 10px rgba(215,184,106,.14);
+      --gold-glowB: 0 0 18px rgba(233,213,155,.10);
+
+      --text-edgeA: 0 1px 0 rgba(0,0,0,.70);
+      --text-edgeB: 0 -1px 0 rgba(0,0,0,.42);
     }
 
     *{ box-sizing:border-box; }
@@ -80,7 +93,10 @@
       background:
         radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
         linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
-      color:var(--ink);
+
+      /* PATCH: 기본 텍스트를 더 금빛으로 */
+      color: rgba(233,213,155,.86);
+
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       letter-spacing:.2px;
       overflow-x:hidden;
@@ -113,13 +129,8 @@
     #bio-modal .en{
       display:block !important;
     }
-
-    #bio-modal[data-bio="kr"] .en{
-      display:none !important;
-    }
-    #bio-modal[data-bio="en"] .ko{
-      display:none !important;
-    }
+    #bio-modal[data-bio="kr"] .en{ display:none !important; }
+    #bio-modal[data-bio="en"] .ko{ display:none !important; }
 
     /* =========================================================
        Waves canvas
@@ -301,7 +312,13 @@
       background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
       border: 1px solid rgba(215,184,106,.14);
     }
-    .poem p{ margin:10px 0; line-height:1.7; color:rgba(237,227,201,.88); }
+    .poem p{
+      margin:10px 0;
+      line-height:1.7;
+      /* PATCH: poem 본문 금빛 */
+      color: rgba(233,213,155,.88);
+      text-shadow: var(--text-edgeA), var(--gold-glowA);
+    }
 
     /* =========================================================
        WORKS
@@ -391,19 +408,22 @@
     }
     .w-title{
       font-weight: 500;
-      color: rgba(237,227,201,.94);
+      /* PATCH: works title 금빛 */
+      color: rgba(233,213,155,.92);
       line-height:1.32;
       font-size: 14px;
       letter-spacing: 0.02em;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: var(--text-edgeA), var(--gold-glowA);
       margin-bottom: 3px;
     }
     .w-sub{
       margin-top:3px;
       font-size: 11.3px;
-      color: rgba(237,227,201,.70);
+      /* PATCH: works sub 금빛 */
+      color: rgba(233,213,155,.64);
       line-height:1.2;
       opacity: 0.95;
+      text-shadow: var(--text-edgeA);
     }
 
     @media (max-width: 768px){
@@ -429,9 +449,16 @@
       border-radius: 14px;
       background: rgba(0,0,0,.18);
       border: 1px solid rgba(255,255,255,.05);
-      color: rgba(237,227,201,.85);
+      /* PATCH: works msg 금빛 */
+      color: rgba(233,213,155,.78);
+      text-shadow: var(--text-edgeA);
     }
-    .w-msg small{ display:block; margin-top:6px; color: rgba(237,227,201,.58); }
+    .w-msg small{
+      display:block;
+      margin-top:6px;
+      color: rgba(233,213,155,.58);
+      text-shadow: var(--text-edgeA);
+    }
 
     /* =========================================================
        REPORTS
@@ -526,22 +553,27 @@
     }
     .r-item .t{
       font-weight: 950;
-      color: rgba(237,227,201,.94);
+      /* PATCH: report title 금빛 */
+      color: rgba(233,213,155,.95);
       line-height:1.35;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: var(--text-edgeA), var(--gold-glowA), var(--gold-glowB);
     }
     .r-item .m{
       margin-top:6px;
       font-size:12px;
-      color: rgba(237,227,201,.62);
+      /* PATCH: report meta 금빛 */
+      color: rgba(233,213,155,.62);
       font-family: ui-monospace, Menlo, Consolas, monospace;
+      text-shadow: var(--text-edgeA);
     }
     .r-item .s{
       margin-top:10px;
       font-size:12px;
-      color: rgba(237,227,201,.78);
+      /* PATCH: report summary 금빛 */
+      color: rgba(233,213,155,.78);
       line-height:1.55;
       white-space: pre-line;
+      text-shadow: var(--text-edgeA), var(--gold-glowA);
     }
 
     /* =========================================================
@@ -569,7 +601,6 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      /* 100vh → 100dvh 로 교체 (iOS 주소창 문제 회피) */
       max-height: calc(100dvh - var(--safe-top) - var(--safe-bot) - 20px);
       overflow-y:auto;
       -webkit-overflow-scrolling: touch;
@@ -632,11 +663,12 @@
       border:0;
       border-bottom:1px solid rgba(255,255,255,.05);
       background: rgba(255,255,255,.02);
-      color: rgba(237,227,201,.92);
+      /* PATCH: expo-kicker 금빛 */
+      color: rgba(233,213,155,.90);
       padding: 10px 14px;
       font-weight: 950;
       cursor:pointer;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: var(--text-edgeA), var(--gold-glowA);
     }
 
     .slide-wrap{
@@ -647,22 +679,18 @@
       display:block;
     }
 
-    /* PATCH: Bio 본문 간격·아래 여백 압축 */
     .bio-body{
       padding: 10px 14px 12px;
-      color: rgba(237,227,201,.88);
+      /* PATCH: bio-body 금빛 */
+      color: rgba(233,213,155,.86);
       line-height: 1.6;
       font-size: 13.4px;
+      text-shadow: var(--text-edgeA);
     }
-    .bio-body p{
-      margin: 6px 0;
-    }
+    .bio-body p{ margin: 6px 0; }
     .bio-body strong{ color: var(--gold2); }
 
-    /* 마지막 bio-body는 아래 패딩을 조금 더 줄여서 데드 스페이스 최소화 */
-    .slide-wrap .bio-body:last-of-type{
-      padding-bottom: 8px;
-    }
+    .slide-wrap .bio-body:last-of-type{ padding-bottom: 8px; }
 
     @media (min-width: 900px){
       .bio-body{
@@ -671,234 +699,193 @@
       }
     }
 
-    /* --- A 모드: 모바일에서는 전체 화면 읽기(100dvh) --- */
     @media (max-width: 768px){
       .bio-card{
         max-width: 100%;
         width: 100%;
         margin: 0;
         border-radius: 0;
-        /* 뷰포트 전체를 Bio로 꽉 채우기 */
         height: 100dvh;
         max-height: 100dvh;
       }
     }
 
-    /* 키 작은 화면(아이폰 등)에서 폰트·간격만 미세 압축 */
     @media (max-height: 740px){
       .bio-body{
         font-size: 13px;
         line-height: 1.55;
       }
-      .bio-body p{
-        margin: 5px 0;
+      .bio-body p{ margin: 5px 0; }
+    }
+
+    /* =========================================================
+       LIGHTBOX (iOS fix)
+    ========================================================= */
+    #lightbox{
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+
+      overflow: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: auto;
+    }
+    #lightbox.is-open{ display:block; }
+
+    .lb-stage{
+      position: absolute;
+      inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      gap: 12px;
+
+      padding-top: var(--safe-top);
+
+      overflow: hidden;
+    }
+
+    #lbImg{
+      display: block;
+      width: auto;
+      height: auto;
+
+      max-width: min(1040px, 96vw);
+      max-height: calc(100% - 8px);
+
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+
+      background: rgba(0,0,0,.25);
+
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .lb-caption{
+      width: min(1040px, 96vw);
+
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+
+      background: rgba(5,8,18,.62);
+      /* PATCH: caption 금빛 */
+      color: rgba(233,213,155,.86);
+
+      white-space: pre-wrap;
+      line-height: 1.65;
+      text-shadow: var(--text-edgeA), var(--gold-glowA);
+
+      max-height: 26vh;
+      overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .lb-close{
+      position: fixed;
+      top: calc(14px + var(--safe-top));
+      right: calc(14px + var(--safe-right));
+
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+
+      appearance: none;
+      border: 1px solid rgba(215,184,106,.30);
+      background: rgba(255,255,255,.02);
+
+      color: var(--gold2);
+      font-size: 18px;
+      font-weight: 950;
+
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+
+      touch-action: manipulation;
+      z-index: 65;
+    }
+
+    @media (max-width: 768px){
+      .lb-stage{
+        inset: 12px 12px calc(12px + var(--safe-bot)) 12px;
+        gap: 10px;
+      }
+      #lbImg{
+        max-width: 96vw;
+        max-height: calc(100% - 10px);
+        border-radius: 14px;
+      }
+      .lb-caption{
+        max-height: 30vh;
+        padding: 11px 11px;
+        border-radius: 13px;
+      }
+      .lb-close{
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
       }
     }
-/* =========================================================
-   LIGHTBOX  (PATCH: iOS에서 일부 작품만 위로 붙고 스크롤 생기는 문제 해결)
-========================================================= */
-#lightbox{
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: none;
 
-  background: rgba(0,0,0,.72);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+    /* =========================================================
+       COSMIC SOUND BAR (minimal · right)
+    ========================================================= */
+    #soundBar{
+      position: fixed;
+      right: calc(14px + var(--safe-right));
+      bottom: calc(18px + var(--safe-bot));
+      width: 44px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        rgba(215,184,106,.55),
+        rgba(121,167,255,.45)
+      );
+      opacity: .35;
+      cursor: pointer;
+      z-index: 71;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.65),
+        0 0 12px rgba(215,184,106,.18);
+      transition:
+        opacity .25s ease,
+        box-shadow .3s ease,
+        transform .25s ease;
+    }
 
-  /* 오버레이 자체 스크롤 금지 (iOS에서 전체가 밀리는 문제 방지) */
-  overflow: hidden;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: auto;
-}
-#lightbox.is-open{ display:block; }
+    #soundBar.is-on{
+      opacity: .85;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.8),
+        0 0 16px rgba(121,167,255,.55);
+    }
 
-/* stage = 중앙 정렬 컨테이너 (이미지 + 캡션을 화면 중앙에 고정) */
-.lb-stage{
-  position: absolute;
-  inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
+    #soundBar:hover{ opacity: .95; }
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 12px;
-
-  /* 안전영역 보정 */
-  padding-top: var(--safe-top);
-
-  /* stage도 스크롤 금지 */
-  overflow: hidden;
-}
-
-/* 이미지: contain + 중앙 */
-#lbImg{
-  display: block;
-  width: auto;
-  height: auto;
-
-  max-width: min(1040px, 96vw);
-  max-height: calc(100% - 8px);
-
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: var(--shadow);
-
-  background: rgba(0,0,0,.25);
-
-  object-fit: contain;
-  margin: 0 auto;
-}
-
-/* 캡션: 길면 캡션만 스크롤 */
-.lb-caption{
-  width: min(1040px, 96vw);
-
-  padding: 12px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.06);
-
-  background: rgba(5,8,18,.62);
-  color: rgba(237,227,201,.88);
-
-  white-space: pre-wrap;
-  line-height: 1.65;
-  text-shadow: 0 1px 0 rgba(0,0,0,.58);
-
-  max-height: 26vh;
-  overflow: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* X 버튼: 언제나 상단 고정 */
-.lb-close{
-  position: fixed;
-  top: calc(14px + var(--safe-top));
-  right: calc(14px + var(--safe-right));
-
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-
-  appearance: none;
-  border: 1px solid rgba(215,184,106,.30);
-  background: rgba(255,255,255,.02);
-
-  color: var(--gold2);
-  font-size: 18px;
-  font-weight: 950;
-
-  cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0,0,0,.28);
-
-  touch-action: manipulation;
-  z-index: 65;
-}
-
-/* 모바일에서 stage 인셋/캡션 높이 최적화 */
-@media (max-width: 768px){
-  .lb-stage{
-    inset: 12px 12px calc(12px + var(--safe-bot)) 12px;
-    gap: 10px;
-  }
-  #lbImg{
-    max-width: 96vw;
-    max-height: calc(100% - 10px);
-    border-radius: 14px;
-  }
-  .lb-caption{
-    max-height: 30vh;
-    padding: 11px 11px;
-    border-radius: 13px;
-  }
-  .lb-close{
-    width: 44px;
-    height: 44px;
-    border-radius: 13px;
-  }
-}
-
-/* =========================================================
-   COSMIC SOUND ORB  (투명·작은·무사건·무한 루프)
-========================================================= */
-#soundOrb{
-  position: fixed;
-  left: 50%;
-  bottom: calc(16px + var(--safe-bot));
-  transform: translateX(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-
-  border: 1px solid rgba(215,184,106,.22);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.78),
-    0 10px 22px rgba(0,0,0,.34);
-
-  background:
-    radial-gradient(circle at 30% 30%, rgba(215,184,106,.75), rgba(7,10,20,0));
-
-  opacity: .60;
-  cursor: pointer;
-  z-index: 71;
-
-  transition:
-    opacity .25s ease,
-    transform .25s ease,
-    box-shadow .30s ease;
-
-  touch-action: manipulation;
-}
-
-#soundOrb:hover{
-  opacity: .95;
-  transform: translateX(-50%) translateY(-1px);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.80),
-    0 0 22px rgba(215,184,106,.36),
-    0 10px 22px rgba(0,0,0,.34);
-}
-
-#soundOrb.is-on{
-  opacity: 1;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.85),
-    0 0 26px rgba(121,167,255,.65),
-    0 10px 22px rgba(0,0,0,.34);
-}
-
-#soundOrb::after{
-  content:"";
-  position:absolute;
-  inset:6px;
-  border-radius:inherit;
-  border:1px solid rgba(7,10,20,.95);
-  box-shadow: 0 0 8px rgba(0,0,0,.7) inset;
-}
-
-@media (max-width: 768px){
-  #soundOrb{
-    width: 42px;
-    height: 42px;
-    bottom: calc(14px + var(--safe-bot));
-  }
-} 
-
-/* =========================================================
-   Footer
-========================================================= */
-footer{
-  max-width: var(--maxw);
-  margin: 18px auto 0;
-  padding: 14px 18px calc(16px + var(--safe-bot));
-  border-top:1px solid rgba(215,184,106,.16);
-  background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
-  border-radius: 18px;
-  text-align:center;
-}
+    /* =========================================================
+       Footer
+    ========================================================= */
+    footer{
+      max-width: var(--maxw);
+      margin: 18px auto 0;
+      padding: 14px 18px calc(16px + var(--safe-bot));
+      border-top:1px solid rgba(215,184,106,.16);
+      background: linear-gradient(180deg, rgba(5,8,18,.10), rgba(0,0,0,0));
+      border-radius: 18px;
+      text-align:center;
+    }
     footer .links{
       display:flex;
       flex-wrap:wrap;
@@ -937,9 +924,10 @@ footer{
     footer small{
       display:block;
       margin-top: 10px;
-      color: rgba(237,227,201,.70);
+      /* PATCH: footer small 금빛 */
+      color: rgba(233,213,155,.66);
       letter-spacing:.2px;
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      text-shadow: var(--text-edgeA);
     }
 
     /* =========================================================
@@ -953,7 +941,6 @@ footer{
       }
     }
 
-    /* 모달 열릴 때 배경 스크롤 락 */
     body.modal-open{ overflow:hidden; }
   </style>
 </head>
@@ -1262,10 +1249,6 @@ footer{
     <button id="lbClose" class="lb-close">✕</button>
   </div>
 
-  <!-- SOUND ORB (우주 표식 / 영원) -->
-  <div id="soundOrb" aria-label="Cosmic resonance" role="button"></div>
-
-  <!-- FOOTER -->
   <footer>
     <div class="links">
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
@@ -1278,71 +1261,106 @@ footer{
     <small class="ko">©등작 燈酌 DUNGZAK CESTLAVIE</small>
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
-</body>
+
+  <!-- 🔊 Cosmic Sound Bar -->
+  <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
 
 <script>
-(function () {
+(() => {
   'use strict';
 
-  /* -------------------------------------------
-   * 0. 작은 헬퍼
-   * ---------------------------------------- */
+  /* =========================================================
+     Helpers
+  ========================================================= */
   const $  = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
-  function safeJSONFetch(url) {
-    return fetch(url, { cache: 'no-store' }).then(res => {
+  const escAttr = (v) => String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const escHTML = (v) => String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  const safeJSONFetch = (url) =>
+    fetch(url, { cache: 'no-store' }).then(res => {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     });
-  }
 
-  function getLang() {
+  const getLang = () => {
     const b = document.body;
     if (b.classList.contains('english')) return 'en';
     if (b.classList.contains('hybrid'))  return 'hy';
     return 'kr';
-  }
+  };
 
-  /* -------------------------------------------
-   * 1. 메인 Nav (Poem / Works / Reports / Artist Bio)
-   * ---------------------------------------- */
+  const runIdle = (fn) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(fn, { timeout: 1200 });
+    } else {
+      setTimeout(fn, 50);
+    }
+  };
+
+  /* =========================================================
+     State
+  ========================================================= */
+  let lbOpenFrom = null;
+
+  // Works store
+  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+
+  // Reports store
+  let reportsLoaded = false;
+
+  /* =========================================================
+     1) Main Nav (Poem / Works / Reports / Artist Bio)
+  ========================================================= */
   function initNav() {
-    const navButtons = $$('nav.primary button');
-    const sections   = $$('main > section');
+    const nav = $('nav.primary');
+    if (!nav) return;
+
+    const sections = Array.from($$('main > section'));
 
     function showSection(id) {
-      sections.forEach(sec => {
-        sec.classList.toggle('is-active', sec.id === id);
-      });
+      for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
     }
 
-    // Poem / Works / Reports
-    navButtons.forEach(btn => {
+    function setActiveBtn(targetId) {
+      const btns = Array.from($$('button', nav));
+      for (const b of btns) b.classList.remove('active');
+      const btn = btns.find(x => x.dataset.target === targetId);
+      if (btn) btn.classList.add('active');
+    }
+
+    nav.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
       const target = btn.dataset.target;
-      if (!target) return; // Artist Bio 제외
-      btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+      if (target) {
+        setActiveBtn(target);
         showSection(target);
-      });
-    });
+        return;
+      }
 
-    // Artist Bio = 모달
-    const bioTab = $('#tab-bio');
-    if (bioTab) {
-      bioTab.addEventListener('click', () => {
-        openBioModal();
-      });
-    }
+      // Artist Bio
+      if (btn.id === 'tab-bio') openBioModal();
+    }, { passive: true });
 
-    // 첫 로드
+    // First load
     showSection('poem');
+    setActiveBtn('poem');
   }
 
-  /* -------------------------------------------
-   * 2. 전역 언어 토글 (KR / EN / KR+EN)
-   * ---------------------------------------- */
+  /* =========================================================
+     2) Global Language Toggle (KR / EN / KR+EN)
+  ========================================================= */
   function initLanguage() {
     const koBtn = $('#koBtn');
     const enBtn = $('#enBtn');
@@ -1356,115 +1374,90 @@ footer{
     }
 
     function activate(btn) {
-      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove('active'));
+      if (koBtn) koBtn.classList.remove('active');
+      if (enBtn) enBtn.classList.remove('active');
+      if (hyBtn) hyBtn.classList.remove('active');
       if (btn) btn.classList.add('active');
     }
 
-    if (koBtn) {
-      koBtn.addEventListener('click', () => {
-        setBodyLang('kr');
-        activate(koBtn);
-        updateOpenLightboxCaption();
-      });
-    }
-    if (enBtn) {
-      enBtn.addEventListener('click', () => {
-        setBodyLang('en');
-        activate(enBtn);
-        updateOpenLightboxCaption();
-      });
-    }
-    if (hyBtn) {
-      hyBtn.addEventListener('click', () => {
-        setBodyLang('hy');
-        activate(hyBtn);
-        updateOpenLightboxCaption();
-      });
-    }
+    if (koBtn) koBtn.addEventListener('click', () => {
+      setBodyLang('kr'); activate(koBtn);
+      updateOpenLightboxCaption();
+      syncReportsToggleLabel();
+    });
 
-    // 초기
+    if (enBtn) enBtn.addEventListener('click', () => {
+      setBodyLang('en'); activate(enBtn);
+      updateOpenLightboxCaption();
+      syncReportsToggleLabel();
+    });
+
+    if (hyBtn) hyBtn.addEventListener('click', () => {
+      setBodyLang('hy'); activate(hyBtn);
+      updateOpenLightboxCaption();
+      syncReportsToggleLabel();
+    });
+
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
 
-  /* -------------------------------------------
-   * 3. Works (data/works.json 1회 로드)
-   * ---------------------------------------- */
-  let worksLoaded = false;
-  let worksByPanel = {};
-
+  /* =========================================================
+     3) Works
+  ========================================================= */
   function initWorks() {
-    // 🔹 Origin 패널 포함
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
 
-    // section_id 기반 매핑 (0 = origin)
-    const idMap = {
-      0: 'origin',
-      1: 'pray',
-      2: 'human',
-      3: 'rebirth',
-      4: 'exist',
-      5: 'cosmos'
-    };
-
-    const tabButtons = $$('.tabs .tab');
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+    // Tabs (event delegation)
+    const tabs = $('.tabs', worksRoot);
+    if (tabs) {
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
         const key = btn.dataset.panel;
         if (!key) return;
-        tabButtons.forEach(b => b.classList.remove('active'));
+
+        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
         btn.classList.add('active');
-        panelIds.forEach(p => {
+
+        for (const p of panelIds) {
           const el = $('#panel-' + p);
           if (el) el.classList.toggle('active', p === key);
-        });
-      });
-    });
+        }
+      }, { passive: true });
+    }
 
+    // Load works.json
     safeJSONFetch('data/works.json')
       .then(json => {
-        const list = Array.isArray(json)
-          ? json
-          : (json.works || json.items || []);
-        if (!Array.isArray(list)) return;
+        const list = Array.isArray(json) ? json : (json.works || json.items || []);
+        if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-        // 🔹 Origin 포함 초기 구조
-        worksByPanel = {
-          origin: [],
-          pray: [],
-          human: [],
-          rebirth: [],
-          exist: [],
-          cosmos: []
-        };
+        worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-        list.forEach(item => {
+        for (const item of list) {
           let key = item.section || item.panel;
-
-          if (!key && item.section_id != null) {
-            const sid = Number(item.section_id);
-            key = idMap[sid] || 'pray';
-          }
-
+          if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
           if (!key || !worksByPanel[key]) key = 'pray';
           worksByPanel[key].push(item);
-        });
+        }
 
-        Object.keys(worksByPanel).forEach(key => {
+        for (const key of Object.keys(worksByPanel)) {
           const panel = $('#panel-' + key);
-          if (!panel) return;
-          renderWorksPanel(panel, worksByPanel[key], key);
-        });
+          if (panel) renderWorksPanel(panel, worksByPanel[key], key);
+        }
 
         attachWorksLightbox();
-        worksLoaded = true;
       })
       .catch(err => {
         console.error('works.json load error:', err);
-        const allPanels = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-        allPanels.forEach(key => {
+        for (const key of panelIds) {
           const panel = $('#panel-' + key);
-          if (!panel) return;
+          if (!panel) continue;
           panel.innerHTML = `
             <div class="w-msg">
               <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로와 파일 구성을 확인해 주세요.</div>
@@ -1472,13 +1465,11 @@ footer{
               <small>GitHub Actions 로그에서 오류 메시지를 함께 확인해 주세요.</small>
             </div>
           `;
-        });
+        }
       });
   }
 
-  // 🔹 Origin 패널만 "이미지 단독" / 나머지는 기존 캡션 유지
   function renderWorksPanel(panel, items, key) {
-    if (!panel) return;
     const isOrigin = (key === 'origin');
 
     if (!items || !items.length) {
@@ -1491,119 +1482,92 @@ footer{
       return;
     }
 
-    const html = [
-      '<div class="w-grid">',
-      ...items.map(item => {
-        const id         = item.id || '';
-        const titleKr    = item.title_kr || '';
-        const titleEn    = item.title_en || '';
-        const matKr      = item.material_kr || '';
-        const matEn      = item.material_en || '';
-        const sizeKr     = item.size_kr || '';
-        const sizeEn     = item.size_en || '';
-        const year       = item.year || '';
-        const imgStd     = item.image || item.image_standard || '';
-        const imgZoom    = item.zoom  || item.image_zoom     || imgStd;
-        const safe = s => String(s).replace(/"/g, '&quot;');
+    let html = '<div class="w-grid">';
+    for (const item of items) {
+      const id      = item.id || '';
+      const titleKr = item.title_kr || '';
+      const titleEn = item.title_en || '';
+      const matKr   = item.material_kr || '';
+      const matEn   = item.material_en || '';
+      const sizeKr  = item.size_kr || '';
+      const sizeEn  = item.size_en || '';
+      const year    = item.year || '';
+      const imgStd  = item.image || item.image_standard || '';
+      const imgZoom = item.zoom  || item.image_zoom || imgStd;
 
-        // Origin은 캡션 완전 제거를 위해 cap을 비워둠
-        const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-        const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
 
-        if (isOrigin) {
-          // 🔸 Origin: 이미지만 표시 (w-meta 없음)
-          return `
-            <article class="w-card w-card-origin"
-                     data-id="${safe(id)}"
-                     data-img="${safe(imgZoom || imgStd)}"
-                     data-cap-kr=""
-                     data-cap-en="">
-              <img class="w-thumb"
-                   src="${safe(imgStd)}"
-                   alt="${safe(titleEn || titleKr || 'Artwork')}"
-                   loading="lazy" />
-            </article>
-          `;
-        }
-
-        // 🔸 나머지 섹션: 기존 카드 구조 유지 (캡션 포함)
-        return `
-          <article class="w-card"
-                   data-id="${safe(id)}"
-                   data-img="${safe(imgZoom || imgStd)}"
-                   data-title-kr="${safe(titleKr)}"
-                   data-title-en="${safe(titleEn)}"
-                   data-mat-kr="${safe(matKr)}"
-                   data-mat-en="${safe(matEn)}"
-                   data-size-kr="${safe(sizeKr)}"
-                   data-size-en="${safe(sizeEn)}"
-                   data-year="${safe(year)}"
-                   data-cap-kr="${safe(captionKr)}"
-                   data-cap-en="${safe(captionEn)}">
+      if (isOrigin) {
+        html += `
+          <article class="w-card w-card-origin"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}">
             <img class="w-thumb"
-                 src="${safe(imgStd)}"
-                 alt="${safe(titleEn || titleKr || 'Artwork')}"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy" />
+          </article>
+        `;
+      } else {
+        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
+        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
+
+        html += `
+          <article class="w-card"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}"
+                   data-cap-kr="${escAttr(captionKr)}"
+                   data-cap-en="${escAttr(captionEn)}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
                  loading="lazy" />
             <div class="w-meta">
               <div class="w-title">
-                <span class="ko">${titleKr}</span>
-                <span class="en">${titleEn}</span>
+                <span class="ko">${escHTML(titleKr)}</span>
+                <span class="en">${escHTML(titleEn)}</span>
               </div>
               <div class="w-sub">
-                <span class="ko">${(matKr && year) ? `${matKr} · ${year}` : (matKr || year || '')}</span>
-                <span class="en">${(matEn && year) ? `${matEn} · ${year}` : (matEn || year || '')}</span>
+                <span class="ko">${escHTML(subKr)}</span>
+                <span class="en">${escHTML(subEn)}</span>
               </div>
             </div>
           </article>
         `;
-      }),
-      '</div>'
-    ].join('');
-
+      }
+    }
+    html += '</div>';
     panel.innerHTML = html;
   }
 
-  /* -------------------------------------------
-   * 4. Lightbox
-   * ---------------------------------------- */
-  let lbOpenFrom = null;
-
+  /* =========================================================
+     4) Lightbox
+  ========================================================= */
   function attachWorksLightbox() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
-    worksRoot.addEventListener('click', e => {
+    worksRoot.addEventListener('click', (e) => {
       const card = e.target.closest('.w-card');
       if (!card) return;
       openLightboxFromCard(card);
     });
 
-    const lb   = $('#lightbox');
+    const lb = $('#lightbox');
     const btnX = $('#lbClose');
-    if (lb) {
-      lb.addEventListener('click', e => {
-        if (e.target === lb) closeLightbox();
-      });
-    }
-    if (btnX) {
-      btnX.addEventListener('click', closeLightbox);
-    }
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeLightbox();
-    });
+
+    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
+    if (btnX) btnX.addEventListener('click', closeLightbox);
   }
 
   function buildCaptionForCard(card, mode) {
-    // 🔹 Origin 카드에서는 Lightbox 캡션도 완전히 비움
-    if (card.closest('#panel-origin')) {
-      return '';
-    }
+    if (card.closest('#panel-origin')) return '';
 
     const capKr = card.getAttribute('data-cap-kr') || '';
     const capEn = card.getAttribute('data-cap-en') || '';
-    if (mode === 'en') {
-      return capEn || capKr || '';
-    }
+
+    if (mode === 'en') return capEn || capKr || '';
     if (mode === 'hy') {
       if (capKr && capEn) return capKr + '\n\n' + capEn;
       return capKr || capEn || '';
@@ -1612,7 +1576,7 @@ footer{
   }
 
   function openLightboxFromCard(card) {
-    const lb    = $('#lightbox');
+    const lb = $('#lightbox');
     const lbImg = $('#lbImg');
     const lbCap = $('#lbCap');
     if (!lb || !lbImg || !lbCap) return;
@@ -1630,10 +1594,11 @@ footer{
   }
 
   function closeLightbox() {
-    const lb    = $('#lightbox');
+    const lb = $('#lightbox');
     const lbImg = $('#lbImg');
     const lbCap = $('#lbCap');
     if (!lb) return;
+
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
     if (lbImg) lbImg.src = '';
@@ -1648,63 +1613,112 @@ footer{
     lbCap.textContent = buildCaptionForCard(lbOpenFrom, getLang());
   }
 
-  /* -------------------------------------------
-   * 5. Reports
-   * ---------------------------------------- */
+  /* =========================================================
+     5) Reports (Fix #1 + Fast)
+  ========================================================= */
   function initReports() {
     const grid = $('#reportGrid');
-    if (!grid) return;
+    const reportsRoot = $('#reports');
+    if (!grid || !reportsRoot) return;
 
-    const tabs = $$('.r-tab');
     const toggleBtn = $('#reportsToggle');
+    const tabsWrap  = $('.r-tabs', reportsRoot);
 
-    function applyFilter(type) {
-      const items = $$('.r-item', grid);
-      items.forEach(item => {
-        const cat = (item.dataset.category || '').toLowerCase();
-        if (!type || type === 'all' || cat === type) {
-          item.style.display = '';
-        } else {
-          item.style.display = 'none';
-        }
-      });
+    // 기본 상태: 닫힘 유지
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      grid.style.display = 'none';
     }
 
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const type = (btn.dataset.r || '').toLowerCase();
-        tabs.forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        applyFilter(type);
-      });
-    });
+    // 버튼 라벨 동기화
+    syncReportsToggleLabel();
 
+    // 탭 필터: event delegation
+    if (tabsWrap) {
+      tabsWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.r-tab');
+        if (!btn) return;
+
+        const type = (btn.dataset.r || 'all').toLowerCase();
+
+        for (const b of $$('.r-tab', tabsWrap)) b.classList.remove('is-active');
+        btn.classList.add('is-active');
+
+        applyReportFilter(type);
+      }, { passive: true });
+    }
+
+    // 토글: 닫힘/열림 + (처음 열 때만 로드도 가능)
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
         const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
+        syncReportsToggleLabel();
+
+        // 열 때, 아직 로드 안됐으면 즉시 로드
+        if (!expanded && !reportsLoaded) {
+          loadReportsIntoGrid(grid);
+        }
       });
     }
 
+    // 속도 최상: 보고서는 idle에 미리 가져오되, 화면은 닫힌 상태 유지
+    runIdle(() => {
+      if (!reportsLoaded) loadReportsIntoGrid(grid);
+    });
+
+    function applyReportFilter(type) {
+      const items = $$('.r-item', grid);
+      for (const item of items) {
+        const cat = (item.dataset.category || '').toLowerCase();
+        item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
+      }
+    }
+
+    // Reports 항목 클릭은 a.r-open이 처리(새 탭)
+    // (추가로 카드 전체 클릭으로 새탭 열고 싶으면 여기서 위임 가능)
+  }
+
+  function syncReportsToggleLabel() {
+    const btn = $('#reportsToggle');
+    if (!btn) return;
+
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    const lang = getLang();
+
+    // 원하는 문구(정확/단단)
+    const labels = {
+      kr: { open: '보고서 열기', close: '보고서 닫기' },
+      en: { open: 'Open Reports', close: 'Close Reports' },
+      hy: { open: 'Open Reports', close: 'Close Reports' } // 하이브리드에서도 버튼은 깔끔하게 영어 유지
+    };
+
+    const L = labels[lang] || labels.kr;
+    btn.textContent = expanded ? L.close : L.open;
+  }
+
+  function loadReportsIntoGrid(grid) {
+    reportsLoaded = true;
+
     safeJSONFetch('data/reports.json')
       .then(json => {
-        const list = Array.isArray(json)
-          ? json
-          : (json.reports || json.items || []);
+        const list = Array.isArray(json) ? json : (json.reports || json.items || []);
         if (!Array.isArray(list) || !list.length) return;
 
-        const html = list.map(item => {
-          const id        = item.id || '';
-          const year      = item.year || '';
-          const category  = (item.category || 'theory').toLowerCase();
-          const titleKr   = item.title_ko || item.title_kr || '';
-          const titleEn   = item.title_en || '';
-          const summaryKr = item.summary_ko || item.summary_kr || '';
-          const summaryEn = item.summary_en || '';
-          const href      = item.url || item.link || item.md_path || '#';
+        // 한 번에 붙이기 (빠름)
+        let html = '';
+        for (const item of list) {
+          const id        = escHTML(item.id || '');
+          const year      = escHTML(item.year || '');
+          const category  = escHTML((item.category || 'theory').toLowerCase());
+          const titleKr   = escHTML(item.title_ko || item.title_kr || '');
+          const titleEn   = escHTML(item.title_en || '');
+          const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
+          const summaryEn = escHTML(item.summary_en || '');
+          const href      = escAttr(item.url || item.link || item.md_path || '#');
 
-          return `
+          html += `
             <article class="r-item" data-category="${category}">
               <div class="t">
                 <span class="ko">${titleKr}</span>
@@ -1717,61 +1731,62 @@ footer{
                 <span class="ko">${summaryKr}</span>
                 <span class="en">${summaryEn}</span>
               </div>
-              <a href="${href}" target="_blank" rel="noopener"
-                 style="display:inline-block;margin-top:10px;font-size:11px;text-decoration:underline;">
+              <a class="r-open" href="${href}" target="_blank" rel="noopener">
                 <span class="ko">전체 보기 (새 창)</span>
                 <span class="en">Open full report (new tab)</span>
               </a>
             </article>
           `;
-        }).join('');
+        }
 
         grid.innerHTML = html;
-        grid.style.display = 'grid';
-        const defaultTab = tabs.find(b => b.dataset.r === 'all') || tabs[0];
+
+        // 기본 탭(All) 적용
+        const tabs = Array.from($$('.r-tab'));
+        const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
         if (defaultTab) {
+          for (const b of tabs) b.classList.remove('is-active');
           defaultTab.classList.add('is-active');
-          applyFilter((defaultTab.dataset.r || 'all').toLowerCase());
         }
+
+        // 열려있는 상태일 때만 보이기
+        const toggleBtn = $('#reportsToggle');
+        const expanded = toggleBtn ? (toggleBtn.getAttribute('aria-expanded') === 'true') : false;
+        grid.style.display = expanded ? 'grid' : 'none';
       })
-      .catch(err => {
-        console.error('reports.json load error:', err);
-      });
+      .catch(err => console.error('reports.json load error:', err));
   }
 
-  /* -------------------------------------------
-   * 6. Artist Bio 모달 + 요약 토글
-   * ---------------------------------------- */
+  /* =========================================================
+     6) Artist Bio modal + expo slide toggle
+  ========================================================= */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    // 1) 언어: KR로 초기화
+    // Always open in KR
     modal.dataset.bio = 'kr';
-    const langBtns = $$('.bio-lang .lang', modal);
-    langBtns.forEach(btn => {
+
+    const langBtns = Array.from($$('.bio-lang .lang', modal));
+    for (const btn of langBtns) {
       const isKr = (btn.dataset.bioLang || 'kr') === 'kr';
       btn.classList.toggle('active', isKr);
       btn.setAttribute('aria-pressed', String(isKr));
-    });
+    }
 
-    // 2) 전시/소장/저서 리스트: 항상 닫힌 상태로 초기화
-    const expoBtn   = $('#expoToggle');
+    const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
     if (expoBtn && expoBlock) {
       expoBlock.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
     }
 
-    // 3) 모달 열기 + 스크롤 맨 위로
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
 
     const card = modal.querySelector('.bio-card');
-    if (card) {
-      card.scrollTop = 0;
-    }
+    if (card) card.scrollTop = 0;
   }
 
   function closeBioModal() {
@@ -1786,42 +1801,29 @@ footer{
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    // 기본 언어: KR
     modal.dataset.bio = 'kr';
 
-    // 상단 KR / EN 토글
-    const langBtns = $$('.bio-lang .lang', modal);
-    langBtns.forEach(btn => {
+    const langBtns = Array.from($$('.bio-lang .lang', modal));
+    for (const btn of langBtns) {
       btn.addEventListener('click', () => {
         const mode = btn.dataset.bioLang || 'kr';
         modal.dataset.bio = mode;
 
-        langBtns.forEach(b => {
-          const active = b === btn;
+        for (const b of langBtns) {
+          const active = (b === btn);
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
-        });
-      });
-    });
-
-    const closeBtn  = $('.bio-close', modal);
-    const backdrop  = $('.bio-backdrop', modal);
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeBioModal);
-    }
-    if (backdrop) {
-      backdrop.addEventListener('click', e => {
-        if (e.target === backdrop) closeBioModal();
+        }
       });
     }
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeBioModal();
-    });
+    const closeBtn = $('.bio-close', modal);
+    const backdrop = $('.bio-backdrop', modal);
 
-    // 전시/소장/저서 슬라이드 토글 (기본은 닫힘)
-    const expoBtn   = $('#expoToggle');
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal);
+    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); });
+
+    const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
     if (expoBtn && expoBlock) {
       expoBlock.setAttribute('data-open', 'false');
@@ -1829,64 +1831,31 @@ footer{
 
       expoBtn.addEventListener('click', () => {
         const isOpen = expoBlock.getAttribute('data-open') === 'true';
-        const next   = !isOpen;
-        expoBlock.setAttribute('data-open', next ? 'true' : 'false');
-        expoBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
+        expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
+        expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
       });
     }
   }
 
-  /* -------------------------------------------
-   * 7. Sound (우주 표식 · 영원 오브)
-   * ---------------------------------------- */
+  /* =========================================================
+     7) Sound (soundBar toggle)
+  ========================================================= */
   function initSound() {
-    const orb = $('#soundOrb');
-    if (!orb) return;
+    const bar = $('#soundBar');
+    if (!bar) return;
 
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
     audio.preload = 'auto';
     audio.volume = 0.18;
 
-    let playing  = false;
-    let pulseTimer = null;
-
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function updateVisual() {
-      orb.classList.toggle('is-on', playing);
-      if (!playing && !prefersReduced) {
-        orb.style.transform = '';
-      }
-    }
-
-    function startPulse() {
-      if (prefersReduced) return;
-      if (pulseTimer) clearInterval(pulseTimer);
-      pulseTimer = setInterval(() => {
-        if (!playing) return;
-        const scale = 0.96 + Math.random() * 0.08;
-        orb.style.transform = 'scale(' + scale.toFixed(2) + ')';
-      }, 420);
-    }
-
-    function stopPulse() {
-      if (pulseTimer) {
-        clearInterval(pulseTimer);
-        pulseTimer = null;
-      }
-      if (!prefersReduced) {
-        orb.style.transform = '';
-      }
-    }
+    let playing = false;
 
     async function playSound() {
       try {
         await audio.play();
         playing = true;
-        updateVisual();
-        startPulse();
+        bar.classList.add('is-on');
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
@@ -1897,29 +1866,23 @@ footer{
       audio.pause();
       audio.currentTime = 0;
       playing = false;
-      stopPulse();
-      updateVisual();
+      bar.classList.remove('is-on');
     }
 
-    function toggleSound() {
+    bar.addEventListener('click', () => {
       if (playing) stopSound();
       else playSound();
-    }
-
-    orb.addEventListener('click', toggleSound);
-
-    window.addEventListener('pagehide', () => {
-      stopSound();
     });
 
-    updateVisual();
+    window.addEventListener('pagehide', stopSound);
+    bar.classList.remove('is-on');
   }
 
-  /* -------------------------------------------
-   * 7-1. Waves 배경 (코스믹 파동 · 경량화 버전)
-   * ---------------------------------------- */
+  /* =========================================================
+     7-1) Waves background
+  ========================================================= */
   function initWaves() {
-    const canvas = document.getElementById('waves');
+    const canvas = $('#waves');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
@@ -1928,23 +1891,22 @@ footer{
     const prefersReduced = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    const gradients = [
+      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
+      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
+    ];
+
     function resize() {
       const dpr = window.devicePixelRatio || 1;
       canvas.width  = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-
     resize();
     window.addEventListener('resize', resize);
 
     let t = 0;
     let animId = null;
-
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
-    ];
 
     function draw() {
       if (prefersReduced) return;
@@ -1955,11 +1917,11 @@ footer{
 
       ctx.clearRect(0, 0, w, h);
 
-      gradients.forEach((g, idx) => {
+      for (let idx = 0; idx < gradients.length; idx++) {
+        const g = gradients[idx];
         ctx.beginPath();
         for (let x = 0; x <= w; x += 10) {
-          const y = h * 0.25 + idx * 80 +
-            Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
+          const y = h * 0.25 + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -1968,43 +1930,60 @@ footer{
         ctx.shadowColor = 'rgba(0,0,0,0.50)';
         ctx.shadowBlur = 8;
         ctx.stroke();
-      });
+      }
 
       ctx.shadowBlur = 0;
       t += 1;
       animId = requestAnimationFrame(draw);
     }
 
-    if (!prefersReduced) {
-      animId = requestAnimationFrame(draw);
-    }
+    if (!prefersReduced) animId = requestAnimationFrame(draw);
 
     document.addEventListener('visibilitychange', () => {
       if (prefersReduced) return;
       if (document.hidden) {
-        if (animId) {
-          cancelAnimationFrame(animId);
-          animId = null;
-        }
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
       } else if (!animId) {
         animId = requestAnimationFrame(draw);
       }
     });
   }
 
-  /* -------------------------------------------
-   * 8. 초기화
-   * ---------------------------------------- */
-  document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); }         catch (e) { console.error(e); }
-    try { initLanguage(); }    catch (e) { console.error(e); }
-    try { initWorks(); }       catch (e) { console.error(e); }
-    try { initReports(); }     catch (e) { console.error(e); }
-    try { initBioModal(); }    catch (e) { console.error(e); }
-    try { initSound(); }       catch (e) { console.error(e); }
-    try { initWaves(); }       catch (e) { console.error(e); }
-  });
+  /* =========================================================
+     8) Global Escape handler (single)
+  ========================================================= */
+  function initGlobalKeys() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
 
+      // Lightbox 우선 닫기
+      const lb = $('#lightbox');
+      if (lb && lb.classList.contains('is-open')) {
+        closeLightbox();
+        return;
+      }
+
+      // Bio 모달 닫기
+      const modal = $('#bio-modal');
+      if (modal && !modal.hidden) {
+        closeBioModal();
+        return;
+      }
+    }, { passive: true });
+  }
+
+  /* =========================================================
+     Boot
+  ========================================================= */
+  document.addEventListener('DOMContentLoaded', () => {
+    try { initNav(); }        catch (e) { console.error(e); }
+    try { initLanguage(); }   catch (e) { console.error(e); }
+    try { initWorks(); }      catch (e) { console.error(e); }
+    try { initReports(); }    catch (e) { console.error(e); }
+    try { initBioModal(); }   catch (e) { console.error(e); }
+    try { initSound(); }      catch (e) { console.error(e); }
+    try { initWaves(); }      catch (e) { console.error(e); }
+    try { initGlobalKeys(); } catch (e) { console.error(e); }
+  });
 })();
 </script>
-</html>

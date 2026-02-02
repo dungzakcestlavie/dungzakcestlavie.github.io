@@ -1058,6 +1058,64 @@
 
     body.modal-open{ overflow:hidden; }
   </style>
+
+<style>
+  @media (prefers-reduced-motion: reduce){
+    *{
+      scroll-behavior: auto !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    #soundBar{ animation: none !important; }
+    #soundBar.is-on::after{ animation: none !important; }
+  }
+
+  body.modal-open{ overflow:hidden; }
+
+  /* ===== 🔽 여기부터 추가 (사운드바 오버라이드) ===== */
+
+  #soundBar{
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+
+    --sound-ring: rgba(215,184,106,0.72);
+    --sound-glow: rgba(215,184,106,0.18);
+
+    border: 1.2px solid var(--sound-ring) !important;
+    border-radius: 999px !important;
+
+    background: rgba(0,0,0,0.12) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 0 18px var(--sound-glow) !important;
+  }
+
+  /* 벌레같은 기호 제거 */
+  #soundBar::before,
+  #soundBar::after{
+    content: "" !important;
+    display: none !important;
+  }
+
+  #soundBar svg,
+  #soundBar span,
+  #soundBar .glyph{
+    display: none !important;
+  }
+
+  /* 재생 중 */
+  #soundBar.is-on{
+    border-color: var(--sound-ring) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 0 22px var(--sound-glow) !important;
+  }
+
+</style>
+
 </head>
 
 <body class="korean">

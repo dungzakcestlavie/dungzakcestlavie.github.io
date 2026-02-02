@@ -1675,9 +1675,6 @@
         item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
       }
     }
-
-    // Reports 항목 클릭은 a.r-open이 처리(새 탭)
-    // (추가로 카드 전체 클릭으로 새탭 열고 싶으면 여기서 위임 가능)
   }
 
   function syncReportsToggleLabel() {
@@ -1687,11 +1684,10 @@
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     const lang = getLang();
 
-    // 원하는 문구(정확/단단)
     const labels = {
       kr: { open: '보고서 열기', close: '보고서 닫기' },
       en: { open: 'Open Reports', close: 'Close Reports' },
-      hy: { open: 'Open Reports', close: 'Close Reports' } // 하이브리드에서도 버튼은 깔끔하게 영어 유지
+      hy: { open: 'Open Reports', close: 'Close Reports' }
     };
 
     const L = labels[lang] || labels.kr;
@@ -1706,7 +1702,6 @@
         const list = Array.isArray(json) ? json : (json.reports || json.items || []);
         if (!Array.isArray(list) || !list.length) return;
 
-        // 한 번에 붙이기 (빠름)
         let html = '';
         for (const item of list) {
           const id        = escHTML(item.id || '');
@@ -1749,7 +1744,6 @@
           defaultTab.classList.add('is-active');
         }
 
-        // 열려있는 상태일 때만 보이기
         const toggleBtn = $('#reportsToggle');
         const expanded = toggleBtn ? (toggleBtn.getAttribute('aria-expanded') === 'true') : false;
         grid.style.display = expanded ? 'grid' : 'none';
@@ -1838,11 +1832,16 @@
   }
 
   /* =========================================================
-     7) Sound (soundBar toggle)
+     7) Sound (Cosmic Orb toggle)
+     - “투명 / 원형 / 수학적 / 5~6초 미세 공명”
   ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
     if (!bar) return;
+
+    // 접근성
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('aria-pressed', 'false');
 
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
@@ -1856,6 +1855,7 @@
         await audio.play();
         playing = true;
         bar.classList.add('is-on');
+        bar.setAttribute('aria-pressed', 'true');
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
@@ -1867,11 +1867,22 @@
       audio.currentTime = 0;
       playing = false;
       bar.classList.remove('is-on');
+      bar.setAttribute('aria-pressed', 'false');
     }
 
-    bar.addEventListener('click', () => {
+    function toggle() {
       if (playing) stopSound();
       else playSound();
+    }
+
+    bar.addEventListener('click', toggle);
+
+    // 키보드 토글(엔터/스페이스)
+    bar.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
     });
 
     window.addEventListener('pagehide', stopSound);
@@ -1987,3 +1998,5 @@
   });
 })();
 </script>
+</body>
+</html>

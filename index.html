@@ -1,5 +1,8 @@
 <!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮31 · HEAD 완성체 : Sound Orb + Reports UX)
+① HEAD / STYLE  (Lightflow ∮31 · HEAD 완전 교체본)
+- 국제 SEO 타이틀/디스크립션 + OG/Twitter + JSON-LD 포함
+- 네가 올린 “두 번째 style(44px 강제/::before::after 제거)”는 완전히 제거
+- Sound Orb(52px) / Reports UX / Bio / Lightbox / Waves / Footer 스타일 포함 (원본 유지)
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
@@ -8,22 +11,57 @@
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
-  <title>등작 燈酌 DUNGZAK CESTLAVIE ∮31 · Lightflow</title>
-  <meta name="description" content="LIGHTFLOW · LIGHT · MEMORY · BEING — 등작 燈酌 DUNGZAK CESTLAVIE" />
+  <!-- 🔥 FINAL TITLE (국제 SEO) -->
+  <title>등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist</title>
+
+  <!-- 🔥 FINAL DESCRIPTION (국제 SEO) -->
+  <meta
+    name="description"
+    content="등작 燈酌 DUNGZAK CESTLAVIE is a contemporary artist exploring Light, Memory, and Being through painting, DCAR aesthetic reports, the Lightflow archive, and Music Universe."
+  />
 
   <link rel="canonical" href="https://dungzak.art/" />
 
-  <!-- OG / Twitter -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE · Lightflow ∮31" />
-  <meta property="og:description" content="LIGHTFLOW · LIGHT · MEMORY · BEING" />
+  <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist" />
+  <meta
+    property="og:description"
+    content="Official website of DUNGZAK CESTLAVIE. Explore paintings, DCAR aesthetic reports, Lightflow archive, and Music Universe."
+  />
   <meta property="og:url" content="https://dungzak.art/" />
+  <meta property="og:site_name" content="DUNGZAK CESTLAVIE" />
+  <meta property="og:locale" content="ko_KR" />
   <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
+
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist" />
+  <meta
+    name="twitter:description"
+    content="Explore paintings, exhibitions, DCAR aesthetic reports, Lightflow archive, and Music Universe."
+  />
 
   <!-- Google Translate bar 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
+
+  <!-- Structured Data (기관/미술관 대응) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "DUNGZAK CESTLAVIE",
+    "alternateName": "등작 燈酌",
+    "url": "https://dungzak.art/",
+    "jobTitle": "Contemporary Artist",
+    "sameAs": [
+      "https://instagram.com/dungzakcestlavie",
+      "https://youtube.com/@dungzakcestlavie",
+      "https://flickr.com/photos/dungzak"
+    ]
+  }
+  </script>
 
   <style>
     /* =========================================================
@@ -1058,64 +1096,6 @@
 
     body.modal-open{ overflow:hidden; }
   </style>
-
-<style>
-  @media (prefers-reduced-motion: reduce){
-    *{
-      scroll-behavior: auto !important;
-      transition: none !important;
-      animation: none !important;
-    }
-
-    #soundBar{ animation: none !important; }
-    #soundBar.is-on::after{ animation: none !important; }
-  }
-
-  body.modal-open{ overflow:hidden; }
-
-  /* ===== 🔽 여기부터 추가 (사운드바 오버라이드) ===== */
-
-  #soundBar{
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-
-    --sound-ring: rgba(215,184,106,0.72);
-    --sound-glow: rgba(215,184,106,0.18);
-
-    border: 1.2px solid var(--sound-ring) !important;
-    border-radius: 999px !important;
-
-    background: rgba(0,0,0,0.12) !important;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,0.04) inset,
-      0 0 18px var(--sound-glow) !important;
-  }
-
-  /* 벌레같은 기호 제거 */
-  #soundBar::before,
-  #soundBar::after{
-    content: "" !important;
-    display: none !important;
-  }
-
-  #soundBar svg,
-  #soundBar span,
-  #soundBar .glyph{
-    display: none !important;
-  }
-
-  /* 재생 중 */
-  #soundBar.is-on{
-    border-color: var(--sound-ring) !important;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,0.05) inset,
-      0 0 22px var(--sound-glow) !important;
-  }
-
-</style>
-
 </head>
 
 <body class="korean">
@@ -1459,9 +1439,12 @@
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;');
 
+  // ✅ attribute에 안전하게 줄바꿈 보존(&#10;)
+  const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
+
   const safeJSONFetch = (url) =>
     fetch(url, { cache: 'no-store' }).then(res => {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
       return res.json();
     });
 
@@ -1473,22 +1456,15 @@
   };
 
   const runIdle = (fn) => {
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(fn, { timeout: 1200 });
-    } else {
-      setTimeout(fn, 50);
-    }
+    if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1200 });
+    else setTimeout(fn, 50);
   };
 
   /* =========================================================
      State
   ========================================================= */
   let lbOpenFrom = null;
-
-  // Works store
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
-
-  // Reports store
   let reportsLoaded = false;
 
   /* =========================================================
@@ -1522,11 +1498,9 @@
         return;
       }
 
-      // Artist Bio
       if (btn.id === 'tab-bio') openBioModal();
     }, { passive: true });
 
-    // First load
     showSection('poem');
     setActiveBtn('poem');
   }
@@ -1585,7 +1559,6 @@
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
     const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
 
-    // Tabs (event delegation)
     const tabs = $('.tabs', worksRoot);
     if (tabs) {
       tabs.addEventListener('click', (e) => {
@@ -1604,7 +1577,6 @@
       }, { passive: true });
     }
 
-    // Load works.json
     safeJSONFetch('data/works.json')
       .then(json => {
         const list = Array.isArray(json) ? json : (json.works || json.items || []);
@@ -1633,9 +1605,9 @@
           if (!panel) continue;
           panel.innerHTML = `
             <div class="w-msg">
-              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로와 파일 구성을 확인해 주세요.</div>
-              <div class="en">Unable to load artworks. Please check data/works.json path and structure.</div>
-              <small>GitHub Actions 로그에서 오류 메시지를 함께 확인해 주세요.</small>
+              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+              <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+              <small>${escHTML(String(err?.message || err || ''))}</small>
             </div>
           `;
         }
@@ -1686,12 +1658,16 @@
         const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
         const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
 
+        // ✅ 줄바꿈을 attribute에 안전하게 저장
+        const capKrAttr = escAttrWithNL(captionKr);
+        const capEnAttr = escAttrWithNL(captionEn);
+
         html += `
           <article class="w-card"
                    data-id="${escAttr(id)}"
                    data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${escAttr(captionKr)}"
-                   data-cap-en="${escAttr(captionEn)}">
+                   data-cap-kr="${capKrAttr}"
+                   data-cap-en="${capEnAttr}">
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
@@ -1737,8 +1713,12 @@
   function buildCaptionForCard(card, mode) {
     if (card.closest('#panel-origin')) return '';
 
-    const capKr = card.getAttribute('data-cap-kr') || '';
-    const capEn = card.getAttribute('data-cap-en') || '';
+    // attribute에서 &#10; → 문자열로 읽히면 이미 '\n'로 복구되는 경우가 많지만,
+    // 브라우저별 차이를 대비해 명시적으로 치환도 해둠.
+    const capKrRaw = card.getAttribute('data-cap-kr') || '';
+    const capEnRaw = card.getAttribute('data-cap-en') || '';
+    const capKr = capKrRaw.replace(/&#10;/g, '\n');
+    const capEn = capEnRaw.replace(/&#10;/g, '\n');
 
     if (mode === 'en') return capEn || capKr || '';
     if (mode === 'hy') {
@@ -1787,7 +1767,7 @@
   }
 
   /* =========================================================
-     5) Reports (Fix #1 + Fast)
+     5) Reports
   ========================================================= */
   function initReports() {
     const grid = $('#reportGrid');
@@ -1797,16 +1777,13 @@
     const toggleBtn = $('#reportsToggle');
     const tabsWrap  = $('.r-tabs', reportsRoot);
 
-    // 기본 상태: 닫힘 유지
     if (toggleBtn) {
       toggleBtn.setAttribute('aria-expanded', 'false');
       grid.style.display = 'none';
     }
 
-    // 버튼 라벨 동기화
     syncReportsToggleLabel();
 
-    // 탭 필터: event delegation
     if (tabsWrap) {
       tabsWrap.addEventListener('click', (e) => {
         const btn = e.target.closest('.r-tab');
@@ -1821,7 +1798,6 @@
       }, { passive: true });
     }
 
-    // 토글: 닫힘/열림 + (처음 열 때만 로드도 가능)
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
         const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
@@ -1829,14 +1805,11 @@
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
 
-        // 열 때, 아직 로드 안됐으면 즉시 로드
-        if (!expanded && !reportsLoaded) {
-          loadReportsIntoGrid(grid);
-        }
+        if (!expanded && !reportsLoaded) loadReportsIntoGrid(grid);
       });
     }
 
-    // 속도 최상: 보고서는 idle에 미리 가져오되, 화면은 닫힌 상태 유지
+    // 유지: idle에서 한 번 로드(원하면 이 블록 삭제해도 됨)
     runIdle(() => {
       if (!reportsLoaded) loadReportsIntoGrid(grid);
     });
@@ -1909,7 +1882,6 @@
 
         grid.innerHTML = html;
 
-        // 기본 탭(All) 적용
         const tabs = Array.from($$('.r-tab'));
         const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
         if (defaultTab) {
@@ -1931,7 +1903,6 @@
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    // Always open in KR
     modal.dataset.bio = 'kr';
 
     const langBtns = Array.from($$('.bio-lang .lang', modal));
@@ -2005,112 +1976,32 @@
   }
 
   /* =========================================================
-     7) Sound (Cosmic Orb toggle) — 개선 완성체
-     - "벌레같은 수학기호" 제거: 텍스트/아이콘 주입 없음
-     - 링(바깥 느낌) 유지: CSS의 ring/outline을 그대로 쓰고
-     - 상태는 class/aria만 제어
-     - 5~6초 미세 떨림(호흡): requestAnimationFrame + 저비용
-     - 링 색을 다르게: playing 상태에서 CSS 변수로 색을 전환(HEAD 수정 없이도
-       이미 CSS가 var(--sound-ring) 등을 쓰고 있다면 즉시 반영)
+     7) Sound (Cosmic Orb toggle)
   ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
     if (!bar) return;
 
-    // 접근성
     bar.setAttribute('tabindex', '0');
     bar.setAttribute('role', 'button');
     bar.setAttribute('aria-pressed', 'false');
 
-    // 텍스트/기호 절대 넣지 않음
+    // 텍스트 주입 금지
     bar.textContent = '';
 
-    // 오디오
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
     audio.loop = true;
     audio.preload = 'auto';
     audio.volume = 0.18;
 
     let playing = false;
-    let raf = 0;
-    let last = 0;
-    let baseOpacity = null;
-
-    // ---- 미세 떨림(호흡) 파라미터 ----
-    // 5.6초 주기 / 아주 작은 변화(벌레 아님)
-    const periodMs = 5600;
-    const minOpacityDelta = 0.06;  // 투명도 미세 변화
-    const minScaleDelta   = 0.018; // 크기 미세 변화(링의 바깥 느낌만 살아있게)
-
-    // prefers-reduced-motion 고려
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function stopRaf() {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      last = 0;
-      // transform/opacity 원복(깔끔)
-      bar.style.transform = '';
-      bar.style.opacity = (baseOpacity != null) ? baseOpacity : '';
-    }
-
-    function startRaf() {
-      if (prefersReduced) return;  // 움직임 최소화 모드면 호흡 애니메이션 없음
-      if (raf) return;
-
-      // 현재 opacity를 기준으로
-      if (baseOpacity == null) {
-        const cs = getComputedStyle(bar);
-        const o = parseFloat(cs.opacity);
-        baseOpacity = Number.isFinite(o) ? o : 1;
-      }
-
-      const tick = (ts) => {
-        if (!playing) { stopRaf(); return; }
-        if (!last) last = ts;
-
-        // 너무 자주 스타일 변경하지 않게 30fps로 제한
-        const dt = ts - last;
-        if (dt >= 33) {
-          last = ts;
-
-          // 0..1 진행률
-          const phase = (ts % periodMs) / periodMs;
-
-          // 부드러운 호흡 곡선(0~1~0)
-          const breath = 0.5 - 0.5 * Math.cos(phase * Math.PI * 2);
-
-          // 아주 미세하게만
-          const s = 1 + (breath - 0.5) * 2 * minScaleDelta;
-          const o = baseOpacity + (breath - 0.5) * 2 * minOpacityDelta;
-
-          bar.style.transform = `translateZ(0) scale(${s.toFixed(4)})`;
-          bar.style.opacity = String(Math.max(0, Math.min(1, o)));
-        }
-
-        raf = requestAnimationFrame(tick);
-      };
-
-      raf = requestAnimationFrame(tick);
-    }
 
     async function playSound() {
       try {
         await audio.play();
         playing = true;
-
-        // 상태 클래스
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
-
-        // 링 색(playing 상태에서만) — HEAD를 안 건드리되,
-        // 기존 CSS가 변수 기반이면 바로 반응.
-        // (변수 미사용 CSS여도 문제 없음: 그냥 무시됨)
-        bar.style.setProperty('--sound-ring', 'rgba(121,167,255,0.75)'); // 블루 계열
-        bar.style.setProperty('--sound-glow', 'rgba(121,167,255,0.22)');
-
-        startRaf();
       } catch (err) {
         console.warn('Audio play failed:', err);
       }
@@ -2119,17 +2010,9 @@
     function stopSound() {
       if (!playing) return;
       audio.pause();
-      audio.currentTime = 0;
       playing = false;
-
       bar.classList.remove('is-on');
       bar.setAttribute('aria-pressed', 'false');
-
-      // 링 색 원복(기본 골드)
-      bar.style.setProperty('--sound-ring', 'rgba(215,184,106,0.72)');
-      bar.style.setProperty('--sound-glow', 'rgba(215,184,106,0.18)');
-
-      stopRaf();
     }
 
     function toggle() {
@@ -2137,7 +2020,6 @@
       else playSound();
     }
 
-    // 클릭/키보드
     bar.addEventListener('click', toggle);
 
     bar.addEventListener('keydown', (e) => {
@@ -2147,19 +2029,13 @@
       }
     });
 
-    // 페이지 전환/백그라운드 대응
-    window.addEventListener('pagehide', stopSound);
-
     document.addEventListener('visibilitychange', () => {
-      // 숨김 시: 사운드는 유지(사용자 의도 유지)하되, 애니메이션만 중지
-      if (document.hidden) stopRaf();
-      else if (playing) startRaf();
+      if (document.hidden) stopSound();
     });
 
-    // 초기 상태
+    window.addEventListener('pagehide', stopSound);
+
     bar.classList.remove('is-on');
-    bar.style.setProperty('--sound-ring', 'rgba(215,184,106,0.72)');
-    bar.style.setProperty('--sound-glow', 'rgba(215,184,106,0.18)');
   }
 
   /* =========================================================
@@ -2234,20 +2110,18 @@
   }
 
   /* =========================================================
-     8) Global Escape handler (single)
+     8) Global Escape handler
   ========================================================= */
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
 
-      // Lightbox 우선 닫기
       const lb = $('#lightbox');
       if (lb && lb.classList.contains('is-open')) {
         closeLightbox();
         return;
       }
 
-      // Bio 모달 닫기
       const modal = $('#bio-modal');
       if (modal && !modal.hidden) {
         closeBioModal();

@@ -2080,7 +2080,7 @@
   }
 
   /* =========================================================
-     7) Sound (Cosmic Orb toggle)
+     7) Sound (Cosmic Orb toggle)  ✅ FIX: click-to-load (no preload download)
   ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
@@ -2091,15 +2091,17 @@
     bar.setAttribute('aria-pressed', 'false');
     bar.textContent = '';
 
-    const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.volume = 0.18;
-
+    let audio = null;     // ✅ 클릭 전엔 오디오 객체를 만들지 않음
     let playing = false;
 
     async function playSound() {
       try {
+        if (!audio) {
+          audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
+          audio.loop = true;
+          audio.preload = 'none'; // ✅ 핵심: 초기 다운로드 방지
+          audio.volume = 0.18;
+        }
         await audio.play();
         playing = true;
         bar.classList.add('is-on');
@@ -2108,13 +2110,15 @@
         console.warn('Audio play failed:', err);
       }
     }
+
     function stopSound() {
-      if (!playing) return;
+      if (!audio || !playing) return;
       audio.pause();
       playing = false;
       bar.classList.remove('is-on');
       bar.setAttribute('aria-pressed', 'false');
     }
+
     function toggle() { playing ? stopSound() : playSound(); }
 
     bar.addEventListener('click', toggle, { passive:true });

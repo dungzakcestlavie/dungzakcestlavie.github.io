@@ -1405,8 +1405,14 @@
   'use strict';
 
   /* =========================================================
-     Helpers
+     PERF SCRIPT (Lightflow ∮31)
+     - BODY/HTML 변경 없음
+     - Works: active panel first, others idle
+     - Reports: load only when user opens (no idle preload)
+     - JSON cache w/ version key (localStorage)
+     - Image decode + IntersectionObserver (safe)
   ========================================================= */
+
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
@@ -1421,14 +1427,61 @@
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;');
 
-  // ✅ attribute에 안전하게 줄바꿈 보존(&#10;)
   const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
 
-  const safeJSONFetch = (url) =>
-    fetch(url, { cache: 'no-store' }).then(res => {
-      if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
-      return res.json();
-    });
+  const runIdle = (fn) => {
+    if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1200 });
+    else setTimeout(fn, 50);
+  };
+
+  /* =========================================================
+     Cache helpers (localStorage)
+     - bump VERSION when you want forced refresh
+  ========================================================= */
+  const VERSION = 'LF31_v1'; // ✅ 속도/구조 바꿀 때만 숫자 올려
+  const CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12h
+
+  function cacheGet(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || obj.v !== VERSION) return null;
+      if (Date.now() - (obj.t || 0) > CACHE_TTL_MS) return null;
+      return obj.d ?? null;
+    } catch { return null; }
+  }
+  function cacheSet(key, data) {
+    try {
+      localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
+    } catch {}
+  }
+
+  /* =========================================================
+     Safe fetch (single-flight)
+  ========================================================= */
+  const inflight = new Map();
+
+  async function safeJSONFetchCached(url, cacheKey) {
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
+    if (inflight.has(cacheKey)) return inflight.get(cacheKey);
+
+    const p = fetch(url, { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
+        return res.json();
+      })
+      .then(json => {
+        cacheSet(cacheKey, json);
+        return json;
+      })
+      .finally(() => inflight.delete(cacheKey));
+
+    inflight.set(cacheKey, p);
+    return p;
+  }
 
   const getLang = () => {
     const b = document.body;
@@ -1437,20 +1490,16 @@
     return 'kr';
   };
 
-  const runIdle = (fn) => {
-    if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1200 });
-    else setTimeout(fn, 50);
-  };
-
   /* =========================================================
      State
   ========================================================= */
   let lbOpenFrom = null;
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  let worksLoaded = false;
   let reportsLoaded = false;
 
   /* =========================================================
-     1) Main Nav (Poem / Works / Reports / Artist Bio)
+     1) Main Nav
   ========================================================= */
   function initNav() {
     const nav = $('nav.primary');
@@ -1461,7 +1510,6 @@
     function showSection(id) {
       for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
     }
-
     function setActiveBtn(targetId) {
       const btns = Array.from($$('button', nav));
       for (const b of btns) b.classList.remove('active');
@@ -1477,18 +1525,22 @@
       if (target) {
         setActiveBtn(target);
         showSection(target);
+
+        // ✅ Works 탭을 처음 열 때 로드 지연(초기 부하 감소)
+        if (target === 'works' && !worksLoaded) loadWorks();
+
         return;
       }
-
       if (btn.id === 'tab-bio') openBioModal();
     }, { passive: true });
 
+    // 초기 화면
     showSection('poem');
     setActiveBtn('poem');
   }
 
   /* =========================================================
-     2) Global Language Toggle (KR / EN / KR+EN)
+     2) Global Language Toggle
   ========================================================= */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1501,7 +1553,6 @@
       else if (mode === 'hy') document.body.classList.add('hybrid');
       else                    document.body.classList.add('korean');
     }
-
     function activate(btn) {
       if (koBtn) koBtn.classList.remove('active');
       if (enBtn) enBtn.classList.remove('active');
@@ -1509,37 +1560,27 @@
       if (btn) btn.classList.add('active');
     }
 
-    if (koBtn) koBtn.addEventListener('click', () => {
-      setBodyLang('kr'); activate(koBtn);
+    const onLangChange = () => {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
-    });
+    };
 
-    if (enBtn) enBtn.addEventListener('click', () => {
-      setBodyLang('en'); activate(enBtn);
-      updateOpenLightboxCaption();
-      syncReportsToggleLabel();
-    });
-
-    if (hyBtn) hyBtn.addEventListener('click', () => {
-      setBodyLang('hy'); activate(hyBtn);
-      updateOpenLightboxCaption();
-      syncReportsToggleLabel();
-    });
+    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive:true });
+    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive:true });
+    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive:true });
 
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
 
   /* =========================================================
-     3) Works
+     3) Works (lazy load + progressive render)
   ========================================================= */
-  function initWorks() {
+  function initWorksUI() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
 
     const tabs = $('.tabs', worksRoot);
     if (tabs) {
@@ -1556,44 +1597,84 @@
           const el = $('#panel-' + p);
           if (el) el.classList.toggle('active', p === key);
         }
+
+        // ✅ 클릭한 탭이 아직 미렌더면 해당 패널만 우선 렌더
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
       }, { passive: true });
     }
 
-    safeJSONFetch('data/works.json')
-      .then(json => {
-        const list = Array.isArray(json) ? json : (json.works || json.items || []);
-        if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+    attachWorksLightbox();
+  }
 
-        worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  async function loadWorks() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
 
-        for (const item of list) {
-          let key = item.section || item.panel;
-          if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
-          if (!key || !worksByPanel[key]) key = 'pray';
-          worksByPanel[key].push(item);
-        }
+    worksLoaded = true;
 
-        for (const key of Object.keys(worksByPanel)) {
+    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+
+    try {
+      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+
+      for (const item of list) {
+        let key = item.section || item.panel;
+        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
+        if (!key || !worksByPanel[key]) key = 'pray';
+        worksByPanel[key].push(item);
+      }
+
+      // ✅ 1) 현재 보이는 패널(기본 active)만 즉시 렌더
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
+
+      // ✅ 2) 나머지는 idle로 순차 렌더 (초기 부하 분산)
+      runIdle(() => {
+        for (const key of panelKeys) {
           const panel = $('#panel-' + key);
-          if (panel) renderWorksPanel(panel, worksByPanel[key], key);
+          if (!panel || panel.dataset.rendered) continue;
+          renderWorksPanel(panel, worksByPanel[key], key);
+          panel.dataset.rendered = '1';
         }
-
-        attachWorksLightbox();
-      })
-      .catch(err => {
-        console.error('works.json load error:', err);
-        for (const key of panelIds) {
-          const panel = $('#panel-' + key);
-          if (!panel) continue;
-          panel.innerHTML = `
-            <div class="w-msg">
-              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
-              <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
-              <small>${escHTML(String(err?.message || err || ''))}</small>
-            </div>
-          `;
-        }
+        runIdle(() => {
+          for (const key of panelKeys) {
+            const panel = $('#panel-' + key);
+            if (panel) scheduleImageDecode(panel);
+          }
+        });
       });
+
+    } catch (err) {
+      console.error('works.json load error:', err);
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = `
+          <div class="w-msg">
+            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+            <small>${escHTML(String(err?.message || err || ''))}</small>
+          </div>
+        `;
+      }
+    }
   }
 
   function renderWorksPanel(panel, items, key) {
@@ -1633,14 +1714,13 @@
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" />
+                 loading="lazy" decoding="async" />
           </article>
         `;
       } else {
         const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
         const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
 
-        // ✅ 줄바꿈을 attribute에 안전하게 저장
         const capKrAttr = escAttrWithNL(captionKr);
         const capEnAttr = escAttrWithNL(captionEn);
 
@@ -1653,7 +1733,7 @@
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" />
+                 loading="lazy" decoding="async" />
             <div class="w-meta">
               <div class="w-title">
                 <span class="ko">${escHTML(titleKr)}</span>
@@ -1673,30 +1753,69 @@
   }
 
   /* =========================================================
+     3-1) Image decode scheduler + IntersectionObserver
+  ========================================================= */
+  let io = null;
+
+  function ensureIO() {
+    if (io) return io;
+    if (!('IntersectionObserver' in window)) return null;
+
+    io = new IntersectionObserver((entries) => {
+      for (const ent of entries) {
+        if (!ent.isIntersecting) continue;
+        const img = ent.target;
+        io.unobserve(img);
+        // decode는 브라우저가 가능할 때만
+        if (img && img.decode) {
+          img.decode().catch(()=>{});
+        }
+      }
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+
+    return io;
+  }
+
+  function scheduleImageDecode(root) {
+    const imgs = $$('img.w-thumb', root || document);
+    const observer = ensureIO();
+
+    if (observer) {
+      for (const img of imgs) observer.observe(img);
+    } else {
+      // fallback: idle decode
+      runIdle(() => {
+        for (const img of imgs) {
+          if (img && img.decode) img.decode().catch(()=>{});
+        }
+      });
+    }
+  }
+
+  /* =========================================================
      4) Lightbox
   ========================================================= */
   function attachWorksLightbox() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
+    // 이벤트 1회 바인딩
     worksRoot.addEventListener('click', (e) => {
       const card = e.target.closest('.w-card');
       if (!card) return;
       openLightboxFromCard(card);
-    });
+    }, { passive: true });
 
     const lb = $('#lightbox');
     const btnX = $('#lbClose');
 
-    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
-    if (btnX) btnX.addEventListener('click', closeLightbox);
+    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive:true });
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
   }
 
   function buildCaptionForCard(card, mode) {
     if (card.closest('#panel-origin')) return '';
 
-    // attribute에서 &#10; → 문자열로 읽히면 이미 '\n'로 복구되는 경우가 많지만,
-    // 브라우저별 차이를 대비해 명시적으로 치환도 해둠.
     const capKrRaw = card.getAttribute('data-cap-kr') || '';
     const capEnRaw = card.getAttribute('data-cap-en') || '';
     const capKr = capKrRaw.replace(/&#10;/g, '\n');
@@ -1726,6 +1845,9 @@
 
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
+
+    // ✅ decode로 확대 진입 시 깜빡임 감소
+    if (lbImg.decode) lbImg.decode().catch(()=>{});
   }
 
   function closeLightbox() {
@@ -1749,7 +1871,7 @@
   }
 
   /* =========================================================
-     5) Reports
+     5) Reports (load only on open)
   ========================================================= */
   function initReports() {
     const grid = $('#reportGrid');
@@ -1772,36 +1894,29 @@
         if (!btn) return;
 
         const type = (btn.dataset.r || 'all').toLowerCase();
-
         for (const b of $$('.r-tab', tabsWrap)) b.classList.remove('is-active');
         btn.classList.add('is-active');
 
-        applyReportFilter(type);
+        applyReportFilter(type, grid);
       }, { passive: true });
     }
 
     if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
+      toggleBtn.addEventListener('click', async () => {
         const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
 
-        if (!expanded && !reportsLoaded) loadReportsIntoGrid(grid);
-      });
-    }
-
-    // 유지: idle에서 한 번 로드(원하면 이 블록 삭제해도 됨)
-    runIdle(() => {
-      if (!reportsLoaded) loadReportsIntoGrid(grid);
-    });
-
-    function applyReportFilter(type) {
-      const items = $$('.r-item', grid);
-      for (const item of items) {
-        const cat = (item.dataset.category || '').toLowerCase();
-        item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
-      }
+        // ✅ 처음 열 때만 로드
+        if (!expanded && !reportsLoaded) {
+          await loadReportsIntoGrid(grid);
+          // 열려 있는 상태면 필터 적용 유지
+          const activeTab = $('.r-tab.is-active', reportsRoot);
+          const type = (activeTab?.dataset.r || 'all').toLowerCase();
+          applyReportFilter(type, grid);
+        }
+      }, { passive: true });
     }
   }
 
@@ -1822,60 +1937,67 @@
     btn.textContent = expanded ? L.close : L.open;
   }
 
-  function loadReportsIntoGrid(grid) {
+  function applyReportFilter(type, grid) {
+    const items = $$('.r-item', grid);
+    for (const item of items) {
+      const cat = (item.dataset.category || '').toLowerCase();
+      item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
+    }
+  }
+
+  async function loadReportsIntoGrid(grid) {
     reportsLoaded = true;
 
-    safeJSONFetch('data/reports.json')
-      .then(json => {
-        const list = Array.isArray(json) ? json : (json.reports || json.items || []);
-        if (!Array.isArray(list) || !list.length) return;
+    try {
+      const json = await safeJSONFetchCached('data/reports.json', 'LF_cache_reports');
+      const list = Array.isArray(json) ? json : (json.reports || json.items || []);
+      if (!Array.isArray(list) || !list.length) return;
 
-        let html = '';
-        for (const item of list) {
-          const id        = escHTML(item.id || '');
-          const year      = escHTML(item.year || '');
-          const category  = escHTML((item.category || 'theory').toLowerCase());
-          const titleKr   = escHTML(item.title_ko || item.title_kr || '');
-          const titleEn   = escHTML(item.title_en || '');
-          const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
-          const summaryEn = escHTML(item.summary_en || '');
-          const href      = escAttr(item.url || item.link || item.md_path || '#');
+      let html = '';
+      for (const item of list) {
+        const id        = escHTML(item.id || '');
+        const year      = escHTML(item.year || '');
+        const category  = escHTML((item.category || 'theory').toLowerCase());
+        const titleKr   = escHTML(item.title_ko || item.title_kr || '');
+        const titleEn   = escHTML(item.title_en || '');
+        const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
+        const summaryEn = escHTML(item.summary_en || '');
+        const href      = escAttr(item.url || item.link || item.md_path || '#');
 
-          html += `
-            <article class="r-item" data-category="${category}">
-              <div class="t">
-                <span class="ko">${titleKr}</span>
-                <span class="en">${titleEn}</span>
-              </div>
-              <div class="m">
-                <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
-              </div>
-              <div class="s">
-                <span class="ko">${summaryKr}</span>
-                <span class="en">${summaryEn}</span>
-              </div>
-              <a class="r-open" href="${href}" target="_blank" rel="noopener">
-                <span class="ko">전체 보기 (새 창)</span>
-                <span class="en">Open full report (new tab)</span>
-              </a>
-            </article>
-          `;
-        }
+        html += `
+          <article class="r-item" data-category="${category}">
+            <div class="t">
+              <span class="ko">${titleKr}</span>
+              <span class="en">${titleEn}</span>
+            </div>
+            <div class="m">
+              <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
+            </div>
+            <div class="s">
+              <span class="ko">${summaryKr}</span>
+              <span class="en">${summaryEn}</span>
+            </div>
+            <a class="r-open" href="${href}" target="_blank" rel="noopener">
+              <span class="ko">전체 보기 (새 창)</span>
+              <span class="en">Open full report (new tab)</span>
+            </a>
+          </article>
+        `;
+      }
 
-        grid.innerHTML = html;
+      grid.innerHTML = html;
 
-        const tabs = Array.from($$('.r-tab'));
-        const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
-        if (defaultTab) {
-          for (const b of tabs) b.classList.remove('is-active');
-          defaultTab.classList.add('is-active');
-        }
+      // 기본 탭 active 유지
+      const tabs = Array.from($$('.r-tab'));
+      const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
+      if (defaultTab) {
+        for (const b of tabs) b.classList.remove('is-active');
+        defaultTab.classList.add('is-active');
+      }
 
-        const toggleBtn = $('#reportsToggle');
-        const expanded = toggleBtn ? (toggleBtn.getAttribute('aria-expanded') === 'true') : false;
-        grid.style.display = expanded ? 'grid' : 'none';
-      })
-      .catch(err => console.error('reports.json load error:', err));
+    } catch (err) {
+      console.error('reports.json load error:', err);
+    }
   }
 
   /* =========================================================
@@ -1934,14 +2056,14 @@
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
         }
-      });
+      }, { passive:true });
     }
 
     const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal);
-    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); });
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
+    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive:true });
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
@@ -1953,7 +2075,7 @@
         const isOpen = expoBlock.getAttribute('data-open') === 'true';
         expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
         expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
-      });
+      }, { passive:true });
     }
   }
 
@@ -1967,8 +2089,6 @@
     bar.setAttribute('tabindex', '0');
     bar.setAttribute('role', 'button');
     bar.setAttribute('aria-pressed', 'false');
-
-    // 텍스트 주입 금지
     bar.textContent = '';
 
     const audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
@@ -1988,7 +2108,6 @@
         console.warn('Audio play failed:', err);
       }
     }
-
     function stopSound() {
       if (!playing) return;
       audio.pause();
@@ -1996,26 +2115,15 @@
       bar.classList.remove('is-on');
       bar.setAttribute('aria-pressed', 'false');
     }
+    function toggle() { playing ? stopSound() : playSound(); }
 
-    function toggle() {
-      if (playing) stopSound();
-      else playSound();
-    }
-
-    bar.addEventListener('click', toggle);
-
+    bar.addEventListener('click', toggle, { passive:true });
     bar.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle();
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
     });
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopSound();
-    });
-
-    window.addEventListener('pagehide', stopSound);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopSound(); }, { passive:true });
+    window.addEventListener('pagehide', stopSound, { passive:true });
 
     bar.classList.remove('is-on');
   }
@@ -2045,7 +2153,7 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive:true });
 
     let t = 0;
     let animId = null;
@@ -2088,7 +2196,7 @@
       } else if (!animId) {
         animId = requestAnimationFrame(draw);
       }
-    });
+    }, { passive:true });
   }
 
   /* =========================================================
@@ -2099,16 +2207,10 @@
       if (e.key !== 'Escape') return;
 
       const lb = $('#lightbox');
-      if (lb && lb.classList.contains('is-open')) {
-        closeLightbox();
-        return;
-      }
+      if (lb && lb.classList.contains('is-open')) { closeLightbox(); return; }
 
       const modal = $('#bio-modal');
-      if (modal && !modal.hidden) {
-        closeBioModal();
-        return;
-      }
+      if (modal && !modal.hidden) { closeBioModal(); return; }
     }, { passive: true });
   }
 
@@ -2118,14 +2220,15 @@
   document.addEventListener('DOMContentLoaded', () => {
     try { initNav(); }        catch (e) { console.error(e); }
     try { initLanguage(); }   catch (e) { console.error(e); }
-    try { initWorks(); }      catch (e) { console.error(e); }
+    try { initWorksUI(); }    catch (e) { console.error(e); } // UI 먼저
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
+
+    // ✅ Works는 기본 화면(poem)에서 바로 로드하지 않음.
+    // 사용자가 Works를 눌렀을 때 loadWorks()가 실행됨.
   });
 })();
 </script>
-</body>
-</html>

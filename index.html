@@ -1411,6 +1411,7 @@
      - Reports: load only when user opens (no idle preload)
      - JSON cache w/ version key (localStorage)
      - Image decode + IntersectionObserver (safe)
+     - Sound: MP3는 클릭 시에만 로드/재생 (초기 8MB 페이로드 제거)
   ========================================================= */
 
   const $  = (sel, root = document) => root.querySelector(sel);
@@ -1438,7 +1439,7 @@
      Cache helpers (localStorage)
      - bump VERSION when you want forced refresh
   ========================================================= */
-  const VERSION = 'LF31_v1'; // ✅ 속도/구조 바꿀 때만 숫자 올려
+  const VERSION = 'LF31_v2'; // ✅ (오디오 로딩 방식 변경) 버전 올림
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12h
 
   function cacheGet(key) {
@@ -1766,10 +1767,7 @@
         if (!ent.isIntersecting) continue;
         const img = ent.target;
         io.unobserve(img);
-        // decode는 브라우저가 가능할 때만
-        if (img && img.decode) {
-          img.decode().catch(()=>{});
-        }
+        if (img && img.decode) img.decode().catch(()=>{});
       }
     }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
 
@@ -1783,7 +1781,6 @@
     if (observer) {
       for (const img of imgs) observer.observe(img);
     } else {
-      // fallback: idle decode
       runIdle(() => {
         for (const img of imgs) {
           if (img && img.decode) img.decode().catch(()=>{});
@@ -1799,7 +1796,6 @@
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
-    // 이벤트 1회 바인딩
     worksRoot.addEventListener('click', (e) => {
       const card = e.target.closest('.w-card');
       if (!card) return;
@@ -1846,7 +1842,6 @@
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
 
-    // ✅ decode로 확대 진입 시 깜빡임 감소
     if (lbImg.decode) lbImg.decode().catch(()=>{});
   }
 
@@ -1908,10 +1903,8 @@
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
 
-        // ✅ 처음 열 때만 로드
         if (!expanded && !reportsLoaded) {
           await loadReportsIntoGrid(grid);
-          // 열려 있는 상태면 필터 적용 유지
           const activeTab = $('.r-tab.is-active', reportsRoot);
           const type = (activeTab?.dataset.r || 'all').toLowerCase();
           applyReportFilter(type, grid);
@@ -1987,7 +1980,6 @@
 
       grid.innerHTML = html;
 
-      // 기본 탭 active 유지
       const tabs = Array.from($$('.r-tab'));
       const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
       if (defaultTab) {
@@ -2080,7 +2072,9 @@
   }
 
   /* =========================================================
-     7) Sound (Cosmic Orb toggle)  ✅ FIX: click-to-load (no preload download)
+     7) Sound (Cosmic Orb toggle)
+     - ✅ MP3는 클릭(사용자 제스처) 시에만 로드/재생
+     - ✅ 초기 로딩 페이로드(8MB) 제거
   ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
@@ -2091,28 +2085,40 @@
     bar.setAttribute('aria-pressed', 'false');
     bar.textContent = '';
 
-    let audio = null;     // ✅ 클릭 전엔 오디오 객체를 만들지 않음
+    const AUDIO_SRC = 'audio/lightflow_C_praha_quick6m.mp3';
+
+    // ✅ src를 처음부터 넣지 않는다 (네트워크 다운로드 방지)
+    const audio = new Audio();
+    audio.loop = true;
+    audio.preload = 'none';   // 핵심
+    audio.volume = 0.18;
+
     let playing = false;
+    let srcAttached = false;
+
+    function ensureSrc() {
+      if (srcAttached) return;
+      audio.src = AUDIO_SRC;
+      // preload none이라도, play 전에 로드 시작하도록 보장
+      try { audio.load(); } catch {}
+      srcAttached = true;
+    }
 
     async function playSound() {
       try {
-        if (!audio) {
-          audio = new Audio('audio/lightflow_C_praha_quick6m.mp3');
-          audio.loop = true;
-          audio.preload = 'none'; // ✅ 핵심: 초기 다운로드 방지
-          audio.volume = 0.18;
-        }
+        ensureSrc();
         await audio.play();
         playing = true;
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
       } catch (err) {
+        // iOS 등에서 사용자가 직접 누른 이벤트가 아닌 경우 실패 가능
         console.warn('Audio play failed:', err);
       }
     }
 
     function stopSound() {
-      if (!audio || !playing) return;
+      if (!playing) return;
       audio.pause();
       playing = false;
       bar.classList.remove('is-on');
@@ -2224,7 +2230,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     try { initNav(); }        catch (e) { console.error(e); }
     try { initLanguage(); }   catch (e) { console.error(e); }
-    try { initWorksUI(); }    catch (e) { console.error(e); } // UI 먼저
+    try { initWorksUI(); }    catch (e) { console.error(e); }
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }

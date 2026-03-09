@@ -1405,15 +1405,14 @@
   'use strict';
 
   /* =========================================================
-     PERF SCRIPT (Lightflow ∮31 refined)
+     PERF SCRIPT (Lightflow ∮31 · final)
      - BODY/HTML 변경 없음
-     - Works: active panel first
-     - Other works panels: render on demand
-     - Reports: load only when user opens
-     - JSON cache w/ version key (localStorage)
-     - Image decode + IntersectionObserver
-     - Sound: MP3는 클릭 시에만 로드/재생
-     - Section switch: always scroll to section top
+     - Waves: 그대로 유지
+     - Works: 현재 패널만 렌더, 다른 패널은 눌렀을 때 최초 렌더
+     - Reports: 열 때만 로드
+     - JSON: 브라우저 캐시 + localStorage 캐시
+     - Images: lazy / async decode 유지
+     - Sound: 클릭 시에만 mp3 로드
   ========================================================= */
 
   const $  = (sel, root = document) => root.querySelector(sel);
@@ -1427,21 +1426,25 @@
 
   const escHTML = (v) => String(v ?? '')
     .replace(/&/g, '&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
   const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
 
   const runIdle = (fn) => {
-    if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1200 });
-    else setTimeout(fn, 50);
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(fn, { timeout: 1200 });
+    } else {
+      setTimeout(fn, 50);
+    }
   };
 
   /* =========================================================
      Cache helpers
   ========================================================= */
-  const VERSION = 'LF31_v3_refined';
-  const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
+  const VERSION = 'LF31_v4_final_speed';
+  const CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12h
+  const inflight = new Map();
 
   function cacheGet(key) {
     try {
@@ -1458,14 +1461,13 @@
 
   function cacheSet(key, data) {
     try {
-      localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
+      localStorage.setItem(key, JSON.stringify({
+        v: VERSION,
+        t: Date.now(),
+        d: data
+      }));
     } catch {}
   }
-
-  /* =========================================================
-     Safe fetch (single-flight)
-  ========================================================= */
-  const inflight = new Map();
 
   async function safeJSONFetchCached(url, cacheKey) {
     const cached = cacheGet(cacheKey);
@@ -1474,11 +1476,11 @@
     if (inflight.has(cacheKey)) return inflight.get(cacheKey);
 
     const p = fetch(url, { cache: 'default' })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
         return res.json();
       })
-      .then(json => {
+      .then((json) => {
         cacheSet(cacheKey, json);
         return json;
       })
@@ -1488,56 +1490,28 @@
     return p;
   }
 
-  const getLang = () => {
+  function getLang() {
     const b = document.body;
     if (b.classList.contains('english')) return 'en';
     if (b.classList.contains('hybrid')) return 'hy';
     return 'kr';
-  };
+  }
 
   /* =========================================================
      State
   ========================================================= */
   let lbOpenFrom = null;
-  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
   let reportsLoaded = false;
-  let currentSection = 'poem';
 
-  /* =========================================================
-     Helpers
-  ========================================================= */
-  function getHeaderHeight() {
-    const header = $('header');
-    return Math.ceil(header?.getBoundingClientRect().height || 0);
-  }
-
-  function scrollToSectionTop(id) {
-    const target = document.getElementById(id);
-    if (!target) return;
-
-    const headerH = getHeaderHeight();
-    const y = window.scrollY + target.getBoundingClientRect().top - headerH - 8;
-
-    window.scrollTo({
-      top: Math.max(0, y),
-      behavior: 'auto'
-    });
-  }
-
-  function scrollWorksTabsTop() {
-    const works = $('#works');
-    const tabs = $('#works .tabs');
-    if (!works || !tabs) return;
-
-    const headerH = getHeaderHeight();
-    const y = window.scrollY + tabs.getBoundingClientRect().top - headerH - 10;
-
-    window.scrollTo({
-      top: Math.max(0, y),
-      behavior: 'auto'
-    });
-  }
+  let worksByPanel = {
+    origin: [],
+    pray: [],
+    human: [],
+    rebirth: [],
+    exist: [],
+    cosmos: []
+  };
 
   /* =========================================================
      1) Main Nav
@@ -1549,23 +1523,15 @@
     const sections = Array.from($$('main > section'));
 
     function showSection(id) {
-      currentSection = id;
-
       for (const sec of sections) {
         sec.classList.toggle('is-active', sec.id === id);
       }
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          scrollToSectionTop(id);
-        });
-      });
     }
 
     function setActiveBtn(targetId) {
       const btns = Array.from($$('button', nav));
       for (const b of btns) b.classList.remove('active');
-      const btn = btns.find(x => x.dataset.target === targetId);
+      const btn = btns.find((x) => x.dataset.target === targetId);
       if (btn) btn.classList.add('active');
     }
 
@@ -1578,11 +1544,15 @@
         setActiveBtn(target);
         showSection(target);
 
-        if (target === 'works' && !worksLoaded) loadWorks();
+        if (target === 'works' && !worksLoaded) {
+          loadWorks();
+        }
         return;
       }
 
-      if (btn.id === 'tab-bio') openBioModal();
+      if (btn.id === 'tab-bio') {
+        openBioModal();
+      }
     }, { passive: true });
 
     showSection('poem');
@@ -1599,9 +1569,9 @@
 
     function setBodyLang(mode) {
       document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en')      document.body.classList.add('english');
+      if (mode === 'en') document.body.classList.add('english');
       else if (mode === 'hy') document.body.classList.add('hybrid');
-      else                    document.body.classList.add('korean');
+      else document.body.classList.add('korean');
     }
 
     function activate(btn) {
@@ -1611,43 +1581,43 @@
       if (btn) btn.classList.add('active');
     }
 
-    const onLangChange = () => {
+    function onLangChange() {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
-    };
+    }
 
     if (koBtn) koBtn.addEventListener('click', () => {
       setBodyLang('kr');
       activate(koBtn);
       onLangChange();
-    }, { passive:true });
+    }, { passive: true });
 
     if (enBtn) enBtn.addEventListener('click', () => {
       setBodyLang('en');
       activate(enBtn);
       onLangChange();
-    }, { passive:true });
+    }, { passive: true });
 
     if (hyBtn) hyBtn.addEventListener('click', () => {
       setBodyLang('hy');
       activate(hyBtn);
       onLangChange();
-    }, { passive:true });
+    }, { passive: true });
 
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
 
   /* =========================================================
-     3) Works
+     3) Works UI
   ========================================================= */
   function initWorksUI() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-
     const tabs = $('.tabs', worksRoot);
+
     if (tabs) {
       tabs.addEventListener('click', (e) => {
         const btn = e.target.closest('.tab');
@@ -1664,20 +1634,14 @@
           if (el) el.classList.toggle('active', p === key);
         }
 
-        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+        if (worksLoaded) {
           const panel = $('#panel-' + key);
-          if (panel) {
+          if (panel && !panel.dataset.rendered) {
             renderWorksPanel(panel, worksByPanel[key], key);
             panel.dataset.rendered = '1';
             scheduleImageDecode(panel);
           }
         }
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            scrollWorksTabsTop();
-          });
-        });
       }, { passive: true });
     }
 
@@ -1690,14 +1654,28 @@
 
     worksLoaded = true;
 
-    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
+    const idMap = {
+      0: 'origin',
+      1: 'pray',
+      2: 'human',
+      3: 'rebirth',
+      4: 'exist',
+      5: 'cosmos'
+    };
 
     try {
       const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+      worksByPanel = {
+        origin: [],
+        pray: [],
+        human: [],
+        rebirth: [],
+        exist: [],
+        cosmos: []
+      };
 
       for (const item of list) {
         let key = item.section || item.panel;
@@ -1707,7 +1685,7 @@
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
 
       if (activePanel) {
         renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
@@ -1718,7 +1696,7 @@
     } catch (err) {
       console.error('works.json load error:', err);
 
-      const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+      const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
       for (const key of panelKeys) {
         const panel = $('#panel-' + key);
         if (!panel) continue;
@@ -1747,6 +1725,7 @@
     }
 
     let html = '<div class="w-grid">';
+
     for (const item of items) {
       const id      = item.id || '';
       const titleKr = item.title_kr || '';
@@ -1757,7 +1736,7 @@
       const sizeEn  = item.size_en || '';
       const year    = item.year || '';
       const imgStd  = item.image || item.image_standard || '';
-      const imgZoom = item.zoom  || item.image_zoom || imgStd;
+      const imgZoom = item.zoom || item.image_zoom || imgStd;
 
       const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
       const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
@@ -1780,15 +1759,12 @@
         const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
         const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
 
-        const capKrAttr = escAttrWithNL(captionKr);
-        const capEnAttr = escAttrWithNL(captionEn);
-
         html += `
           <article class="w-card"
                    data-id="${escAttr(id)}"
                    data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${capKrAttr}"
-                   data-cap-en="${capEnAttr}">
+                   data-cap-kr="${escAttrWithNL(captionKr)}"
+                   data-cap-en="${escAttrWithNL(captionEn)}">
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
@@ -1810,12 +1786,13 @@
         `;
       }
     }
+
     html += '</div>';
     panel.innerHTML = html;
   }
 
   /* =========================================================
-     3-1) Image decode
+     3-1) Image decode observer
   ========================================================= */
   let io = null;
 
@@ -1828,9 +1805,13 @@
         if (!ent.isIntersecting) continue;
         const img = ent.target;
         io.unobserve(img);
-        if (img && img.decode) img.decode().catch(()=>{});
+        if (img && img.decode) img.decode().catch(() => {});
       }
-    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+    }, {
+      root: null,
+      rootMargin: '200px 0px',
+      threshold: 0.01
+    });
 
     return io;
   }
@@ -1844,7 +1825,7 @@
     } else {
       runIdle(() => {
         for (const img of imgs) {
-          if (img && img.decode) img.decode().catch(()=>{});
+          if (img && img.decode) img.decode().catch(() => {});
         }
       });
     }
@@ -1866,11 +1847,13 @@
     const lb = $('#lightbox');
     const btnX = $('#lbClose');
 
-    if (lb) lb.addEventListener('click', (e) => {
-      if (e.target === lb) closeLightbox();
-    }, { passive:true });
+    if (lb) {
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb) closeLightbox();
+      }, { passive: true });
+    }
 
-    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
   }
 
   function buildCaptionForCard(card, mode) {
@@ -1897,7 +1880,7 @@
 
     lbOpenFrom = card;
 
-    const src  = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
+    const src = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
     const mode = getLang();
 
     lbImg.src = src;
@@ -1906,7 +1889,7 @@
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
 
-    if (lbImg.decode) lbImg.decode().catch(()=>{});
+    if (lbImg.decode) lbImg.decode().catch(() => {});
   }
 
   function closeLightbox() {
@@ -1917,6 +1900,7 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
+
     if (lbImg) lbImg.src = '';
     if (lbCap) lbCap.textContent = '';
     lbOpenFrom = null;
@@ -1938,7 +1922,7 @@
     if (!grid || !reportsRoot) return;
 
     const toggleBtn = $('#reportsToggle');
-    const tabsWrap  = $('.r-tabs', reportsRoot);
+    const tabsWrap = $('.r-tabs', reportsRoot);
 
     if (toggleBtn) {
       toggleBtn.setAttribute('aria-expanded', 'false');
@@ -2011,6 +1995,7 @@
       if (!Array.isArray(list) || !list.length) return;
 
       let html = '';
+
       for (const item of list) {
         const id        = escHTML(item.id || '');
         const year      = escHTML(item.year || '');
@@ -2045,7 +2030,7 @@
       grid.innerHTML = html;
 
       const tabs = Array.from($$('.r-tab'));
-      const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
+      const defaultTab = tabs.find((b) => (b.dataset.r || '').toLowerCase() === 'all');
       if (defaultTab) {
         for (const b of tabs) b.classList.remove('is-active');
         defaultTab.classList.add('is-active');
@@ -2074,6 +2059,7 @@
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
+
     if (expoBtn && expoBlock) {
       expoBlock.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
@@ -2112,19 +2098,22 @@
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
         }
-      }, { passive:true });
+      }, { passive: true });
     }
 
     const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
-    if (backdrop) backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) closeBioModal();
-    }, { passive:true });
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
+    if (backdrop) {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) closeBioModal();
+      }, { passive: true });
+    }
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
+
     if (expoBtn && expoBlock) {
       expoBlock.setAttribute('data-open', 'false');
       expoBtn.setAttribute('aria-expanded', 'false');
@@ -2133,7 +2122,7 @@
         const isOpen = expoBlock.getAttribute('data-open') === 'true';
         expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
         expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
-      }, { passive:true });
+      }, { passive: true });
     }
   }
 
@@ -2190,7 +2179,7 @@
       playing ? stopSound() : playSound();
     }
 
-    bar.addEventListener('click', toggle, { passive:true });
+    bar.addEventListener('click', toggle, { passive: true });
     bar.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -2200,15 +2189,15 @@
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopSound();
-    }, { passive:true });
+    }, { passive: true });
 
-    window.addEventListener('pagehide', stopSound, { passive:true });
+    window.addEventListener('pagehide', stopSound, { passive: true });
 
     bar.classList.remove('is-on');
   }
 
   /* =========================================================
-     7-1) Waves
+     7-1) Waves background (unchanged)
   ========================================================= */
   function initWaves() {
     const canvas = $('#waves');
@@ -2233,7 +2222,7 @@
     }
 
     resize();
-    window.addEventListener('resize', resize, { passive:true });
+    window.addEventListener('resize', resize, { passive: true });
 
     let t = 0;
     let animId = null;
@@ -2242,7 +2231,7 @@
       if (prefersReduced) return;
 
       const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  / dpr;
+      const w = canvas.width / dpr;
       const h = canvas.height / dpr;
 
       ctx.clearRect(0, 0, w, h);
@@ -2272,11 +2261,14 @@
     document.addEventListener('visibilitychange', () => {
       if (prefersReduced) return;
       if (document.hidden) {
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
       } else if (!animId) {
         animId = requestAnimationFrame(draw);
       }
-    }, { passive:true });
+    }, { passive: true });
   }
 
   /* =========================================================

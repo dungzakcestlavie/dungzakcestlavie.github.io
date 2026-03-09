@@ -1428,7 +1428,7 @@
   /* =========================================================
      Cache / Fetch
   ========================================================= */
-  const VERSION = 'LF31_v7_headerfix';
+  const VERSION = 'LF31_v8_sectionscroll_fix';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
   const inflight = new Map();
 
@@ -1517,14 +1517,19 @@
   };
 
   /* =========================================================
-     Header offset sync
+     Header / section position sync
   ========================================================= */
+  function getHeaderHeight() {
+    const header = $('header');
+    return Math.ceil(header?.getBoundingClientRect().height || 0);
+  }
+
   function syncHeaderOffset() {
     const header = $('header');
     const main = $('main');
     if (!header || !main) return;
 
-    const h = Math.ceil(header.getBoundingClientRect().height || 0);
+    const h = getHeaderHeight();
     const topPad = Math.max(h + 12, 120);
 
     document.documentElement.style.setProperty('--header-offset', `${h}px`);
@@ -1534,6 +1539,27 @@
   function scheduleHeaderOffsetSync() {
     requestAnimationFrame(() => {
       requestAnimationFrame(syncHeaderOffset);
+    });
+  }
+
+  function scrollSectionTop(id) {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const headerH = getHeaderHeight();
+    const y = window.scrollY + target.getBoundingClientRect().top - headerH - 8;
+
+    window.scrollTo({
+      top: Math.max(0, y),
+      behavior: 'auto'
+    });
+  }
+
+  function scheduleScrollSectionTop(id) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollSectionTop(id);
+      });
     });
   }
 
@@ -1564,9 +1590,14 @@
 
     function showSection(id) {
       currentSection = id;
-      for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
+
+      for (const sec of sections) {
+        sec.classList.toggle('is-active', sec.id === id);
+      }
+
       refreshPerformanceMode();
       scheduleHeaderOffsetSync();
+      scheduleScrollSectionTop(id);
     }
 
     function setActiveBtn(targetId) {
@@ -1676,6 +1707,18 @@
           ensurePanelInitialized(key);
           activatePanelObserver(key);
           scheduleHeaderOffsetSync();
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const worksSection = $('#works');
+              const tabsEl = $('.tabs', worksSection);
+              if (!worksSection || !tabsEl) return;
+
+              const headerH = getHeaderHeight();
+              const y = window.scrollY + tabsEl.getBoundingClientRect().top - headerH - 10;
+              window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+            });
+          });
         }
       }, { passive: true });
     }

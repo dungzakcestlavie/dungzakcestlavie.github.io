@@ -1428,7 +1428,7 @@
   /* =========================================================
      Cache / Fetch
   ========================================================= */
-  const VERSION = 'LF31_v6_infinite_refined';
+  const VERSION = 'LF31_v7_headerfix';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
   const inflight = new Map();
 
@@ -1517,6 +1517,27 @@
   };
 
   /* =========================================================
+     Header offset sync
+  ========================================================= */
+  function syncHeaderOffset() {
+    const header = $('header');
+    const main = $('main');
+    if (!header || !main) return;
+
+    const h = Math.ceil(header.getBoundingClientRect().height || 0);
+    const topPad = Math.max(h + 12, 120);
+
+    document.documentElement.style.setProperty('--header-offset', `${h}px`);
+    main.style.paddingTop = `${topPad}px`;
+  }
+
+  function scheduleHeaderOffsetSync() {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(syncHeaderOffset);
+    });
+  }
+
+  /* =========================================================
      Performance mode
   ========================================================= */
   function refreshPerformanceMode() {
@@ -1545,6 +1566,7 @@
       currentSection = id;
       for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
       refreshPerformanceMode();
+      scheduleHeaderOffsetSync();
     }
 
     function setActiveBtn(targetId) {
@@ -1599,6 +1621,7 @@
     function onLangChange() {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
+      scheduleHeaderOffsetSync();
     }
 
     if (koBtn) koBtn.addEventListener('click', () => {
@@ -1652,6 +1675,7 @@
         if (worksLoaded) {
           ensurePanelInitialized(key);
           activatePanelObserver(key);
+          scheduleHeaderOffsetSync();
         }
       }, { passive: true });
     }
@@ -1700,6 +1724,7 @@
 
       ensurePanelInitialized(activeKey);
       activatePanelObserver(activeKey);
+      scheduleHeaderOffsetSync();
 
     } catch (err) {
       console.error('works.json load error:', err);
@@ -1716,23 +1741,8 @@
           </div>
         `;
       }
+      scheduleHeaderOffsetSync();
     }
-  }
-
-  function resetPanelState(key) {
-    const state = panelState[key];
-    if (!state) return;
-
-    if (state.observer) {
-      state.observer.disconnect();
-      state.observer = null;
-    }
-
-    state.rendered = 0;
-    state.done = false;
-    state.grid = null;
-    state.sentinel = null;
-    state.initialized = false;
   }
 
   function ensurePanelInitialized(key) {
@@ -1853,6 +1863,8 @@
         state.observer = null;
       }
     }
+
+    scheduleHeaderOffsetSync();
   }
 
   function mountPanelObserver(key) {
@@ -1989,6 +2001,7 @@
 
     if (lbImg.decode) lbImg.decode().catch(() => {});
     refreshPerformanceMode();
+    scheduleHeaderOffsetSync();
   }
 
   function closeLightbox() {
@@ -2005,6 +2018,7 @@
 
     lbOpenFrom = null;
     refreshPerformanceMode();
+    scheduleHeaderOffsetSync();
   }
 
   function updateOpenLightboxCaption() {
@@ -2051,6 +2065,7 @@
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
+        scheduleHeaderOffsetSync();
 
         if (!expanded && !reportsLoaded) {
           await loadReportsIntoGrid(grid);
@@ -2128,6 +2143,7 @@
       }
 
       grid.innerHTML = html;
+      scheduleHeaderOffsetSync();
 
       const tabs = Array.from($$('.r-tab'));
       const defaultTab = tabs.find((b) => (b.dataset.r || '').toLowerCase() === 'all');
@@ -2172,6 +2188,7 @@
     if (card) card.scrollTop = 0;
 
     refreshPerformanceMode();
+    scheduleHeaderOffsetSync();
   }
 
   function closeBioModal() {
@@ -2183,6 +2200,7 @@
     document.body.classList.remove('modal-open');
 
     refreshPerformanceMode();
+    scheduleHeaderOffsetSync();
   }
 
   function initBioModal() {
@@ -2202,6 +2220,8 @@
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
         }
+
+        scheduleHeaderOffsetSync();
       }, { passive: true });
     }
 
@@ -2225,6 +2245,7 @@
         const isOpen = expoBlock.getAttribute('data-open') === 'true';
         expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
         expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
+        scheduleHeaderOffsetSync();
       }, { passive: true });
     }
   }
@@ -2323,6 +2344,7 @@
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      scheduleHeaderOffsetSync();
     }
 
     resize();
@@ -2412,6 +2434,20 @@
   }
 
   /* =========================================================
+     9) Viewport / layout sync
+  ========================================================= */
+  function initViewportSync() {
+    window.addEventListener('resize', scheduleHeaderOffsetSync, { passive: true });
+    window.addEventListener('orientationchange', scheduleHeaderOffsetSync, { passive: true });
+    window.addEventListener('load', scheduleHeaderOffsetSync, { passive: true });
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scheduleHeaderOffsetSync, { passive: true });
+      window.visualViewport.addEventListener('scroll', scheduleHeaderOffsetSync, { passive: true });
+    }
+  }
+
+  /* =========================================================
      Boot
   ========================================================= */
   document.addEventListener('DOMContentLoaded', () => {
@@ -2423,6 +2459,9 @@
     try { initSound(); } catch (e) { console.error(e); }
     try { initWaves(); } catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
+    try { initViewportSync(); } catch (e) { console.error(e); }
+
+    scheduleHeaderOffsetSync();
   });
 })();
 </script>

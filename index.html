@@ -1404,6 +1404,18 @@
 (() => {
   'use strict';
 
+  /* =========================================================
+     PERF SCRIPT (Lightflow ∮31 refined)
+     - BODY/HTML 변경 없음
+     - Works: active panel first
+     - Other works panels: render on demand
+     - Reports: load only when user opens
+     - JSON cache w/ version key (localStorage)
+     - Image decode + IntersectionObserver
+     - Sound: MP3는 클릭 시에만 로드/재생
+     - Section switch: always scroll to section top
+  ========================================================= */
+
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
@@ -1415,8 +1427,8 @@
 
   const escHTML = (v) => String(v ?? '')
     .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
 
   const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
 
@@ -1426,11 +1438,10 @@
   };
 
   /* =========================================================
-     Cache / Fetch
+     Cache helpers
   ========================================================= */
-  const VERSION = 'LF31_v8_sectionscroll_fix';
+  const VERSION = 'LF31_v3_refined';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
-  const inflight = new Map();
 
   function cacheGet(key) {
     try {
@@ -1447,13 +1458,14 @@
 
   function cacheSet(key, data) {
     try {
-      localStorage.setItem(key, JSON.stringify({
-        v: VERSION,
-        t: Date.now(),
-        d: data
-      }));
+      localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
     } catch {}
   }
+
+  /* =========================================================
+     Safe fetch (single-flight)
+  ========================================================= */
+  const inflight = new Map();
 
   async function safeJSONFetchCached(url, cacheKey) {
     const cached = cacheGet(cacheKey);
@@ -1462,11 +1474,11 @@
     if (inflight.has(cacheKey)) return inflight.get(cacheKey);
 
     const p = fetch(url, { cache: 'default' })
-      .then((res) => {
+      .then(res => {
         if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
         return res.json();
       })
-      .then((json) => {
+      .then(json => {
         cacheSet(cacheKey, json);
         return json;
       })
@@ -1484,65 +1496,23 @@
   };
 
   /* =========================================================
-     Global state
+     State
   ========================================================= */
-  let currentSection = 'poem';
   let lbOpenFrom = null;
+  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
   let reportsLoaded = false;
-
-  let worksByPanel = {
-    origin: [],
-    pray: [],
-    human: [],
-    rebirth: [],
-    exist: [],
-    cosmos: []
-  };
-
-  const panelState = {
-    origin:  { rendered: 0, batch: 16, done: false, observer: null, sentinel: null, grid: null, initialized: false },
-    pray:    { rendered: 0, batch: 12, done: false, observer: null, sentinel: null, grid: null, initialized: false },
-    human:   { rendered: 0, batch: 12, done: false, observer: null, sentinel: null, grid: null, initialized: false },
-    rebirth: { rendered: 0, batch: 12, done: false, observer: null, sentinel: null, grid: null, initialized: false },
-    exist:   { rendered: 0, batch: 12, done: false, observer: null, sentinel: null, grid: null, initialized: false },
-    cosmos:  { rendered: 0, batch: 12, done: false, observer: null, sentinel: null, grid: null, initialized: false }
-  };
-
-  let imgDecodeObserver = null;
-  let wavesController = {
-    start() {},
-    stop() {},
-    refresh() {}
-  };
+  let currentSection = 'poem';
 
   /* =========================================================
-     Header / section position sync
+     Helpers
   ========================================================= */
   function getHeaderHeight() {
     const header = $('header');
     return Math.ceil(header?.getBoundingClientRect().height || 0);
   }
 
-  function syncHeaderOffset() {
-    const header = $('header');
-    const main = $('main');
-    if (!header || !main) return;
-
-    const h = getHeaderHeight();
-    const topPad = Math.max(h + 12, 120);
-
-    document.documentElement.style.setProperty('--header-offset', `${h}px`);
-    main.style.paddingTop = `${topPad}px`;
-  }
-
-  function scheduleHeaderOffsetSync() {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(syncHeaderOffset);
-    });
-  }
-
-  function scrollSectionTop(id) {
+  function scrollToSectionTop(id) {
     const target = document.getElementById(id);
     if (!target) return;
 
@@ -1555,28 +1525,18 @@
     });
   }
 
-  function scheduleScrollSectionTop(id) {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        scrollSectionTop(id);
-      });
+  function scrollWorksTabsTop() {
+    const works = $('#works');
+    const tabs = $('#works .tabs');
+    if (!works || !tabs) return;
+
+    const headerH = getHeaderHeight();
+    const y = window.scrollY + tabs.getBoundingClientRect().top - headerH - 10;
+
+    window.scrollTo({
+      top: Math.max(0, y),
+      behavior: 'auto'
     });
-  }
-
-  /* =========================================================
-     Performance mode
-  ========================================================= */
-  function refreshPerformanceMode() {
-    const lightboxOpen = $('#lightbox')?.classList.contains('is-open');
-    const bioOpen = $('#bio-modal') && !$('#bio-modal').hidden;
-
-    const shouldRunWaves =
-      currentSection === 'poem' &&
-      !lightboxOpen &&
-      !bioOpen;
-
-    if (shouldRunWaves) wavesController.start();
-    else wavesController.stop();
   }
 
   /* =========================================================
@@ -1595,15 +1555,17 @@
         sec.classList.toggle('is-active', sec.id === id);
       }
 
-      refreshPerformanceMode();
-      scheduleHeaderOffsetSync();
-      scheduleScrollSectionTop(id);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToSectionTop(id);
+        });
+      });
     }
 
     function setActiveBtn(targetId) {
       const btns = Array.from($$('button', nav));
       for (const b of btns) b.classList.remove('active');
-      const btn = btns.find((x) => x.dataset.target === targetId);
+      const btn = btns.find(x => x.dataset.target === targetId);
       if (btn) btn.classList.add('active');
     }
 
@@ -1628,7 +1590,7 @@
   }
 
   /* =========================================================
-     2) Global Language
+     2) Global Language Toggle
   ========================================================= */
   function initLanguage() {
     const koBtn = $('#koBtn');
@@ -1637,9 +1599,9 @@
 
     function setBodyLang(mode) {
       document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en') document.body.classList.add('english');
+      if (mode === 'en')      document.body.classList.add('english');
       else if (mode === 'hy') document.body.classList.add('hybrid');
-      else document.body.classList.add('korean');
+      else                    document.body.classList.add('korean');
     }
 
     function activate(btn) {
@@ -1649,44 +1611,43 @@
       if (btn) btn.classList.add('active');
     }
 
-    function onLangChange() {
+    const onLangChange = () => {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
-      scheduleHeaderOffsetSync();
-    }
+    };
 
     if (koBtn) koBtn.addEventListener('click', () => {
       setBodyLang('kr');
       activate(koBtn);
       onLangChange();
-    }, { passive: true });
+    }, { passive:true });
 
     if (enBtn) enBtn.addEventListener('click', () => {
       setBodyLang('en');
       activate(enBtn);
       onLangChange();
-    }, { passive: true });
+    }, { passive:true });
 
     if (hyBtn) hyBtn.addEventListener('click', () => {
       setBodyLang('hy');
       activate(hyBtn);
       onLangChange();
-    }, { passive: true });
+    }, { passive:true });
 
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
   }
 
   /* =========================================================
-     3) Works UI
+     3) Works
   ========================================================= */
   function initWorksUI() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
     const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-    const tabs = $('.tabs', worksRoot);
 
+    const tabs = $('.tabs', worksRoot);
     if (tabs) {
       tabs.addEventListener('click', (e) => {
         const btn = e.target.closest('.tab');
@@ -1699,27 +1660,24 @@
         btn.classList.add('active');
 
         for (const p of panelIds) {
-          const panel = $('#panel-' + p);
-          if (panel) panel.classList.toggle('active', p === key);
+          const el = $('#panel-' + p);
+          if (el) el.classList.toggle('active', p === key);
         }
 
-        if (worksLoaded) {
-          ensurePanelInitialized(key);
-          activatePanelObserver(key);
-          scheduleHeaderOffsetSync();
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
 
+        requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              const worksSection = $('#works');
-              const tabsEl = $('.tabs', worksSection);
-              if (!worksSection || !tabsEl) return;
-
-              const headerH = getHeaderHeight();
-              const y = window.scrollY + tabsEl.getBoundingClientRect().top - headerH - 10;
-              window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
-            });
+            scrollWorksTabsTop();
           });
-        }
+        });
       }, { passive: true });
     }
 
@@ -1732,28 +1690,14 @@
 
     worksLoaded = true;
 
-    const idMap = {
-      0: 'origin',
-      1: 'pray',
-      2: 'human',
-      3: 'rebirth',
-      4: 'exist',
-      5: 'cosmos'
-    };
+    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
 
     try {
       const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-      worksByPanel = {
-        origin: [],
-        pray: [],
-        human: [],
-        rebirth: [],
-        exist: [],
-        cosmos: []
-      };
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
       for (const item of list) {
         let key = item.section || item.panel;
@@ -1763,16 +1707,18 @@
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
 
-      ensurePanelInitialized(activeKey);
-      activatePanelObserver(activeKey);
-      scheduleHeaderOffsetSync();
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
 
     } catch (err) {
       console.error('works.json load error:', err);
-      const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
 
+      const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
       for (const key of panelKeys) {
         const panel = $('#panel-' + key);
         if (!panel) continue;
@@ -1784,204 +1730,124 @@
           </div>
         `;
       }
-      scheduleHeaderOffsetSync();
     }
   }
 
-  function ensurePanelInitialized(key) {
-    const panel = $('#panel-' + key);
-    const state = panelState[key];
-    if (!panel || !state) return;
+  function renderWorksPanel(panel, items, key) {
+    const isOrigin = (key === 'origin');
 
-    if (state.initialized) return;
-
-    panel.innerHTML = '';
-    state.grid = document.createElement('div');
-    state.grid.className = 'w-grid';
-    panel.appendChild(state.grid);
-
-    state.sentinel = document.createElement('div');
-    state.sentinel.className = 'w-sentinel';
-    state.sentinel.setAttribute('aria-hidden', 'true');
-    state.sentinel.style.cssText = 'height:1px;width:100%;';
-    panel.appendChild(state.sentinel);
-
-    state.initialized = true;
-
-    renderNextBatch(key);
-    mountPanelObserver(key);
-  }
-
-  function buildWorkCardHTML(item, isOrigin) {
-    const id      = item.id || '';
-    const titleKr = item.title_kr || '';
-    const titleEn = item.title_en || '';
-    const matKr   = item.material_kr || '';
-    const matEn   = item.material_en || '';
-    const sizeKr  = item.size_kr || '';
-    const sizeEn  = item.size_en || '';
-    const year    = item.year || '';
-    const imgStd  = item.image || item.image_standard || '';
-    const imgZoom = item.zoom || item.image_zoom || imgStd;
-
-    const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-    const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
-
-    if (isOrigin) {
-      return `
-        <article class="w-card w-card-origin"
-                 data-id="${escAttr(id)}"
-                 data-img="${escAttr(imgZoom || imgStd)}">
-          <img class="w-thumb"
-               src="${escAttr(imgStd)}"
-               alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-               loading="lazy"
-               decoding="async"
-               width="800"
-               height="1000" />
-        </article>
-      `;
-    }
-
-    const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
-    const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
-
-    return `
-      <article class="w-card"
-               data-id="${escAttr(id)}"
-               data-img="${escAttr(imgZoom || imgStd)}"
-               data-cap-kr="${escAttrWithNL(captionKr)}"
-               data-cap-en="${escAttrWithNL(captionEn)}">
-        <img class="w-thumb"
-             src="${escAttr(imgStd)}"
-             alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-             loading="lazy"
-             decoding="async"
-             width="800"
-             height="1000" />
-        <div class="w-meta">
-          <div class="w-title">
-            <span class="ko">${escHTML(titleKr)}</span>
-            <span class="en">${escHTML(titleEn)}</span>
-          </div>
-          <div class="w-sub">
-            <span class="ko">${escHTML(subKr)}</span>
-            <span class="en">${escHTML(subEn)}</span>
-          </div>
+    if (!items || !items.length) {
+      panel.innerHTML = `
+        <div class="w-msg">
+          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+          <div class="en">No artworks have been registered in this section yet.</div>
         </div>
-      </article>
-    `;
-  }
-
-  function renderNextBatch(key) {
-    const state = panelState[key];
-    const items = worksByPanel[key] || [];
-    const isOrigin = key === 'origin';
-    if (!state || !state.grid || state.done) return;
-
-    const start = state.rendered;
-    const end = Math.min(start + state.batch, items.length);
-
-    if (start >= items.length) {
-      state.done = true;
-      if (state.sentinel) state.sentinel.style.display = 'none';
+      `;
       return;
     }
 
-    let html = '';
-    for (let i = start; i < end; i++) {
-      html += buildWorkCardHTML(items[i], isOrigin);
-    }
+    let html = '<div class="w-grid">';
+    for (const item of items) {
+      const id      = item.id || '';
+      const titleKr = item.title_kr || '';
+      const titleEn = item.title_en || '';
+      const matKr   = item.material_kr || '';
+      const matEn   = item.material_en || '';
+      const sizeKr  = item.size_kr || '';
+      const sizeEn  = item.size_en || '';
+      const year    = item.year || '';
+      const imgStd  = item.image || item.image_standard || '';
+      const imgZoom = item.zoom  || item.image_zoom || imgStd;
 
-    state.grid.insertAdjacentHTML('beforeend', html);
-    state.rendered = end;
+      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
 
-    scheduleImageDecode(state.grid);
+      if (isOrigin) {
+        html += `
+          <article class="w-card w-card-origin"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy"
+                 decoding="async"
+                 width="800"
+                 height="1000" />
+          </article>
+        `;
+      } else {
+        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
+        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
 
-    if (state.rendered >= items.length) {
-      state.done = true;
-      if (state.sentinel) state.sentinel.style.display = 'none';
-      if (state.observer) {
-        state.observer.disconnect();
-        state.observer = null;
+        const capKrAttr = escAttrWithNL(captionKr);
+        const capEnAttr = escAttrWithNL(captionEn);
+
+        html += `
+          <article class="w-card"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}"
+                   data-cap-kr="${capKrAttr}"
+                   data-cap-en="${capEnAttr}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy"
+                 decoding="async"
+                 width="800"
+                 height="1000" />
+            <div class="w-meta">
+              <div class="w-title">
+                <span class="ko">${escHTML(titleKr)}</span>
+                <span class="en">${escHTML(titleEn)}</span>
+              </div>
+              <div class="w-sub">
+                <span class="ko">${escHTML(subKr)}</span>
+                <span class="en">${escHTML(subEn)}</span>
+              </div>
+            </div>
+          </article>
+        `;
       }
     }
-
-    scheduleHeaderOffsetSync();
-  }
-
-  function mountPanelObserver(key) {
-    const state = panelState[key];
-    if (!state || !state.sentinel || state.observer || !('IntersectionObserver' in window)) return;
-
-    state.observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        if (state.done) return;
-        renderNextBatch(key);
-      }
-    }, {
-      root: null,
-      rootMargin: '400px 0px',
-      threshold: 0.01
-    });
-
-    state.observer.observe(state.sentinel);
-  }
-
-  function activatePanelObserver(activeKey) {
-    for (const key of Object.keys(panelState)) {
-      const state = panelState[key];
-      if (!state) continue;
-
-      if (state.observer) {
-        state.observer.disconnect();
-        state.observer = null;
-      }
-
-      if (key === activeKey && state.initialized && !state.done) {
-        mountPanelObserver(key);
-      }
-    }
+    html += '</div>';
+    panel.innerHTML = html;
   }
 
   /* =========================================================
      3-1) Image decode
   ========================================================= */
-  function ensureImgDecodeObserver() {
-    if (imgDecodeObserver) return imgDecodeObserver;
+  let io = null;
+
+  function ensureIO() {
+    if (io) return io;
     if (!('IntersectionObserver' in window)) return null;
 
-    imgDecodeObserver = new IntersectionObserver((entries) => {
+    io = new IntersectionObserver((entries) => {
       for (const ent of entries) {
         if (!ent.isIntersecting) continue;
         const img = ent.target;
-        imgDecodeObserver.unobserve(img);
-        if (img && img.decode) img.decode().catch(() => {});
+        io.unobserve(img);
+        if (img && img.decode) img.decode().catch(()=>{});
       }
-    }, {
-      root: null,
-      rootMargin: '220px 0px',
-      threshold: 0.01
-    });
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
 
-    return imgDecodeObserver;
+    return io;
   }
 
   function scheduleImageDecode(root) {
     const imgs = $$('img.w-thumb', root || document);
-    const observer = ensureImgDecodeObserver();
+    const observer = ensureIO();
 
     if (observer) {
       for (const img of imgs) observer.observe(img);
-      return;
+    } else {
+      runIdle(() => {
+        for (const img of imgs) {
+          if (img && img.decode) img.decode().catch(()=>{});
+        }
+      });
     }
-
-    runIdle(() => {
-      for (const img of imgs) {
-        if (img && img.decode) img.decode().catch(() => {});
-      }
-    });
   }
 
   /* =========================================================
@@ -2000,13 +1866,11 @@
     const lb = $('#lightbox');
     const btnX = $('#lbClose');
 
-    if (lb) {
-      lb.addEventListener('click', (e) => {
-        if (e.target === lb) closeLightbox();
-      }, { passive: true });
-    }
+    if (lb) lb.addEventListener('click', (e) => {
+      if (e.target === lb) closeLightbox();
+    }, { passive:true });
 
-    if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
   }
 
   function buildCaptionForCard(card, mode) {
@@ -2033,7 +1897,7 @@
 
     lbOpenFrom = card;
 
-    const src = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
+    const src  = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
     const mode = getLang();
 
     lbImg.src = src;
@@ -2042,9 +1906,7 @@
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
 
-    if (lbImg.decode) lbImg.decode().catch(() => {});
-    refreshPerformanceMode();
-    scheduleHeaderOffsetSync();
+    if (lbImg.decode) lbImg.decode().catch(()=>{});
   }
 
   function closeLightbox() {
@@ -2055,13 +1917,9 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
-
     if (lbImg) lbImg.src = '';
     if (lbCap) lbCap.textContent = '';
-
     lbOpenFrom = null;
-    refreshPerformanceMode();
-    scheduleHeaderOffsetSync();
   }
 
   function updateOpenLightboxCaption() {
@@ -2080,7 +1938,7 @@
     if (!grid || !reportsRoot) return;
 
     const toggleBtn = $('#reportsToggle');
-    const tabsWrap = $('.r-tabs', reportsRoot);
+    const tabsWrap  = $('.r-tabs', reportsRoot);
 
     if (toggleBtn) {
       toggleBtn.setAttribute('aria-expanded', 'false');
@@ -2108,7 +1966,6 @@
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
-        scheduleHeaderOffsetSync();
 
         if (!expanded && !reportsLoaded) {
           await loadReportsIntoGrid(grid);
@@ -2186,10 +2043,9 @@
       }
 
       grid.innerHTML = html;
-      scheduleHeaderOffsetSync();
 
       const tabs = Array.from($$('.r-tab'));
-      const defaultTab = tabs.find((b) => (b.dataset.r || '').toLowerCase() === 'all');
+      const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
       if (defaultTab) {
         for (const b of tabs) b.classList.remove('is-active');
         defaultTab.classList.add('is-active');
@@ -2229,21 +2085,14 @@
 
     const card = modal.querySelector('.bio-card');
     if (card) card.scrollTop = 0;
-
-    refreshPerformanceMode();
-    scheduleHeaderOffsetSync();
   }
 
   function closeBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
-
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
-
-    refreshPerformanceMode();
-    scheduleHeaderOffsetSync();
   }
 
   function initBioModal() {
@@ -2263,20 +2112,16 @@
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
         }
-
-        scheduleHeaderOffsetSync();
-      }, { passive: true });
+      }, { passive:true });
     }
 
     const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
-    if (backdrop) {
-      backdrop.addEventListener('click', (e) => {
-        if (e.target === backdrop) closeBioModal();
-      }, { passive: true });
-    }
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
+    if (backdrop) backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeBioModal();
+    }, { passive:true });
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
@@ -2288,8 +2133,7 @@
         const isOpen = expoBlock.getAttribute('data-open') === 'true';
         expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
         expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
-        scheduleHeaderOffsetSync();
-      }, { passive: true });
+      }, { passive:true });
     }
   }
 
@@ -2343,11 +2187,10 @@
     }
 
     function toggle() {
-      if (playing) stopSound();
-      else playSound();
+      playing ? stopSound() : playSound();
     }
 
-    bar.addEventListener('click', toggle, { passive: true });
+    bar.addEventListener('click', toggle, { passive:true });
     bar.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -2357,9 +2200,9 @@
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopSound();
-    }, { passive: true });
+    }, { passive:true });
 
-    window.addEventListener('pagehide', stopSound, { passive: true });
+    window.addEventListener('pagehide', stopSound, { passive:true });
 
     bar.classList.remove('is-on');
   }
@@ -2384,24 +2227,22 @@
 
     function resize() {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
+      canvas.width  = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      scheduleHeaderOffsetSync();
     }
 
     resize();
-    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('resize', resize, { passive:true });
 
     let t = 0;
     let animId = null;
-    let running = false;
 
     function draw() {
-      if (!running || prefersReduced) return;
+      if (prefersReduced) return;
 
       const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width / dpr;
+      const w = canvas.width  / dpr;
       const h = canvas.height / dpr;
 
       ctx.clearRect(0, 0, w, h);
@@ -2426,38 +2267,20 @@
       animId = requestAnimationFrame(draw);
     }
 
-    function start() {
-      if (prefersReduced || running) return;
-      running = true;
-      if (!animId) animId = requestAnimationFrame(draw);
-    }
-
-    function stop() {
-      running = false;
-      if (animId) {
-        cancelAnimationFrame(animId);
-        animId = null;
-      }
-      const dpr = window.devicePixelRatio || 1;
-      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-    }
-
-    function refresh() {
-      refreshPerformanceMode();
-    }
-
-    wavesController = { start, stop, refresh };
+    if (!prefersReduced) animId = requestAnimationFrame(draw);
 
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else refreshPerformanceMode();
-    }, { passive: true });
-
-    refreshPerformanceMode();
+      if (prefersReduced) return;
+      if (document.hidden) {
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+      } else if (!animId) {
+        animId = requestAnimationFrame(draw);
+      }
+    }, { passive:true });
   }
 
   /* =========================================================
-     8) Global Escape
+     8) Global Escape handler
   ========================================================= */
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
@@ -2472,39 +2295,23 @@
       const modal = $('#bio-modal');
       if (modal && !modal.hidden) {
         closeBioModal();
+        return;
       }
     }, { passive: true });
-  }
-
-  /* =========================================================
-     9) Viewport / layout sync
-  ========================================================= */
-  function initViewportSync() {
-    window.addEventListener('resize', scheduleHeaderOffsetSync, { passive: true });
-    window.addEventListener('orientationchange', scheduleHeaderOffsetSync, { passive: true });
-    window.addEventListener('load', scheduleHeaderOffsetSync, { passive: true });
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', scheduleHeaderOffsetSync, { passive: true });
-      window.visualViewport.addEventListener('scroll', scheduleHeaderOffsetSync, { passive: true });
-    }
   }
 
   /* =========================================================
      Boot
   ========================================================= */
   document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); } catch (e) { console.error(e); }
-    try { initLanguage(); } catch (e) { console.error(e); }
-    try { initWorksUI(); } catch (e) { console.error(e); }
-    try { initReports(); } catch (e) { console.error(e); }
-    try { initBioModal(); } catch (e) { console.error(e); }
-    try { initSound(); } catch (e) { console.error(e); }
-    try { initWaves(); } catch (e) { console.error(e); }
+    try { initNav(); }        catch (e) { console.error(e); }
+    try { initLanguage(); }   catch (e) { console.error(e); }
+    try { initWorksUI(); }    catch (e) { console.error(e); }
+    try { initReports(); }    catch (e) { console.error(e); }
+    try { initBioModal(); }   catch (e) { console.error(e); }
+    try { initSound(); }      catch (e) { console.error(e); }
+    try { initWaves(); }      catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
-    try { initViewportSync(); } catch (e) { console.error(e); }
-
-    scheduleHeaderOffsetSync();
   });
 })();
 </script>

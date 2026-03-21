@@ -6,7 +6,6 @@
 ========================================================== -->
 <head>
   <meta charset="utf-8" />
-  <meta name="google-site-verification" content="iyI6phZ0bzkfuN5jydyX2RzC2PDtpJ6EVkLxOS_FtP4" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
@@ -817,8 +816,8 @@
       .bio-body p{ margin: 5px 0; }
     }
 
-    /* =========================================================
-       LIGHTBOX (iOS fix)
+       /* =========================================================
+       LIGHTBOX (desktop caption fix)
     ========================================================= */
     #lightbox{
       position: fixed;
@@ -828,9 +827,9 @@
       background: rgba(0,0,0,.72);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      overflow: hidden;
+      overflow: auto;
       overscroll-behavior: contain;
-      -webkit-overflow-scrolling: auto;
+      -webkit-overflow-scrolling: touch;
     }
     #lightbox.is-open{ display:block; }
 
@@ -839,11 +838,13 @@
       inset: 14px 14px calc(14px + var(--safe-bot)) 14px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: stretch;
+      justify-content: flex-start;
       gap: 12px;
-      padding-top: var(--safe-top);
-      overflow: hidden;
+      padding-top: calc(56px + var(--safe-top));
+      padding-bottom: 18px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     #lbImg{
@@ -851,13 +852,14 @@
       width: auto;
       height: auto;
       max-width: min(1040px, 96vw);
-      max-height: calc(100% - 8px);
+      max-height: 70vh;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
       background: rgba(0,0,0,.25);
       object-fit: contain;
       margin: 0 auto;
+      flex: 0 0 auto;
     }
 
     .lb-caption{
@@ -865,15 +867,16 @@
       padding: 12px 12px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.06);
-      background: rgba(5,8,18,.62);
+      background: rgba(5,8,18,.85);
       color: rgba(233,213,155,.86);
       white-space: pre-wrap;
       line-height: 1.65;
       text-shadow: var(--text-edgeA), var(--gold-glowA);
-      max-height: 26vh;
-      overflow: auto;
-      overscroll-behavior: contain;
+      max-height: none;
+      overflow: visible;
       -webkit-overflow-scrolling: touch;
+      flex: 0 0 auto;
+      margin: 0 auto 12px;
     }
 
     .lb-close{
@@ -899,6 +902,8 @@
       .lb-stage{
         inset: 12px 12px calc(12px + var(--safe-bot)) 12px;
         gap: 10px;
+        align-items: center;
+        padding-top: calc(52px + var(--safe-top));
       }
       #lbImg{
         max-width: 96vw;
@@ -907,8 +912,10 @@
       }
       .lb-caption{
         max-height: 30vh;
+        overflow: auto;
         padding: 11px 11px;
         border-radius: 13px;
+        margin: 0;
       }
       .lb-close{
         width: 44px;

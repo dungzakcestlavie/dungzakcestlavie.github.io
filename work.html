@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Artwork | DUNGZAK CESTLAVIE</title>
+  <meta name="description" content="Artwork archive page by DUNGZAK CESTLAVIE." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://dungzak.art/work.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Artwork | DUNGZAK CESTLAVIE" />
+  <meta property="og:description" content="Artwork archive page by DUNGZAK CESTLAVIE." />
+  <meta property="og:url" content="https://dungzak.art/work.html" />
+  <meta property="og:image" content="https://dungzak.art/images/standard/DZ-001.jpg" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Artwork | DUNGZAK CESTLAVIE" />
+  <meta name="twitter:description" content="Artwork archive page by DUNGZAK CESTLAVIE." />
+  <meta name="twitter:image" content="https://dungzak.art/images/standard/DZ-001.jpg" />
+
+  <style>
+    :root{
+      --bg:#070A14;
+      --panel:#0f1628;
+      --text:#f5efe0;
+      --muted:#b9ab86;
+      --line:rgba(212,185,110,.28);
+      --gold:#d4b96e;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Georgia,"Times New Roman",serif;}
+    body{min-height:100vh}
+    .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px}
+    .toplink{
+      display:inline-block;
+      margin-bottom:18px;
+      color:var(--gold);
+      text-decoration:none;
+      border:1px solid var(--line);
+      padding:10px 14px;
+      border-radius:999px
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden
+    }
+    .imagebox{
+      width:100%;
+      background:#0b1020
+    }
+    .imagebox img{
+      display:block;
+      width:100%;
+      height:auto
+    }
+    .meta{padding:24px}
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(28px,4vw,40px);
+      line-height:1.2
+    }
+    .subtitle{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:15px
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:160px 1fr;
+      gap:10px 18px
+    }
+    .label{color:var(--muted)}
+    .value{color:var(--text)}
+    .desc{
+      margin-top:26px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      line-height:1.8
+    }
+    .footerlink{margin-top:28px}
+    .footerlink a{color:var(--gold)}
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="toplink" href="https://dungzak.art/">← Back to Archive</a>
+
+    <article class="card" id="artwork-card" hidden>
+      <div class="imagebox">
+        <img id="art-image" src="" alt="" loading="eager" />
+      </div>
+      <div class="meta">
+        <h1 id="title">Artwork</h1>
+        <p class="subtitle" id="section-line"></p>
+
+        <div class="grid">
+          <div class="label">ID</div>
+          <div class="value" id="work-id"></div>
+
+          <div class="label">Material</div>
+          <div class="value" id="material"></div>
+
+          <div class="label">Size</div>
+          <div class="value" id="size"></div>
+
+          <div class="label">Year</div>
+          <div class="value" id="year"></div>
+        </div>
+
+        <div class="desc" id="description">
+          DUNGZAK CESTLAVIE artwork archive page.
+        </div>
+
+        <div class="footerlink">
+          <a id="zoom-link" href="#" target="_blank" rel="noopener">Open zoom image</a>
+        </div>
+      </div>
+    </article>
+
+    <div id="error-box" class="card" style="padding:24px;">
+      <h2 style="margin-top:0;">Artwork not found</h2>
+      <p>The requested artwork could not be loaded.</p>
+    </div>
+  </div>
+
+  <script>
+    (async function () {
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+
+      if (!id) return;
+
+      try {
+        const res = await fetch("/data/works.json", { cache: "no-store" });
+        const data = await res.json();
+        const works = Array.isArray(data) ? data : (data.works || []);
+        const work = works.find(item => String(item.id).toUpperCase() === id.toUpperCase());
+
+        if (!work) return;
+
+        const titleKr = work.title_kr || "";
+        const titleEn = work.title_en || "";
+        const titleText =
+          titleKr && titleEn ? `${titleKr} / ${titleEn}` :
+          titleKr || titleEn || work.id || "Artwork";
+
+        const materialText =
+          [work.material_kr, work.material_en].filter(Boolean).join(" / ") || "-";
+
+        const sizeText =
+          [work.size_kr, work.size_en].filter(Boolean).join(" / ") || "-";
+
+        const sectionText =
+          [work.section_kr, work.section_en].filter(Boolean).join(" / ");
+
+        const yearText = work.year || "-";
+        const pageUrl = `https://dungzak.art/work.html?id=${encodeURIComponent(work.id)}`;
+        const imagePath = (work.image || work.zoom || "").replace(/^\/+/, "");
+        const zoomPath = (work.zoom || work.image || "").replace(/^\/+/, "");
+        const imageUrl = imagePath ? `https://dungzak.art/${imagePath}` : "";
+
+        document.title = `${titleText} | DUNGZAK CESTLAVIE`;
+        document.querySelector('meta[name="description"]').setAttribute(
+          "content",
+          `${titleText}. ${materialText}. ${sizeText}. ${yearText}. Artwork by DUNGZAK CESTLAVIE.`
+        );
+        document.querySelector('link[rel="canonical"]').setAttribute("href", pageUrl);
+
+        document.querySelector('meta[property="og:title"]').setAttribute("content", `${titleText} | DUNGZAK CESTLAVIE`);
+        document.querySelector('meta[property="og:description"]').setAttribute(
+          "content",
+          `${titleText}. ${materialText}. ${sizeText}. ${yearText}.`
+        );
+        document.querySelector('meta[property="og:url"]').setAttribute("content", pageUrl);
+        if (imageUrl) {
+          document.querySelector('meta[property="og:image"]').setAttribute("content", imageUrl);
+          document.querySelector('meta[name="twitter:image"]').setAttribute("content", imageUrl);
+        }
+
+        document.querySelector('meta[name="twitter:title"]').setAttribute("content", `${titleText} | DUNGZAK CESTLAVIE`);
+        document.querySelector('meta[name="twitter:description"]').setAttribute(
+          "content",
+          `${titleText}. ${materialText}. ${sizeText}. ${yearText}.`
+        );
+
+        document.getElementById("title").textContent = titleText;
+        document.getElementById("section-line").textContent = sectionText;
+        document.getElementById("work-id").textContent = work.id || "-";
+        document.getElementById("material").textContent = materialText;
+        document.getElementById("size").textContent = sizeText;
+        document.getElementById("year").textContent = yearText;
+        document.getElementById("description").textContent =
+          `${titleText}. ${sectionText}. ${materialText}. ${sizeText}. ${yearText}.`;
+
+        const img = document.getElementById("art-image");
+        img.src = work.image || work.zoom || "";
+        img.alt = titleText;
+
+        const zoomLink = document.getElementById("zoom-link");
+        zoomLink.href = work.zoom || work.image || "#";
+
+        const ld = {
+          "@context": "https://schema.org",
+          "@type": "VisualArtwork",
+          "name": titleText,
+          "creator": {
+            "@type": "Person",
+            "name": "DUNGZAK CESTLAVIE"
+          },
+          "artMedium": materialText,
+          "dateCreated": String(yearText),
+          "url": pageUrl,
+          "image": imageUrl,
+          "artform": "Painting"
+        };
+
+        const script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.textContent = JSON.stringify(ld);
+        document.head.appendChild(script);
+
+        document.getElementById("error-box").hidden = true;
+        document.getElementById("artwork-card").hidden = false;
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-<!-- ==========================================================
-① HEAD / STYLE  (Lightflow ∮31 · HEAD 완전 교체본)
-- 국제 SEO 타이틀/디스크립션 + OG/Twitter + JSON-LD 포함
-- 네가 올린 “두 번째 style(44px 강제/::before::after 제거)”는 완전히 제거
-- Sound Orb(52px) / Reports UX / Bio / Lightbox / Waves / Footer 스타일 포함 (원본 유지)
-========================================================== -->
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -13,21 +7,16 @@
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
-  <!-- 🔥 FINAL TITLE (국제 SEO) -->
   <title>등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist</title>
 
-  <!-- 🔥 FINAL DESCRIPTION (국제 SEO) -->
   <meta
     name="description"
-    
     content="등작 燈酌 DUNGZAK CESTLAVIE is a contemporary artist exploring Light, Memory, and Being through painting, DCAR aesthetic reports, the Lightflow archive, and Music Universe."
   />
 
   <meta name="robots" content="index, follow, max-image-preview:large" />
-
   <link rel="canonical" href="https://dungzak.art/" />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist" />
   <meta
@@ -37,9 +26,7 @@
   <meta property="og:url" content="https://dungzak.art/" />
   <meta property="og:site_name" content="DUNGZAK CESTLAVIE" />
   <meta property="og:locale" content="ko_KR" />
-  <!-- <meta property="og:image" content="https://dungzak.art/images/og.jpg" /> -->
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist" />
   <meta
@@ -47,11 +34,9 @@
     content="Explore paintings, exhibitions, DCAR aesthetic reports, Lightflow archive, and Music Universe."
   />
 
-  <!-- Google Translate bar 차단 -->
   <meta name="google" content="notranslate" />
   <meta name="googlebot" content="notranslate" />
 
-  <!-- Structured Data (기관/미술관 대응) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -69,9 +54,6 @@
   </script>
 
   <style>
-    /* =========================================================
-       Base / Reset
-    ========================================================= */
     :root{
       --bg0:#050812;
       --bg1:#070A14;
@@ -100,23 +82,16 @@
       --safe-right: env(safe-area-inset-right, 0px);
 
       --maxw: 1120px;
-
-      /* 금빛 “단단함(번짐 없음)” 엣지 */
       --gold-edge: rgba(0,0,0,.70);
       --gold-edge2: rgba(0,0,0,.42);
 
-      /* 버튼 크기 튜닝 */
       --btnH: 40px;
       --btnPadX: 12px;
       --btnFont: 12.6px;
       --btnRadius: 999px;
 
-      /* =========================================================
-         GOLD TEXT GLOW SYSTEM (PATCH)
-         - 텍스트를 "금빛의 빛"으로 올리되 번짐/흐림 없이
-      ========================================================= */
-      --gold-ink: rgba(233,213,155,.92);   /* gold2 기반 */
-      --gold-ink2: rgba(215,184,106,.90);  /* gold 기반 */
+      --gold-ink: rgba(233,213,155,.92);
+      --gold-ink2: rgba(215,184,106,.90);
 
       --gold-glowA: 0 0 10px rgba(215,184,106,.14);
       --gold-glowB: 0 0 18px rgba(233,213,155,.10);
@@ -124,17 +99,12 @@
       --text-edgeA: 0 1px 0 rgba(0,0,0,.70);
       --text-edgeB: 0 -1px 0 rgba(0,0,0,.42);
 
-      /* =========================================================
-         SOUND ORB (C resonance)
-         - 52px 고정 / 원형 / 문자링 / 5~6초 숨 / 재생 시 회전
-      ========================================================= */
-      --orb: 52px; /* 핵심: 52px */
+      --orb: 52px;
       --orb-ring: rgba(233,213,155,.38);
       --orb-ring2: rgba(121,167,255,.26);
       --orb-fill: rgba(5,8,18,.22);
       --orb-shadow: 0 12px 30px rgba(0,0,0,.55);
 
-      /* Reports UX */
       --report-accent: rgba(215,184,106,.22);
       --report-accent2: rgba(121,167,255,.18);
     }
@@ -164,18 +134,12 @@
     a:hover{ text-decoration:underline; }
     img{ max-width:100%; display:block; }
 
-    /* =========================================================
-       Language visibility (GLOBAL)
-    ========================================================= */
     .ko,.en{ display:block; }
     body.korean .en{ display:none !important; }
     body.english .ko{ display:none !important; }
     body.hybrid .ko,
     body.hybrid .en{ display:block !important; }
 
-    /* =========================================================
-       Bio modal 언어는 전역 필터에서 완전히 분리
-    ========================================================= */
     #bio-modal .ko,
     #bio-modal .en{
       display:block !important;
@@ -183,9 +147,6 @@
     #bio-modal[data-bio="kr"] .en{ display:none !important; }
     #bio-modal[data-bio="en"] .ko{ display:none !important; }
 
-    /* =========================================================
-       Waves canvas
-    ========================================================= */
     #waves{
       position:fixed;
       inset:0;
@@ -196,9 +157,6 @@
       opacity:1;
     }
 
-    /* =========================================================
-       Header / Nav
-    ========================================================= */
     header{
       position:sticky;
       top:0;
@@ -319,9 +277,6 @@
       outline-offset:2px;
     }
 
-    /* =========================================================
-       Main layout
-    ========================================================= */
     main{
       max-width: var(--maxw);
       margin: 0 auto;
@@ -337,13 +292,9 @@
       overflow:hidden;
     }
 
-    /* SINGLE SECTION VIEW */
     main > section{ display:none; }
     main > section.is-active{ display:block; }
 
-    /* =========================================================
-       POEM
-    ========================================================= */
     .hero{
       padding: 18px 18px 20px;
       position:relative;
@@ -370,9 +321,6 @@
       text-shadow: var(--text-edgeA), var(--gold-glowA);
     }
 
-    /* =========================================================
-       WORKS
-    ========================================================= */
     #works{
       padding: 18px;
       margin-top: 4px;
@@ -504,10 +452,6 @@
       text-shadow: var(--text-edgeA);
     }
 
-    /* =========================================================
-       REPORTS
-       - Open 버튼/링크를 “열고 싶게” 만드는 UX 강화 (HEAD only)
-    ========================================================= */
     #reports{ padding:18px; }
     #reports h2{
       margin:0;
@@ -554,7 +498,6 @@
       background: rgba(215,184,106,.08);
     }
 
-    /* 🔥 Reports Toggle = “열기 유도” 버튼 */
     .r-toggle{
       appearance:none;
       border:1px solid rgba(215,184,106,.34);
@@ -662,7 +605,6 @@
       z-index: 1;
     }
 
-    /* ✅ 보고서 “전체보기 링크”를 버튼처럼 보이게 (BODY 수정 없이) */
     .r-open{
       display:inline-flex;
       align-items:center;
@@ -695,9 +637,6 @@
       outline-offset:2px;
     }
 
-    /* =========================================================
-       BIO MODAL (원본 유지)
-    ========================================================= */
     #bio-modal[hidden]{ display:none !important; }
     #bio-modal{ position: fixed; inset:0; z-index: 50; }
     .bio-backdrop{
@@ -822,9 +761,6 @@
       .bio-body p{ margin: 5px 0; }
     }
 
-       /* =========================================================
-       LIGHTBOX (desktop caption fix)
-    ========================================================= */
     #lightbox{
       position: fixed;
       inset: 0;
@@ -853,12 +789,13 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* ✅ 전체화면 확대 최종 수정 */
     #lbImg{
       display: block;
       width: auto;
-      height: auto;
-      max-width: min(1040px, 96vw);
-      max-height: 70vh;
+      height: calc(100dvh - 140px);
+      max-width: calc(100vw - 48px);
+      max-height: none;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
@@ -934,8 +871,10 @@
         padding-top: calc(52px + var(--safe-top));
       }
       #lbImg{
-        max-width: 96vw;
-        max-height: calc(100% - 10px);
+        width: auto;
+        height: calc(100dvh - 110px);
+        max-width: calc(100vw - 24px);
+        max-height: none;
         border-radius: 14px;
       }
       .lb-caption{
@@ -952,10 +891,6 @@
       }
     }
 
-    /* =========================================================
-       COSMIC SOUND ORB (52px · right-bottom)
-       - BODY에는 #soundBar 1개만 있음 → CSS로 ‘원형/문자링’ 구성
-    ========================================================= */
     #soundBar{
       position: fixed;
       right: calc(14px + var(--safe-right));
@@ -965,24 +900,20 @@
       border-radius: 999px;
       cursor: pointer;
       z-index: 71;
-
       background:
         radial-gradient(circle at 50% 40%, rgba(233,213,155,.14), rgba(0,0,0,0) 55%),
         radial-gradient(circle at 50% 70%, rgba(121,167,255,.10), rgba(0,0,0,0) 62%),
         radial-gradient(circle at 50% 50%, var(--orb-fill), rgba(0,0,0,0) 72%);
-
       box-shadow:
         0 0 0 1px rgba(0,0,0,.75),
         0 0 0 1.5px rgba(233,213,155,.18) inset,
         var(--orb-shadow);
-
       opacity: .62;
       transition: opacity .25s ease, transform .25s ease, box-shadow .3s ease;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
 
-    /* 링(수학적 가장자리) */
     #soundBar::before{
       content:"";
       position:absolute;
@@ -1004,23 +935,20 @@
       pointer-events:none;
     }
 
-/* 문자 링 제거 – 순수 orb 유지 */
-#soundBar::after{
-  content: "";
-  display: none !important;
-}
+    #soundBar::after{
+      content: "";
+      display: none !important;
+    }
 
-    /* 숨(5~6초) */
     @keyframes orbBreath{
-      0%   { transform: scale(1);   opacity:.62; }
+      0%   { transform: scale(1); opacity:.62; }
       50%  { transform: scale(1.04); opacity:.78; }
-      100% { transform: scale(1);   opacity:.62; }
+      100% { transform: scale(1); opacity:.62; }
     }
     #soundBar{
       animation: orbBreath 5.6s ease-in-out infinite;
     }
 
-    /* ON 상태 = 더 선명 + 회전(문자링만) */
     #soundBar.is-on{
       opacity: .92;
       box-shadow:
@@ -1040,13 +968,9 @@
       color: rgba(233,213,155,.70);
     }
 
-    /* Hover/Active */
     #soundBar:hover{ opacity: .95; transform: translateY(-1px); }
     #soundBar:active{ transform: translateY(0); }
 
-    /* =========================================================
-       Footer
-    ========================================================= */
     footer{
       max-width: var(--maxw);
       margin: 18px auto 0;
@@ -1099,9 +1023,6 @@
       text-shadow: var(--text-edgeA);
     }
 
-    /* =========================================================
-       Reduced motion
-    ========================================================= */
     @media (prefers-reduced-motion: reduce){
       *{
         scroll-behavior:auto !important;
@@ -1117,12 +1038,10 @@
 </head>
 
 <body class="korean">
-  <!-- BACKGROUND -->
   <canvas id="waves" aria-hidden="true"></canvas>
 
-  <!-- HEADER -->
   <header>
-<div class="brand">등작 燈酌 DUNGZAK CESTLAVIE</div>
+    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
@@ -1140,7 +1059,6 @@
   </header>
 
   <main>
-    <!-- 1) POEM -->
     <section id="poem" class="hero">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
@@ -1194,16 +1112,12 @@
       </div>
     </section>
 
-    <!-- 2) WORKS -->
     <section id="works">
       <h2 class="ko">작품 아카이브</h2>
       <h2 class="en">Artworks</h2>
 
       <div class="tabs" role="tablist">
-        <!-- 🔹 A. Origin 섹션 (새 탭) -->
         <button type="button" class="tab" data-panel="origin">A 기원 · Origins</button>
-
-        <!-- 기존 Ⅰ~Ⅴ 섹션 그대로 유지 -->
         <button type="button" class="tab active" data-panel="pray">Ⅰ 우리를 위해 기도해 주세요 · Pray for Us</button>
         <button type="button" class="tab" data-panel="human">Ⅱ 인간 · Human Being</button>
         <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
@@ -1211,10 +1125,7 @@
         <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
       </div>
 
-      <!-- 🔹 Origin 전용 패널 -->
       <div id="panel-origin" class="tabpanel"></div>
-
-      <!-- 기존 패널들 -->
       <div id="panel-pray" class="tabpanel active"></div>
       <div id="panel-human" class="tabpanel"></div>
       <div id="panel-rebirth" class="tabpanel"></div>
@@ -1222,7 +1133,6 @@
       <div id="panel-cosmos" class="tabpanel"></div>
     </section>
 
-    <!-- 3) REPORTS -->
     <section id="reports">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
@@ -1246,7 +1156,6 @@
     </section>
   </main>
 
-  <!-- ARTIST BIO MODAL -->
   <div id="bio-modal" hidden>
     <div class="bio-backdrop"></div>
 
@@ -1263,7 +1172,6 @@
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
-      <!-- 🔹 INTRO -->
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’라는 세 축을 중심으로 예술의 근원을 탐구하는 한국 현대 예술가다.</p>
         <p>그의 회화는 한 인간이 겪어낸 감정의 잔향, 상처를 통과하며 남는 빛의 기원, 그리고 사라짐과 다시 태어남이 반복되는 존재의 순환을 기록한다. 등작의 화면에는 기도·흔적·숨결 같은 정서적 층위가 켜켜이 남아 있으며, 이는 단순한 형상이나 색채를 넘어 ‘감정의 생물학적 흔적’과 ‘기억의 존엄’을 응시하는 미학으로 확장된다.</p>
@@ -1278,16 +1186,12 @@
         <p>Each work is both prayer and record: a quiet declaration of human dignity, the warmth that follows wounding, and the breath by which being reawakens.</p>
       </div>
 
-      <!-- 🔹 EXPO KICKER -->
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
         <span class="ko">등작 燈酌 DUNGZAK CESTLAVIE · 국내외 개인전 29회 ▾</span>
         <span class="en">DUNGZAK CESTLAVIE · 29 solo exhibitions worldwide ▾</span>
       </button>
 
-      <!-- 🔹 EXPO SLIDE -->
       <div class="slide-wrap" id="expoSlide" data-open="false">
-
-        <!-- BIO · KOREAN -->
         <div class="bio-body ko">
           <p><strong>국내 주요전시</strong></p>
           <p>2026 김정숙 갤러리, 제이에스아트스페이스, 월미도, 인천, 대한민국</p>
@@ -1330,9 +1234,7 @@
           <br>
 
           <p><strong>소장</strong></p>
-          <p>
-            베를린 시청; 훔볼트 병원; 노트르담 대성당(파리); 파리 정치대학; 바르샤바 국립 의료원; 일본 도쿄 교회; 베트남 호찌민 중앙 경찰서; 네덜란드 암스테르담 반 고흐 미술관(포트폴리오); 미국 뉴욕 현대 미술관(포트폴리오); 메리츠 증권; 국내외 개인 소장자 다수
-          </p>
+          <p>베를린 시청; 훔볼트 병원; 노트르담 대성당(파리); 파리 정치대학; 바르샤바 국립 의료원; 일본 도쿄 교회; 베트남 호찌민 중앙 경찰서; 네덜란드 암스테르담 반 고흐 미술관(포트폴리오); 미국 뉴욕 현대 미술관(포트폴리오); 메리츠 증권; 국내외 개인 소장자 다수</p>
 
           <br>
 
@@ -1347,7 +1249,6 @@
           <p>2016년 폴란드 바르샤바 법정에서, 12년간 유럽과 한국을 오가며 활동해 온 행적과 유럽 측 증언을 바탕으로 ‘해양 에너지 사업가(Ocean Energy Businessman)’로 공식 인정받았다.</p>
         </div>
 
-        <!-- BIO · ENGLISH -->
         <div class="bio-body en">
           <p><strong>Major Exhibitions in Korea</strong></p>
           <p>2026 Kim Jungsook Gallery, JS ART SPACE, Wolmido, Incheon, Republic of Korea</p>
@@ -1390,9 +1291,7 @@
           <br>
 
           <p><strong>Collections</strong></p>
-          <p>
-            Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland; Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); Meritz Securities Co., Ltd., Republic of Korea; Numerous private collections worldwide.
-          </p>
+          <p>Berlin City Hall, Germany; Humboldt Hospital, Germany; Notre-Dame Cathedral, Paris, France; Sciences Po, Paris, France; National Medical Institute, Warsaw, Poland; Church in Tokyo, Japan; Ho Chi Minh City Central Police Department, Vietnam; Van Gogh Museum Amsterdam, Netherlands (Portfolio Collection); Museum of Modern Art, New York, USA (Portfolio Collection); Meritz Securities Co., Ltd., Republic of Korea; Numerous private collections worldwide.</p>
 
           <br>
 
@@ -1406,12 +1305,10 @@
           <p><strong>Event</strong></p>
           <p>In 2016, before the court in Warsaw, Poland, he was officially recognized as an “ocean energy businessman”, based on twelve years of work between Europe and Korea and supporting testimony from European partners.</p>
         </div>
+      </div>
+    </div>
+  </div>
 
-      </div> <!-- /.slide-wrap -->
-    </div>   <!-- /.bio-card -->
-  </div>     <!-- /#bio-modal -->
-
-  <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true">
     <div class="lb-stage">
       <img id="lbImg" alt="">
@@ -1433,22 +1330,11 @@
     <small class="en">©DUNGZAK CESTLAVIE</small>
   </footer>
 
-  <!-- 🔊 Cosmic Sound Bar -->
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
 
 <script>
 (() => {
   'use strict';
-
-  /* =========================================================
-     PERF SCRIPT (Lightflow ∮31)
-     - BODY/HTML 변경 없음
-     - Works: active panel first, others idle
-     - Reports: load only when user opens (no idle preload)
-     - JSON cache w/ version key (localStorage)
-     - Image decode + IntersectionObserver (safe)
-     - Sound: MP3는 클릭 시에만 로드/재생 (초기 8MB 페이로드 제거)
-  ========================================================= */
 
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
@@ -1471,12 +1357,8 @@
     else setTimeout(fn, 50);
   };
 
-  /* =========================================================
-     Cache helpers (localStorage)
-     - bump VERSION when you want forced refresh
-  ========================================================= */
-  const VERSION = 'LF31_v2'; // ✅ (오디오 로딩 방식 변경) 버전 올림
-  const CACHE_TTL_MS = 1000 * 60 * 60 * 12; // 12h
+  const VERSION = 'LF31_v2';
+  const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
     try {
@@ -1494,9 +1376,6 @@
     } catch {}
   }
 
-  /* =========================================================
-     Safe fetch (single-flight)
-  ========================================================= */
   const inflight = new Map();
 
   async function safeJSONFetchCached(url, cacheKey) {
@@ -1527,17 +1406,11 @@
     return 'kr';
   };
 
-  /* =========================================================
-     State
-  ========================================================= */
   let lbOpenFrom = null;
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
   let reportsLoaded = false;
 
-  /* =========================================================
-     1) Main Nav
-  ========================================================= */
   function initNav() {
     const nav = $('nav.primary');
     if (!nav) return;
@@ -1562,23 +1435,16 @@
       if (target) {
         setActiveBtn(target);
         showSection(target);
-
-        // ✅ Works 탭을 처음 열 때 로드 지연(초기 부하 감소)
         if (target === 'works' && !worksLoaded) loadWorks();
-
         return;
       }
       if (btn.id === 'tab-bio') openBioModal();
     }, { passive: true });
 
-    // 초기 화면
     showSection('poem');
     setActiveBtn('poem');
   }
 
-  /* =========================================================
-     2) Global Language Toggle
-  ========================================================= */
   function initLanguage() {
     const koBtn = $('#koBtn');
     const enBtn = $('#enBtn');
@@ -1610,9 +1476,6 @@
     if (koBtn) koBtn.classList.add('active');
   }
 
-  /* =========================================================
-     3) Works (lazy load + progressive render)
-  ========================================================= */
   function initWorksUI() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
@@ -1635,7 +1498,6 @@
           if (el) el.classList.toggle('active', p === key);
         }
 
-        // ✅ 클릭한 탭이 아직 미렌더면 해당 패널만 우선 렌더
         if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
           const panel = $('#panel-' + key);
           if (panel) {
@@ -1673,7 +1535,6 @@
         worksByPanel[key].push(item);
       }
 
-      // ✅ 1) 현재 보이는 패널(기본 active)만 즉시 렌더
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
       const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
       if (activePanel) {
@@ -1682,7 +1543,6 @@
         scheduleImageDecode(activePanel);
       }
 
-      // ✅ 2) 나머지는 idle로 순차 렌더 (초기 부하 분산)
       runIdle(() => {
         for (const key of panelKeys) {
           const panel = $('#panel-' + key);
@@ -1789,9 +1649,6 @@
     panel.innerHTML = html;
   }
 
-  /* =========================================================
-     3-1) Image decode scheduler + IntersectionObserver
-  ========================================================= */
   let io = null;
 
   function ensureIO() {
@@ -1825,9 +1682,6 @@
     }
   }
 
-  /* =========================================================
-     4) Lightbox
-  ========================================================= */
   function attachWorksLightbox() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
@@ -1975,7 +1829,6 @@
 
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
-
     bindLightboxSwipe();
   }
 
@@ -2004,9 +1857,6 @@
     lbCap.textContent = buildCaptionForCard(lbOpenFrom, getLang());
   }
 
-  /* =========================================================
-     5) Reports (load only on open)
-  ========================================================= */
   function initReports() {
     const grid = $('#reportGrid');
     const reportsRoot = $('#reports');
@@ -2131,9 +1981,6 @@
     }
   }
 
-  /* =========================================================
-     6) Artist Bio modal + expo slide toggle
-  ========================================================= */
   function openBioModal() {
     const modal = $('#bio-modal');
     if (!modal) return;
@@ -2210,11 +2057,6 @@
     }
   }
 
-  /* =========================================================
-     7) Sound (Cosmic Orb toggle)
-     - ✅ MP3는 클릭(사용자 제스처) 시에만 로드/재생
-     - ✅ 초기 로딩 페이로드(8MB) 제거
-  ========================================================= */
   function initSound() {
     const bar = $('#soundBar');
     if (!bar) return;
@@ -2225,11 +2067,9 @@
     bar.textContent = '';
 
     const AUDIO_SRC = 'audio/lightflow_C_praha_quick6m.mp3';
-
-    // ✅ src를 처음부터 넣지 않는다 (네트워크 다운로드 방지)
     const audio = new Audio();
     audio.loop = true;
-    audio.preload = 'none';   // 핵심
+    audio.preload = 'none';
     audio.volume = 0.18;
 
     let playing = false;
@@ -2238,7 +2078,6 @@
     function ensureSrc() {
       if (srcAttached) return;
       audio.src = AUDIO_SRC;
-      // preload none이라도, play 전에 로드 시작하도록 보장
       try { audio.load(); } catch {}
       srcAttached = true;
     }
@@ -2251,7 +2090,6 @@
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
       } catch (err) {
-        // iOS 등에서 사용자가 직접 누른 이벤트가 아닌 경우 실패 가능
         console.warn('Audio play failed:', err);
       }
     }
@@ -2277,9 +2115,6 @@
     bar.classList.remove('is-on');
   }
 
-  /* =========================================================
-     7-1) Waves background
-  ========================================================= */
   function initWaves() {
     const canvas = $('#waves');
     if (!canvas) return;
@@ -2348,9 +2183,6 @@
     }, { passive:true });
   }
 
-  /* =========================================================
-     8) Global Escape handler
-  ========================================================= */
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -2363,9 +2195,6 @@
     }, { passive: true });
   }
 
-  /* =========================================================
-     Boot
-  ========================================================= */
   document.addEventListener('DOMContentLoaded', () => {
     try { initNav(); }        catch (e) { console.error(e); }
     try { initLanguage(); }   catch (e) { console.error(e); }
@@ -2375,9 +2204,6 @@
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
-
-    // ✅ Works는 기본 화면(poem)에서 바로 로드하지 않음.
-    // 사용자가 Works를 눌렀을 때 loadWorks()가 실행됨.
   });
 })();
 </script>

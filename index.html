@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="ko">
 <!-- ==========================================================
 ① HEAD / STYLE  (Lightflow ∮31 · HEAD 완전 교체본)
 - 국제 SEO 타이틀/디스크립션 + OG/Twitter + JSON-LD 포함
@@ -20,6 +22,8 @@
     
     content="등작 燈酌 DUNGZAK CESTLAVIE is a contemporary artist exploring Light, Memory, and Being through painting, DCAR aesthetic reports, the Lightflow archive, and Music Universe."
   />
+
+  <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <link rel="canonical" href="https://dungzak.art/" />
 
@@ -444,7 +448,8 @@
     .w-thumb{
       width:100%;
       display:block;
-      object-fit:cover;
+      object-fit:contain;
+      object-position:center center;
       aspect-ratio:4/5;
       background: rgba(0,0,0,.18);
     }
@@ -861,6 +866,28 @@
       object-fit: contain;
       margin: 0 auto;
       flex: 0 0 auto;
+    }
+
+    #lbImg{
+      transition: transform .22s ease, opacity .22s ease;
+      will-change: transform, opacity;
+      touch-action: pan-y;
+    }
+    #lbImg.is-sliding-left{
+      transform: translateX(-24px);
+      opacity: 0;
+    }
+    #lbImg.is-sliding-right{
+      transform: translateX(24px);
+      opacity: 0;
+    }
+    #lbImg.is-enter-left{
+      transform: translateX(24px);
+      opacity: 0;
+    }
+    #lbImg.is-enter-right{
+      transform: translateX(-24px);
+      opacity: 0;
     }
 
     .lb-caption{
@@ -1818,6 +1845,11 @@
     if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
   }
 
+  let lbItems = [];
+  let lbIndex = 0;
+  let lbTouchStartX = 0;
+  let lightboxSwipeBound = false;
+
   function buildCaptionForCard(card, mode) {
     if (card.closest('#panel-origin')) return '';
 
@@ -1834,24 +1866,117 @@
     return capKr || capEn || '';
   }
 
+  function getActiveWorksCards() {
+    const activePanel = $('#works .tabpanel.active');
+    if (!activePanel) return [];
+    return Array.from($$('.w-card', activePanel));
+  }
+
+  function preloadImage(src) {
+    if (!src) return;
+    const img = new Image();
+    img.src = src;
+  }
+
+  function preloadNearbyLightboxImages() {
+    if (!lbItems.length) return;
+    const nextIndex = (lbIndex + 1) % lbItems.length;
+    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+    preloadImage(lbItems[nextIndex]?.src);
+    preloadImage(lbItems[prevIndex]?.src);
+  }
+
+  function setLightboxSlideContent(index) {
+    const lbImg = $('#lbImg');
+    const lbCap = $('#lbCap');
+    if (!lbImg || !lbCap || !lbItems[index]) return;
+
+    lbIndex = index;
+    lbOpenFrom = lbItems[index].card;
+    lbImg.src = lbItems[index].src;
+    lbCap.textContent = buildCaptionForCard(lbItems[index].card, getLang());
+
+    if (lbImg.decode) lbImg.decode().catch(()=>{});
+    preloadNearbyLightboxImages();
+  }
+
+  function animateLightboxTo(index, direction) {
+    const lbImg = $('#lbImg');
+    if (!lbImg || !lbItems[index]) return;
+
+    const exitClass = direction === 'next' ? 'is-sliding-left' : 'is-sliding-right';
+    const enterClass = direction === 'next' ? 'is-enter-left' : 'is-enter-right';
+
+    lbImg.classList.add(exitClass);
+
+    setTimeout(() => {
+      lbImg.classList.remove(exitClass);
+      setLightboxSlideContent(index);
+      lbImg.classList.add(enterClass);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          lbImg.classList.remove(enterClass);
+        });
+      });
+    }, 180);
+  }
+
+  function goNextLightboxImage() {
+    if (lbItems.length < 2) return;
+    const nextIndex = (lbIndex + 1) % lbItems.length;
+    animateLightboxTo(nextIndex, 'next');
+  }
+
+  function goPrevLightboxImage() {
+    if (lbItems.length < 2) return;
+    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+    animateLightboxTo(prevIndex, 'prev');
+  }
+
+  function bindLightboxSwipe() {
+    if (lightboxSwipeBound) return;
+    const lb = $('#lightbox');
+    if (!lb) return;
+
+    lb.addEventListener('touchstart', (e) => {
+      if (!lb.classList.contains('is-open')) return;
+      lbTouchStartX = e.touches[0].clientX;
+    }, { passive:true });
+
+    lb.addEventListener('touchend', (e) => {
+      if (!lb.classList.contains('is-open')) return;
+      const lbTouchEndX = e.changedTouches[0].clientX;
+      const diff = lbTouchStartX - lbTouchEndX;
+      if (Math.abs(diff) < 50) return;
+      if (diff > 0) goNextLightboxImage();
+      else goPrevLightboxImage();
+    }, { passive:true });
+
+    lightboxSwipeBound = true;
+  }
+
   function openLightboxFromCard(card) {
     const lb = $('#lightbox');
     const lbImg = $('#lbImg');
     const lbCap = $('#lbCap');
     if (!lb || !lbImg || !lbCap) return;
 
-    lbOpenFrom = card;
+    const cards = getActiveWorksCards();
+    lbItems = cards.map((c) => ({
+      card: c,
+      src: c.getAttribute('data-img') || c.querySelector('img')?.src || ''
+    }));
 
-    const src  = card.getAttribute('data-img') || card.querySelector('img')?.src || '';
-    const mode = getLang();
+    const clickedIndex = cards.indexOf(card);
+    if (clickedIndex < 0) return;
 
-    lbImg.src = src;
-    lbCap.textContent = buildCaptionForCard(card, mode);
+    setLightboxSlideContent(clickedIndex);
 
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
 
-    if (lbImg.decode) lbImg.decode().catch(()=>{});
+    bindLightboxSwipe();
   }
 
   function closeLightbox() {
@@ -1862,9 +1987,14 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
-    if (lbImg) lbImg.src = '';
+    if (lbImg) {
+      lbImg.src = '';
+      lbImg.classList.remove('is-sliding-left', 'is-sliding-right', 'is-enter-left', 'is-enter-right');
+    }
     if (lbCap) lbCap.textContent = '';
     lbOpenFrom = null;
+    lbItems = [];
+    lbIndex = 0;
   }
 
   function updateOpenLightboxCaption() {
@@ -2251,3 +2381,6 @@
   });
 })();
 </script>
+
+</body>
+</html>

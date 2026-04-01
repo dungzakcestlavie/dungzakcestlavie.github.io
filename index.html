@@ -858,19 +858,6 @@
       display:none;
     }
 
-    .lb-zoom-hint{
-      width:min(1040px,96vw);
-      margin: -4px auto 0;
-      font-size: 11px;
-      line-height: 1.35;
-      color: rgba(233,213,155,.62);
-      text-align:center;
-      text-shadow: var(--text-edgeA);
-      user-select:none;
-      pointer-events:none;
-      flex: 0 0 auto;
-    }
-
     .lb-viewport.is-zoomed{
       cursor: grab;
     }
@@ -910,10 +897,6 @@
         height: min(70dvh, calc(100dvh - 230px));
         min-height: 320px;
         border-radius: 14px;
-      }
-      .lb-zoom-hint{
-        margin-top: -2px;
-        font-size: 10.5px;
       }
       .lb-caption{
         width: calc(100vw - 24px);
@@ -1353,7 +1336,6 @@
       <div id="lbViewport" class="lb-viewport">
         <img id="lbImg" alt="">
       </div>
-      <div id="lbZoomHint" class="lb-zoom-hint">Pinch / wheel / double tap to zoom</div>
       <div id="lbCap" class="lb-caption"></div>
     </div>
     <button id="lbClose" class="lb-close">✕</button>
@@ -1865,7 +1847,6 @@
     const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
     animateLightboxTo(prevIndex, 'prev');
   }
-
 
   function clamp(v, min, max) {
     return Math.min(max, Math.max(min, v));

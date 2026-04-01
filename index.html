@@ -854,6 +854,9 @@
       flex: 0 0 auto;
       margin: 0 auto 12px;
     }
+    .lb-caption:empty{
+      display:none;
+    }
 
     .lb-zoom-hint{
       width:min(1040px,96vw);
@@ -897,17 +900,24 @@
     @media (max-width: 768px){
       .lb-stage{
         inset: 12px 12px calc(12px + var(--safe-bot)) 12px;
-        gap: 10px;
+        gap: 8px;
         align-items: center;
         padding-top: calc(52px + var(--safe-top));
+        padding-bottom: calc(12px + var(--safe-bot));
       }
       .lb-viewport{
         width: calc(100vw - 24px);
-        height: calc(100dvh - 110px);
+        height: min(70dvh, calc(100dvh - 230px));
+        min-height: 320px;
         border-radius: 14px;
       }
+      .lb-zoom-hint{
+        margin-top: -2px;
+        font-size: 10.5px;
+      }
       .lb-caption{
-        max-height: 30vh;
+        width: calc(100vw - 24px);
+        max-height: 22dvh;
         overflow: auto;
         padding: 11px 11px;
         border-radius: 13px;
@@ -1771,6 +1781,23 @@
     return capKr || capEn || '';
   }
 
+  function syncLightboxCaptionVisibility(text) {
+    const lbCap = $('#lbCap');
+    const hint = $('#lbZoomHint');
+    const viewport = $('#lbViewport');
+    if (!lbCap) return;
+
+    const hasCaption = !!String(text || '').trim();
+    lbCap.textContent = text || '';
+    lbCap.style.display = hasCaption ? 'block' : 'none';
+
+    if (hint) hint.style.display = hasCaption ? 'block' : 'none';
+    if (viewport) {
+      viewport.classList.toggle('has-caption', hasCaption);
+      viewport.classList.toggle('no-caption', !hasCaption);
+    }
+  }
+
   function getActiveWorksCards() {
     const activePanel = $('#works .tabpanel.active');
     if (!activePanel) return [];
@@ -1793,13 +1820,12 @@
 
   function setLightboxSlideContent(index) {
     const lbImg = $('#lbImg');
-    const lbCap = $('#lbCap');
-    if (!lbImg || !lbCap || !lbItems[index]) return;
+    if (!lbImg || !lbItems[index]) return;
 
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
     lbImg.src = lbItems[index].src;
-    lbCap.textContent = buildCaptionForCard(lbItems[index].card, getLang());
+    syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
     if (lbImg.decode) lbImg.decode().catch(()=>{});
@@ -2084,7 +2110,6 @@
   function closeLightbox() {
     const lb = $('#lightbox');
     const lbImg = $('#lbImg');
-    const lbCap = $('#lbCap');
     if (!lb) return;
 
     lb.classList.remove('is-open');
@@ -2093,7 +2118,7 @@
       lbImg.src = '';
       lbImg.classList.remove('is-sliding-left', 'is-sliding-right', 'is-enter-left', 'is-enter-right');
     }
-    if (lbCap) lbCap.textContent = '';
+    syncLightboxCaptionVisibility('');
     resetLbZoom(false);
     lbOpenFrom = null;
     lbItems = [];
@@ -2102,9 +2127,7 @@
 
   function updateOpenLightboxCaption() {
     if (!lbOpenFrom) return;
-    const lbCap = $('#lbCap');
-    if (!lbCap) return;
-    lbCap.textContent = buildCaptionForCard(lbOpenFrom, getLang());
+    syncLightboxCaptionVisibility(buildCaptionForCard(lbOpenFrom, getLang()));
   }
 
   function initReports() {

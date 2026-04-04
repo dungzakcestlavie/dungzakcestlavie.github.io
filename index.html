@@ -244,41 +244,76 @@
       margin: 8px auto 0;
       padding: 0 18px;
       display:flex;
-      gap:8px;
+      gap:6px;
       flex-wrap:wrap;
-      justify-content:center;
+      justify-content:flex-start;
+      align-items:center;
     }
     .lang button{
       appearance:none;
-      border:1px solid rgba(121,167,255,.20);
-      background: rgba(255,255,255,.028);
-      color: rgba(237,227,201,.92);
-      padding: 7px 11px;
-      border-radius: var(--btnRadius);
-      font-weight: 900;
-      font-size: 12px;
+      border:1px solid rgba(214,184,106,.15);
+      background: transparent;
+      color: rgba(214,184,106,.70);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 1;
       cursor:pointer;
-      min-height: 38px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.26);
-      text-shadow: 0 1px 0 rgba(0,0,0,.58);
+      min-height: 28px;
+      box-shadow: none;
+      text-shadow: none;
       touch-action: manipulation;
+      transition: border-color .16s ease, color .16s ease, background .16s ease;
     }
     .lang button.active{
-      border-color: rgba(215,184,106,.72);
-      background: rgba(215,184,106,.12);
-      color: var(--gold2);
+      border-color: rgba(214,184,106,.28);
+      background: rgba(214,184,106,.05);
+      color: rgba(233,213,155,.88);
     }
     .lang button:hover{
-      border-color: rgba(215,184,106,.45);
-      background: rgba(215,184,106,.08);
+      border-color: rgba(214,184,106,.24);
+      background: rgba(214,184,106,.03);
+      color: rgba(233,213,155,.80);
     }
     .lang button:focus-visible{
-      outline:2px solid rgba(121,167,255,.55);
+      outline:1px solid rgba(214,184,106,.28);
+      outline-offset:2px;
+    }
+    .lang .lab-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
+      padding: 4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(214,184,106,.12);
+      background: transparent;
+      color: rgba(214,184,106,.65);
+      font-size: 11px;
+      line-height:1;
+      font-weight:700;
+      letter-spacing:.02em;
+      text-decoration:none;
+      white-space:nowrap;
+      box-shadow:none;
+      text-shadow:none;
+      touch-action:manipulation;
+      transition: border-color .16s ease, color .16s ease, background .16s ease;
+    }
+    .lang .lab-link:hover{
+      border-color: rgba(214,184,106,.25);
+      color: rgba(233,213,155,.82);
+      background: rgba(214,184,106,.03);
+      text-decoration:none;
+    }
+    .lang .lab-link:focus-visible{
+      outline:1px solid rgba(214,184,106,.28);
       outline-offset:2px;
     }
 
     .mobile-top-links{
-      display:none;
+      display:none !important;
     }
 
     main{
@@ -1120,11 +1155,11 @@
       }
 
       footer .links{
-        display:none !important;
+        display:flex;
       }
 
       footer small{
-        margin-top: 0;
+        margin-top: 10px;
       }
     }
 
@@ -1160,6 +1195,7 @@
       <button type="button" id="koBtn" class="active">KR</button>
       <button type="button" id="enBtn">EN</button>
       <button type="button" id="hyBtn">KR+EN</button>
+      <a href="https://dungzaklab.art" target="_blank" rel="noopener" class="lab-link">dungzaklab.art</a>
     </div>
 
     <div class="mobile-top-links" aria-label="External links">
@@ -1437,7 +1473,6 @@
 
   <footer>
     <div class="links">
-      <a href="https://dungzaklab.art" target="_blank" rel="noopener">dungzaklab.art</a>
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
       <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
       <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">MUSIC UNIVERSE</a>

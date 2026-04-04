@@ -178,15 +178,18 @@
     }
 
     header .brand{
-      font-weight: 900;
-      color: var(--gold2);
-      letter-spacing: .72px;
-      font-size: 15px;
-      line-height: 1.25;
-      -webkit-text-stroke: .35px rgba(0,0,0,.35);
+      font-family: "Noto Serif KR", Georgia, "Times New Roman", serif;
+      font-weight: 600;
+      color: #d8c27a;
+      letter-spacing: .02em;
+      font-size: 17px;
+      line-height: 1.22;
+      white-space: nowrap;
+      text-align: center;
+      -webkit-text-stroke: 0 transparent;
       text-shadow:
-        0 1px 0 var(--gold-edge),
-        0 -1px 0 var(--gold-edge2);
+        0 1px 0 rgba(0,0,0,.78),
+        0 2px 8px rgba(0,0,0,.34);
     }
 
     header .brand-sub{
@@ -238,77 +241,125 @@
       outline:2px solid rgba(121,167,255,.55);
       outline-offset:2px;
     }
+    .lang-row{
+      max-width: var(--maxw);
+      margin: 10px auto 0;
+      padding: 0 18px;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+    }
 
     .lang{
+      display:flex;
+      gap:12px;
+      flex-wrap:nowrap;
+      justify-content:flex-end;
+      align-items:center;
+      margin-left:auto;
+    }
+
+    .lang button{
+      appearance:none;
+      border:0;
+      background:transparent;
+      color: rgba(233,213,155,.58);
+      padding: 0;
+      border-radius: 0;
+      font-family: "Inter", "SF Pro Text", "Segoe UI", "Noto Sans KR", sans-serif;
+      font-weight: 400;
+      font-size: 10.5px;
+      line-height: 1;
+      letter-spacing: .12em;
+      cursor:pointer;
+      min-height: auto;
+      box-shadow: none;
+      text-shadow: none;
+      touch-action: manipulation;
+      transition: color .18s ease, opacity .18s ease;
+      opacity: .96;
+      white-space: nowrap;
+    }
+    .lang button.active{
+      color: rgba(233,213,155,.92);
+      font-weight: 500;
+    }
+    .lang button:hover{
+      color: rgba(233,213,155,.80);
+    }
+    .lang button:focus-visible{
+      outline: none;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(214,184,106,.34);
+    }
+
+    .lab-row{
+      width:100%;
       max-width: var(--maxw);
       margin: 8px auto 0;
       padding: 0 18px;
       display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-start;
+      justify-content:center;
       align-items:center;
+      text-align:center;
     }
-    .lang button{
-      appearance:none;
-      border:1px solid rgba(214,184,106,.15);
-      background: transparent;
-      color: rgba(214,184,106,.70);
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 11px;
-      line-height: 1;
-      cursor:pointer;
-      min-height: 28px;
-      box-shadow: none;
-      text-shadow: none;
-      touch-action: manipulation;
-      transition: border-color .16s ease, color .16s ease, background .16s ease;
-    }
-    .lang button.active{
-      border-color: rgba(214,184,106,.28);
-      background: rgba(214,184,106,.05);
-      color: rgba(233,213,155,.88);
-    }
-    .lang button:hover{
-      border-color: rgba(214,184,106,.24);
-      background: rgba(214,184,106,.03);
-      color: rgba(233,213,155,.80);
-    }
-    .lang button:focus-visible{
-      outline:1px solid rgba(214,184,106,.28);
-      outline-offset:2px;
-    }
-    .lang .lab-link{
+
+    .lab-link{
+      --lab-shift: 0px;
+      position:relative;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height:28px;
-      padding: 4px 8px;
+      width:auto;
+      min-width:0;
+      min-height:30px;
+      padding: 4px 10px;
       border-radius:999px;
-      border:1px solid rgba(214,184,106,.12);
-      background: transparent;
-      color: rgba(214,184,106,.65);
-      font-size: 11px;
+      border:1px solid rgba(214,184,106,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.020), rgba(255,255,255,.010));
+      color: rgba(233,213,155,.88);
+      font-size: 13px;
       line-height:1;
       font-weight:700;
       letter-spacing:.02em;
       text-decoration:none;
       white-space:nowrap;
-      box-shadow:none;
-      text-shadow:none;
+      box-shadow: none;
+      text-shadow: 0 1px 0 rgba(0,0,0,.62);
       touch-action:manipulation;
-      transition: border-color .16s ease, color .16s ease, background .16s ease;
+      transition: border-color .18s ease, color .18s ease, background .18s ease, transform .18s ease;
+      overflow:hidden;
+      margin-left:auto;
+      margin-right:auto;
+      transform: translateX(var(--lab-shift));
     }
-    .lang .lab-link:hover{
-      border-color: rgba(214,184,106,.25);
-      color: rgba(233,213,155,.82);
-      background: rgba(214,184,106,.03);
+
+    .lab-link::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:999px;
+      background: radial-gradient(circle at 50% 50%, rgba(215,184,106,.14), rgba(0,0,0,0) 72%);
+      opacity:.18;
+      pointer-events:none;
+      animation: labBreath 5.2s ease-in-out infinite;
+    }
+
+    @keyframes labBreath{
+      0%   { opacity:.12; transform: scale(1); }
+      50%  { opacity:.24; transform: scale(1.02); }
+      100% { opacity:.12; transform: scale(1); }
+    }
+
+    .lab-link:hover{
+      border-color: rgba(214,184,106,.28);
+      color: rgba(233,213,155,.96);
+      background: linear-gradient(180deg, rgba(214,184,106,.04), rgba(255,255,255,.012));
       text-decoration:none;
     }
-    .lang .lab-link:focus-visible{
-      outline:1px solid rgba(214,184,106,.28);
+    .lab-link:focus-visible{
+      outline:1px solid rgba(214,184,106,.30);
       outline-offset:2px;
     }
 
@@ -463,6 +514,12 @@
     }
 
     @media (max-width: 768px){
+      header .brand{
+        font-size: 15.5px;
+        letter-spacing: .01em;
+        white-space: nowrap;
+      }
+
       .w-card{ border-radius: 16px; }
       .w-meta{ padding: 7px 8px 16px; }
       .w-title{
@@ -1086,10 +1143,7 @@
 
     @media (max-width: 768px){
       .mobile-top-links{
-        display:block;
-        max-width: var(--maxw);
-        margin: 10px auto 0;
-        padding: 0 14px;
+        display:none !important;
       }
 
       .mobile-top-links .mobile-link-scroll{
@@ -1163,7 +1217,69 @@
       }
     }
 
-    @media (prefers-reduced-motion: reduce){
+    
+    @media (min-width: 769px){
+      header .brand{
+        font-size: 17px;
+        letter-spacing: .018em;
+      }
+
+      .lang-row{
+        margin-top: 12px;
+      }
+      .lang{
+        gap:10px;
+      }
+      .lang button{
+        font-size: 13.5px;
+        padding: 7px 12px;
+        min-height: 35px;
+        border-color: rgba(214,184,106,.19);
+      }
+      .lab-row{
+        margin-top: 8px;
+      }
+      .lab-link{
+        font-size: 14.2px;
+        padding: 7px 14px;
+        min-height: 38px;
+        letter-spacing:.025em;
+        border-color: rgba(214,184,106,.24);
+        box-shadow:
+          0 0 0 1px rgba(0,0,0,.60),
+          0 10px 22px rgba(0,0,0,.26);
+      }
+    }
+
+    @media (max-width: 768px){
+      .lang-row{
+        margin-top: 8px;
+        padding: 0 14px;
+      }
+      .lang{
+        gap:6px;
+      }
+      .lang button{
+        font-size: 12.2px;
+        padding: 6px 10px;
+        min-height: 32px;
+      }
+      .lab-row{
+        margin-top: 6px;
+        padding: 0 14px;
+      }
+      .lab-link{
+        font-size: 13px;
+        padding: 6px 11px;
+        min-height: 34px;
+      }
+
+      main{
+        padding-top: 12px;
+      }
+    }
+
+@media (prefers-reduced-motion: reduce){
       *{
         scroll-behavior:auto !important;
         transition:none !important;
@@ -1175,6 +1291,8 @@
 
     body.modal-open{ overflow:hidden; }
   </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
 </head>
 
 <body class="korean">
@@ -1191,10 +1309,15 @@
       <button type="button" id="tab-bio">Artist Bio</button>
     </nav>
 
-    <div class="lang" aria-label="Language">
-      <button type="button" id="koBtn" class="active">KR</button>
-      <button type="button" id="enBtn">EN</button>
-      <button type="button" id="hyBtn">KR+EN</button>
+    <div class="lang-row" aria-label="Language controls">
+      <div class="lang">
+        <button type="button" id="koBtn" class="active">KR</button>
+        <button type="button" id="enBtn">EN</button>
+        <button type="button" id="hyBtn">KR+EN</button>
+      </div>
+    </div>
+
+    <div class="lab-row" aria-label="Lab entry">
       <a href="https://dungzaklab.art" target="_blank" rel="noopener" class="lab-link">dungzaklab.art</a>
     </div>
 
@@ -2567,6 +2690,26 @@
     }, { passive:true });
   }
 
+
+  function syncHeaderGeometry() {
+    const nav = $('nav.primary');
+    const worksBtn = $('nav.primary button[data-target="works"]');
+    const reportsBtn = $('nav.primary button[data-target="reports"]');
+    const labLink = $('.lab-link');
+
+    if (!nav || !worksBtn || !reportsBtn || !labLink) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const worksRect = worksBtn.getBoundingClientRect();
+    const reportsRect = reportsBtn.getBoundingClientRect();
+
+    const targetCenter = ((worksRect.left + worksRect.right) / 2 + (reportsRect.left + reportsRect.right) / 2) / 2;
+    const navCenter = (navRect.left + navRect.right) / 2;
+    const shift = targetCenter - navCenter;
+
+    labLink.style.setProperty('--lab-shift', `${shift.toFixed(2)}px`);
+  }
+
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -2588,6 +2731,10 @@
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
+    try { syncHeaderGeometry(); } catch (e) { console.error(e); }
+
+    window.addEventListener('load', syncHeaderGeometry, { passive:true });
+    window.addEventListener('resize', syncHeaderGeometry, { passive:true });
   });
 })();
 </script>

@@ -277,6 +277,10 @@
       outline-offset:2px;
     }
 
+    .mobile-top-links{
+      display:none;
+    }
+
     main{
       max-width: var(--maxw);
       margin: 0 auto;
@@ -1045,6 +1049,85 @@
       text-shadow: var(--text-edgeA);
     }
 
+    @media (max-width: 768px){
+      .mobile-top-links{
+        display:block;
+        max-width: var(--maxw);
+        margin: 10px auto 0;
+        padding: 0 14px;
+      }
+
+      .mobile-top-links .mobile-link-scroll{
+        display:flex;
+        gap:8px;
+        overflow-x:auto;
+        overflow-y:hidden;
+        white-space:nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 2px 4px 4px;
+        justify-content:flex-start;
+      }
+
+      .mobile-top-links .mobile-link-scroll::-webkit-scrollbar{
+        display:none;
+      }
+
+      .mobile-top-links a{
+        flex: 0 0 auto;
+        white-space: nowrap;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height: 34px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border:1px solid rgba(215,184,106,.26);
+        background: rgba(255,255,255,.018);
+        color: rgba(233,213,155,.92);
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: .12px;
+        text-decoration:none;
+        box-shadow: 0 6px 14px rgba(0,0,0,.20);
+        text-shadow: 0 1px 0 rgba(0,0,0,.60);
+        touch-action: manipulation;
+      }
+
+      .mobile-top-links a:hover{
+        background: rgba(215,184,106,.08);
+        border-color: rgba(215,184,106,.46);
+        text-decoration:none;
+      }
+
+      .mobile-top-links a:active{
+        transform: translateY(1px);
+      }
+
+      .mobile-top-links a:focus-visible{
+        outline:2px solid rgba(121,167,255,.55);
+        outline-offset:2px;
+      }
+
+      main{
+        padding-top: 14px;
+      }
+
+      footer{
+        margin-top: 16px;
+        padding-top: 12px;
+      }
+
+      footer .links{
+        display:none !important;
+      }
+
+      footer small{
+        margin-top: 0;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce){
       *{
         scroll-behavior:auto !important;
@@ -1077,6 +1160,17 @@
       <button type="button" id="koBtn" class="active">KR</button>
       <button type="button" id="enBtn">EN</button>
       <button type="button" id="hyBtn">KR+EN</button>
+    </div>
+
+    <div class="mobile-top-links" aria-label="External links">
+      <div class="mobile-link-scroll">
+        <a href="https://dungzaklab.art" target="_blank" rel="noopener">dungzaklab.art</a>
+        <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
+        <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">MUSIC UNIVERSE</a>
+        <a href="https://naver.me/x95dk3l1" target="_blank" rel="noopener">Naver Info</a>
+        <a href="mailto:dungzakcestlavie@gmail.com">Email</a>
+      </div>
     </div>
   </header>
 
@@ -1343,6 +1437,7 @@
 
   <footer>
     <div class="links">
+      <a href="https://dungzaklab.art" target="_blank" rel="noopener">dungzaklab.art</a>
       <a href="https://flickr.com/photos/dungzak" target="_blank" rel="noopener">Flickr</a>
       <a href="https://instagram.com/dungzakcestlavie" target="_blank" rel="noopener">Instagram</a>
       <a href="https://youtube.com/@dungzakcestlavie" target="_blank" rel="noopener">MUSIC UNIVERSE</a>

@@ -285,6 +285,16 @@
   "summary_ko": "정신을 형태와 언어의 관계 속에서 사유하며, 흐릿함과 명징함, 결핍과 포만, 사랑과 미움 사이를 흐르는 정신의 유동적 형상을 탐구한다.",
   "summary_en": "Reflects on the mind within the relationship between form and language, exploring its fluid shape as it moves between obscurity and lucidity, deprivation and fullness, love and hatred.",
   "md_path": "reports/DCAR-27-2026.md"
+},{
+  "id": "DCAR-28-2026",
+  "slug": "DCAR-28-2026",
+  "year": "2026",
+  "category": "Theory",
+  "title_ko": "전시는 공간이 아니라 함수다 — 관람자를 계산하는 구조",
+  "title_en": "Exhibition Is Not a Space — A Function That Computes the Viewer",
+  "summary_ko": "전시를 공간이 아닌 함수로 재정의하며, 관람자를 입력값으로 받아 상태 변화를 계산하는 구조와 감정 강도의 조건 설계를 함께 제시한다.",
+  "summary_en": "Redefines exhibition not as space but as a function, presenting a structure that takes the viewer as input and computes state change, together with a design logic for emotional intensity.",
+  "md_path": "reports/DCAR-28-2026.md"
 }
   ]
 }

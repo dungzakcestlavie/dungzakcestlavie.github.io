@@ -144,147 +144,180 @@
       "md_path": "reports/DCAR-13-2026.md"
     },
     {
-  "id": "DCAR-14-2026",
-  "slug": "DCAR-14-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 검정",
-  "title_en": "Language Read Through Color, Color Read Through Language — Black",
-  "summary_ko": "검정을 색채의 시작이자 빛이 태어나는 근원으로 사유하며, 먹의 경험을 통해 색과 존재, 우주의 관계를 탐구한다. 검정은 어둠이 아니라 하나의 빛으로 일어서는 색이며, 모든 색이 시작되는 사유의 자리임을 말한다.",
-  "summary_en": "Reflects on black as the origin of color and the ground from which light emerges. Through the experience of ink, it explores the relationship between color, being, and the universe, presenting black not as darkness but as a color rising as a single light from which all colors begin.",
-  "md_path": "reports/DCAR-14-2026.md"
-},
-{
-  "id": "DCAR-15-2026",
-  "slug": "DCAR-15-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 남색",
-  "title_en": "Language Read Through Color, Color Read Through Language — Indigo",
-  "summary_ko": "남색을 짙은 여운과 생의 그림자로 사유하며, 중간 톤의 조화 속에서 빛이 아직 끝나지 않았음을 드러내는 색으로 읽는다. 남색은 익숙함과 낯섦 사이에서 화면의 공간성을 이루고, 새벽빛의 공기를 품은 고독한 색채로 존재한다.",
-  "summary_en": "Reflects on indigo as a color of deep resonance and the shadow of life, revealing within the harmony of middle tones that light has not yet ended. Indigo shapes the spatial presence of the image between familiarity and estrangement, existing as a solitary color that carries the air of dawn light.",
-  "md_path": "reports/DCAR-15-2026.md"
-},{
-  "id": "DCAR-16-2026",
-  "slug": "DCAR-16-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 노랑",
-  "title_en": "Language Read Through Color, Color Read Through Language — Yellow",
-  "summary_ko": "노랑이라는 색을 통해 인간의 정서, 공간, 존재를 사유하는 미학 보고서.",
-  "summary_en": "An aesthetic report reflecting on human emotion, space, and being through the color yellow.",
-  "md_path": "reports/DCAR-16-2026.md"
-},
-{
-  "id": "DCAR-17-2026",
-  "slug": "DCAR-17-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 보라",
-  "title_en": "Language Read Through Color, Color Read Through Language — Purple",
-  "summary_ko": "보라라는 색을 통해 정신의 긴장, 상상, 자연의 색채 구조를 사유하는 미학 보고서.",
-  "summary_en": "An aesthetic report reflecting on tension of the mind, imagination, and the structure of color in nature through the color purple.",
-  "md_path": "reports/DCAR-17-2026.md"
-},{
-  "id": "DCAR-18-2026",
-  "slug": "DCAR-18-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 빨강",
-  "title_en": "Language Read Through Color, Color Read Through Language — Red",
-  "summary_ko": "빨강을 고독의 힘이자 무의식의 날개로 사유하며, 공간의 긴장과 색채의 분배, 혁명에 이르는 의식의 경로를 탐구한다. 빨강은 힘의 단순한 표지가 아니라 붕괴가 아닌 일어남, 그리고 서로의 의지 속에서 빛을 잃은 거리의 색으로 존재한다.",
-  "summary_en": "Reflects on red as the power of solitude and the wings of the unconscious, exploring spatial tension, chromatic distribution, and the path of consciousness toward revolution. Red appears not as a simple sign of force, but as a color of rising rather than collapse, and as the color of streets that have lost their light within mutual reliance.",
-  "md_path": "reports/DCAR-18-2026.md"
-},{
-  "id": "DCAR-19-2026",
-  "slug": "DCAR-19-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 주황",
-  "title_en": "Language Read Through Color, Color Read Through Language — Orange",
-  "summary_ko": "주황을 홀로 일어서는 색이자 욕망과 균형의 색으로 사유하며, 자연과 인공의 경계에서 색채의 자립과 조화의 가능성을 탐구한다. 주황은 태양의 자유, 노을의 그리움, 그리고 화면 속에서 빛이 먼저 인사를 건네는 색으로 존재한다.",
-  "summary_en": "Reflects on orange as a color that rises on its own and as a color of desire and balance, exploring the autonomy of color and the possibility of harmony at the boundary between nature and the artificial. Orange appears as the freedom of the sun, the longing of sunset, and the color to which light first offers its greeting within the image.",
-  "md_path": "reports/DCAR-19-2026.md"
-},{
-  "id": "DCAR-20-2026",
-  "slug": "DCAR-20-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 초록",
-  "title_en": "Language Read Through Color, Color Read Through Language — Green",
-  "summary_ko": "초록을 생명의 음률과 위로의 색으로 사유하며, 자연의 빛 속에서 생명의 호흡과 조화의 시작을 탐구한다. 초록은 숲의 숨결과 함께 인간의 마음을 열어 주는 색으로서 공간의 시작과 끝을 동시에 이야기한다.",
-  "summary_en": "Reflects on green as the melody of life and the color of consolation, exploring the breath of life and the beginning of harmony within natural light. Green appears as the breath of the forest that opens the human mind and speaks of both the beginning and the ending of space.",
-  "md_path": "reports/DCAR-20-2026.md"
-},{
-  "id": "DCAR-21-2026",
-  "slug": "DCAR-21-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 파랑",
-  "title_en": "Language Read Through Color, Color Read Through Language — Blue",
-  "summary_ko": "파랑을 어둠 속에서도 빛을 발하는 색으로 사유하며, 기억과 고통을 위로하고 공간을 신비로 이끄는 색채의 힘을 탐구한다.",
-  "summary_en": "Reflects on blue as a color that shines even in darkness, exploring its power to comfort memory and pain while transforming space into mystery.",
-  "md_path": "reports/DCAR-21-2026.md"
-},{
-  "id": "DCAR-22-2026",
-  "slug": "DCAR-22-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 하양",
-  "title_en": "Language Read Through Color, Color Read Through Language — White",
-  "summary_ko": "하양을 겸손하면서도 스스로 빛을 이루는 색으로 사유하며, 색채의 조화와 공간의 균형을 지탱하는 근원적 역할을 탐구한다.",
-  "summary_en": "Reflects on white as a humble color that forms light on its own, exploring its fundamental role in sustaining harmony among colors and balance within space.",
-  "md_path": "reports/DCAR-22-2026.md"
-},{
-  "id": "DCAR-23-2026",
-  "slug": "DCAR-23-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 몸",
-  "title_en": "Language Read Through Form, Form Read Through Language — Body",
-  "summary_ko": "몸을 살아있는 예술이자 형태와 색채의 근원으로 사유하며, 육체가 지닌 시간성, 감성, 비교와 욕망, 그리고 존재의 존엄을 탐구한다.",
-  "summary_en": "Reflects on the body as living art and as a source of form and color, exploring its temporality, sensibility, comparison and desire, and the dignity of embodied existence.",
-  "md_path": "reports/DCAR-23-2026.md"
-},{
-  "id": "DCAR-24-2026",
-  "slug": "DCAR-24-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 빛",
-  "title_en": "Language Read Through Form, Form Read Through Language — Light",
-  "summary_ko": "빛을 형태와 언어의 중심으로 사유하며, 어둠을 밝히고 마음을 환하게 하는 존재의 근원적 힘을 탐구한다. 빛은 고정된 형태 없이 상상과 언어를 통해 형성되며, 하늘과 생명 그 자체로 확장된다.",
-  "summary_en": "Reflects on light as the center of form and language, exploring its fundamental power to illuminate darkness and brighten the heart. Without a fixed form, light is shaped through imagination and language, expanding into sky and life itself.",
-  "md_path": "reports/DCAR-24-2026.md"
-},{
-  "id": "DCAR-25-2026",
-  "slug": "DCAR-25-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 얼굴",
-  "title_en": "Language Read Through Form, Form Read Through Language — Face",
-  "summary_ko": "얼굴을 인간 존재의 우주적 형상으로 사유하며, 눈동자·표정·자화상을 통해 형태와 언어가 서로를 비추는 방식을 탐구한다. 얼굴은 시가 되고 언어는 달빛처럼 형태를 이루며 지상을 비추는 미학적 장이 된다.",
-  "summary_en": "Reflects on the face as a cosmic form of human existence, exploring how form and language mirror one another through the eyes, expression, and the self-portrait. The face becomes poetry, and language takes form like moonlight, illuminating the earth as an aesthetic field.",
-  "md_path": "reports/DCAR-25-2026.md"
-},{
-  "id": "DCAR-26-2026",
-  "slug": "DCAR-26-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 영혼",
-  "title_en": "Language Read Through Form, Form Read Through Language — Soul",
-  "summary_ko": "영혼을 형태와 언어, 그리고 빛의 관계 속에서 사유하며, 원형에 가까운 형상과 우주적 감응, 언어화된 빛이 영혼과 공존하는 방식을 탐구한다.",
-  "summary_en": "Reflects on the soul within the relationship among form, language, and light, exploring forms close to the circle, cosmic resonance, and the way light shaped into language coexists with the soul.",
-  "md_path": "reports/DCAR-26-2026.md"
-},{
-  "id": "DCAR-27-2026",
-  "slug": "DCAR-27-2026",
-  "year": "2026",
-  "category": "Theory",
-  "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 정신",
-  "title_en": "Language Read Through Form, Form Read Through Language — Mind",
-  "summary_ko": "정신을 형태와 언어의 관계 속에서 사유하며, 흐릿함과 명징함, 결핍과 포만, 사랑과 미움 사이를 흐르는 정신의 유동적 형상을 탐구한다.",
-  "summary_en": "Reflects on the mind within the relationship between form and language, exploring its fluid shape as it moves between obscurity and lucidity, deprivation and fullness, love and hatred.",
-  "md_path": "reports/DCAR-27-2026.md"
-}
+      "id": "DCAR-14-2026",
+      "slug": "DCAR-14-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 검정",
+      "title_en": "Language Read Through Color, Color Read Through Language — Black",
+      "summary_ko": "검정을 색채의 시작이자 빛이 태어나는 근원으로 사유하며, 먹의 경험을 통해 색과 존재, 우주의 관계를 탐구한다. 검정은 어둠이 아니라 하나의 빛으로 일어서는 색이며, 모든 색이 시작되는 사유의 자리임을 말한다.",
+      "summary_en": "Reflects on black as the origin of color and the ground from which light emerges. Through the experience of ink, it explores the relationship between color, being, and the universe, presenting black not as darkness but as a color rising as a single light from which all colors begin.",
+      "md_path": "reports/DCAR-14-2026.md"
+    },
+    {
+      "id": "DCAR-15-2026",
+      "slug": "DCAR-15-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 남색",
+      "title_en": "Language Read Through Color, Color Read Through Language — Indigo",
+      "summary_ko": "남색을 짙은 여운과 생의 그림자로 사유하며, 중간 톤의 조화 속에서 빛이 아직 끝나지 않았음을 드러내는 색으로 읽는다. 남색은 익숙함과 낯섦 사이에서 화면의 공간성을 이루고, 새벽빛의 공기를 품은 고독한 색채로 존재한다.",
+      "summary_en": "Reflects on indigo as a color of deep resonance and the shadow of life, revealing within the harmony of middle tones that light has not yet ended. Indigo shapes the spatial presence of the image between familiarity and estrangement, existing as a solitary color that carries the air of dawn light.",
+      "md_path": "reports/DCAR-15-2026.md"
+    },
+    {
+      "id": "DCAR-16-2026",
+      "slug": "DCAR-16-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 노랑",
+      "title_en": "Language Read Through Color, Color Read Through Language — Yellow",
+      "summary_ko": "노랑이라는 색을 통해 인간의 정서, 공간, 존재를 사유하는 미학 보고서.",
+      "summary_en": "An aesthetic report reflecting on human emotion, space, and being through the color yellow.",
+      "md_path": "reports/DCAR-16-2026.md"
+    },
+    {
+      "id": "DCAR-17-2026",
+      "slug": "DCAR-17-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 보라",
+      "title_en": "Language Read Through Color, Color Read Through Language — Purple",
+      "summary_ko": "보라라는 색을 통해 정신의 긴장, 상상, 자연의 색채 구조를 사유하는 미학 보고서.",
+      "summary_en": "An aesthetic report reflecting on tension of the mind, imagination, and the structure of color in nature through the color purple.",
+      "md_path": "reports/DCAR-17-2026.md"
+    },
+    {
+      "id": "DCAR-18-2026",
+      "slug": "DCAR-18-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 빨강",
+      "title_en": "Language Read Through Color, Color Read Through Language — Red",
+      "summary_ko": "빨강을 고독의 힘이자 무의식의 날개로 사유하며, 공간의 긴장과 색채의 분배, 혁명에 이르는 의식의 경로를 탐구한다. 빨강은 힘의 단순한 표지가 아니라 붕괴가 아닌 일어남, 그리고 서로의 의지 속에서 빛을 잃은 거리의 색으로 존재한다.",
+      "summary_en": "Reflects on red as the power of solitude and the wings of the unconscious, exploring spatial tension, chromatic distribution, and the path of consciousness toward revolution. Red appears not as a simple sign of force, but as a color of rising rather than collapse, and as the color of streets that have lost their light within mutual reliance.",
+      "md_path": "reports/DCAR-18-2026.md"
+    },
+    {
+      "id": "DCAR-19-2026",
+      "slug": "DCAR-19-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 주황",
+      "title_en": "Language Read Through Color, Color Read Through Language — Orange",
+      "summary_ko": "주황을 홀로 일어서는 색이자 욕망과 균형의 색으로 사유하며, 자연과 인공의 경계에서 색채의 자립과 조화의 가능성을 탐구한다. 주황은 태양의 자유, 노을의 그리움, 그리고 화면 속에서 빛이 먼저 인사를 건네는 색으로 존재한다.",
+      "summary_en": "Reflects on orange as a color that rises on its own and as a color of desire and balance, exploring the autonomy of color and the possibility of harmony at the boundary between nature and the artificial. Orange appears as the freedom of the sun, the longing of sunset, and the color to which light first offers its greeting within the image.",
+      "md_path": "reports/DCAR-19-2026.md"
+    },
+    {
+      "id": "DCAR-20-2026",
+      "slug": "DCAR-20-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 초록",
+      "title_en": "Language Read Through Color, Color Read Through Language — Green",
+      "summary_ko": "초록을 생명의 음률과 위로의 색으로 사유하며, 자연의 빛 속에서 생명의 호흡과 조화의 시작을 탐구한다. 초록은 숲의 숨결과 함께 인간의 마음을 열어 주는 색으로서 공간의 시작과 끝을 동시에 이야기한다.",
+      "summary_en": "Reflects on green as the melody of life and the color of consolation, exploring the breath of life and the beginning of harmony within natural light. Green appears as the breath of the forest that opens the human mind and speaks of both the beginning and the ending of space.",
+      "md_path": "reports/DCAR-20-2026.md"
+    },
+    {
+      "id": "DCAR-21-2026",
+      "slug": "DCAR-21-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 파랑",
+      "title_en": "Language Read Through Color, Color Read Through Language — Blue",
+      "summary_ko": "파랑을 어둠 속에서도 빛을 발하는 색으로 사유하며, 기억과 고통을 위로하고 공간을 신비로 이끄는 색채의 힘을 탐구한다.",
+      "summary_en": "Reflects on blue as a color that shines even in darkness, exploring its power to comfort memory and pain while transforming space into mystery.",
+      "md_path": "reports/DCAR-21-2026.md"
+    },
+    {
+      "id": "DCAR-22-2026",
+      "slug": "DCAR-22-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "색채로 읽는 언어, 언어로 읽는 색채 — 하양",
+      "title_en": "Language Read Through Color, Color Read Through Language — White",
+      "summary_ko": "하양을 겸손하면서도 스스로 빛을 이루는 색으로 사유하며, 색채의 조화와 공간의 균형을 지탱하는 근원적 역할을 탐구한다.",
+      "summary_en": "Reflects on white as a humble color that forms light on its own, exploring its fundamental role in sustaining harmony among colors and balance within space.",
+      "md_path": "reports/DCAR-22-2026.md"
+    },
+    {
+      "id": "DCAR-23-2026",
+      "slug": "DCAR-23-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 몸",
+      "title_en": "Language Read Through Form, Form Read Through Language — Body",
+      "summary_ko": "몸을 살아있는 예술이자 형태와 색채의 근원으로 사유하며, 육체가 지닌 시간성, 감성, 비교와 욕망, 그리고 존재의 존엄을 탐구한다.",
+      "summary_en": "Reflects on the body as living art and as a source of form and color, exploring its temporality, sensibility, comparison and desire, and the dignity of embodied existence.",
+      "md_path": "reports/DCAR-23-2026.md"
+    },
+    {
+      "id": "DCAR-24-2026",
+      "slug": "DCAR-24-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 빛",
+      "title_en": "Language Read Through Form, Form Read Through Language — Light",
+      "summary_ko": "빛을 형태와 언어의 중심으로 사유하며, 어둠을 밝히고 마음을 환하게 하는 존재의 근원적 힘을 탐구한다. 빛은 고정된 형태 없이 상상과 언어를 통해 형성되며, 하늘과 생명 그 자체로 확장된다.",
+      "summary_en": "Reflects on light as the center of form and language, exploring its fundamental power to illuminate darkness and brighten the heart. Without a fixed form, light is shaped through imagination and language, expanding into sky and life itself.",
+      "md_path": "reports/DCAR-24-2026.md"
+    },
+    {
+      "id": "DCAR-25-2026",
+      "slug": "DCAR-25-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 얼굴",
+      "title_en": "Language Read Through Form, Form Read Through Language — Face",
+      "summary_ko": "얼굴을 인간 존재의 우주적 형상으로 사유하며, 눈동자·표정·자화상을 통해 형태와 언어가 서로를 비추는 방식을 탐구한다. 얼굴은 시가 되고 언어는 달빛처럼 형태를 이루며 지상을 비추는 미학적 장이 된다.",
+      "summary_en": "Reflects on the face as a cosmic form of human existence, exploring how form and language mirror one another through the eyes, expression, and the self-portrait. The face becomes poetry, and language takes form like moonlight, illuminating the earth as an aesthetic field.",
+      "md_path": "reports/DCAR-25-2026.md"
+    },
+    {
+      "id": "DCAR-26-2026",
+      "slug": "DCAR-26-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 영혼",
+      "title_en": "Language Read Through Form, Form Read Through Language — Soul",
+      "summary_ko": "영혼을 형태와 언어, 그리고 빛의 관계 속에서 사유하며, 원형에 가까운 형상과 우주적 감응, 언어화된 빛이 영혼과 공존하는 방식을 탐구한다.",
+      "summary_en": "Reflects on the soul within the relationship among form, language, and light, exploring forms close to the circle, cosmic resonance, and the way light shaped into language coexists with the soul.",
+      "md_path": "reports/DCAR-26-2026.md"
+    },
+    {
+      "id": "DCAR-27-2026",
+      "slug": "DCAR-27-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "형태로 읽는 언어, 언어로 읽는 형태 — 정신",
+      "title_en": "Language Read Through Form, Form Read Through Language — Mind",
+      "summary_ko": "정신을 형태와 언어의 관계 속에서 사유하며, 흐릿함과 명징함, 결핍과 포만, 사랑과 미움 사이를 흐르는 정신의 유동적 형상을 탐구한다.",
+      "summary_en": "Reflects on the mind within the relationship between form and language, exploring its fluid shape as it moves between obscurity and lucidity, deprivation and fullness, love and hatred.",
+      "md_path": "reports/DCAR-27-2026.md"
+    },
+    {
+      "id": "DCAR-28-2026",
+      "slug": "DCAR-28-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "전시는 공간이 아니라 함수다 — 관람자를 계산하는 구조",
+      "title_en": "Exhibition Is Not a Space — A Function That Computes the Viewer",
+      "summary_ko": "전시를 공간이 아닌 하나의 작동 방식으로 바라보며, 관람자를 중심으로 경험이 어떻게 변화하고 감정이 어떻게 형성되는지를 탐구한다.",
+      "summary_en": "Reframes exhibition not as a space but as an operating process, exploring how the viewer’s experience transforms and how emotion emerges within it.",
+      "md_path": "reports/DCAR-28-2026.md"
+    },
+    {
+      "id": "DCAR-29-2026",
+      "slug": "DCAR-29-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "김정숙 갤러리와 JS ART SPACE의 이중 구조 — 본관과 별관의 기능 분화",
+      "title_en": "The Dual Structure of Kim Jung sook Gallery and JS ART SPACE — Functional Differentiation of Main Hall and Annex",
+      "summary_ko": "김정숙 갤러리 본관과 JS ART SPACE를 함께 바라보며, 전시가 서로 다른 역할 속에서 이어지는 경험으로 작동하는 방식을 제시한다.",
+      "summary_en": "Examines Kim Jung sook Gallery and JS ART SPACE together, showing how an exhibition unfolds as a continuous experience shaped by different roles across spaces.",
+      "md_path": "reports/DCAR-29-2026.md"
+    }
   ]
 }

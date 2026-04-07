@@ -2614,7 +2614,18 @@
     const audio = new Audio(AUDIO_SRC);
     audio.loop = true;
     audio.preload = 'auto';
-    audio.volume = 0.18;
+
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    const isMac = /Mac/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      audio.volume = 0.08;
+    } else if (isMac) {
+      audio.volume = 0.17;
+    } else {
+      audio.volume = 0.18;
+    }
+
     audio.playsInline = true;
     try { audio.setAttribute('playsinline', ''); } catch {}
 

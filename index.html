@@ -1608,7 +1608,6 @@
   </footer>
 
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
-<script>
 (() => {
   'use strict';
 
@@ -2430,21 +2429,32 @@
     return raw;
   }
 
-  function getReportTabCategory(btn) {
-    const value = String(btn?.dataset?.r || btn?.dataset?.category || 'All').trim();
-    if (!value) return 'All';
-    if (value.toLowerCase() === 'all') return 'All';
-    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  function getReportGridContainer() {
+    return (
+      document.getElementById('reports-grid') ||
+      document.getElementById('reports-container') ||
+      document.getElementById('reportGrid')
+    );
   }
 
-  function setActiveReportTabByCategory(category) {
-    const reportsRoot = $('#reports');
-    if (!reportsRoot) return;
+  function setActiveReportTab(category) {
+    const filterButtons = document.querySelectorAll('[data-report-category], .r-tab[data-r]');
+    if (!filterButtons.length) return;
 
-    const tabs = $$('.r-tab', reportsRoot);
-    tabs.forEach(tab => {
-      const tabCategory = getReportTabCategory(tab);
-      tab.classList.toggle('is-active', tabCategory === category);
+    filterButtons.forEach(btn => {
+      const raw =
+        btn.getAttribute('data-report-category') ||
+        btn.getAttribute('data-r') ||
+        'All';
+
+      const value = String(raw).trim().toLowerCase();
+      const isActive =
+        (category === 'All' && value === 'all') ||
+        (category !== 'All' && value === String(category).trim().toLowerCase());
+
+      btn.classList.toggle('is-active', isActive);
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
     });
   }
 
@@ -2473,81 +2483,106 @@
     const titleEn = escHTML(item.title_en || '');
     const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
     const summaryEn = escHTML(item.summary_en || '');
-    const href = escAttr(item.url || item.link || item.md_path || '#');
+    const href = escAttr(item.md_path || item.url || item.link || '#');
 
-    return `
-      <article class="r-item" data-category="${categoryFilter}">
-        <div class="t">
-          <span class="ko">${titleKr}</span>
-          <span class="en">${titleEn}</span>
-        </div>
-        <div class="m">
-          <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
-        </div>
-        <div class="s">
-          <span class="ko">${summaryKr}</span>
-          <span class="en">${summaryEn}</span>
-        </div>
-        <a class="r-open" href="${href}" target="_blank" rel="noopener">
-          <span class="ko">전체 보기 (새 창)</span>
-          <span class="en">Open full report (new tab)</span>
-        </a>
-      </article>
+    const article = document.createElement('article');
+    article.className = 'r-item';
+    article.setAttribute('data-category', categoryFilter);
+
+    article.innerHTML = `
+      <div class="t">
+        <span class="ko">${titleKr}</span>
+        <span class="en">${titleEn}</span>
+      </div>
+      <div class="m">
+        <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
+      </div>
+      <div class="s">
+        <span class="ko">${summaryKr}</span>
+        <span class="en">${summaryEn}</span>
+      </div>
+      <a class="r-open" href="${href}" target="_blank" rel="noopener">
+        <span class="ko">전체 보기 (새 창)</span>
+        <span class="en">Open full report (new tab)</span>
+      </a>
     `;
+
+    return article;
   }
 
   function renderReports(category = 'All') {
-    const container = document.getElementById('reportGrid');
+    const container = getReportGridContainer();
     if (!container) return;
 
-    const source = Array.isArray(REPORTS_DATA) ? REPORTS_DATA : [];
-    const filtered = category === 'All'
-      ? source
-      : source.filter(item => normalizeReportCategoryForFilter(item.category) === String(category).trim().toLowerCase());
+    const safeData = Array.isArray(REPORTS_DATA) ? REPORTS_DATA : [];
 
-    container.innerHTML = filtered.map(report => createReportCard(report)).join('');
+    const list = category === 'All'
+      ? [...safeData]
+      : safeData.filter(item => {
+          return normalizeReportCategoryForFilter(item.category) === String(category).trim().toLowerCase();
+        });
+
+    container.innerHTML = '';
+
+    list.forEach(item => {
+      const card = createReportCard(item);
+      container.appendChild(card);
+    });
+
+    setActiveReportTab(category);
   }
 
-  function bindReportControls() {
-    const reportsRoot = $('#reports');
-    const grid = $('#reportGrid');
-    const toggleBtn = $('#reportsToggle');
-    const tabsWrap = $('.r-tabs', reportsRoot);
+  function bindReportFilterEvents() {
+    const filterButtons = document.querySelectorAll('[data-report-category], .r-tab[data-r]');
+    if (!filterButtons.length) return;
 
-    if (!reportsRoot || !grid) return;
+    filterButtons.forEach(btn => {
+      if (btn.dataset.bound === 'true') return;
+      btn.dataset.bound = 'true';
 
-    if (toggleBtn && toggleBtn.dataset.bound !== '1') {
-      toggleBtn.dataset.bound = '1';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      grid.style.display = 'none';
+      btn.addEventListener('click', () => {
+        const raw =
+          btn.getAttribute('data-report-category') ||
+          btn.getAttribute('data-r') ||
+          'All';
 
-      toggleBtn.addEventListener('click', () => {
-        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        toggleBtn.setAttribute('aria-expanded', String(!expanded));
-        grid.style.display = expanded ? 'none' : 'grid';
-        syncReportsToggleLabel();
+        const value = String(raw).trim().toLowerCase();
+        currentReportCategory = value === 'all'
+          ? 'All'
+          : value.charAt(0).toUpperCase() + value.slice(1);
 
-        if (!expanded) {
-          renderReports(currentReportCategory);
-        }
-      }, { passive: true });
-    }
-
-    if (tabsWrap && tabsWrap.dataset.bound !== '1') {
-      tabsWrap.dataset.bound = '1';
-
-      tabsWrap.addEventListener('click', (e) => {
-        const btn = e.target.closest('.r-tab');
-        if (!btn) return;
-
-        currentReportCategory = getReportTabCategory(btn);
-        setActiveReportTabByCategory(currentReportCategory);
         renderReports(currentReportCategory);
       }, { passive: true });
+    });
+  }
+
+  function bindReportsToggleEvent() {
+    const toggleBtn = document.getElementById('reportsToggle');
+    const grid = getReportGridContainer();
+    if (!toggleBtn || !grid) return;
+
+    if (toggleBtn.dataset.bound === 'true') return;
+    toggleBtn.dataset.bound = 'true';
+
+    if (!toggleBtn.hasAttribute('aria-expanded')) {
+      toggleBtn.setAttribute('aria-expanded', 'false');
     }
 
-    setActiveReportTabByCategory(currentReportCategory);
+    grid.style.display = 'none';
     syncReportsToggleLabel();
+
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      const next = !expanded;
+
+      toggleBtn.setAttribute('aria-expanded', String(next));
+      grid.style.display = next ? 'grid' : 'none';
+      syncReportsToggleLabel();
+
+      if (next) {
+        renderReports(currentReportCategory);
+      }
+    }, { passive: true });
   }
 
   async function initReportsOnce() {
@@ -2559,33 +2594,20 @@
         cache: 'no-store'
       });
 
-      if (!res.ok) throw new Error('Failed to load reports.json');
+      if (!res.ok) throw new Error('Failed to load data/reports.json');
 
       const json = await res.json();
 
-      REPORTS_DATA = Array.isArray(json)
-        ? json
-        : (Array.isArray(json.reports) ? json.reports : []);
+      REPORTS_DATA = Array.isArray(json?.reports) ? json.reports : [];
 
-      if (!Array.isArray(REPORTS_DATA)) REPORTS_DATA = [];
-
-      REPORTS_DATA = REPORTS_DATA.slice().sort((a, b) => {
-        const getNum = (id) => {
-          const m = String(id || '').match(/DCAR-(\d+)-/);
-          return m ? parseInt(m[1], 10) : 0;
-        };
-        return getNum(a.id) - getNum(b.id);
-      });
-
-      bindReportControls();
+      bindReportsToggleEvent();
+      bindReportFilterEvents();
       renderReports(currentReportCategory);
-
-      console.log('REPORTS_DATA length:', REPORTS_DATA.length);
-      console.log('Last reports:', REPORTS_DATA.slice(-5).map(r => r.id));
-
     } catch (err) {
-      console.error('Reports init failed:', err);
+      console.error('[Reports] init failed:', err);
       REPORTS_DATA = [];
+      bindReportsToggleEvent();
+      bindReportFilterEvents();
       renderReports(currentReportCategory);
     }
   }
@@ -2632,38 +2654,41 @@
 
     const backdrop = $('.bio-backdrop', modal);
     const closeBtn = $('.bio-close', modal);
-    const expoToggle = $('#expoToggle');
-    const expoSlide = $('#expoSlide');
-    const langBtns = $$('.bio-lang .lang', modal);
+    const expoBtn = $('#expoToggle');
+    const expoBlock = $('#expoSlide');
 
     if (backdrop) backdrop.addEventListener('click', closeBioModal, { passive: true });
     if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
 
-    if (expoToggle && expoSlide) {
-      expoToggle.addEventListener('click', () => {
-        const isOpen = expoSlide.getAttribute('data-open') === 'true';
-        expoSlide.setAttribute('data-open', String(!isOpen));
-        expoToggle.setAttribute('aria-expanded', String(!isOpen));
+    if (expoBtn && expoBlock) {
+      expoBtn.addEventListener('click', () => {
+        const open = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', String(!open));
+        expoBtn.setAttribute('aria-expanded', String(!open));
       }, { passive: true });
     }
 
+    const langBtns = Array.from($$('.bio-lang .lang', modal));
     langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const mode = btn.dataset.bioLang === 'en' ? 'en' : 'kr';
+        const mode = btn.dataset.bioLang || 'kr';
         modal.dataset.bio = mode;
+
         langBtns.forEach(b => {
-          const active = b === btn;
-          b.classList.toggle('active', active);
-          b.setAttribute('aria-pressed', String(active));
+          const isActive = b === btn;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-pressed', String(isActive));
         });
       }, { passive: true });
     });
   }
 
   function initAudio() {
-    const soundBar = $('#soundBar');
-    if (!soundBar || audioInitialized) return;
+    if (audioInitialized) return;
     audioInitialized = true;
+
+    const soundBar = $('#soundBar');
+    if (!soundBar) return;
 
     function buildAudio() {
       if (audioCtx) return;
@@ -2752,42 +2777,40 @@
 
       const bands = [
         { y: h * 0.24, amp: 18, len: 240, speed: 0.24, stroke: palette[0], width: 1.0 },
-        { y: h * 0.52, amp: 28, len: 320, speed: 0.18, stroke: palette[2], width: 1.0 },
-        { y: h * 0.76, amp: 24, len: 240, speed: 0.16, stroke: palette[1], width: 0.9 }
+        { y: h * 0.52, amp: 28, len: 320, speed: 0.18, stroke: palette[2], width: 1.1 },
+        { y: h * 0.78, amp: 20, len: 260, speed: 0.16, stroke: palette[1], width: 1.0 }
       ];
 
-      for (const band of bands) {
+      bands.forEach((b, idx) => {
         ctx.beginPath();
-        ctx.lineWidth = band.width;
-        ctx.strokeStyle = band.stroke;
-
         for (let x = -20; x <= w + 20; x += 4) {
-          const y = band.y + Math.sin((x / band.len) + t * band.speed) * band.amp;
+          const y =
+            b.y +
+            Math.sin((x / b.len) + t * b.speed + idx * 0.7) * b.amp +
+            Math.cos((x / (b.len * 0.54)) + t * (b.speed * 0.72)) * (b.amp * 0.18);
           if (x === -20) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-
+        ctx.lineWidth = b.width;
+        ctx.strokeStyle = b.stroke;
         ctx.stroke();
-      }
+      });
     }
 
     function animate() {
-      if (wavePrefersReduced || document.hidden) {
-        draw();
-        waveAnimationFrame = null;
-        return;
-      }
-
-      t += 0.012;
+      t += 0.016;
       draw();
       waveAnimationFrame = requestAnimationFrame(animate);
     }
 
-    waveDrawRef = draw;
     resize();
     draw();
+    waveDrawRef = draw;
 
-    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('resize', () => {
+      resize();
+      draw();
+    }, { passive: true });
 
     if (!waveVisibilityBound) {
       waveVisibilityBound = true;
@@ -2832,5 +2855,6 @@
     initWaveOnce();
     initReportsOnce();
   });
+
 })();
 </script>

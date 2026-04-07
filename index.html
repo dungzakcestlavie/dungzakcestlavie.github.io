@@ -1637,8 +1637,8 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_v2';
-  const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
+  const VERSION = 'LF31_reports_hard_reset_v2';
+  const CACHE_TTL_MS = 1000 * 60 * 5;
 
   function cacheGet(key) {
     try {
@@ -1650,6 +1650,7 @@
       return obj.d ?? null;
     } catch { return null; }
   }
+
   function cacheSet(key, data) {
     try {
       localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
@@ -1659,9 +1660,6 @@
   const inflight = new Map();
 
   async function safeJSONFetchCached(url, cacheKey) {
-    const cached = cacheGet(cacheKey);
-    if (cached) return cached;
-
     if (inflight.has(cacheKey)) return inflight.get(cacheKey);
 
     const p = fetch(url, { cache: 'no-store' })
@@ -1673,6 +1671,11 @@
         cacheSet(cacheKey, json);
         return json;
       })
+      .catch(err => {
+        const cached = cacheGet(cacheKey);
+        if (cached) return cached;
+        throw err;
+      })
       .finally(() => inflight.delete(cacheKey));
 
     inflight.set(cacheKey, p);
@@ -1682,7 +1685,7 @@
   const getLang = () => {
     const b = document.body;
     if (b.classList.contains('english')) return 'en';
-    if (b.classList.contains('hybrid'))  return 'hy';
+    if (b.classList.contains('hybrid')) return 'hy';
     return 'kr';
   };
 
@@ -1704,6 +1707,7 @@
     function showSection(id) {
       for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
     }
+
     function setActiveBtn(targetId) {
       const btns = Array.from($$('button', nav));
       for (const b of btns) b.classList.remove('active');
@@ -1722,6 +1726,7 @@
         if (target === 'works' && !worksLoaded) loadWorks();
         return;
       }
+
       if (btn.id === 'tab-bio') openBioModal();
     }, { passive: true });
 
@@ -1736,10 +1741,11 @@
 
     function setBodyLang(mode) {
       document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en')      document.body.classList.add('english');
+      if (mode === 'en') document.body.classList.add('english');
       else if (mode === 'hy') document.body.classList.add('hybrid');
-      else                    document.body.classList.add('korean');
+      else document.body.classList.add('korean');
     }
+
     function activate(btn) {
       if (koBtn) koBtn.classList.remove('active');
       if (enBtn) enBtn.classList.remove('active');
@@ -1752,9 +1758,23 @@
       syncReportsToggleLabel();
     };
 
-    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive:true });
-    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive:true });
-    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive:true });
+    if (koBtn) koBtn.addEventListener('click', () => {
+      setBodyLang('kr');
+      activate(koBtn);
+      onLangChange();
+    }, { passive: true });
+
+    if (enBtn) enBtn.addEventListener('click', () => {
+      setBodyLang('en');
+      activate(enBtn);
+      onLangChange();
+    }, { passive: true });
+
+    if (hyBtn) hyBtn.addEventListener('click', () => {
+      setBodyLang('hy');
+      activate(hyBtn);
+      onLangChange();
+    }, { passive: true });
 
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
@@ -1797,13 +1817,10 @@
   }
 
   async function loadWorks() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
     worksLoaded = true;
 
     const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
-    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
 
     try {
       const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
@@ -1820,7 +1837,8 @@
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
+
       if (activePanel) {
         renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
         activePanel.dataset.rendered = '1';
@@ -1834,6 +1852,7 @@
           renderWorksPanel(panel, worksByPanel[key], key);
           panel.dataset.rendered = '1';
         }
+
         runIdle(() => {
           for (const key of panelKeys) {
             const panel = $('#panel-' + key);
@@ -1841,12 +1860,13 @@
           }
         });
       });
-
     } catch (err) {
       console.error('works.json load error:', err);
+
       for (const key of panelKeys) {
         const panel = $('#panel-' + key);
         if (!panel) continue;
+
         panel.innerHTML = `
           <div class="w-msg">
             <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
@@ -1872,6 +1892,7 @@
     }
 
     let html = '<div class="w-grid">';
+
     for (const item of items) {
       const id      = item.id || '';
       const titleKr = item.title_kr || '';
@@ -1882,7 +1903,7 @@
       const sizeEn  = item.size_en || '';
       const year    = item.year || '';
       const imgStd  = item.image || item.image_standard || '';
-      const imgZoom = item.zoom  || item.image_zoom || imgStd;
+      const imgZoom = item.zoom || item.image_zoom || imgStd;
 
       const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
       const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
@@ -1895,7 +1916,8 @@
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
+                 loading="lazy"
+                 decoding="async" />
           </article>
         `;
       } else {
@@ -1914,7 +1936,8 @@
             <img class="w-thumb"
                  src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
+                 loading="lazy"
+                 decoding="async" />
             <div class="w-meta">
               <div class="w-title">
                 <span class="ko">${escHTML(titleKr)}</span>
@@ -1929,6 +1952,7 @@
         `;
       }
     }
+
     html += '</div>';
     panel.innerHTML = html;
   }
@@ -1944,7 +1968,7 @@
         if (!ent.isIntersecting) continue;
         const img = ent.target;
         io.unobserve(img);
-        if (img && img.decode) img.decode().catch(()=>{});
+        if (img && img.decode) img.decode().catch(() => {});
       }
     }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
 
@@ -1960,7 +1984,7 @@
     } else {
       runIdle(() => {
         for (const img of imgs) {
-          if (img && img.decode) img.decode().catch(()=>{});
+          if (img && img.decode) img.decode().catch(() => {});
         }
       });
     }
@@ -1979,8 +2003,11 @@
     const lb = $('#lightbox');
     const btnX = $('#lbClose');
 
-    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive:true });
-    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
+    if (lb) lb.addEventListener('click', (e) => {
+      if (e.target === lb) closeLightbox();
+    }, { passive: true });
+
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
   }
 
   let lbItems = [];
@@ -2070,7 +2097,7 @@
     syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
-    if (lbImg.decode) lbImg.decode().catch(()=>{});
+    if (lbImg.decode) lbImg.decode().catch(() => {});
     preloadNearbyLightboxImages();
   }
 
@@ -2124,6 +2151,7 @@
   function getViewportMetrics() {
     const { viewport, img } = getLbEls();
     if (!viewport || !img) return null;
+
     const vw = viewport.clientWidth || 1;
     const vh = viewport.clientHeight || 1;
     const iw = img.naturalWidth || vw;
@@ -2131,14 +2159,17 @@
     const fit = Math.min(vw / iw, vh / ih);
     const baseW = iw * fit;
     const baseH = ih * fit;
+
     return { vw, vh, iw, ih, fit, baseW, baseH };
   }
 
   function clampLbPan() {
     const m = getViewportMetrics();
     if (!m) return;
+
     const maxX = Math.max(0, (m.baseW * lbZoom.scale - m.vw) / 2);
     const maxY = Math.max(0, (m.baseH * lbZoom.scale - m.vh) / 2);
+
     lbZoom.x = clamp(lbZoom.x, -maxX, maxX);
     lbZoom.y = clamp(lbZoom.y, -maxY, maxY);
   }
@@ -2146,25 +2177,34 @@
   function renderLbZoom() {
     const { img, viewport, hint } = getLbEls();
     if (!img || !viewport) return;
+
     clampLbPan();
+
     img.style.transform = `translate3d(calc(-50% + ${lbZoom.x}px), calc(-50% + ${lbZoom.y}px), 0) scale(${lbZoom.scale})`;
     viewport.classList.toggle('is-zoomed', lbZoom.scale > 1.01);
+
     if (hint) hint.style.opacity = lbZoom.scale > 1.01 ? '0' : '1';
   }
 
   function resetLbZoom(animate = false) {
     const { img } = getLbEls();
     if (!img) return;
+
     const prev = img.style.transition;
     if (!animate) img.style.transition = 'none';
+
     lbZoom.scale = 1;
     lbZoom.x = 0;
     lbZoom.y = 0;
     lbZoom.pointers.clear();
     lbZoom.dragging = false;
+
     renderLbZoom();
+
     if (!animate) {
-      requestAnimationFrame(() => { img.style.transition = prev || ''; });
+      requestAnimationFrame(() => {
+        img.style.transition = prev || '';
+      });
     }
   }
 
@@ -2184,11 +2224,13 @@
     lbZoom.x = lbZoom.x + cx * (1 - clamped / prevScale);
     lbZoom.y = lbZoom.y + cy * (1 - clamped / prevScale);
     lbZoom.scale = clamped;
+
     if (lbZoom.scale <= 1.01) {
       lbZoom.scale = 1;
       lbZoom.x = 0;
       lbZoom.y = 0;
     }
+
     renderLbZoom();
   }
 
@@ -2210,6 +2252,7 @@
     viewport.addEventListener('wheel', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
       e.preventDefault();
+
       const delta = -e.deltaY;
       const factor = delta > 0 ? 1.14 : 0.88;
       zoomAroundPoint(lbZoom.scale * factor, e.clientX, e.clientY);
@@ -2251,20 +2294,24 @@
     viewport.addEventListener('pointermove', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
       if (!lbZoom.pointers.has(e.pointerId)) return;
+
       lbZoom.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (lbZoom.pointers.size === 2) {
         const [a, b] = [...lbZoom.pointers.values()];
         const dist = distanceBetween(a, b) || 1;
         const mid = midpointBetween(a, b);
+
         lbZoom.scale = clamp(lbZoom.startScale * (dist / lbZoom.startDistance), lbZoom.min, lbZoom.max);
         lbZoom.x = lbZoom.startX + (mid.x - lbZoom.startMidX);
         lbZoom.y = lbZoom.startY + (mid.y - lbZoom.startMidY);
+
         if (lbZoom.scale <= 1.01) {
           lbZoom.scale = 1;
           lbZoom.x = 0;
           lbZoom.y = 0;
         }
+
         renderLbZoom();
         return;
       }
@@ -2279,9 +2326,9 @@
 
     function endPointer(e) {
       lbZoom.pointers.delete(e.pointerId);
-      if (lbZoom.pointers.size < 2) {
-        lbZoom.startDistance = 0;
-      }
+
+      if (lbZoom.pointers.size < 2) lbZoom.startDistance = 0;
+
       if (lbZoom.pointers.size === 0) {
         lbZoom.dragging = false;
         if (lbZoom.scale <= 1.01) resetLbZoom(false);
@@ -2309,17 +2356,20 @@
     lb.addEventListener('touchstart', (e) => {
       if (!lb.classList.contains('is-open')) return;
       lbTouchStartX = e.touches[0].clientX;
-    }, { passive:true });
+    }, { passive: true });
 
     lb.addEventListener('touchend', (e) => {
       if (!lb.classList.contains('is-open')) return;
+
       const lbTouchEndX = e.changedTouches[0].clientX;
       const diff = lbTouchStartX - lbTouchEndX;
+
       if (lbZoom.scale > 1.01) return;
       if (Math.abs(diff) < 50) return;
+
       if (diff > 0) goNextLightboxImage();
       else goPrevLightboxImage();
-    }, { passive:true });
+    }, { passive: true });
 
     lightboxSwipeBound = true;
   }
@@ -2343,6 +2393,7 @@
 
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
+
     bindLightboxSwipe();
     bindLightboxZoom();
     resetLbZoom(false);
@@ -2355,10 +2406,12 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
+
     if (lbImg) {
       lbImg.src = '';
       lbImg.classList.remove('is-sliding-left', 'is-sliding-right', 'is-enter-left', 'is-enter-right');
     }
+
     syncLightboxCaptionVisibility('');
     resetLbZoom(false);
     lbOpenFrom = null;
@@ -2370,7 +2423,6 @@
     if (!lbOpenFrom) return;
     syncLightboxCaptionVisibility(buildCaptionForCard(lbOpenFrom, getLang()));
   }
-
 
   function extractReportNumericId(item) {
     const str = String(item?.id || '');
@@ -2435,7 +2487,6 @@
     grid.innerHTML = html;
   }
 
-
   function initReports() {
     if (reportsInitialized) return;
     reportsInitialized = true;
@@ -2445,7 +2496,7 @@
     if (!grid || !reportsRoot) return;
 
     const toggleBtn = $('#reportsToggle');
-    const tabsWrap  = $('.r-tabs', reportsRoot);
+    const tabsWrap = $('.r-tabs', reportsRoot);
 
     if (toggleBtn) {
       toggleBtn.setAttribute('aria-expanded', 'false');
@@ -2513,6 +2564,10 @@
   async function loadReportsIntoGrid(grid) {
     if (!grid) return;
 
+    if (!reportsLoaded) {
+      try { localStorage.removeItem('LF_cache_reports'); } catch {}
+    }
+
     try {
       const raw = await safeJSONFetchCached(
         'data/reports.json?v=' + Date.now(),
@@ -2535,7 +2590,6 @@
         for (const b of tabs) b.classList.remove('is-active');
         defaultTab.classList.add('is-active');
       }
-
     } catch (err) {
       console.error('reports.json load error:', err);
       if (reportsLoaded && REPORTS_DATA.length > 0) {
@@ -2543,8 +2597,6 @@
       }
     }
   }
-
-
 
   function openBioModal() {
     const modal = $('#bio-modal');
@@ -2599,215 +2651,374 @@
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
         }
-      }, { passive:true });
+      }, { passive: true });
     }
 
     const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
-    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive:true });
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
+    if (backdrop) backdrop.addEventListener('click', closeBioModal, { passive: true });
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
     if (expoBtn && expoBlock) {
-      expoBlock.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-
       expoBtn.addEventListener('click', () => {
-        const isOpen = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
-        expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
-      }, { passive:true });
+        const open = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', String(!open));
+        expoBtn.setAttribute('aria-expanded', String(!open));
+      }, { passive: true });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden) closeBioModal();
+    });
+  }
+
+  let audioCtx = null;
+  let audioMaster = null;
+  let audioStarted = false;
+  let audioMuted = false;
+  let soundBarHintTimer = null;
+
+  function setSoundBarState(on) {
+    const el = $('#soundBar');
+    if (!el) return;
+    el.classList.toggle('is-on', !!on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+    el.setAttribute('title', on ? 'Sound on' : 'Sound off');
+  }
+
+  function clearSoundBarHint() {
+    const el = $('#soundBar');
+    if (!el) return;
+    el.classList.remove('show-hint');
+    if (soundBarHintTimer) {
+      clearTimeout(soundBarHintTimer);
+      soundBarHintTimer = null;
     }
   }
 
+  function flashSoundBarHint() {
+    const el = $('#soundBar');
+    if (!el) return;
+    el.classList.add('show-hint');
+    if (soundBarHintTimer) clearTimeout(soundBarHintTimer);
+    soundBarHintTimer = setTimeout(() => {
+      el.classList.remove('show-hint');
+      soundBarHintTimer = null;
+    }, 1600);
+  }
 
-  let soundInitialized = false;
-  let soundAudio = null;
-  let soundPlaying = false;
-  let soundSrcAttached = false;
+  function buildResonanceAudio() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
 
-  function initSound() {
-    if (soundInitialized) return;
-    soundInitialized = true;
+    audioCtx = new AudioContextClass();
 
-    const bar = $('#soundBar');
-    if (!bar) return;
+    const master = audioCtx.createGain();
+    master.gain.value = 0.0;
+    master.connect(audioCtx.destination);
 
-    bar.setAttribute('tabindex', '0');
-    bar.setAttribute('role', 'button');
-    bar.setAttribute('aria-pressed', 'false');
-    bar.textContent = '';
+    const now = audioCtx.currentTime;
 
-    const AUDIO_SRC = 'audio/lightflow_C_praha_quick6m.mp3';
-
-    soundAudio = new Audio();
-    soundAudio.loop = true;
-    soundAudio.preload = 'none';
-    soundAudio.volume = 0.18;
-
-    function ensureSrc() {
-      if (soundSrcAttached) return;
-      soundAudio.src = AUDIO_SRC;
-      try { soundAudio.load(); } catch {}
-      soundSrcAttached = true;
+    function makeSine(freq, gainValue) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.value = gainValue;
+      osc.connect(gain).connect(master);
+      osc.start(now);
+      return { osc, gain };
     }
 
-    async function playSound() {
+    function makeTriangle(freq, gainValue) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.value = gainValue;
+      osc.connect(gain).connect(master);
+      osc.start(now);
+      return { osc, gain };
+    }
+
+    const layers = [
+      makeSine(61.735, 0.020),
+      makeSine(123.47, 0.010),
+      makeTriangle(185.00, 0.006),
+      makeSine(246.94, 0.004)
+    ];
+
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.047;
+    lfoGain.gain.value = 0.010;
+    lfo.connect(lfoGain);
+    lfoGain.connect(master.gain);
+    lfo.start(now);
+
+    const shimmer = audioCtx.createOscillator();
+    const shimmerGain = audioCtx.createGain();
+    shimmer.type = 'sine';
+    shimmer.frequency.value = 0.083;
+    shimmerGain.gain.value = 0.0024;
+    shimmer.connect(shimmerGain);
+    shimmerGain.connect(master.gain);
+    shimmer.start(now);
+
+    audioMaster = master;
+
+    return {
+      ctx: audioCtx,
+      master,
+      layers,
+      lfo,
+      shimmer
+    };
+  }
+
+  let resonanceGraph = null;
+
+  async function startAudio() {
+    if (!resonanceGraph) {
+      resonanceGraph = buildResonanceAudio();
+      if (!resonanceGraph) return;
+    }
+
+    if (audioCtx && audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
+
+    const now = audioCtx.currentTime;
+    resonanceGraph.master.gain.cancelScheduledValues(now);
+    resonanceGraph.master.gain.setValueAtTime(resonanceGraph.master.gain.value, now);
+    resonanceGraph.master.gain.linearRampToValueAtTime(0.06, now + 1.6);
+
+    audioStarted = true;
+    audioMuted = false;
+    setSoundBarState(true);
+    clearSoundBarHint();
+  }
+
+  function stopAudio() {
+    if (!resonanceGraph || !audioCtx) {
+      audioStarted = false;
+      audioMuted = true;
+      setSoundBarState(false);
+      return;
+    }
+
+    const now = audioCtx.currentTime;
+    resonanceGraph.master.gain.cancelScheduledValues(now);
+    resonanceGraph.master.gain.setValueAtTime(resonanceGraph.master.gain.value, now);
+    resonanceGraph.master.gain.linearRampToValueAtTime(0.0, now + 0.8);
+
+    audioMuted = true;
+    audioStarted = false;
+    setSoundBarState(false);
+  }
+
+  function initAudio() {
+    const soundBar = $('#soundBar');
+    if (!soundBar) return;
+
+    setSoundBarState(false);
+
+    const toggle = async () => {
       try {
-        ensureSrc();
-        await soundAudio.play();
-        soundPlaying = true;
-        bar.classList.add('is-on');
-        bar.setAttribute('aria-pressed', 'true');
-      } catch (err) {
-        console.warn('Audio play failed:', err);
+        if (!audioStarted || audioMuted) await startAudio();
+        else stopAudio();
+      } catch (e) {
+        console.error('audio init failed:', e);
       }
-    }
+    };
 
-    function stopSound() {
-      if (!soundPlaying || !soundAudio) return;
-      soundAudio.pause();
-      soundPlaying = false;
-      bar.classList.remove('is-on');
-      bar.setAttribute('aria-pressed', 'false');
-    }
+    soundBar.addEventListener('click', toggle);
+    soundBar.addEventListener('touchstart', toggle, { passive: true });
 
-    function toggle() {
-      soundPlaying ? stopSound() : playSound();
-    }
+    soundBar.addEventListener('mouseenter', () => {
+      if (!audioStarted) flashSoundBarHint();
+    }, { passive: true });
 
-    bar.addEventListener('click', toggle);
-    bar.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle();
-      }
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopSound();
-    });
-    window.addEventListener('pagehide', stopSound, { passive:true });
-
-    bar.classList.remove('is-on');
+    soundBar.addEventListener('mouseleave', clearSoundBarHint, { passive: true });
+    soundBar.addEventListener('blur', clearSoundBarHint, { passive: true });
   }
 
-  function initWaves() {
+  let waveAnimationFrame = null;
+  let waveInited = false;
+  let waveVisibilityBound = false;
+  let wavePrefersReduced = false;
+  let waveDrawRef = null;
+
+  function initWaveOnce() {
+    if (waveInited) return;
+    waveInited = true;
 
     const canvas = $('#waves');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    wavePrefersReduced = !!prefersReduced.matches;
 
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
+    const DPR = () => Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+    let w = 0;
+    let h = 0;
+    let t = 0;
+
+    const bands = [
+      { amp: 22, len: 320, speed: 0.20, width: 1.15, stroke: 'rgba(215,184,106,0.10)' },
+      { amp: 34, len: 460, speed: 0.14, width: 1.35, stroke: 'rgba(121,167,255,0.10)' },
+      { amp: 16, len: 250, speed: 0.26, width: 0.90, stroke: 'rgba(233,213,155,0.08)' }
     ];
 
     function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width  = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      const dpr = DPR();
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    resize();
-    window.addEventListener('resize', resize, { passive:true });
-
-    let t = 0;
-    let animId = null;
 
     function draw() {
-      if (prefersReduced) return;
-
-      const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  / dpr;
-      const h = canvas.height / dpr;
-
       ctx.clearRect(0, 0, w, h);
 
-      for (let idx = 0; idx < gradients.length; idx++) {
-        const g = gradients[idx];
+      const yBase = h * 0.58;
+
+      bands.forEach((b, i) => {
         ctx.beginPath();
-        for (let x = 0; x <= w; x += 10) {
-          const y = h * 0.25 + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
-          if (x === 0) ctx.moveTo(x, y);
+
+        for (let x = -20; x <= w + 20; x += 10) {
+          const y =
+            yBase +
+            Math.sin((x / b.len) + t * b.speed + i * 0.7) * b.amp +
+            Math.cos((x / (b.len * 0.54)) + t * (b.speed * 0.72)) * (b.amp * 0.18);
+
+          if (x === -20) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.3;
-        ctx.shadowColor = 'rgba(0,0,0,0.50)';
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-      }
 
-      ctx.shadowBlur = 0;
-      t += 1;
-      animId = requestAnimationFrame(draw);
+        ctx.lineWidth = b.width;
+        ctx.strokeStyle = b.stroke;
+        ctx.stroke();
+      });
     }
 
-    if (!prefersReduced) animId = requestAnimationFrame(draw);
+    function animate() {
+      t += 0.016;
+      draw();
+      waveAnimationFrame = requestAnimationFrame(animate);
+    }
 
-    document.addEventListener('visibilitychange', () => {
-      if (prefersReduced) return;
-      if (document.hidden) {
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
-      } else if (!animId) {
-        animId = requestAnimationFrame(draw);
+    resize();
+    draw();
+    waveDrawRef = draw;
+
+    window.addEventListener('resize', () => {
+      resize();
+      draw();
+    }, { passive: true });
+
+    if (!waveVisibilityBound) {
+      waveVisibilityBound = true;
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
+          waveAnimationFrame = null;
+          if (waveDrawRef) waveDrawRef();
+        } else {
+          if (!waveAnimationFrame && !wavePrefersReduced) {
+            waveAnimationFrame = requestAnimationFrame(animate);
+          }
+        }
+      });
+    }
+
+    const onMotionChange = (e) => {
+      wavePrefersReduced = e.matches;
+      if (wavePrefersReduced) {
+        if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
+        waveAnimationFrame = null;
+        draw();
+      } else if (!document.hidden && !waveAnimationFrame) {
+        waveAnimationFrame = requestAnimationFrame(animate);
       }
-    }, { passive:true });
-  }
+    };
 
+    if (prefersReduced.addEventListener) prefersReduced.addEventListener('change', onMotionChange);
+    else prefersReduced.addListener(onMotionChange);
+
+    if (!wavePrefersReduced) {
+      waveAnimationFrame = requestAnimationFrame(animate);
+    }
+  }
 
   function syncHeaderGeometry() {
-    const nav = $('nav.primary');
-    const worksBtn = $('nav.primary button[data-target="works"]');
-    const reportsBtn = $('nav.primary button[data-target="reports"]');
-    const labLink = $('.lab-link');
+    const header = document.querySelector('header');
+    const primary = document.querySelector('nav.primary');
+    const langRow = document.querySelector('.lang-row');
+    const labRow = document.querySelector('.lab-row');
+    const soundBar = document.getElementById('soundBar');
+    if (!header || !primary || !langRow || !labRow || !soundBar) return;
 
-    if (!nav || !worksBtn || !reportsBtn || !labLink) return;
+    const soundRect = soundBar.getBoundingClientRect();
+    const headerRect = header.getBoundingClientRect();
 
-    const navRect = nav.getBoundingClientRect();
-    const worksRect = worksBtn.getBoundingClientRect();
-    const reportsRect = reportsBtn.getBoundingClientRect();
+    if (window.innerWidth <= 768) {
+      document.documentElement.style.setProperty('--lab-shift', '0px');
+      header.style.paddingBottom = '10px';
+      return;
+    }
 
-    const targetCenter = ((worksRect.left + worksRect.right) / 2 + (reportsRect.left + reportsRect.right) / 2) / 2;
-    const navCenter = (navRect.left + navRect.right) / 2;
-    const shift = targetCenter - navCenter;
+    const primaryTop = primary.offsetTop;
+    const primaryHeight = primary.offsetHeight;
+    const langHeight = langRow.offsetHeight;
+    const labHeight = labRow.offsetHeight;
 
-    labLink.style.setProperty('--lab-shift', `${shift.toFixed(2)}px`);
-  }
+    const navCenterY = headerRect.top + primaryTop + (primaryHeight / 2);
+    const soundCenterY = soundRect.top + (soundRect.height / 2);
+    const deltaY = soundCenterY - navCenterY;
 
-  function initGlobalKeys() {
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape') return;
+    const extraBottom = Math.max(0, deltaY - (langHeight * 0.28) - (labHeight * 0.22));
+    header.style.paddingBottom = `${10 + extraBottom}px`;
 
-      const lb = $('#lightbox');
-      if (lb && lb.classList.contains('is-open')) { closeLightbox(); return; }
+    const langRect = langRow.getBoundingClientRect();
+    const langRight = langRect.right;
+    const gap = 14;
+    const targetCenterX = (langRight + gap) + (soundRect.width / 2);
+    const labRect = labRow.getBoundingClientRect();
+    const currentCenterX = labRect.left + (labRect.width / 2);
+    const shiftX = targetCenterX - currentCenterX;
 
-      const modal = $('#bio-modal');
-      if (modal && !modal.hidden) { closeBioModal(); return; }
-    }, { passive: true });
+    document.documentElement.style.setProperty('--lab-shift', `${shiftX}px`);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); }        catch (e) { console.error(e); }
-    try { initLanguage(); }   catch (e) { console.error(e); }
-    try { initWorksUI(); }    catch (e) { console.error(e); }
-    try { initReports(); }    catch (e) { console.error(e); }
-    try { initBioModal(); }   catch (e) { console.error(e); }
-    try { initSound(); }      catch (e) { console.error(e); }
-    try { initWaves(); }      catch (e) { console.error(e); }
-    try { initGlobalKeys(); } catch (e) { console.error(e); }
-    try { syncHeaderGeometry(); } catch (e) { console.error(e); }
+    initNav();
+    initLanguage();
+    initWorksUI();
+    initBioModal();
+    initAudio();
+    initWaveOnce();
+    initReports();
 
-    window.addEventListener('load', syncHeaderGeometry, { passive:true });
-    window.addEventListener('resize', syncHeaderGeometry, { passive:true });
+    try {
+      syncHeaderGeometry();
+    } catch (e) {
+      console.error(e);
+    }
+
+    window.addEventListener('load', syncHeaderGeometry, { passive: true });
+    window.addEventListener('resize', syncHeaderGeometry, { passive: true });
   });
 })();
 

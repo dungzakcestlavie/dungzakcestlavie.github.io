@@ -1633,7 +1633,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_reports_200_safe_v1';
+  const VERSION = 'LF31_reports_200_safe_v2';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1785,6 +1785,7 @@
     const onLangChange = () => {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
+      renderReports(currentReportCategory);
     };
 
     if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive: true });
@@ -2010,6 +2011,28 @@
 
     if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive: true });
     if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
+
+    document.addEventListener('keydown', (e) => {
+      const lbOpen = $('#lightbox')?.classList.contains('is-open');
+      const bioOpen = !$('#bio-modal')?.hidden;
+
+      if (e.key === 'Escape') {
+        if (lbOpen) {
+          closeLightbox();
+          return;
+        }
+        if (bioOpen) {
+          closeBioModal();
+        }
+        return;
+      }
+
+      if (!lbOpen) return;
+      if (lbZoom.scale > 1.01) return;
+
+      if (e.key === 'ArrowRight') goNextLightboxImage();
+      if (e.key === 'ArrowLeft') goPrevLightboxImage();
+    });
   }
 
   function buildCaptionForCard(card, mode) {
@@ -2030,7 +2053,6 @@
 
   function syncLightboxCaptionVisibility(text) {
     const lbCap = $('#lbCap');
-    const hint = $('#lbZoomHint');
     const viewport = $('#lbViewport');
     if (!lbCap) return;
 
@@ -2038,7 +2060,6 @@
     lbCap.textContent = text || '';
     lbCap.style.display = hasCaption ? 'block' : 'none';
 
-    if (hint) hint.style.display = hasCaption ? 'block' : 'none';
     if (viewport) {
       viewport.classList.toggle('has-caption', hasCaption);
       viewport.classList.toggle('no-caption', !hasCaption);
@@ -2121,8 +2142,7 @@
     return {
       lb: $('#lightbox'),
       img: $('#lbImg'),
-      viewport: $('#lbViewport'),
-      hint: $('#lbZoomHint')
+      viewport: $('#lbViewport')
     };
   }
 
@@ -2152,13 +2172,12 @@
   }
 
   function renderLbZoom() {
-    const { img, viewport, hint } = getLbEls();
+    const { img, viewport } = getLbEls();
     if (!img || !viewport) return;
 
     clampLbPan();
     img.style.transform = `translate3d(calc(-50% + ${lbZoom.x}px), calc(-50% + ${lbZoom.y}px), 0) scale(${lbZoom.scale})`;
     viewport.classList.toggle('is-zoomed', lbZoom.scale > 1.01);
-    if (hint) hint.style.opacity = lbZoom.scale > 1.01 ? '0' : '1';
   }
 
   function resetLbZoom(animate = false) {
@@ -2429,48 +2448,6 @@
     });
   }
 
-  function initReports() {
-    const grid = $('#reportGrid');
-    const reportsRoot = $('#reports');
-    if (!grid || !reportsRoot) return;
-
-    const toggleBtn = $('#reportsToggle');
-    const tabsWrap = $('.r-tabs', reportsRoot);
-
-    if (toggleBtn && toggleBtn.dataset.bound !== '1') {
-      toggleBtn.dataset.bound = '1';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      grid.style.display = 'none';
-
-      toggleBtn.addEventListener('click', () => {
-        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        toggleBtn.setAttribute('aria-expanded', String(!expanded));
-        grid.style.display = expanded ? 'none' : 'grid';
-        syncReportsToggleLabel();
-
-        if (!expanded) {
-          renderFilteredReports();
-        }
-      }, { passive: true });
-    }
-
-    if (tabsWrap && tabsWrap.dataset.bound !== '1') {
-      tabsWrap.dataset.bound = '1';
-
-      tabsWrap.addEventListener('click', (e) => {
-        const btn = e.target.closest('.r-tab');
-        if (!btn) return;
-
-        currentReportCategory = getReportTabCategory(btn);
-        setActiveReportTabByCategory(currentReportCategory);
-        renderFilteredReports();
-      }, { passive: true });
-    }
-
-    setActiveReportTabByCategory(currentReportCategory);
-    syncReportsToggleLabel();
-  }
-
   function syncReportsToggleLabel() {
     const btn = $('#reportsToggle');
     if (!btn) return;
@@ -2487,58 +2464,90 @@
     btn.textContent = expanded ? L.close : L.open;
   }
 
-  function renderReports(list) {
-    const grid = $('#reportGrid');
-    const reportsRoot = $('#reports');
-    if (!grid || !reportsRoot) return;
+  function createReportCard(item) {
+    const id = escHTML(item.id || '');
+    const year = escHTML(item.year || '');
+    const categoryUI = escHTML(normalizeReportCategoryForUI(item.category));
+    const categoryFilter = escHTML(normalizeReportCategoryForFilter(item.category));
+    const titleKr = escHTML(item.title_ko || item.title_kr || '');
+    const titleEn = escHTML(item.title_en || '');
+    const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
+    const summaryEn = escHTML(item.summary_en || '');
+    const href = escAttr(item.url || item.link || item.md_path || '#');
 
-    const reports = Array.isArray(list) ? list : [];
-    let html = '';
-
-    for (const item of reports) {
-      const id = escHTML(item.id || '');
-      const year = escHTML(item.year || '');
-      const categoryUI = escHTML(normalizeReportCategoryForUI(item.category));
-      const categoryFilter = escHTML(normalizeReportCategoryForFilter(item.category));
-      const titleKr = escHTML(item.title_ko || item.title_kr || '');
-      const titleEn = escHTML(item.title_en || '');
-      const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
-      const summaryEn = escHTML(item.summary_en || '');
-      const href = escAttr(item.url || item.link || item.md_path || '#');
-
-      html += `
-        <article class="r-item" data-category="${categoryFilter}">
-          <div class="t">
-            <span class="ko">${titleKr}</span>
-            <span class="en">${titleEn}</span>
-          </div>
-          <div class="m">
-            <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
-          </div>
-          <div class="s">
-            <span class="ko">${summaryKr}</span>
-            <span class="en">${summaryEn}</span>
-          </div>
-          <a class="r-open" href="${href}" target="_blank" rel="noopener">
-            <span class="ko">전체 보기 (새 창)</span>
-            <span class="en">Open full report (new tab)</span>
-          </a>
-        </article>
-      `;
-    }
-
-    grid.innerHTML = html;
+    return `
+      <article class="r-item" data-category="${categoryFilter}">
+        <div class="t">
+          <span class="ko">${titleKr}</span>
+          <span class="en">${titleEn}</span>
+        </div>
+        <div class="m">
+          <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
+        </div>
+        <div class="s">
+          <span class="ko">${summaryKr}</span>
+          <span class="en">${summaryEn}</span>
+        </div>
+        <a class="r-open" href="${href}" target="_blank" rel="noopener">
+          <span class="ko">전체 보기 (새 창)</span>
+          <span class="en">Open full report (new tab)</span>
+        </a>
+      </article>
+    `;
   }
 
-  function renderFilteredReports() {
-    let list = REPORTS_DATA;
+  function renderReports(category = 'All') {
+    const container = document.getElementById('reportGrid');
+    if (!container) return;
 
-    if (currentReportCategory !== 'All') {
-      const wanted = String(currentReportCategory).trim().toLowerCase();
-      list = REPORTS_DATA.filter(r => normalizeReportCategoryForFilter(r.category) === wanted);
+    const source = Array.isArray(REPORTS_DATA) ? REPORTS_DATA : [];
+    const filtered = category === 'All'
+      ? source
+      : source.filter(item => normalizeReportCategoryForFilter(item.category) === String(category).trim().toLowerCase());
+
+    container.innerHTML = filtered.map(report => createReportCard(report)).join('');
+  }
+
+  function bindReportControls() {
+    const reportsRoot = $('#reports');
+    const grid = $('#reportGrid');
+    const toggleBtn = $('#reportsToggle');
+    const tabsWrap = $('.r-tabs', reportsRoot);
+
+    if (!reportsRoot || !grid) return;
+
+    if (toggleBtn && toggleBtn.dataset.bound !== '1') {
+      toggleBtn.dataset.bound = '1';
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      grid.style.display = 'none';
+
+      toggleBtn.addEventListener('click', () => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', String(!expanded));
+        grid.style.display = expanded ? 'none' : 'grid';
+        syncReportsToggleLabel();
+
+        if (!expanded) {
+          renderReports(currentReportCategory);
+        }
+      }, { passive: true });
     }
 
-    renderReports(list);
+    if (tabsWrap && tabsWrap.dataset.bound !== '1') {
+      tabsWrap.dataset.bound = '1';
+
+      tabsWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.r-tab');
+        if (!btn) return;
+
+        currentReportCategory = getReportTabCategory(btn);
+        setActiveReportTabByCategory(currentReportCategory);
+        renderReports(currentReportCategory);
+      }, { passive: true });
+    }
+
+    setActiveReportTabByCategory(currentReportCategory);
+    syncReportsToggleLabel();
   }
 
   async function initReportsOnce() {
@@ -2550,20 +2559,34 @@
         cache: 'no-store'
       });
 
-      if (!res.ok) throw new Error('Failed to load data/reports.json');
+      if (!res.ok) throw new Error('Failed to load reports.json');
 
-      const data = await res.json();
-      REPORTS_DATA = Array.isArray(data.reports) ? data.reports.slice() : [];
+      const json = await res.json();
 
-      REPORTS_DATA.sort((a, b) => String(b.id || '').localeCompare(String(a.id || ''), undefined, { numeric: true }));
+      REPORTS_DATA = Array.isArray(json)
+        ? json
+        : (Array.isArray(json.reports) ? json.reports : []);
 
-      console.log('REPORT IDS:', REPORTS_DATA.map(r => r.id));
+      if (!Array.isArray(REPORTS_DATA)) REPORTS_DATA = [];
 
-      currentReportCategory = 'All';
-      setActiveReportTabByCategory(currentReportCategory);
-      renderReports(REPORTS_DATA);
-    } catch (e) {
-      console.error('Reports load error:', e);
+      REPORTS_DATA = REPORTS_DATA.slice().sort((a, b) => {
+        const getNum = (id) => {
+          const m = String(id || '').match(/DCAR-(\d+)-/);
+          return m ? parseInt(m[1], 10) : 0;
+        };
+        return getNum(a.id) - getNum(b.id);
+      });
+
+      bindReportControls();
+      renderReports(currentReportCategory);
+
+      console.log('REPORTS_DATA length:', REPORTS_DATA.length);
+      console.log('Last reports:', REPORTS_DATA.slice(-5).map(r => r.id));
+
+    } catch (err) {
+      console.error('Reports init failed:', err);
+      REPORTS_DATA = [];
+      renderReports(currentReportCategory);
     }
   }
 
@@ -2607,124 +2630,86 @@
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
-    const expoBtn = $('#expoToggle');
-    const expoBlock = $('#expoSlide');
-    const langBtns = Array.from($$('.bio-lang .lang', modal));
+    const closeBtn = $('.bio-close', modal);
+    const expoToggle = $('#expoToggle');
+    const expoSlide = $('#expoSlide');
+    const langBtns = $$('.bio-lang .lang', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
     if (backdrop) backdrop.addEventListener('click', closeBioModal, { passive: true });
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
 
-    if (expoBtn && expoBlock) {
-      expoBtn.addEventListener('click', () => {
-        const open = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', open ? 'false' : 'true');
-        expoBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    if (expoToggle && expoSlide) {
+      expoToggle.addEventListener('click', () => {
+        const isOpen = expoSlide.getAttribute('data-open') === 'true';
+        expoSlide.setAttribute('data-open', String(!isOpen));
+        expoToggle.setAttribute('aria-expanded', String(!isOpen));
       }, { passive: true });
     }
 
     langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const lang = btn.dataset.bioLang || 'kr';
-        modal.dataset.bio = lang;
+        const mode = btn.dataset.bioLang === 'en' ? 'en' : 'kr';
+        modal.dataset.bio = mode;
         langBtns.forEach(b => {
-          const isActive = b === btn;
-          b.classList.toggle('active', isActive);
-          b.setAttribute('aria-pressed', String(isActive));
+          const active = b === btn;
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', String(active));
         });
       }, { passive: true });
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if ($('#lightbox')?.classList.contains('is-open')) {
-          closeLightbox();
-          return;
-        }
-        if (!modal.hidden) closeBioModal();
-      }
-
-      if ($('#lightbox')?.classList.contains('is-open')) {
-        if (e.key === 'ArrowRight') goNextLightboxImage();
-        if (e.key === 'ArrowLeft') goPrevLightboxImage();
-      }
     });
   }
 
   function initAudio() {
     const soundBar = $('#soundBar');
-    if (!soundBar) return;
+    if (!soundBar || audioInitialized) return;
+    audioInitialized = true;
 
-    function createAudio() {
-      if (audioInitialized) return;
-      audioInitialized = true;
+    function buildAudio() {
+      if (audioCtx) return;
 
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
 
-      audioCtx = new Ctx();
+      audioCtx = new AC();
       masterGain = audioCtx.createGain();
       masterGain.gain.value = 0.0001;
       masterGain.connect(audioCtx.destination);
 
-      const baseFreqs = [130.81, 196.00, 261.63, 392.00];
-      oscillators = baseFreqs.map((f, i) => {
+      const freqs = [174.61, 220.0, 261.63];
+      oscillators = freqs.map((freq, i) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = f;
-        gain.gain.value = 0.008 / (i + 1);
+        osc.type = i === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.value = i === 0 ? 0.012 : 0.006;
         osc.connect(gain);
         gain.connect(masterGain);
         osc.start();
-        return { osc, gain, base: f };
+        return { osc, gain };
       });
-
-      const lfo = audioCtx.createOscillator();
-      const lfoGain = audioCtx.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.value = 0.08;
-      lfoGain.gain.value = 10;
-      lfo.connect(lfoGain);
-
-      oscillators.forEach(({ osc }) => lfoGain.connect(osc.frequency));
-      lfo.start();
-
-      let t = 0;
-      function shimmer() {
-        if (!audioCtx || !audioEnabled) return;
-        t += 0.016;
-        oscillators.forEach(({ gain }, i) => {
-          const base = 0.0032 / (i + 1);
-          gain.gain.setTargetAtTime(base + Math.sin(t * (0.6 + i * 0.12)) * base * 0.22, audioCtx.currentTime, 0.6);
-        });
-        requestAnimationFrame(shimmer);
-      }
-
-      soundBar.addEventListener('click', async () => {
-        try {
-          if (!audioCtx) return;
-          await audioCtx.resume();
-
-          audioEnabled = !audioEnabled;
-          soundBar.classList.toggle('is-on', audioEnabled);
-
-          if (audioEnabled) {
-            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-            masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.4);
-            shimmer();
-          } else {
-            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-            masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 1.6);
-          }
-        } catch (e) {
-          console.error('Audio resume error:', e);
-        }
-      }, { passive: true });
     }
 
-    createAudio();
+    async function toggleAudio() {
+      try {
+        buildAudio();
+        if (!audioCtx || !masterGain) return;
+
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+        audioEnabled = !audioEnabled;
+        soundBar.classList.toggle('is-on', audioEnabled);
+
+        const now = audioCtx.currentTime;
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+        masterGain.gain.linearRampToValueAtTime(audioEnabled ? 0.22 : 0.0001, now + 0.8);
+      } catch (err) {
+        console.error('Audio init error:', err);
+      }
+    }
+
+    soundBar.addEventListener('click', toggleAudio, { passive: true });
   }
 
   function initWaveOnce() {
@@ -2734,27 +2719,21 @@
     const canvas = $('#waves');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    let w = 0;
+    let h = 0;
+    let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    let t = 0;
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     wavePrefersReduced = prefersReduced.matches;
 
-    const DPR_CAP = 1.6;
-    let w = 0;
-    let h = 0;
-    let t = 0;
-
-    const palette = [
-      'rgba(215,184,106,0.09)',
-      'rgba(121,167,255,0.07)',
-      'rgba(233,213,155,0.05)'
-    ];
-
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
-      w = window.innerWidth;
-      h = window.innerHeight;
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      w = Math.floor(window.innerWidth);
+      h = Math.floor(window.innerHeight);
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       canvas.style.width = w + 'px';
@@ -2765,10 +2744,15 @@
     function draw() {
       ctx.clearRect(0, 0, w, h);
 
+      const palette = [
+        'rgba(215,184,106,0.20)',
+        'rgba(121,167,255,0.16)',
+        'rgba(233,213,155,0.10)'
+      ];
+
       const bands = [
-        { y: h * 0.18, amp: 22, len: 180, speed: 0.38, stroke: palette[0], width: 1.2 },
-        { y: h * 0.36, amp: 28, len: 220, speed: 0.28, stroke: palette[1], width: 1.1 },
-        { y: h * 0.56, amp: 18, len: 160, speed: 0.22, stroke: palette[2], width: 1.0 },
+        { y: h * 0.24, amp: 18, len: 240, speed: 0.24, stroke: palette[0], width: 1.0 },
+        { y: h * 0.52, amp: 28, len: 320, speed: 0.18, stroke: palette[2], width: 1.0 },
         { y: h * 0.76, amp: 24, len: 240, speed: 0.16, stroke: palette[1], width: 0.9 }
       ];
 
@@ -2843,7 +2827,6 @@
     initNav();
     initLanguage();
     initWorksUI();
-    initReports();
     initBioModal();
     initAudio();
     initWaveOnce();

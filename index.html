@@ -1608,8 +1608,8 @@
   </footer>
 
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
-
 <script>
+
 (() => {
   'use strict';
 
@@ -1627,8 +1627,8 @@
 
   const escHTML = (v) => String(v ?? '')
     .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
 
   const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
 
@@ -1637,7 +1637,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_reports_sound_fixed_v1';
+  const VERSION = 'LF31_v2';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1648,11 +1648,8 @@
       if (!obj || obj.v !== VERSION) return null;
       if (Date.now() - (obj.t || 0) > CACHE_TTL_MS) return null;
       return obj.d ?? null;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   }
-
   function cacheSet(key, data) {
     try {
       localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
@@ -1682,29 +1679,310 @@
     return p;
   }
 
-  function getLang() {
+  const getLang = () => {
     const b = document.body;
     if (b.classList.contains('english')) return 'en';
-    if (b.classList.contains('hybrid')) return 'hy';
+    if (b.classList.contains('hybrid'))  return 'hy';
     return 'kr';
-  }
+  };
+
+  let lbOpenFrom = null;
+  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  let worksLoaded = false;
 
   let REPORTS_DATA = [];
   let reportsInitialized = false;
   let reportsLoaded = false;
-  let currentReportCategory = 'All';
+  let currentReportCategory = 'all';
 
-  let waveInitialized = false;
-  let waveAnimationFrame = null;
-  let waveVisibilityBound = false;
-  let waveDrawRef = null;
-  let wavePrefersReduced = false;
+  function initNav() {
+    const nav = $('nav.primary');
+    if (!nav) return;
 
-  let lbOpenFrom = null;
-  let worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-  let worksLoaded = false;
+    const sections = Array.from($$('main > section'));
+
+    function showSection(id) {
+      for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
+    }
+    function setActiveBtn(targetId) {
+      const btns = Array.from($$('button', nav));
+      for (const b of btns) b.classList.remove('active');
+      const btn = btns.find(x => x.dataset.target === targetId);
+      if (btn) btn.classList.add('active');
+    }
+
+    nav.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const target = btn.dataset.target;
+      if (target) {
+        setActiveBtn(target);
+        showSection(target);
+        if (target === 'works' && !worksLoaded) loadWorks();
+        return;
+      }
+      if (btn.id === 'tab-bio') openBioModal();
+    }, { passive: true });
+
+    showSection('poem');
+    setActiveBtn('poem');
+  }
+
+  function initLanguage() {
+    const koBtn = $('#koBtn');
+    const enBtn = $('#enBtn');
+    const hyBtn = $('#hyBtn');
+
+    function setBodyLang(mode) {
+      document.body.classList.remove('korean', 'english', 'hybrid');
+      if (mode === 'en')      document.body.classList.add('english');
+      else if (mode === 'hy') document.body.classList.add('hybrid');
+      else                    document.body.classList.add('korean');
+    }
+    function activate(btn) {
+      if (koBtn) koBtn.classList.remove('active');
+      if (enBtn) enBtn.classList.remove('active');
+      if (hyBtn) hyBtn.classList.remove('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    const onLangChange = () => {
+      updateOpenLightboxCaption();
+      syncReportsToggleLabel();
+    };
+
+    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive:true });
+    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive:true });
+    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive:true });
+
+    setBodyLang('kr');
+    if (koBtn) koBtn.classList.add('active');
+  }
+
+  function initWorksUI() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+
+    const tabs = $('.tabs', worksRoot);
+    if (tabs) {
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        const key = btn.dataset.panel;
+        if (!key) return;
+
+        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
+        btn.classList.add('active');
+
+        for (const p of panelIds) {
+          const el = $('#panel-' + p);
+          if (el) el.classList.toggle('active', p === key);
+        }
+
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
+      }, { passive: true });
+    }
+
+    attachWorksLightbox();
+  }
+
+  async function loadWorks() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    worksLoaded = true;
+
+    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+
+    try {
+      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+
+      for (const item of list) {
+        let key = item.section || item.panel;
+        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
+        if (!key || !worksByPanel[key]) key = 'pray';
+        worksByPanel[key].push(item);
+      }
+
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
+
+      runIdle(() => {
+        for (const key of panelKeys) {
+          const panel = $('#panel-' + key);
+          if (!panel || panel.dataset.rendered) continue;
+          renderWorksPanel(panel, worksByPanel[key], key);
+          panel.dataset.rendered = '1';
+        }
+        runIdle(() => {
+          for (const key of panelKeys) {
+            const panel = $('#panel-' + key);
+            if (panel) scheduleImageDecode(panel);
+          }
+        });
+      });
+
+    } catch (err) {
+      console.error('works.json load error:', err);
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = `
+          <div class="w-msg">
+            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+            <small>${escHTML(String(err?.message || err || ''))}</small>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function renderWorksPanel(panel, items, key) {
+    const isOrigin = (key === 'origin');
+
+    if (!items || !items.length) {
+      panel.innerHTML = `
+        <div class="w-msg">
+          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+          <div class="en">No artworks have been registered in this section yet.</div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '<div class="w-grid">';
+    for (const item of items) {
+      const id      = item.id || '';
+      const titleKr = item.title_kr || '';
+      const titleEn = item.title_en || '';
+      const matKr   = item.material_kr || '';
+      const matEn   = item.material_en || '';
+      const sizeKr  = item.size_kr || '';
+      const sizeEn  = item.size_en || '';
+      const year    = item.year || '';
+      const imgStd  = item.image || item.image_standard || '';
+      const imgZoom = item.zoom  || item.image_zoom || imgStd;
+
+      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+
+      if (isOrigin) {
+        html += `
+          <article class="w-card w-card-origin"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy" decoding="async" />
+          </article>
+        `;
+      } else {
+        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
+        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
+
+        const capKrAttr = escAttrWithNL(captionKr);
+        const capEnAttr = escAttrWithNL(captionEn);
+
+        html += `
+          <article class="w-card"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}"
+                   data-cap-kr="${capKrAttr}"
+                   data-cap-en="${capEnAttr}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy" decoding="async" />
+            <div class="w-meta">
+              <div class="w-title">
+                <span class="ko">${escHTML(titleKr)}</span>
+                <span class="en">${escHTML(titleEn)}</span>
+              </div>
+              <div class="w-sub">
+                <span class="ko">${escHTML(subKr)}</span>
+                <span class="en">${escHTML(subEn)}</span>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+    }
+    html += '</div>';
+    panel.innerHTML = html;
+  }
 
   let io = null;
+
+  function ensureIO() {
+    if (io) return io;
+    if (!('IntersectionObserver' in window)) return null;
+
+    io = new IntersectionObserver((entries) => {
+      for (const ent of entries) {
+        if (!ent.isIntersecting) continue;
+        const img = ent.target;
+        io.unobserve(img);
+        if (img && img.decode) img.decode().catch(()=>{});
+      }
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+
+    return io;
+  }
+
+  function scheduleImageDecode(root) {
+    const imgs = $$('img.w-thumb', root || document);
+    const observer = ensureIO();
+
+    if (observer) {
+      for (const img of imgs) observer.observe(img);
+    } else {
+      runIdle(() => {
+        for (const img of imgs) {
+          if (img && img.decode) img.decode().catch(()=>{});
+        }
+      });
+    }
+  }
+
+  function attachWorksLightbox() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    worksRoot.addEventListener('click', (e) => {
+      const card = e.target.closest('.w-card');
+      if (!card) return;
+      openLightboxFromCard(card);
+    }, { passive: true });
+
+    const lb = $('#lightbox');
+    const btnX = $('#lbClose');
+
+    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive:true });
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
+  }
+
   let lbItems = [];
   let lbIndex = 0;
   let lbTouchStartX = 0;
@@ -1729,335 +2007,6 @@
     lastTapAt: 0
   };
 
-  let audioInitialized = false;
-  let audioCtx = null;
-  let masterGain = null;
-  let oscillators = [];
-  let audioEnabled = false;
-
-  function initNav() {
-    const nav = $('nav.primary');
-    if (!nav) return;
-
-    const sections = Array.from($$('main > section'));
-
-    function showSection(id) {
-      sections.forEach(sec => sec.classList.toggle('is-active', sec.id === id));
-    }
-
-    function setActiveBtn(targetId) {
-      Array.from($$('button', nav)).forEach(b => b.classList.remove('active'));
-      const btn = Array.from($$('button', nav)).find(x => x.dataset.target === targetId);
-      if (btn) btn.classList.add('active');
-    }
-
-    nav.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-
-      const target = btn.dataset.target;
-      if (target) {
-        setActiveBtn(target);
-        showSection(target);
-        if (target === 'works' && !worksLoaded) loadWorks();
-        return;
-      }
-
-      if (btn.id === 'tab-bio') openBioModal();
-    }, { passive: true });
-
-    showSection('poem');
-    setActiveBtn('poem');
-  }
-
-  function initLanguage() {
-    const koBtn = $('#koBtn');
-    const enBtn = $('#enBtn');
-    const hyBtn = $('#hyBtn');
-
-    function setBodyLang(mode) {
-      document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en') document.body.classList.add('english');
-      else if (mode === 'hy') document.body.classList.add('hybrid');
-      else document.body.classList.add('korean');
-    }
-
-    function activate(btn) {
-      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-    }
-
-    const onLangChange = () => {
-      updateOpenLightboxCaption();
-      syncReportsToggleLabel();
-      if (reportsLoaded) renderReports(currentReportCategory);
-    };
-
-    if (koBtn) koBtn.addEventListener('click', () => {
-      setBodyLang('kr');
-      activate(koBtn);
-      onLangChange();
-    }, { passive: true });
-
-    if (enBtn) enBtn.addEventListener('click', () => {
-      setBodyLang('en');
-      activate(enBtn);
-      onLangChange();
-    }, { passive: true });
-
-    if (hyBtn) hyBtn.addEventListener('click', () => {
-      setBodyLang('hy');
-      activate(hyBtn);
-      onLangChange();
-    }, { passive: true });
-
-    setBodyLang('kr');
-    if (koBtn) koBtn.classList.add('active');
-  }
-
-  function initWorksUI() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-    const tabs = $('.tabs', worksRoot);
-
-    if (tabs) {
-      tabs.addEventListener('click', (e) => {
-        const btn = e.target.closest('.tab');
-        if (!btn) return;
-        const key = btn.dataset.panel;
-        if (!key) return;
-
-        $$('.tabs .tab', worksRoot).forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        panelIds.forEach(p => {
-          const el = $('#panel-' + p);
-          if (el) el.classList.toggle('active', p === key);
-        });
-
-        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
-          const panel = $('#panel-' + key);
-          if (panel) {
-            renderWorksPanel(panel, worksByPanel[key], key);
-            panel.dataset.rendered = '1';
-            scheduleImageDecode(panel);
-          }
-        }
-      }, { passive: true });
-    }
-
-    attachWorksLightbox();
-  }
-
-  async function loadWorks() {
-    worksLoaded = true;
-
-    const idMap = { 0: 'origin', 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
-    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-
-    try {
-      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
-      const list = Array.isArray(json) ? json : (json.works || json.items || []);
-      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
-
-      worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-
-      for (const item of list) {
-        let key = item.section || item.panel;
-        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
-        if (!key || !worksByPanel[key]) key = 'pray';
-        worksByPanel[key].push(item);
-      }
-
-      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
-
-      if (activePanel) {
-        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
-        activePanel.dataset.rendered = '1';
-        scheduleImageDecode(activePanel);
-      }
-
-      runIdle(() => {
-        for (const key of panelKeys) {
-          const panel = $('#panel-' + key);
-          if (!panel || panel.dataset.rendered) continue;
-          renderWorksPanel(panel, worksByPanel[key], key);
-          panel.dataset.rendered = '1';
-        }
-
-        runIdle(() => {
-          for (const key of panelKeys) {
-            const panel = $('#panel-' + key);
-            if (panel) scheduleImageDecode(panel);
-          }
-        });
-      });
-    } catch (err) {
-      console.error('works.json load error:', err);
-      for (const key of panelKeys) {
-        const panel = $('#panel-' + key);
-        if (!panel) continue;
-        panel.innerHTML = `
-          <div class="w-msg">
-            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
-            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
-            <small>${escHTML(String(err?.message || err || ''))}</small>
-          </div>
-        `;
-      }
-    }
-  }
-
-  function renderWorksPanel(panel, items, key) {
-    const isOrigin = key === 'origin';
-
-    if (!items || !items.length) {
-      panel.innerHTML = `
-        <div class="w-msg">
-          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
-          <div class="en">No artworks have been registered in this section yet.</div>
-        </div>
-      `;
-      return;
-    }
-
-    let html = '<div class="w-grid">';
-
-    for (const item of items) {
-      const id      = item.id || '';
-      const titleKr = item.title_kr || '';
-      const titleEn = item.title_en || '';
-      const matKr   = item.material_kr || '';
-      const matEn   = item.material_en || '';
-      const sizeKr  = item.size_kr || '';
-      const sizeEn  = item.size_en || '';
-      const year    = item.year || '';
-      const imgStd  = item.image || item.image_standard || '';
-      const imgZoom = item.zoom || item.image_zoom || imgStd;
-
-      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
-
-      if (isOrigin) {
-        html += `
-          <article class="w-card w-card-origin"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}">
-            <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy"
-                 decoding="async" />
-          </article>
-        `;
-      } else {
-        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
-        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
-
-        html += `
-          <article class="w-card"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${escAttrWithNL(captionKr)}"
-                   data-cap-en="${escAttrWithNL(captionEn)}">
-            <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy"
-                 decoding="async" />
-            <div class="w-meta">
-              <div class="w-title">
-                <span class="ko">${escHTML(titleKr)}</span>
-                <span class="en">${escHTML(titleEn)}</span>
-              </div>
-              <div class="w-sub">
-                <span class="ko">${escHTML(subKr)}</span>
-                <span class="en">${escHTML(subEn)}</span>
-              </div>
-            </div>
-          </article>
-        `;
-      }
-    }
-
-    html += '</div>';
-    panel.innerHTML = html;
-  }
-
-  function ensureIO() {
-    if (io) return io;
-    if (!('IntersectionObserver' in window)) return null;
-
-    io = new IntersectionObserver((entries) => {
-      for (const ent of entries) {
-        if (!ent.isIntersecting) continue;
-        const img = ent.target;
-        io.unobserve(img);
-        if (img && img.decode) img.decode().catch(() => {});
-      }
-    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
-
-    return io;
-  }
-
-  function scheduleImageDecode(root) {
-    const imgs = $$('img.w-thumb', root || document);
-    const observer = ensureIO();
-
-    if (observer) {
-      imgs.forEach(img => observer.observe(img));
-    } else {
-      runIdle(() => imgs.forEach(img => img && img.decode && img.decode().catch(() => {})));
-    }
-  }
-
-  function attachWorksLightbox() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    worksRoot.addEventListener('click', (e) => {
-      const card = e.target.closest('.w-card');
-      if (!card) return;
-      openLightboxFromCard(card);
-    }, { passive: true });
-
-    const lb = $('#lightbox');
-    const btnX = $('#lbClose');
-
-    if (lb) {
-      lb.addEventListener('click', (e) => {
-        if (e.target === lb) closeLightbox();
-      }, { passive: true });
-    }
-
-    if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
-
-    document.addEventListener('keydown', (e) => {
-      const lbOpen = $('#lightbox')?.classList.contains('is-open');
-      const bioOpen = !$('#bio-modal')?.hidden;
-
-      if (e.key === 'Escape') {
-        if (lbOpen) {
-          closeLightbox();
-          return;
-        }
-        if (bioOpen) {
-          closeBioModal();
-        }
-        return;
-      }
-
-      if (!lbOpen) return;
-      if (lbZoom.scale > 1.01) return;
-
-      if (e.key === 'ArrowRight') goNextLightboxImage();
-      if (e.key === 'ArrowLeft') goPrevLightboxImage();
-    });
-  }
-
   function buildCaptionForCard(card, mode) {
     if (card.closest('#panel-origin')) return '';
 
@@ -2076,6 +2025,7 @@
 
   function syncLightboxCaptionVisibility(text) {
     const lbCap = $('#lbCap');
+    const hint = $('#lbZoomHint');
     const viewport = $('#lbViewport');
     if (!lbCap) return;
 
@@ -2083,6 +2033,7 @@
     lbCap.textContent = text || '';
     lbCap.style.display = hasCaption ? 'block' : 'none';
 
+    if (hint) hint.style.display = hasCaption ? 'block' : 'none';
     if (viewport) {
       viewport.classList.toggle('has-caption', hasCaption);
       viewport.classList.toggle('no-caption', !hasCaption);
@@ -2119,7 +2070,7 @@
     syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
-    if (lbImg.decode) lbImg.decode().catch(() => {});
+    if (lbImg.decode) lbImg.decode().catch(()=>{});
     preloadNearbyLightboxImages();
   }
 
@@ -2165,14 +2116,14 @@
     return {
       lb: $('#lightbox'),
       img: $('#lbImg'),
-      viewport: $('#lbViewport')
+      viewport: $('#lbViewport'),
+      hint: $('#lbZoomHint')
     };
   }
 
   function getViewportMetrics() {
     const { viewport, img } = getLbEls();
     if (!viewport || !img) return null;
-
     const vw = viewport.clientWidth || 1;
     const vh = viewport.clientHeight || 1;
     const iw = img.naturalWidth || vw;
@@ -2180,14 +2131,12 @@
     const fit = Math.min(vw / iw, vh / ih);
     const baseW = iw * fit;
     const baseH = ih * fit;
-
     return { vw, vh, iw, ih, fit, baseW, baseH };
   }
 
   function clampLbPan() {
     const m = getViewportMetrics();
     if (!m) return;
-
     const maxX = Math.max(0, (m.baseW * lbZoom.scale - m.vw) / 2);
     const maxY = Math.max(0, (m.baseH * lbZoom.scale - m.vh) / 2);
     lbZoom.x = clamp(lbZoom.x, -maxX, maxX);
@@ -2195,32 +2144,27 @@
   }
 
   function renderLbZoom() {
-    const { img, viewport } = getLbEls();
+    const { img, viewport, hint } = getLbEls();
     if (!img || !viewport) return;
-
     clampLbPan();
     img.style.transform = `translate3d(calc(-50% + ${lbZoom.x}px), calc(-50% + ${lbZoom.y}px), 0) scale(${lbZoom.scale})`;
     viewport.classList.toggle('is-zoomed', lbZoom.scale > 1.01);
+    if (hint) hint.style.opacity = lbZoom.scale > 1.01 ? '0' : '1';
   }
 
   function resetLbZoom(animate = false) {
     const { img } = getLbEls();
     if (!img) return;
-
     const prev = img.style.transition;
     if (!animate) img.style.transition = 'none';
-
     lbZoom.scale = 1;
     lbZoom.x = 0;
     lbZoom.y = 0;
     lbZoom.pointers.clear();
     lbZoom.dragging = false;
     renderLbZoom();
-
     if (!animate) {
-      requestAnimationFrame(() => {
-        img.style.transition = prev || '';
-      });
+      requestAnimationFrame(() => { img.style.transition = prev || ''; });
     }
   }
 
@@ -2234,24 +2178,24 @@
     const cy = clientY - rect.top - m.vh / 2;
 
     const prevScale = lbZoom.scale;
-    const clampedScale = clamp(nextScale, lbZoom.min, lbZoom.max);
-    if (clampedScale === prevScale) return;
+    const clamped = clamp(nextScale, lbZoom.min, lbZoom.max);
+    if (clamped === prevScale) return;
 
-    lbZoom.x = lbZoom.x + cx * (1 - clampedScale / prevScale);
-    lbZoom.y = lbZoom.y + cy * (1 - clampedScale / prevScale);
-    lbZoom.scale = clampedScale;
-
+    lbZoom.x = lbZoom.x + cx * (1 - clamped / prevScale);
+    lbZoom.y = lbZoom.y + cy * (1 - clamped / prevScale);
+    lbZoom.scale = clamped;
     if (lbZoom.scale <= 1.01) {
       lbZoom.scale = 1;
       lbZoom.x = 0;
       lbZoom.y = 0;
     }
-
     renderLbZoom();
   }
 
   function distanceBetween(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.hypot(dx, dy);
   }
 
   function midpointBetween(a, b) {
@@ -2273,12 +2217,10 @@
 
     viewport.addEventListener('pointerdown', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
-
       viewport.setPointerCapture?.(e.pointerId);
       lbZoom.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       const now = Date.now();
-
       if (lbZoom.pointers.size === 1 && now - lbZoom.lastTapAt < 260) {
         const targetScale = lbZoom.scale > 1.01 ? 1 : 2.2;
         zoomAroundPoint(targetScale, e.clientX, e.clientY);
@@ -2309,24 +2251,20 @@
     viewport.addEventListener('pointermove', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
       if (!lbZoom.pointers.has(e.pointerId)) return;
-
       lbZoom.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (lbZoom.pointers.size === 2) {
         const [a, b] = [...lbZoom.pointers.values()];
         const dist = distanceBetween(a, b) || 1;
         const mid = midpointBetween(a, b);
-
         lbZoom.scale = clamp(lbZoom.startScale * (dist / lbZoom.startDistance), lbZoom.min, lbZoom.max);
         lbZoom.x = lbZoom.startX + (mid.x - lbZoom.startMidX);
         lbZoom.y = lbZoom.startY + (mid.y - lbZoom.startMidY);
-
         if (lbZoom.scale <= 1.01) {
           lbZoom.scale = 1;
           lbZoom.x = 0;
           lbZoom.y = 0;
         }
-
         renderLbZoom();
         return;
       }
@@ -2341,9 +2279,9 @@
 
     function endPointer(e) {
       lbZoom.pointers.delete(e.pointerId);
-
-      if (lbZoom.pointers.size < 2) lbZoom.startDistance = 0;
-
+      if (lbZoom.pointers.size < 2) {
+        lbZoom.startDistance = 0;
+      }
       if (lbZoom.pointers.size === 0) {
         lbZoom.dragging = false;
         if (lbZoom.scale <= 1.01) resetLbZoom(false);
@@ -2371,7 +2309,7 @@
     lb.addEventListener('touchstart', (e) => {
       if (!lb.classList.contains('is-open')) return;
       lbTouchStartX = e.touches[0].clientX;
-    }, { passive: true });
+    }, { passive:true });
 
     lb.addEventListener('touchend', (e) => {
       if (!lb.classList.contains('is-open')) return;
@@ -2381,7 +2319,7 @@
       if (Math.abs(diff) < 50) return;
       if (diff > 0) goNextLightboxImage();
       else goPrevLightboxImage();
-    }, { passive: true });
+    }, { passive:true });
 
     lightboxSwipeBound = true;
   }
@@ -2402,6 +2340,7 @@
     if (clickedIndex < 0) return;
 
     setLightboxSlideContent(clickedIndex);
+
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
     bindLightboxSwipe();
@@ -2416,12 +2355,10 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
-
     if (lbImg) {
       lbImg.src = '';
       lbImg.classList.remove('is-sliding-left', 'is-sliding-right', 'is-enter-left', 'is-enter-right');
     }
-
     syncLightboxCaptionVisibility('');
     resetLbZoom(false);
     lbOpenFrom = null;
@@ -2434,50 +2371,120 @@
     syncLightboxCaptionVisibility(buildCaptionForCard(lbOpenFrom, getLang()));
   }
 
-  function normalizeReportCategoryForUI(category) {
-    const raw = String(category || '').trim();
-    if (!raw) return 'Theory';
 
-    const lower = raw.toLowerCase();
-    if (lower === 'theory') return 'Theory';
-    if (lower === 'archive') return 'Archive';
-    if (lower === 'practice') return 'Practice';
-    return raw;
+  function extractReportNumericId(item) {
+    const str = String(item?.id || '');
+    const match = str.match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
   }
 
-  function normalizeReportCategoryForFilter(category) {
-    const raw = String(category || '').trim().toLowerCase();
-    if (!raw) return 'theory';
-    return raw;
+  function sortReportsDesc(list) {
+    return list.slice().sort((a, b) => extractReportNumericId(b) - extractReportNumericId(a));
   }
 
-  function getReportGridContainer() {
-    return (
-      document.getElementById('reports-grid') ||
-      document.getElementById('reports-container') ||
-      document.getElementById('reportGrid')
-    );
+  function getSafeReportsArray(raw) {
+    return Array.isArray(raw?.reports) ? raw.reports.slice() : [];
   }
 
-  function setActiveReportTab(category) {
-    const filterButtons = document.querySelectorAll('[data-report-category], .r-tab[data-r]');
-    if (!filterButtons.length) return;
+  function getFilteredReports(type = 'all') {
+    const normalized = String(type || 'all').toLowerCase();
+    const source = sortReportsDesc(REPORTS_DATA);
+    if (normalized === 'all') return source;
+    return source.filter(item => String(item?.category || 'theory').toLowerCase() === normalized);
+  }
 
-    filterButtons.forEach(btn => {
-      const raw =
-        btn.getAttribute('data-report-category') ||
-        btn.getAttribute('data-r') ||
-        'All';
+  function renderReportsIntoGrid(grid, type = currentReportCategory) {
+    if (!grid) return;
+    if (!Array.isArray(REPORTS_DATA) || REPORTS_DATA.length === 0) return;
 
-      const value = String(raw).trim().toLowerCase();
-      const isActive =
-        (category === 'All' && value === 'all') ||
-        (category !== 'All' && value === String(category).trim().toLowerCase());
+    const list = getFilteredReports(type);
+    let html = '';
 
-      btn.classList.toggle('is-active', isActive);
-      btn.classList.toggle('active', isActive);
-      btn.setAttribute('aria-pressed', String(isActive));
-    });
+    for (const item of list) {
+      const id        = escHTML(item.id || '');
+      const year      = escHTML(item.year || '');
+      const category  = escHTML((item.category || 'theory').toLowerCase());
+      const titleKr   = escHTML(item.title_ko || item.title_kr || '');
+      const titleEn   = escHTML(item.title_en || '');
+      const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
+      const summaryEn = escHTML(item.summary_en || '');
+      const href      = escAttr(item.url || item.link || item.md_path || '#');
+
+      html += `
+          <article class="r-item" data-category="${category}">
+            <div class="t">
+              <span class="ko">${titleKr}</span>
+              <span class="en">${titleEn}</span>
+            </div>
+            <div class="m">
+              <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
+            </div>
+            <div class="s">
+              <span class="ko">${summaryKr}</span>
+              <span class="en">${summaryEn}</span>
+            </div>
+            <a class="r-open" href="${href}" target="_blank" rel="noopener">
+              <span class="ko">전체 보기 (새 창)</span>
+              <span class="en">Open full report (new tab)</span>
+            </a>
+          </article>
+      `;
+    }
+
+    if (!html.trim()) return;
+    grid.innerHTML = html;
+  }
+
+
+  function initReports() {
+    if (reportsInitialized) return;
+    reportsInitialized = true;
+
+    const grid = $('#reportGrid');
+    const reportsRoot = $('#reports');
+    if (!grid || !reportsRoot) return;
+
+    const toggleBtn = $('#reportsToggle');
+    const tabsWrap  = $('.r-tabs', reportsRoot);
+
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      grid.style.display = 'none';
+    }
+
+    syncReportsToggleLabel();
+
+    if (tabsWrap) {
+      tabsWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.r-tab');
+        if (!btn) return;
+
+        const type = (btn.dataset.r || 'all').toLowerCase();
+        currentReportCategory = type;
+
+        for (const b of $$('.r-tab', tabsWrap)) b.classList.remove('is-active');
+        btn.classList.add('is-active');
+
+        applyReportFilter(type, grid);
+      }, { passive: true });
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', async () => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', String(!expanded));
+        grid.style.display = expanded ? 'none' : 'grid';
+        syncReportsToggleLabel();
+
+        if (!expanded && !reportsLoaded) {
+          await loadReportsIntoGrid(grid);
+        }
+
+        if (!expanded) {
+          applyReportFilter(currentReportCategory, grid);
+        }
+      }, { passive: true });
+    }
   }
 
   function syncReportsToggleLabel() {
@@ -2486,6 +2493,7 @@
 
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     const lang = getLang();
+
     const labels = {
       kr: { open: '보고서 열기', close: '보고서 닫기' },
       en: { open: 'Open Reports', close: 'Close Reports' },
@@ -2496,148 +2504,47 @@
     btn.textContent = expanded ? L.close : L.open;
   }
 
-  function createReportCard(item) {
-    const id = escHTML(item.id || '');
-    const year = escHTML(item.year || '');
-    const categoryUI = escHTML(normalizeReportCategoryForUI(item.category));
-    const categoryFilter = escHTML(normalizeReportCategoryForFilter(item.category));
-    const titleKr = escHTML(item.title_ko || item.title_kr || '');
-    const titleEn = escHTML(item.title_en || '');
-    const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
-    const summaryEn = escHTML(item.summary_en || '');
-    const href = escAttr(item.md_path || item.url || item.link || '#');
-
-    const article = document.createElement('article');
-    article.className = 'r-item';
-    article.setAttribute('data-category', categoryFilter);
-
-    article.innerHTML = `
-      <div class="t">
-        <span class="ko">${titleKr}</span>
-        <span class="en">${titleEn}</span>
-      </div>
-      <div class="m">
-        <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
-      </div>
-      <div class="s">
-        <span class="ko">${summaryKr}</span>
-        <span class="en">${summaryEn}</span>
-      </div>
-      <a class="r-open" href="${href}" target="_blank" rel="noopener">
-        <span class="ko">전체 보기 (새 창)</span>
-        <span class="en">Open full report (new tab)</span>
-      </a>
-    `;
-
-    return article;
+  function applyReportFilter(type, grid) {
+    if (!grid) return;
+    currentReportCategory = String(type || 'all').toLowerCase();
+    renderReportsIntoGrid(grid, currentReportCategory);
   }
 
-  function renderReports(category = 'All') {
-    const container = getReportGridContainer();
-    if (!container) return;
-
-    const safeData = Array.isArray(REPORTS_DATA) ? REPORTS_DATA.slice() : [];
-
-    const list = category === 'All'
-      ? safeData
-      : safeData.filter(item => {
-          return normalizeReportCategoryForFilter(item.category) === String(category).trim().toLowerCase();
-        });
-
-    list.sort((a, b) => {
-      const aNum = parseInt(String(a?.id || '').replace(/\D/g, ''), 10) || 0;
-      const bNum = parseInt(String(b?.id || '').replace(/\D/g, ''), 10) || 0;
-      return bNum - aNum;
-    });
-
-    container.innerHTML = '';
-    list.forEach(item => {
-      const card = createReportCard(item);
-      container.appendChild(card);
-    });
-
-    setActiveReportTab(category);
-  }
-
-  function bindReportFilterEvents() {
-    const filterButtons = document.querySelectorAll('[data-report-category], .r-tab[data-r]');
-    if (!filterButtons.length) return;
-
-    filterButtons.forEach(btn => {
-      if (btn.dataset.bound === 'true') return;
-      btn.dataset.bound = 'true';
-
-      btn.addEventListener('click', () => {
-        const raw =
-          btn.getAttribute('data-report-category') ||
-          btn.getAttribute('data-r') ||
-          'All';
-
-        const value = String(raw).trim().toLowerCase();
-        currentReportCategory = value === 'all'
-          ? 'All'
-          : value.charAt(0).toUpperCase() + value.slice(1);
-
-        if (reportsLoaded) renderReports(currentReportCategory);
-      }, { passive: true });
-    });
-  }
-
-  function bindReportsToggleEvent() {
-    const toggleBtn = document.getElementById('reportsToggle');
-    const grid = getReportGridContainer();
-    if (!toggleBtn || !grid) return;
-
-    if (toggleBtn.dataset.bound === 'true') return;
-    toggleBtn.dataset.bound = 'true';
-
-    if (!toggleBtn.hasAttribute('aria-expanded')) {
-      toggleBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    grid.style.display = 'none';
-    syncReportsToggleLabel();
-
-    toggleBtn.addEventListener('click', () => {
-      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      const next = !expanded;
-
-      toggleBtn.setAttribute('aria-expanded', String(next));
-      grid.style.display = next ? 'grid' : 'none';
-      syncReportsToggleLabel();
-
-      if (next && reportsLoaded) {
-        renderReports(currentReportCategory);
-      }
-    }, { passive: true });
-  }
-
-  async function initReportsOnce() {
-    if (reportsInitialized) return;
-    reportsInitialized = true;
-
-    bindReportsToggleEvent();
-    bindReportFilterEvents();
+  async function loadReportsIntoGrid(grid) {
+    if (!grid) return;
 
     try {
-      const response = await fetch('data/reports.json?v=' + Date.now(), { cache: 'no-store' });
-      if (!response.ok) throw new Error('Failed to load reports.json');
+      const raw = await safeJSONFetchCached(
+        'data/reports.json?v=' + Date.now(),
+        'LF_cache_reports'
+      );
 
-      const raw = await response.json();
+      const nextReports = getSafeReportsArray(raw);
 
-      REPORTS_DATA = Array.isArray(raw?.reports)
-        ? raw.reports.slice()
-        : [];
+      if (nextReports.length > 0) {
+        REPORTS_DATA = nextReports;
+        reportsLoaded = true;
+      }
 
-      reportsLoaded = true;
-      renderReports(currentReportCategory);
+      if (!reportsLoaded || REPORTS_DATA.length === 0) return;
+      renderReportsIntoGrid(grid, currentReportCategory);
+
+      const tabs = Array.from($$('.r-tab'));
+      const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === currentReportCategory);
+      if (defaultTab) {
+        for (const b of tabs) b.classList.remove('is-active');
+        defaultTab.classList.add('is-active');
+      }
+
     } catch (err) {
-      console.error('Reports load error:', err);
-      REPORTS_DATA = [];
-      reportsLoaded = true;
-      renderReports(currentReportCategory);
+      console.error('reports.json load error:', err);
+      if (reportsLoaded && REPORTS_DATA.length > 0) {
+        renderReportsIntoGrid(grid, currentReportCategory);
+      }
     }
   }
+
+
 
   function openBioModal() {
     const modal = $('#bio-modal');
@@ -2646,11 +2553,11 @@
     modal.dataset.bio = 'kr';
 
     const langBtns = Array.from($$('.bio-lang .lang', modal));
-    langBtns.forEach(btn => {
+    for (const btn of langBtns) {
       const isKr = (btn.dataset.bioLang || 'kr') === 'kr';
       btn.classList.toggle('active', isKr);
       btn.setAttribute('aria-pressed', String(isKr));
-    });
+    }
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
@@ -2679,104 +2586,115 @@
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    const backdrop = $('.bio-backdrop', modal);
-    const closeBtn = $('.bio-close', modal);
-    const expoBtn = $('#expoToggle');
-    const expoBlock = $('#expoSlide');
-
-    if (backdrop) backdrop.addEventListener('click', closeBioModal, { passive: true });
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
-
-    if (expoBtn && expoBlock) {
-      expoBtn.addEventListener('click', () => {
-        const open = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', String(!open));
-        expoBtn.setAttribute('aria-expanded', String(!open));
-      }, { passive: true });
-    }
+    modal.dataset.bio = 'kr';
 
     const langBtns = Array.from($$('.bio-lang .lang', modal));
-    langBtns.forEach(btn => {
+    for (const btn of langBtns) {
       btn.addEventListener('click', () => {
         const mode = btn.dataset.bioLang || 'kr';
         modal.dataset.bio = mode;
 
-        langBtns.forEach(b => {
-          const isActive = b === btn;
-          b.classList.toggle('active', isActive);
-          b.setAttribute('aria-pressed', String(isActive));
-        });
-      }, { passive: true });
-    });
-  }
-
-  function initAudio() {
-    if (audioInitialized) return;
-    audioInitialized = true;
-
-    const soundBar = $('#soundBar');
-    if (!soundBar) return;
-
-    soundBar.style.display = '';
-    soundBar.style.visibility = 'visible';
-    soundBar.style.pointerEvents = 'auto';
-
-    function buildAudio() {
-      if (audioCtx) return;
-
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-
-      audioCtx = new AC();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.value = 0.0001;
-      masterGain.connect(audioCtx.destination);
-
-      const freqs = [174.61, 220.0, 261.63];
-      oscillators = freqs.map((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = i === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.value = i === 0 ? 0.012 : 0.006;
-
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-
-        return { osc, gain };
-      });
+        for (const b of langBtns) {
+          const active = (b === btn);
+          b.classList.toggle('active', active);
+          b.setAttribute('aria-pressed', String(active));
+        }
+      }, { passive:true });
     }
 
-    async function toggleAudio() {
+    const closeBtn = $('.bio-close', modal);
+    const backdrop = $('.bio-backdrop', modal);
+
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
+    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive:true });
+
+    const expoBtn = $('#expoToggle');
+    const expoBlock = $('#expoSlide');
+    if (expoBtn && expoBlock) {
+      expoBlock.setAttribute('data-open', 'false');
+      expoBtn.setAttribute('aria-expanded', 'false');
+
+      expoBtn.addEventListener('click', () => {
+        const isOpen = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
+        expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
+      }, { passive:true });
+    }
+  }
+
+
+  let soundInitialized = false;
+  let soundAudio = null;
+  let soundPlaying = false;
+  let soundSrcAttached = false;
+
+  function initSound() {
+    if (soundInitialized) return;
+    soundInitialized = true;
+
+    const bar = $('#soundBar');
+    if (!bar) return;
+
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('role', 'button');
+    bar.setAttribute('aria-pressed', 'false');
+    bar.textContent = '';
+
+    const AUDIO_SRC = 'audio/lightflow_C_praha_quick6m.mp3';
+
+    soundAudio = new Audio();
+    soundAudio.loop = true;
+    soundAudio.preload = 'none';
+    soundAudio.volume = 0.18;
+
+    function ensureSrc() {
+      if (soundSrcAttached) return;
+      soundAudio.src = AUDIO_SRC;
+      try { soundAudio.load(); } catch {}
+      soundSrcAttached = true;
+    }
+
+    async function playSound() {
       try {
-        buildAudio();
-        if (!audioCtx || !masterGain) return;
-
-        if (audioCtx.state === 'suspended') {
-          await audioCtx.resume();
-        }
-
-        audioEnabled = !audioEnabled;
-        soundBar.classList.toggle('is-on', audioEnabled);
-
-        const now = audioCtx.currentTime;
-        masterGain.gain.cancelScheduledValues(now);
-        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-        masterGain.gain.linearRampToValueAtTime(audioEnabled ? 0.22 : 0.0001, now + 0.8);
+        ensureSrc();
+        await soundAudio.play();
+        soundPlaying = true;
+        bar.classList.add('is-on');
+        bar.setAttribute('aria-pressed', 'true');
       } catch (err) {
-        console.error('Audio init error:', err);
+        console.warn('Audio play failed:', err);
       }
     }
 
-    soundBar.addEventListener('click', toggleAudio, { passive: true });
-    soundBar.addEventListener('touchstart', toggleAudio, { passive: true });
+    function stopSound() {
+      if (!soundPlaying || !soundAudio) return;
+      soundAudio.pause();
+      soundPlaying = false;
+      bar.classList.remove('is-on');
+      bar.setAttribute('aria-pressed', 'false');
+    }
+
+    function toggle() {
+      soundPlaying ? stopSound() : playSound();
+    }
+
+    bar.addEventListener('click', toggle);
+    bar.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopSound();
+    });
+    window.addEventListener('pagehide', stopSound, { passive:true });
+
+    bar.classList.remove('is-on');
   }
 
-  function initWaveOnce() {
-    if (waveInitialized) return;
-    waveInitialized = true;
+  function initWaves() {
 
     const canvas = $('#waves');
     if (!canvas) return;
@@ -2784,114 +2702,113 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let w = 0;
-    let h = 0;
-    let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    let t = 0;
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    wavePrefersReduced = prefersReduced.matches;
+    const gradients = [
+      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
+      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
+    ];
 
     function resize() {
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      w = Math.floor(window.innerWidth);
-      h = Math.floor(window.innerHeight);
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
+    resize();
+    window.addEventListener('resize', resize, { passive:true });
+
+    let t = 0;
+    let animId = null;
 
     function draw() {
+      if (prefersReduced) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width  / dpr;
+      const h = canvas.height / dpr;
+
       ctx.clearRect(0, 0, w, h);
 
-      const palette = [
-        'rgba(215,184,106,0.20)',
-        'rgba(121,167,255,0.16)',
-        'rgba(233,213,155,0.10)'
-      ];
-
-      const bands = [
-        { y: h * 0.24, amp: 18, len: 240, speed: 0.24, stroke: palette[0], width: 1.0 },
-        { y: h * 0.52, amp: 28, len: 320, speed: 0.18, stroke: palette[2], width: 1.1 },
-        { y: h * 0.78, amp: 20, len: 260, speed: 0.16, stroke: palette[1], width: 1.0 }
-      ];
-
-      bands.forEach((b, idx) => {
+      for (let idx = 0; idx < gradients.length; idx++) {
+        const g = gradients[idx];
         ctx.beginPath();
-        for (let x = -20; x <= w + 20; x += 4) {
-          const y =
-            b.y +
-            Math.sin((x / b.len) + t * b.speed + idx * 0.7) * b.amp +
-            Math.cos((x / (b.len * 0.54)) + t * (b.speed * 0.72)) * (b.amp * 0.18);
-          if (x === -20) ctx.moveTo(x, y);
+        for (let x = 0; x <= w; x += 10) {
+          const y = h * 0.25 + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
+          if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.lineWidth = b.width;
-        ctx.strokeStyle = b.stroke;
+        ctx.strokeStyle = g.color;
+        ctx.lineWidth = 1.3;
+        ctx.shadowColor = 'rgba(0,0,0,0.50)';
+        ctx.shadowBlur = 8;
         ctx.stroke();
-      });
-    }
-
-    function animate() {
-      t += 0.016;
-      draw();
-      waveAnimationFrame = requestAnimationFrame(animate);
-    }
-
-    resize();
-    draw();
-    waveDrawRef = draw;
-
-    window.addEventListener('resize', () => {
-      resize();
-      draw();
-    }, { passive: true });
-
-    if (!waveVisibilityBound) {
-      waveVisibilityBound = true;
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
-          waveAnimationFrame = null;
-          if (waveDrawRef) waveDrawRef();
-        } else {
-          if (!waveAnimationFrame && !wavePrefersReduced) {
-            waveAnimationFrame = requestAnimationFrame(animate);
-          }
-        }
-      });
-    }
-
-    const onMotionChange = (e) => {
-      wavePrefersReduced = e.matches;
-      if (wavePrefersReduced) {
-        if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
-        waveAnimationFrame = null;
-        draw();
-      } else if (!document.hidden && !waveAnimationFrame) {
-        waveAnimationFrame = requestAnimationFrame(animate);
       }
-    };
 
-    if (prefersReduced.addEventListener) prefersReduced.addEventListener('change', onMotionChange);
-    else prefersReduced.addListener(onMotionChange);
-
-    if (!wavePrefersReduced) {
-      waveAnimationFrame = requestAnimationFrame(animate);
+      ctx.shadowBlur = 0;
+      t += 1;
+      animId = requestAnimationFrame(draw);
     }
+
+    if (!prefersReduced) animId = requestAnimationFrame(draw);
+
+    document.addEventListener('visibilitychange', () => {
+      if (prefersReduced) return;
+      if (document.hidden) {
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+      } else if (!animId) {
+        animId = requestAnimationFrame(draw);
+      }
+    }, { passive:true });
+  }
+
+
+  function syncHeaderGeometry() {
+    const nav = $('nav.primary');
+    const worksBtn = $('nav.primary button[data-target="works"]');
+    const reportsBtn = $('nav.primary button[data-target="reports"]');
+    const labLink = $('.lab-link');
+
+    if (!nav || !worksBtn || !reportsBtn || !labLink) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const worksRect = worksBtn.getBoundingClientRect();
+    const reportsRect = reportsBtn.getBoundingClientRect();
+
+    const targetCenter = ((worksRect.left + worksRect.right) / 2 + (reportsRect.left + reportsRect.right) / 2) / 2;
+    const navCenter = (navRect.left + navRect.right) / 2;
+    const shift = targetCenter - navCenter;
+
+    labLink.style.setProperty('--lab-shift', `${shift.toFixed(2)}px`);
+  }
+
+  function initGlobalKeys() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+
+      const lb = $('#lightbox');
+      if (lb && lb.classList.contains('is-open')) { closeLightbox(); return; }
+
+      const modal = $('#bio-modal');
+      if (modal && !modal.hidden) { closeBioModal(); return; }
+    }, { passive: true });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    initNav();
-    initLanguage();
-    initWorksUI();
-    initBioModal();
-    initAudio();
-    initWaveOnce();
-    initReportsOnce();
-  });
+    try { initNav(); }        catch (e) { console.error(e); }
+    try { initLanguage(); }   catch (e) { console.error(e); }
+    try { initWorksUI(); }    catch (e) { console.error(e); }
+    try { initReports(); }    catch (e) { console.error(e); }
+    try { initBioModal(); }   catch (e) { console.error(e); }
+    try { initSound(); }      catch (e) { console.error(e); }
+    try { initWaves(); }      catch (e) { console.error(e); }
+    try { initGlobalKeys(); } catch (e) { console.error(e); }
+    try { syncHeaderGeometry(); } catch (e) { console.error(e); }
 
+    window.addEventListener('load', syncHeaderGeometry, { passive:true });
+    window.addEventListener('resize', syncHeaderGeometry, { passive:true });
+  });
 })();
+
 </script>

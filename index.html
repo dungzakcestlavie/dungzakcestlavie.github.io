@@ -1608,9 +1608,13 @@
   </footer>
 
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
+
 <script>
 (() => {
   'use strict';
+
+  if (window.__LF_SITE_BOOTED__) return;
+  window.__LF_SITE_BOOTED__ = true;
 
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
@@ -1633,7 +1637,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_reports_200_safe_v2';
+  const VERSION = 'LF31_reports_sound_fixed_v1';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1687,6 +1691,7 @@
 
   let REPORTS_DATA = [];
   let reportsInitialized = false;
+  let reportsLoaded = false;
   let currentReportCategory = 'All';
 
   let waveInitialized = false;
@@ -1785,12 +1790,26 @@
     const onLangChange = () => {
       updateOpenLightboxCaption();
       syncReportsToggleLabel();
-      renderReports(currentReportCategory);
+      if (reportsLoaded) renderReports(currentReportCategory);
     };
 
-    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive: true });
-    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive: true });
-    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive: true });
+    if (koBtn) koBtn.addEventListener('click', () => {
+      setBodyLang('kr');
+      activate(koBtn);
+      onLangChange();
+    }, { passive: true });
+
+    if (enBtn) enBtn.addEventListener('click', () => {
+      setBodyLang('en');
+      activate(enBtn);
+      onLangChange();
+    }, { passive: true });
+
+    if (hyBtn) hyBtn.addEventListener('click', () => {
+      setBodyLang('hy');
+      activate(hyBtn);
+      onLangChange();
+    }, { passive: true });
 
     setBodyLang('kr');
     if (koBtn) koBtn.classList.add('active');
@@ -1833,8 +1852,6 @@
   }
 
   async function loadWorks() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
     worksLoaded = true;
 
     const idMap = { 0: 'origin', 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
@@ -1856,6 +1873,7 @@
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
       const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
+
       if (activePanel) {
         renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
         activePanel.dataset.rendered = '1';
@@ -2009,7 +2027,12 @@
     const lb = $('#lightbox');
     const btnX = $('#lbClose');
 
-    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive: true });
+    if (lb) {
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb) closeLightbox();
+      }, { passive: true });
+    }
+
     if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
 
     document.addEventListener('keydown', (e) => {
@@ -2319,9 +2342,7 @@
     function endPointer(e) {
       lbZoom.pointers.delete(e.pointerId);
 
-      if (lbZoom.pointers.size < 2) {
-        lbZoom.startDistance = 0;
-      }
+      if (lbZoom.pointers.size < 2) lbZoom.startDistance = 0;
 
       if (lbZoom.pointers.size === 0) {
         lbZoom.dragging = false;
@@ -2530,7 +2551,6 @@
     });
 
     container.innerHTML = '';
-
     list.forEach(item => {
       const card = createReportCard(item);
       container.appendChild(card);
@@ -2558,7 +2578,7 @@
           ? 'All'
           : value.charAt(0).toUpperCase() + value.slice(1);
 
-        renderReports(currentReportCategory);
+        if (reportsLoaded) renderReports(currentReportCategory);
       }, { passive: true });
     });
   }
@@ -2586,7 +2606,7 @@
       grid.style.display = next ? 'grid' : 'none';
       syncReportsToggleLabel();
 
-      if (next) {
+      if (next && reportsLoaded) {
         renderReports(currentReportCategory);
       }
     }, { passive: true });
@@ -2600,10 +2620,7 @@
     bindReportFilterEvents();
 
     try {
-      const response = await fetch('data/reports.json?v=' + Date.now(), {
-        cache: 'no-store'
-      });
-
+      const response = await fetch('data/reports.json?v=' + Date.now(), { cache: 'no-store' });
       if (!response.ok) throw new Error('Failed to load reports.json');
 
       const raw = await response.json();
@@ -2612,10 +2629,12 @@
         ? raw.reports.slice()
         : [];
 
+      reportsLoaded = true;
       renderReports(currentReportCategory);
     } catch (err) {
       console.error('Reports load error:', err);
       REPORTS_DATA = [];
+      reportsLoaded = true;
       renderReports(currentReportCategory);
     }
   }
@@ -2698,6 +2717,10 @@
     const soundBar = $('#soundBar');
     if (!soundBar) return;
 
+    soundBar.style.display = '';
+    soundBar.style.visibility = 'visible';
+    soundBar.style.pointerEvents = 'auto';
+
     function buildAudio() {
       if (audioCtx) return;
 
@@ -2713,12 +2736,15 @@
       oscillators = freqs.map((freq, i) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
+
         osc.type = i === 0 ? 'sine' : 'triangle';
         osc.frequency.value = freq;
         gain.gain.value = i === 0 ? 0.012 : 0.006;
+
         osc.connect(gain);
         gain.connect(masterGain);
         osc.start();
+
         return { osc, gain };
       });
     }
@@ -2728,7 +2754,9 @@
         buildAudio();
         if (!audioCtx || !masterGain) return;
 
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
 
         audioEnabled = !audioEnabled;
         soundBar.classList.toggle('is-on', audioEnabled);
@@ -2743,6 +2771,7 @@
     }
 
     soundBar.addEventListener('click', toggleAudio, { passive: true });
+    soundBar.addEventListener('touchstart', toggleAudio, { passive: true });
   }
 
   function initWaveOnce() {

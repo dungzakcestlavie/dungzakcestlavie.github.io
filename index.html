@@ -1608,7 +1608,6 @@
   </footer>
 
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
-
 <script>
 (() => {
   'use strict';
@@ -2516,13 +2515,19 @@
     const container = getReportGridContainer();
     if (!container) return;
 
-    const safeData = Array.isArray(REPORTS_DATA) ? REPORTS_DATA : [];
+    const safeData = Array.isArray(REPORTS_DATA) ? REPORTS_DATA.slice() : [];
 
     const list = category === 'All'
-      ? [...safeData]
+      ? safeData
       : safeData.filter(item => {
           return normalizeReportCategoryForFilter(item.category) === String(category).trim().toLowerCase();
         });
+
+    list.sort((a, b) => {
+      const aNum = parseInt(String(a?.id || '').replace(/\D/g, ''), 10) || 0;
+      const bNum = parseInt(String(b?.id || '').replace(/\D/g, ''), 10) || 0;
+      return bNum - aNum;
+    });
 
     container.innerHTML = '';
 
@@ -2591,25 +2596,26 @@
     if (reportsInitialized) return;
     reportsInitialized = true;
 
+    bindReportsToggleEvent();
+    bindReportFilterEvents();
+
     try {
-      const res = await fetch('data/reports.json?v=' + Date.now(), {
+      const response = await fetch('data/reports.json?v=' + Date.now(), {
         cache: 'no-store'
       });
 
-      if (!res.ok) throw new Error('Failed to load data/reports.json');
+      if (!response.ok) throw new Error('Failed to load reports.json');
 
-      const json = await res.json();
+      const raw = await response.json();
 
-      REPORTS_DATA = Array.isArray(json?.reports) ? json.reports : [];
+      REPORTS_DATA = Array.isArray(raw?.reports)
+        ? raw.reports.slice()
+        : [];
 
-      bindReportsToggleEvent();
-      bindReportFilterEvents();
       renderReports(currentReportCategory);
     } catch (err) {
-      console.error('[Reports] init failed:', err);
+      console.error('Reports load error:', err);
       REPORTS_DATA = [];
-      bindReportsToggleEvent();
-      bindReportFilterEvents();
       renderReports(currentReportCategory);
     }
   }

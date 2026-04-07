@@ -1608,7 +1608,6 @@
   </footer>
 
   <div id="soundBar" aria-label="Cosmic resonance" role="button"></div>
-
 <script>
 (() => {
   'use strict';
@@ -1624,8 +1623,8 @@
 
   const escHTML = (v) => String(v ?? '')
     .replace(/&/g, '&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
   const escAttrWithNL = (v) => escAttr(v).replace(/\n/g, '&#10;');
 
@@ -1634,7 +1633,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_reports_wave_fix_v1';
+  const VERSION = 'LF31_reports_200_safe_v1';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1688,9 +1687,13 @@
 
   let REPORTS_DATA = [];
   let reportsInitialized = false;
+  let currentReportCategory = 'All';
 
   let waveInitialized = false;
   let waveAnimationFrame = null;
+  let waveVisibilityBound = false;
+  let waveDrawRef = null;
+  let wavePrefersReduced = false;
 
   let lbOpenFrom = null;
   let worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
@@ -2391,6 +2394,41 @@
     syncLightboxCaptionVisibility(buildCaptionForCard(lbOpenFrom, getLang()));
   }
 
+  function normalizeReportCategoryForUI(category) {
+    const raw = String(category || '').trim();
+    if (!raw) return 'Theory';
+
+    const lower = raw.toLowerCase();
+    if (lower === 'theory') return 'Theory';
+    if (lower === 'archive') return 'Archive';
+    if (lower === 'practice') return 'Practice';
+    return raw;
+  }
+
+  function normalizeReportCategoryForFilter(category) {
+    const raw = String(category || '').trim().toLowerCase();
+    if (!raw) return 'theory';
+    return raw;
+  }
+
+  function getReportTabCategory(btn) {
+    const value = String(btn?.dataset?.r || btn?.dataset?.category || 'All').trim();
+    if (!value) return 'All';
+    if (value.toLowerCase() === 'all') return 'All';
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
+
+  function setActiveReportTabByCategory(category) {
+    const reportsRoot = $('#reports');
+    if (!reportsRoot) return;
+
+    const tabs = $$('.r-tab', reportsRoot);
+    tabs.forEach(tab => {
+      const tabCategory = getReportTabCategory(tab);
+      tab.classList.toggle('is-active', tabCategory === category);
+    });
+  }
+
   function initReports() {
     const grid = $('#reportGrid');
     const reportsRoot = $('#reports');
@@ -2411,9 +2449,7 @@
         syncReportsToggleLabel();
 
         if (!expanded) {
-          const activeTab = $('.r-tab.is-active', reportsRoot);
-          const type = (activeTab?.dataset.r || 'all').toLowerCase();
-          applyReportFilter(type, grid);
+          renderFilteredReports();
         }
       }, { passive: true });
     }
@@ -2425,13 +2461,13 @@
         const btn = e.target.closest('.r-tab');
         if (!btn) return;
 
-        const type = (btn.dataset.r || 'all').toLowerCase();
-        $$('.r-tab', tabsWrap).forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        applyReportFilter(type, grid);
+        currentReportCategory = getReportTabCategory(btn);
+        setActiveReportTabByCategory(currentReportCategory);
+        renderFilteredReports();
       }, { passive: true });
     }
 
+    setActiveReportTabByCategory(currentReportCategory);
     syncReportsToggleLabel();
   }
 
@@ -2451,14 +2487,6 @@
     btn.textContent = expanded ? L.close : L.open;
   }
 
-  function applyReportFilter(type, grid) {
-    const items = $$('.r-item', grid);
-    items.forEach(item => {
-      const cat = (item.dataset.category || '').toLowerCase();
-      item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
-    });
-  }
-
   function renderReports(list) {
     const grid = $('#reportGrid');
     const reportsRoot = $('#reports');
@@ -2468,23 +2496,24 @@
     let html = '';
 
     for (const item of reports) {
-      const id        = escHTML(item.id || '');
-      const year      = escHTML(item.year || '');
-      const category  = escHTML((item.category || 'theory').toLowerCase());
-      const titleKr   = escHTML(item.title_ko || item.title_kr || '');
-      const titleEn   = escHTML(item.title_en || '');
+      const id = escHTML(item.id || '');
+      const year = escHTML(item.year || '');
+      const categoryUI = escHTML(normalizeReportCategoryForUI(item.category));
+      const categoryFilter = escHTML(normalizeReportCategoryForFilter(item.category));
+      const titleKr = escHTML(item.title_ko || item.title_kr || '');
+      const titleEn = escHTML(item.title_en || '');
       const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
       const summaryEn = escHTML(item.summary_en || '');
-      const href      = escAttr(item.url || item.link || item.md_path || '#');
+      const href = escAttr(item.url || item.link || item.md_path || '#');
 
       html += `
-        <article class="r-item" data-category="${category}">
+        <article class="r-item" data-category="${categoryFilter}">
           <div class="t">
             <span class="ko">${titleKr}</span>
             <span class="en">${titleEn}</span>
           </div>
           <div class="m">
-            <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
+            <span>${id}</span> · <span>${year}</span> · <span>${categoryUI}</span>
           </div>
           <div class="s">
             <span class="ko">${summaryKr}</span>
@@ -2499,10 +2528,17 @@
     }
 
     grid.innerHTML = html;
+  }
 
-    const activeTab = $('.r-tab.is-active', reportsRoot);
-    const type = (activeTab?.dataset.r || 'all').toLowerCase();
-    applyReportFilter(type, grid);
+  function renderFilteredReports() {
+    let list = REPORTS_DATA;
+
+    if (currentReportCategory !== 'All') {
+      const wanted = String(currentReportCategory).trim().toLowerCase();
+      list = REPORTS_DATA.filter(r => normalizeReportCategoryForFilter(r.category) === wanted);
+    }
+
+    renderReports(list);
   }
 
   async function initReportsOnce() {
@@ -2514,14 +2550,19 @@
         cache: 'no-store'
       });
 
-      if (!response.ok) throw new Error('Failed to load data/reports.json');
+      if (!response.ok) throw new Error('Failed to load reports.json');
 
       const data = await response.json();
-      REPORTS_DATA = Array.isArray(data.reports) ? data.reports : [];
+      REPORTS_DATA = Array.isArray(data.reports) ? data.reports.slice() : [];
 
-      renderReports(REPORTS_DATA);
+      REPORTS_DATA.sort((a, b) => String(b.id || '').localeCompare(String(a.id || ''), undefined, { numeric: true }));
+
+      currentReportCategory = 'All';
+      setActiveReportTabByCategory(currentReportCategory);
+      renderFilteredReports();
+
       console.log('Reports loaded:', REPORTS_DATA.length);
-      console.log('Reports loaded:', REPORTS_DATA.map(r => r.id));
+      console.log('REPORT IDS:', REPORTS_DATA.map(r => r.id));
     } catch (error) {
       console.error('Reports load error:', error);
     }
@@ -2610,60 +2651,71 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-    let frame = 0;
+    wavePrefersReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const waveLayers = [
-      { y: 0.28, amp: 14, len: 0.0046, speed: 0.0030, alpha: 0.055 },
-      { y: 0.48, amp: 18, len: 0.0056, speed: 0.0022, alpha: 0.050 },
-      { y: 0.66, amp: 12, len: 0.0068, speed: 0.0016, alpha: 0.040 }
+    const gradients = [
+      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015, yBase: 0.25 },
+      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010, yBase: 0.25 }
     ];
 
-    function resizeWaveCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      width = Math.max(1, Math.round(rect.width || window.innerWidth));
-      height = Math.max(1, Math.round(rect.height || window.innerHeight));
-      dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+    let t = 0;
 
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
+    function resize() {
+      const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    function drawLayer(layer, time) {
-      ctx.beginPath();
-      for (let x = 0; x <= width; x += 2) {
-        const y =
-          height * layer.y +
-          Math.sin(x * layer.len + time * layer.speed) * layer.amp +
-          Math.sin(x * layer.len * 0.45 + time * layer.speed * 0.55 + 1.7) * (layer.amp * 0.42);
+    function draw() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
 
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      ctx.clearRect(0, 0, w, h);
+
+      for (let idx = 0; idx < gradients.length; idx++) {
+        const g = gradients[idx];
+        ctx.beginPath();
+
+        for (let x = 0; x <= w; x += 10) {
+          const y = h * g.yBase + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        ctx.strokeStyle = g.color;
+        ctx.lineWidth = 1.3;
+        ctx.shadowColor = 'rgba(0,0,0,0.50)';
+        ctx.shadowBlur = 8;
+        ctx.stroke();
       }
-      ctx.lineTo(width, height + 40);
-      ctx.lineTo(0, height + 40);
-      ctx.closePath();
-      ctx.fillStyle = `rgba(215,184,106,${layer.alpha})`;
-      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      t += 1;
+      waveAnimationFrame = requestAnimationFrame(waveDrawRef);
     }
 
-    function animateWave() {
-      ctx.clearRect(0, 0, width, height);
+    waveDrawRef = draw;
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
 
-      const time = prefersReduced ? 0 : frame;
-      waveLayers.forEach(layer => drawLayer(layer, time));
+    if (!waveVisibilityBound) {
+      waveVisibilityBound = true;
+      document.addEventListener('visibilitychange', () => {
+        if (wavePrefersReduced) return;
 
-      frame += prefersReduced ? 0 : 0.55;
-      waveAnimationFrame = requestAnimationFrame(animateWave);
+        if (document.hidden) {
+          if (waveAnimationFrame) {
+            cancelAnimationFrame(waveAnimationFrame);
+            waveAnimationFrame = null;
+          }
+        } else if (!waveAnimationFrame && waveDrawRef) {
+          waveAnimationFrame = requestAnimationFrame(waveDrawRef);
+        }
+      }, { passive: true });
     }
-
-    resizeWaveCanvas();
-    window.addEventListener('resize', resizeWaveCanvas, { passive: true });
 
     if (waveAnimationFrame !== null) {
       cancelAnimationFrame(waveAnimationFrame);
@@ -2671,7 +2723,10 @@
     }
 
     console.log('Wave initialized once');
-    waveAnimationFrame = requestAnimationFrame(animateWave);
+
+    if (!wavePrefersReduced) {
+      waveAnimationFrame = requestAnimationFrame(waveDrawRef);
+    }
   }
 
   function initAudio() {

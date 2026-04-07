@@ -1686,7 +1686,6 @@
   let lbOpenFrom = null;
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
-  let reportsLoaded = false;
 
   function initNav() {
     const nav = $('nav.primary');
@@ -2393,14 +2392,13 @@
     }
 
     if (toggleBtn) {
-      toggleBtn.addEventListener('click', async () => {
+      toggleBtn.addEventListener('click', () => {
         const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
         grid.style.display = expanded ? 'none' : 'grid';
         syncReportsToggleLabel();
 
-        if (!expanded && !reportsLoaded) {
-          await loadReportsIntoGrid(grid);
+        if (!expanded) {
           const activeTab = $('.r-tab.is-active', reportsRoot);
           const type = (activeTab?.dataset.r || 'all').toLowerCase();
           applyReportFilter(type, grid);
@@ -2434,26 +2432,25 @@
     }
   }
 
-  async function loadReportsIntoGrid(grid) {
-    reportsLoaded = true;
+  function renderReports(list) {
+    const grid = $('#reportGrid');
+    const reportsRoot = $('#reports');
+    if (!grid || !reportsRoot) return;
 
-    try {
-      const json = await safeJSONFetchCached('data/reports.json', 'LF_cache_reports');
-      const list = Array.isArray(json) ? json : (json.reports || json.items || []);
-      if (!Array.isArray(list) || !list.length) return;
+    const reports = Array.isArray(list) ? list : [];
+    let html = '';
 
-      let html = '';
-      for (const item of list) {
-        const id        = escHTML(item.id || '');
-        const year      = escHTML(item.year || '');
-        const category  = escHTML((item.category || 'theory').toLowerCase());
-        const titleKr   = escHTML(item.title_ko || item.title_kr || '');
-        const titleEn   = escHTML(item.title_en || '');
-        const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
-        const summaryEn = escHTML(item.summary_en || '');
-        const href      = escAttr(item.url || item.link || item.md_path || '#');
+    for (const item of reports) {
+      const id        = escHTML(item.id || '');
+      const year      = escHTML(item.year || '');
+      const category  = escHTML((item.category || 'theory').toLowerCase());
+      const titleKr   = escHTML(item.title_ko || item.title_kr || '');
+      const titleEn   = escHTML(item.title_en || '');
+      const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
+      const summaryEn = escHTML(item.summary_en || '');
+      const href      = escAttr(item.url || item.link || item.md_path || '#');
 
-        html += `
+      html += `
           <article class="r-item" data-category="${category}">
             <div class="t">
               <span class="ko">${titleKr}</span>
@@ -2471,22 +2468,39 @@
               <span class="en">Open full report (new tab)</span>
             </a>
           </article>
-        `;
-      }
+      `;
+    }
 
-      grid.innerHTML = html;
+    grid.innerHTML = html;
 
-      const tabs = Array.from($$('.r-tab'));
-      const defaultTab = tabs.find(b => (b.dataset.r || '').toLowerCase() === 'all');
-      if (defaultTab) {
-        for (const b of tabs) b.classList.remove('is-active');
-        defaultTab.classList.add('is-active');
-      }
+    const activeTab = $('.r-tab.is-active', reportsRoot);
+    const type = (activeTab?.dataset.r || 'all').toLowerCase();
+    applyReportFilter(type, grid);
+  }
 
-    } catch (err) {
-      console.error('reports.json load error:', err);
+  let REPORTS_DATA = [];
+  let reportsInitialized = false;
+
+  async function initReportsOnce() {
+    if (reportsInitialized) return;
+    reportsInitialized = true;
+
+    try {
+      const response = await fetch('data/reports.json?v=' + Date.now(), {
+        cache: 'no-store'
+      });
+      if (!response.ok) throw new Error('Failed to load reports.json');
+
+      const data = await response.json();
+      REPORTS_DATA = Array.isArray(data.reports) ? data.reports : [];
+
+      renderReports(REPORTS_DATA);
+      console.log('Reports loaded:', REPORTS_DATA.length);
+    } catch (error) {
+      console.error('Reports load error:', error);
     }
   }
+  document.addEventListener('DOMContentLoaded', initReportsOnce);
 
   function openBioModal() {
     const modal = $('#bio-modal');
@@ -2557,169 +2571,213 @@
       expoBtn.setAttribute('aria-expanded', 'false');
 
       expoBtn.addEventListener('click', () => {
-        const isOpen = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', (!isOpen) ? 'true' : 'false');
-        expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
+        const open = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', String(!open));
+        expoBtn.setAttribute('aria-expanded', String(!open));
       }, { passive:true });
     }
   }
 
-  function initSound() {
-    const bar = $('#soundBar');
-    if (!bar) return;
+  let audioCtx = null;
+  let masterGain = null;
+  let soundOn = false;
+  let resonanceTimer = null;
+  let resonators = [];
 
-    bar.setAttribute('tabindex', '0');
-    bar.setAttribute('role', 'button');
-    bar.setAttribute('aria-pressed', 'false');
-    bar.textContent = '';
+  function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+  }
 
-    const AUDIO_SRC = 'audio/lightflow_C_praha_quick6m.mp3';
-    const audio = new Audio();
-    audio.loop = true;
-    audio.preload = 'none';
-    audio.volume = 0.18;
+  function createResonator(freq = 220, type = 'sine', gainValue = 0.0025, attack = 2.2, release = 6.5) {
+    if (!audioCtx || !masterGain) return;
 
-    let playing = false;
-    let srcAttached = false;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
 
-    function ensureSrc() {
-      if (srcAttached) return;
-      audio.src = AUDIO_SRC;
-      try { audio.load(); } catch {}
-      srcAttached = true;
-    }
+    osc.type = type;
+    osc.frequency.value = freq;
 
-    async function playSound() {
-      try {
-        ensureSrc();
-        await audio.play();
-        playing = true;
-        bar.classList.add('is-on');
-        bar.setAttribute('aria-pressed', 'true');
-      } catch (err) {
-        console.warn('Audio play failed:', err);
+    filter.type = 'bandpass';
+    filter.frequency.value = freq * randomBetween(0.9, 1.08);
+    filter.Q.value = randomBetween(0.8, 2.4);
+
+    gain.gain.setValueAtTime(0.00001, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(gainValue, audioCtx.currentTime + attack);
+    gain.gain.linearRampToValueAtTime(0.00001, audioCtx.currentTime + attack + release);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + attack + release + 0.08);
+
+    resonators.push({ osc, gain, filter });
+    osc.onended = () => {
+      try { osc.disconnect(); } catch {}
+      try { gain.disconnect(); } catch {}
+      try { filter.disconnect(); } catch {}
+      resonators = resonators.filter(x => x.osc !== osc);
+    };
+  }
+
+  function scheduleResonanceLoop() {
+    clearTimeout(resonanceTimer);
+    if (!soundOn) return;
+
+    const palette = [110, 146.83, 164.81, 196, 220, 246.94, 293.66, 329.63, 392];
+    const freq = palette[Math.floor(Math.random() * palette.length)] * randomBetween(0.985, 1.018);
+    const type = Math.random() > 0.72 ? 'triangle' : 'sine';
+    const gainValue = randomBetween(0.0016, 0.0046);
+    const attack = randomBetween(1.8, 4.4);
+    const release = randomBetween(5.6, 11.8);
+
+    createResonator(freq, type, gainValue, attack, release);
+
+    resonanceTimer = setTimeout(scheduleResonanceLoop, randomBetween(1300, 4200));
+  }
+
+  async function initAudioEngine() {
+    if (audioCtx) return;
+
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+
+    audioCtx = new Ctx();
+
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.0;
+    masterGain.connect(audioCtx.destination);
+
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 1800;
+    lp.Q.value = 0.2;
+
+    masterGain.disconnect();
+    masterGain.connect(lp);
+    lp.connect(audioCtx.destination);
+  }
+
+  async function toggleSound() {
+    const btn = $('#soundBar');
+    try {
+      await initAudioEngine();
+      if (!audioCtx || !masterGain) return;
+
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
       }
+
+      soundOn = !soundOn;
+
+      if (soundOn) {
+        btn?.classList.add('is-on');
+        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.8);
+        scheduleResonanceLoop();
+      } else {
+        btn?.classList.remove('is-on');
+        clearTimeout(resonanceTimer);
+        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        masterGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.4);
+      }
+    } catch (err) {
+      console.error('sound error:', err);
     }
+  }
 
-    function stopSound() {
-      if (!playing) return;
-      audio.pause();
-      playing = false;
-      bar.classList.remove('is-on');
-      bar.setAttribute('aria-pressed', 'false');
-    }
-
-    function toggle() { playing ? stopSound() : playSound(); }
-
-    bar.addEventListener('click', toggle, { passive:true });
-    bar.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-    });
-
-    document.addEventListener('visibilitychange', () => { if (document.hidden) stopSound(); }, { passive:true });
-    window.addEventListener('pagehide', stopSound, { passive:true });
-
-    bar.classList.remove('is-on');
+  function initSound() {
+    const btn = $('#soundBar');
+    if (!btn) return;
+    btn.addEventListener('click', toggleSound, { passive:true });
   }
 
   function initWaves() {
     const canvas = $('#waves');
     if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
-    ];
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = 0;
+    let h = 0;
+    let t = 0;
 
     function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width  = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.width = Math.floor(innerWidth * dpr);
+      h = canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(dpr, dpr);
     }
-    resize();
-    window.addEventListener('resize', resize, { passive:true });
-
-    let t = 0;
-    let animId = null;
 
     function draw() {
-      if (prefersReduced) return;
+      const vw = innerWidth;
+      const vh = innerHeight;
 
-      const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  / dpr;
-      const h = canvas.height / dpr;
+      ctx.clearRect(0,0,vw,vh);
 
-      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < 3; i++) {
+        const amp = 18 + i * 10;
+        const yBase = vh * (0.20 + i * 0.18);
+        const freq = 0.010 + i * 0.0022;
+        const speed = 0.00065 + i * 0.00018;
 
-      for (let idx = 0; idx < gradients.length; idx++) {
-        const g = gradients[idx];
         ctx.beginPath();
-        for (let x = 0; x <= w; x += 10) {
-          const y = h * 0.25 + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
-          if (x === 0) ctx.moveTo(x, y);
+        for (let x = -10; x <= vw + 10; x += 6) {
+          const y = yBase
+            + Math.sin((x * freq) + t * speed * 1000 + i) * amp
+            + Math.sin((x * freq * 0.42) - t * speed * 780) * (amp * 0.42);
+
+          if (x === -10) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.3;
-        ctx.shadowColor = 'rgba(0,0,0,0.50)';
-        ctx.shadowBlur = 8;
+
+        const g = ctx.createLinearGradient(0, yBase - amp, vw, yBase + amp);
+        g.addColorStop(0, i === 1 ? 'rgba(121,167,255,.11)' : 'rgba(215,184,106,.11)');
+        g.addColorStop(0.5, i === 2 ? 'rgba(233,213,155,.12)' : 'rgba(121,167,255,.08)');
+        g.addColorStop(1, 'rgba(215,184,106,.06)');
+
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.2;
         ctx.stroke();
       }
 
-      ctx.shadowBlur = 0;
-      t += 1;
-      animId = requestAnimationFrame(draw);
+      t += 16;
+      requestAnimationFrame(draw);
     }
 
-    if (!prefersReduced) animId = requestAnimationFrame(draw);
-
-    document.addEventListener('visibilitychange', () => {
-      if (prefersReduced) return;
-      if (document.hidden) {
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
-      } else if (!animId) {
-        animId = requestAnimationFrame(draw);
-      }
-    }, { passive:true });
-  }
-
-
-  function syncHeaderGeometry() {
-    const nav = $('nav.primary');
-    const worksBtn = $('nav.primary button[data-target="works"]');
-    const reportsBtn = $('nav.primary button[data-target="reports"]');
-    const labLink = $('.lab-link');
-
-    if (!nav || !worksBtn || !reportsBtn || !labLink) return;
-
-    const navRect = nav.getBoundingClientRect();
-    const worksRect = worksBtn.getBoundingClientRect();
-    const reportsRect = reportsBtn.getBoundingClientRect();
-
-    const targetCenter = ((worksRect.left + worksRect.right) / 2 + (reportsRect.left + reportsRect.right) / 2) / 2;
-    const navCenter = (navRect.left + navRect.right) / 2;
-    const shift = targetCenter - navCenter;
-
-    labLink.style.setProperty('--lab-shift', `${shift.toFixed(2)}px`);
+    resize();
+    draw();
+    window.addEventListener('resize', resize, { passive:true });
   }
 
   function initGlobalKeys() {
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape') return;
+    window.addEventListener('keydown', (e) => {
+      const bioOpen = !$('#bio-modal')?.hidden;
+      const lbOpen = $('#lightbox')?.classList.contains('is-open');
 
-      const lb = $('#lightbox');
-      if (lb && lb.classList.contains('is-open')) { closeLightbox(); return; }
+      if (e.key === 'Escape') {
+        if (lbOpen) closeLightbox();
+        else if (bioOpen) closeBioModal();
+        return;
+      }
 
-      const modal = $('#bio-modal');
-      if (modal && !modal.hidden) { closeBioModal(); return; }
-    }, { passive: true });
+      if (lbOpen) {
+        if (e.key === 'ArrowRight') goNextLightboxImage();
+        if (e.key === 'ArrowLeft') goPrevLightboxImage();
+      }
+    });
+  }
+
+  function syncHeaderGeometry() {
+    const header = document.querySelector('header');
+    if (!header) return;
+    document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -2738,6 +2796,3 @@
   });
 })();
 </script>
-
-</body>
-</html>

@@ -1634,7 +1634,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_v2';
+  const VERSION = 'LF31_reports_wave_fix_v1';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1645,8 +1645,11 @@
       if (!obj || obj.v !== VERSION) return null;
       if (Date.now() - (obj.t || 0) > CACHE_TTL_MS) return null;
       return obj.d ?? null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   }
+
   function cacheSet(key, data) {
     try {
       localStorage.setItem(key, JSON.stringify({ v: VERSION, t: Date.now(), d: data }));
@@ -1676,305 +1679,24 @@
     return p;
   }
 
-  const getLang = () => {
+  function getLang() {
     const b = document.body;
     if (b.classList.contains('english')) return 'en';
-    if (b.classList.contains('hybrid'))  return 'hy';
+    if (b.classList.contains('hybrid')) return 'hy';
     return 'kr';
-  };
+  }
+
+  let REPORTS_DATA = [];
+  let reportsInitialized = false;
+
+  let waveInitialized = false;
+  let waveAnimationFrame = null;
 
   let lbOpenFrom = null;
-  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  let worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
   let worksLoaded = false;
 
-  function initNav() {
-    const nav = $('nav.primary');
-    if (!nav) return;
-
-    const sections = Array.from($$('main > section'));
-
-    function showSection(id) {
-      for (const sec of sections) sec.classList.toggle('is-active', sec.id === id);
-    }
-    function setActiveBtn(targetId) {
-      const btns = Array.from($$('button', nav));
-      for (const b of btns) b.classList.remove('active');
-      const btn = btns.find(x => x.dataset.target === targetId);
-      if (btn) btn.classList.add('active');
-    }
-
-    nav.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-
-      const target = btn.dataset.target;
-      if (target) {
-        setActiveBtn(target);
-        showSection(target);
-        if (target === 'works' && !worksLoaded) loadWorks();
-        return;
-      }
-      if (btn.id === 'tab-bio') openBioModal();
-    }, { passive: true });
-
-    showSection('poem');
-    setActiveBtn('poem');
-  }
-
-  function initLanguage() {
-    const koBtn = $('#koBtn');
-    const enBtn = $('#enBtn');
-    const hyBtn = $('#hyBtn');
-
-    function setBodyLang(mode) {
-      document.body.classList.remove('korean', 'english', 'hybrid');
-      if (mode === 'en')      document.body.classList.add('english');
-      else if (mode === 'hy') document.body.classList.add('hybrid');
-      else                    document.body.classList.add('korean');
-    }
-    function activate(btn) {
-      if (koBtn) koBtn.classList.remove('active');
-      if (enBtn) enBtn.classList.remove('active');
-      if (hyBtn) hyBtn.classList.remove('active');
-      if (btn) btn.classList.add('active');
-    }
-
-    const onLangChange = () => {
-      updateOpenLightboxCaption();
-      syncReportsToggleLabel();
-    };
-
-    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive:true });
-    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive:true });
-    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive:true });
-
-    setBodyLang('kr');
-    if (koBtn) koBtn.classList.add('active');
-  }
-
-  function initWorksUI() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
-
-    const tabs = $('.tabs', worksRoot);
-    if (tabs) {
-      tabs.addEventListener('click', (e) => {
-        const btn = e.target.closest('.tab');
-        if (!btn) return;
-        const key = btn.dataset.panel;
-        if (!key) return;
-
-        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
-        btn.classList.add('active');
-
-        for (const p of panelIds) {
-          const el = $('#panel-' + p);
-          if (el) el.classList.toggle('active', p === key);
-        }
-
-        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
-          const panel = $('#panel-' + key);
-          if (panel) {
-            renderWorksPanel(panel, worksByPanel[key], key);
-            panel.dataset.rendered = '1';
-            scheduleImageDecode(panel);
-          }
-        }
-      }, { passive: true });
-    }
-
-    attachWorksLightbox();
-  }
-
-  async function loadWorks() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    worksLoaded = true;
-
-    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
-    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
-
-    try {
-      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
-      const list = Array.isArray(json) ? json : (json.works || json.items || []);
-      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
-
-      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
-
-      for (const item of list) {
-        let key = item.section || item.panel;
-        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
-        if (!key || !worksByPanel[key]) key = 'pray';
-        worksByPanel[key].push(item);
-      }
-
-      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
-      if (activePanel) {
-        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
-        activePanel.dataset.rendered = '1';
-        scheduleImageDecode(activePanel);
-      }
-
-      runIdle(() => {
-        for (const key of panelKeys) {
-          const panel = $('#panel-' + key);
-          if (!panel || panel.dataset.rendered) continue;
-          renderWorksPanel(panel, worksByPanel[key], key);
-          panel.dataset.rendered = '1';
-        }
-        runIdle(() => {
-          for (const key of panelKeys) {
-            const panel = $('#panel-' + key);
-            if (panel) scheduleImageDecode(panel);
-          }
-        });
-      });
-
-    } catch (err) {
-      console.error('works.json load error:', err);
-      for (const key of panelKeys) {
-        const panel = $('#panel-' + key);
-        if (!panel) continue;
-        panel.innerHTML = `
-          <div class="w-msg">
-            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
-            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
-            <small>${escHTML(String(err?.message || err || ''))}</small>
-          </div>
-        `;
-      }
-    }
-  }
-
-  function renderWorksPanel(panel, items, key) {
-    const isOrigin = (key === 'origin');
-
-    if (!items || !items.length) {
-      panel.innerHTML = `
-        <div class="w-msg">
-          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
-          <div class="en">No artworks have been registered in this section yet.</div>
-        </div>
-      `;
-      return;
-    }
-
-    let html = '<div class="w-grid">';
-    for (const item of items) {
-      const id      = item.id || '';
-      const titleKr = item.title_kr || '';
-      const titleEn = item.title_en || '';
-      const matKr   = item.material_kr || '';
-      const matEn   = item.material_en || '';
-      const sizeKr  = item.size_kr || '';
-      const sizeEn  = item.size_en || '';
-      const year    = item.year || '';
-      const imgStd  = item.image || item.image_standard || '';
-      const imgZoom = item.zoom  || item.image_zoom || imgStd;
-
-      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
-
-      if (isOrigin) {
-        html += `
-          <article class="w-card w-card-origin"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}">
-            <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
-          </article>
-        `;
-      } else {
-        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
-        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
-
-        const capKrAttr = escAttrWithNL(captionKr);
-        const capEnAttr = escAttrWithNL(captionEn);
-
-        html += `
-          <article class="w-card"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${capKrAttr}"
-                   data-cap-en="${capEnAttr}">
-            <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
-            <div class="w-meta">
-              <div class="w-title">
-                <span class="ko">${escHTML(titleKr)}</span>
-                <span class="en">${escHTML(titleEn)}</span>
-              </div>
-              <div class="w-sub">
-                <span class="ko">${escHTML(subKr)}</span>
-                <span class="en">${escHTML(subEn)}</span>
-              </div>
-            </div>
-          </article>
-        `;
-      }
-    }
-    html += '</div>';
-    panel.innerHTML = html;
-  }
-
   let io = null;
-
-  function ensureIO() {
-    if (io) return io;
-    if (!('IntersectionObserver' in window)) return null;
-
-    io = new IntersectionObserver((entries) => {
-      for (const ent of entries) {
-        if (!ent.isIntersecting) continue;
-        const img = ent.target;
-        io.unobserve(img);
-        if (img && img.decode) img.decode().catch(()=>{});
-      }
-    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
-
-    return io;
-  }
-
-  function scheduleImageDecode(root) {
-    const imgs = $$('img.w-thumb', root || document);
-    const observer = ensureIO();
-
-    if (observer) {
-      for (const img of imgs) observer.observe(img);
-    } else {
-      runIdle(() => {
-        for (const img of imgs) {
-          if (img && img.decode) img.decode().catch(()=>{});
-        }
-      });
-    }
-  }
-
-  function attachWorksLightbox() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    worksRoot.addEventListener('click', (e) => {
-      const card = e.target.closest('.w-card');
-      if (!card) return;
-      openLightboxFromCard(card);
-    }, { passive: true });
-
-    const lb = $('#lightbox');
-    const btnX = $('#lbClose');
-
-    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive:true });
-    if (btnX) btnX.addEventListener('click', closeLightbox, { passive:true });
-  }
-
   let lbItems = [];
   let lbIndex = 0;
   let lbTouchStartX = 0;
@@ -1998,6 +1720,294 @@
     startDragY: 0,
     lastTapAt: 0
   };
+
+  let audioInitialized = false;
+  let audioCtx = null;
+  let masterGain = null;
+  let oscillators = [];
+  let audioEnabled = false;
+
+  function initNav() {
+    const nav = $('nav.primary');
+    if (!nav) return;
+
+    const sections = Array.from($$('main > section'));
+
+    function showSection(id) {
+      sections.forEach(sec => sec.classList.toggle('is-active', sec.id === id));
+    }
+
+    function setActiveBtn(targetId) {
+      Array.from($$('button', nav)).forEach(b => b.classList.remove('active'));
+      const btn = Array.from($$('button', nav)).find(x => x.dataset.target === targetId);
+      if (btn) btn.classList.add('active');
+    }
+
+    nav.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const target = btn.dataset.target;
+      if (target) {
+        setActiveBtn(target);
+        showSection(target);
+        if (target === 'works' && !worksLoaded) loadWorks();
+        return;
+      }
+
+      if (btn.id === 'tab-bio') openBioModal();
+    }, { passive: true });
+
+    showSection('poem');
+    setActiveBtn('poem');
+  }
+
+  function initLanguage() {
+    const koBtn = $('#koBtn');
+    const enBtn = $('#enBtn');
+    const hyBtn = $('#hyBtn');
+
+    function setBodyLang(mode) {
+      document.body.classList.remove('korean', 'english', 'hybrid');
+      if (mode === 'en') document.body.classList.add('english');
+      else if (mode === 'hy') document.body.classList.add('hybrid');
+      else document.body.classList.add('korean');
+    }
+
+    function activate(btn) {
+      [koBtn, enBtn, hyBtn].forEach(b => b && b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    const onLangChange = () => {
+      updateOpenLightboxCaption();
+      syncReportsToggleLabel();
+    };
+
+    if (koBtn) koBtn.addEventListener('click', () => { setBodyLang('kr'); activate(koBtn); onLangChange(); }, { passive: true });
+    if (enBtn) enBtn.addEventListener('click', () => { setBodyLang('en'); activate(enBtn); onLangChange(); }, { passive: true });
+    if (hyBtn) hyBtn.addEventListener('click', () => { setBodyLang('hy'); activate(hyBtn); onLangChange(); }, { passive: true });
+
+    setBodyLang('kr');
+    if (koBtn) koBtn.classList.add('active');
+  }
+
+  function initWorksUI() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const tabs = $('.tabs', worksRoot);
+
+    if (tabs) {
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.tab');
+        if (!btn) return;
+        const key = btn.dataset.panel;
+        if (!key) return;
+
+        $$('.tabs .tab', worksRoot).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        panelIds.forEach(p => {
+          const el = $('#panel-' + p);
+          if (el) el.classList.toggle('active', p === key);
+        });
+
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
+      }, { passive: true });
+    }
+
+    attachWorksLightbox();
+  }
+
+  async function loadWorks() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+    worksLoaded = true;
+
+    const idMap = { 0: 'origin', 1: 'pray', 2: 'human', 3: 'rebirth', 4: 'exist', 5: 'cosmos' };
+    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+
+    try {
+      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+
+      worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
+
+      for (const item of list) {
+        let key = item.section || item.panel;
+        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
+        if (!key || !worksByPanel[key]) key = 'pray';
+        worksByPanel[key].push(item);
+      }
+
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-', '');
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
+
+      runIdle(() => {
+        for (const key of panelKeys) {
+          const panel = $('#panel-' + key);
+          if (!panel || panel.dataset.rendered) continue;
+          renderWorksPanel(panel, worksByPanel[key], key);
+          panel.dataset.rendered = '1';
+        }
+
+        runIdle(() => {
+          for (const key of panelKeys) {
+            const panel = $('#panel-' + key);
+            if (panel) scheduleImageDecode(panel);
+          }
+        });
+      });
+    } catch (err) {
+      console.error('works.json load error:', err);
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = `
+          <div class="w-msg">
+            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+            <small>${escHTML(String(err?.message || err || ''))}</small>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function renderWorksPanel(panel, items, key) {
+    const isOrigin = key === 'origin';
+
+    if (!items || !items.length) {
+      panel.innerHTML = `
+        <div class="w-msg">
+          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+          <div class="en">No artworks have been registered in this section yet.</div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '<div class="w-grid">';
+
+    for (const item of items) {
+      const id      = item.id || '';
+      const titleKr = item.title_kr || '';
+      const titleEn = item.title_en || '';
+      const matKr   = item.material_kr || '';
+      const matEn   = item.material_en || '';
+      const sizeKr  = item.size_kr || '';
+      const sizeEn  = item.size_en || '';
+      const year    = item.year || '';
+      const imgStd  = item.image || item.image_standard || '';
+      const imgZoom = item.zoom || item.image_zoom || imgStd;
+
+      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
+      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+
+      if (isOrigin) {
+        html += `
+          <article class="w-card w-card-origin"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy"
+                 decoding="async" />
+          </article>
+        `;
+      } else {
+        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
+        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
+
+        html += `
+          <article class="w-card"
+                   data-id="${escAttr(id)}"
+                   data-img="${escAttr(imgZoom || imgStd)}"
+                   data-cap-kr="${escAttrWithNL(captionKr)}"
+                   data-cap-en="${escAttrWithNL(captionEn)}">
+            <img class="w-thumb"
+                 src="${escAttr(imgStd)}"
+                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
+                 loading="lazy"
+                 decoding="async" />
+            <div class="w-meta">
+              <div class="w-title">
+                <span class="ko">${escHTML(titleKr)}</span>
+                <span class="en">${escHTML(titleEn)}</span>
+              </div>
+              <div class="w-sub">
+                <span class="ko">${escHTML(subKr)}</span>
+                <span class="en">${escHTML(subEn)}</span>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+    }
+
+    html += '</div>';
+    panel.innerHTML = html;
+  }
+
+  function ensureIO() {
+    if (io) return io;
+    if (!('IntersectionObserver' in window)) return null;
+
+    io = new IntersectionObserver((entries) => {
+      for (const ent of entries) {
+        if (!ent.isIntersecting) continue;
+        const img = ent.target;
+        io.unobserve(img);
+        if (img && img.decode) img.decode().catch(() => {});
+      }
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+
+    return io;
+  }
+
+  function scheduleImageDecode(root) {
+    const imgs = $$('img.w-thumb', root || document);
+    const observer = ensureIO();
+
+    if (observer) {
+      imgs.forEach(img => observer.observe(img));
+    } else {
+      runIdle(() => imgs.forEach(img => img && img.decode && img.decode().catch(() => {})));
+    }
+  }
+
+  function attachWorksLightbox() {
+    const worksRoot = $('#works');
+    if (!worksRoot) return;
+
+    worksRoot.addEventListener('click', (e) => {
+      const card = e.target.closest('.w-card');
+      if (!card) return;
+      openLightboxFromCard(card);
+    }, { passive: true });
+
+    const lb = $('#lightbox');
+    const btnX = $('#lbClose');
+
+    if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); }, { passive: true });
+    if (btnX) btnX.addEventListener('click', closeLightbox, { passive: true });
+  }
 
   function buildCaptionForCard(card, mode) {
     if (card.closest('#panel-origin')) return '';
@@ -2062,7 +2072,7 @@
     syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
-    if (lbImg.decode) lbImg.decode().catch(()=>{});
+    if (lbImg.decode) lbImg.decode().catch(() => {});
     preloadNearbyLightboxImages();
   }
 
@@ -2116,6 +2126,7 @@
   function getViewportMetrics() {
     const { viewport, img } = getLbEls();
     if (!viewport || !img) return null;
+
     const vw = viewport.clientWidth || 1;
     const vh = viewport.clientHeight || 1;
     const iw = img.naturalWidth || vw;
@@ -2123,12 +2134,14 @@
     const fit = Math.min(vw / iw, vh / ih);
     const baseW = iw * fit;
     const baseH = ih * fit;
+
     return { vw, vh, iw, ih, fit, baseW, baseH };
   }
 
   function clampLbPan() {
     const m = getViewportMetrics();
     if (!m) return;
+
     const maxX = Math.max(0, (m.baseW * lbZoom.scale - m.vw) / 2);
     const maxY = Math.max(0, (m.baseH * lbZoom.scale - m.vh) / 2);
     lbZoom.x = clamp(lbZoom.x, -maxX, maxX);
@@ -2138,6 +2151,7 @@
   function renderLbZoom() {
     const { img, viewport, hint } = getLbEls();
     if (!img || !viewport) return;
+
     clampLbPan();
     img.style.transform = `translate3d(calc(-50% + ${lbZoom.x}px), calc(-50% + ${lbZoom.y}px), 0) scale(${lbZoom.scale})`;
     viewport.classList.toggle('is-zoomed', lbZoom.scale > 1.01);
@@ -2147,16 +2161,21 @@
   function resetLbZoom(animate = false) {
     const { img } = getLbEls();
     if (!img) return;
+
     const prev = img.style.transition;
     if (!animate) img.style.transition = 'none';
+
     lbZoom.scale = 1;
     lbZoom.x = 0;
     lbZoom.y = 0;
     lbZoom.pointers.clear();
     lbZoom.dragging = false;
     renderLbZoom();
+
     if (!animate) {
-      requestAnimationFrame(() => { img.style.transition = prev || ''; });
+      requestAnimationFrame(() => {
+        img.style.transition = prev || '';
+      });
     }
   }
 
@@ -2170,24 +2189,24 @@
     const cy = clientY - rect.top - m.vh / 2;
 
     const prevScale = lbZoom.scale;
-    const clamped = clamp(nextScale, lbZoom.min, lbZoom.max);
-    if (clamped === prevScale) return;
+    const clampedScale = clamp(nextScale, lbZoom.min, lbZoom.max);
+    if (clampedScale === prevScale) return;
 
-    lbZoom.x = lbZoom.x + cx * (1 - clamped / prevScale);
-    lbZoom.y = lbZoom.y + cy * (1 - clamped / prevScale);
-    lbZoom.scale = clamped;
+    lbZoom.x = lbZoom.x + cx * (1 - clampedScale / prevScale);
+    lbZoom.y = lbZoom.y + cy * (1 - clampedScale / prevScale);
+    lbZoom.scale = clampedScale;
+
     if (lbZoom.scale <= 1.01) {
       lbZoom.scale = 1;
       lbZoom.x = 0;
       lbZoom.y = 0;
     }
+
     renderLbZoom();
   }
 
   function distanceBetween(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.hypot(dx, dy);
+    return Math.hypot(a.x - b.x, a.y - b.y);
   }
 
   function midpointBetween(a, b) {
@@ -2209,10 +2228,12 @@
 
     viewport.addEventListener('pointerdown', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
+
       viewport.setPointerCapture?.(e.pointerId);
       lbZoom.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       const now = Date.now();
+
       if (lbZoom.pointers.size === 1 && now - lbZoom.lastTapAt < 260) {
         const targetScale = lbZoom.scale > 1.01 ? 1 : 2.2;
         zoomAroundPoint(targetScale, e.clientX, e.clientY);
@@ -2243,20 +2264,24 @@
     viewport.addEventListener('pointermove', (e) => {
       if (!$('#lightbox')?.classList.contains('is-open')) return;
       if (!lbZoom.pointers.has(e.pointerId)) return;
+
       lbZoom.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (lbZoom.pointers.size === 2) {
         const [a, b] = [...lbZoom.pointers.values()];
         const dist = distanceBetween(a, b) || 1;
         const mid = midpointBetween(a, b);
+
         lbZoom.scale = clamp(lbZoom.startScale * (dist / lbZoom.startDistance), lbZoom.min, lbZoom.max);
         lbZoom.x = lbZoom.startX + (mid.x - lbZoom.startMidX);
         lbZoom.y = lbZoom.startY + (mid.y - lbZoom.startMidY);
+
         if (lbZoom.scale <= 1.01) {
           lbZoom.scale = 1;
           lbZoom.x = 0;
           lbZoom.y = 0;
         }
+
         renderLbZoom();
         return;
       }
@@ -2271,9 +2296,11 @@
 
     function endPointer(e) {
       lbZoom.pointers.delete(e.pointerId);
+
       if (lbZoom.pointers.size < 2) {
         lbZoom.startDistance = 0;
       }
+
       if (lbZoom.pointers.size === 0) {
         lbZoom.dragging = false;
         if (lbZoom.scale <= 1.01) resetLbZoom(false);
@@ -2301,7 +2328,7 @@
     lb.addEventListener('touchstart', (e) => {
       if (!lb.classList.contains('is-open')) return;
       lbTouchStartX = e.touches[0].clientX;
-    }, { passive:true });
+    }, { passive: true });
 
     lb.addEventListener('touchend', (e) => {
       if (!lb.classList.contains('is-open')) return;
@@ -2311,7 +2338,7 @@
       if (Math.abs(diff) < 50) return;
       if (diff > 0) goNextLightboxImage();
       else goPrevLightboxImage();
-    }, { passive:true });
+    }, { passive: true });
 
     lightboxSwipeBound = true;
   }
@@ -2332,7 +2359,6 @@
     if (clickedIndex < 0) return;
 
     setLightboxSlideContent(clickedIndex);
-
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
     bindLightboxSwipe();
@@ -2347,10 +2373,12 @@
 
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
+
     if (lbImg) {
       lbImg.src = '';
       lbImg.classList.remove('is-sliding-left', 'is-sliding-right', 'is-enter-left', 'is-enter-right');
     }
+
     syncLightboxCaptionVisibility('');
     resetLbZoom(false);
     lbOpenFrom = null;
@@ -2369,29 +2397,13 @@
     if (!grid || !reportsRoot) return;
 
     const toggleBtn = $('#reportsToggle');
-    const tabsWrap  = $('.r-tabs', reportsRoot);
+    const tabsWrap = $('.r-tabs', reportsRoot);
 
-    if (toggleBtn) {
+    if (toggleBtn && toggleBtn.dataset.bound !== '1') {
+      toggleBtn.dataset.bound = '1';
       toggleBtn.setAttribute('aria-expanded', 'false');
       grid.style.display = 'none';
-    }
 
-    syncReportsToggleLabel();
-
-    if (tabsWrap) {
-      tabsWrap.addEventListener('click', (e) => {
-        const btn = e.target.closest('.r-tab');
-        if (!btn) return;
-
-        const type = (btn.dataset.r || 'all').toLowerCase();
-        for (const b of $$('.r-tab', tabsWrap)) b.classList.remove('is-active');
-        btn.classList.add('is-active');
-
-        applyReportFilter(type, grid);
-      }, { passive: true });
-    }
-
-    if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
         const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
         toggleBtn.setAttribute('aria-expanded', String(!expanded));
@@ -2405,6 +2417,22 @@
         }
       }, { passive: true });
     }
+
+    if (tabsWrap && tabsWrap.dataset.bound !== '1') {
+      tabsWrap.dataset.bound = '1';
+
+      tabsWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('.r-tab');
+        if (!btn) return;
+
+        const type = (btn.dataset.r || 'all').toLowerCase();
+        $$('.r-tab', tabsWrap).forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        applyReportFilter(type, grid);
+      }, { passive: true });
+    }
+
+    syncReportsToggleLabel();
   }
 
   function syncReportsToggleLabel() {
@@ -2413,7 +2441,6 @@
 
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     const lang = getLang();
-
     const labels = {
       kr: { open: '보고서 열기', close: '보고서 닫기' },
       en: { open: 'Open Reports', close: 'Close Reports' },
@@ -2426,10 +2453,10 @@
 
   function applyReportFilter(type, grid) {
     const items = $$('.r-item', grid);
-    for (const item of items) {
+    items.forEach(item => {
       const cat = (item.dataset.category || '').toLowerCase();
       item.style.display = (!type || type === 'all' || cat === type) ? '' : 'none';
-    }
+    });
   }
 
   function renderReports(list) {
@@ -2451,23 +2478,23 @@
       const href      = escAttr(item.url || item.link || item.md_path || '#');
 
       html += `
-          <article class="r-item" data-category="${category}">
-            <div class="t">
-              <span class="ko">${titleKr}</span>
-              <span class="en">${titleEn}</span>
-            </div>
-            <div class="m">
-              <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
-            </div>
-            <div class="s">
-              <span class="ko">${summaryKr}</span>
-              <span class="en">${summaryEn}</span>
-            </div>
-            <a class="r-open" href="${href}" target="_blank" rel="noopener">
-              <span class="ko">전체 보기 (새 창)</span>
-              <span class="en">Open full report (new tab)</span>
-            </a>
-          </article>
+        <article class="r-item" data-category="${category}">
+          <div class="t">
+            <span class="ko">${titleKr}</span>
+            <span class="en">${titleEn}</span>
+          </div>
+          <div class="m">
+            <span>${id}</span> · <span>${year}</span> · <span>${category}</span>
+          </div>
+          <div class="s">
+            <span class="ko">${summaryKr}</span>
+            <span class="en">${summaryEn}</span>
+          </div>
+          <a class="r-open" href="${href}" target="_blank" rel="noopener">
+            <span class="ko">전체 보기 (새 창)</span>
+            <span class="en">Open full report (new tab)</span>
+          </a>
+        </article>
       `;
     }
 
@@ -2478,9 +2505,6 @@
     applyReportFilter(type, grid);
   }
 
-  let REPORTS_DATA = [];
-  let reportsInitialized = false;
-
   async function initReportsOnce() {
     if (reportsInitialized) return;
     reportsInitialized = true;
@@ -2489,18 +2513,19 @@
       const response = await fetch('data/reports.json?v=' + Date.now(), {
         cache: 'no-store'
       });
-      if (!response.ok) throw new Error('Failed to load reports.json');
+
+      if (!response.ok) throw new Error('Failed to load data/reports.json');
 
       const data = await response.json();
       REPORTS_DATA = Array.isArray(data.reports) ? data.reports : [];
 
       renderReports(REPORTS_DATA);
       console.log('Reports loaded:', REPORTS_DATA.length);
+      console.log('Reports loaded:', REPORTS_DATA.map(r => r.id));
     } catch (error) {
       console.error('Reports load error:', error);
     }
   }
-  document.addEventListener('DOMContentLoaded', initReportsOnce);
 
   function openBioModal() {
     const modal = $('#bio-modal');
@@ -2509,11 +2534,11 @@
     modal.dataset.bio = 'kr';
 
     const langBtns = Array.from($$('.bio-lang .lang', modal));
-    for (const btn of langBtns) {
+    langBtns.forEach(btn => {
       const isKr = (btn.dataset.bioLang || 'kr') === 'kr';
       btn.classList.toggle('active', isKr);
       btn.setAttribute('aria-pressed', String(isKr));
-    }
+    });
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
@@ -2545,254 +2570,218 @@
     modal.dataset.bio = 'kr';
 
     const langBtns = Array.from($$('.bio-lang .lang', modal));
-    for (const btn of langBtns) {
+    langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const mode = btn.dataset.bioLang || 'kr';
         modal.dataset.bio = mode;
 
-        for (const b of langBtns) {
-          const active = (b === btn);
+        langBtns.forEach(b => {
+          const active = b === btn;
           b.classList.toggle('active', active);
           b.setAttribute('aria-pressed', String(active));
-        }
-      }, { passive:true });
-    }
+        });
+      }, { passive: true });
+    });
 
     const closeBtn = $('.bio-close', modal);
     const backdrop = $('.bio-backdrop', modal);
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive:true });
-    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive:true });
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
+    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive: true });
 
     const expoBtn = $('#expoToggle');
     const expoBlock = $('#expoSlide');
     if (expoBtn && expoBlock) {
-      expoBlock.setAttribute('data-open', 'false');
-      expoBtn.setAttribute('aria-expanded', 'false');
-
       expoBtn.addEventListener('click', () => {
-        const open = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', String(!open));
-        expoBtn.setAttribute('aria-expanded', String(!open));
-      }, { passive:true });
+        const isOpen = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', String(!isOpen));
+        expoBtn.setAttribute('aria-expanded', String(!isOpen));
+      }, { passive: true });
     }
   }
 
-  let audioCtx = null;
-  let masterGain = null;
-  let soundOn = false;
-  let resonanceTimer = null;
-  let resonators = [];
+  function initWaveOnce() {
+    if (waveInitialized) return;
+    waveInitialized = true;
 
-  function randomBetween(min, max) {
-    return min + Math.random() * (max - min);
+    const canvas = document.getElementById('waves');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let frame = 0;
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const waveLayers = [
+      { y: 0.28, amp: 14, len: 0.0046, speed: 0.0030, alpha: 0.055 },
+      { y: 0.48, amp: 18, len: 0.0056, speed: 0.0022, alpha: 0.050 },
+      { y: 0.66, amp: 12, len: 0.0068, speed: 0.0016, alpha: 0.040 }
+    ];
+
+    function resizeWaveCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      width = Math.max(1, Math.round(rect.width || window.innerWidth));
+      height = Math.max(1, Math.round(rect.height || window.innerHeight));
+      dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawLayer(layer, time) {
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 2) {
+        const y =
+          height * layer.y +
+          Math.sin(x * layer.len + time * layer.speed) * layer.amp +
+          Math.sin(x * layer.len * 0.45 + time * layer.speed * 0.55 + 1.7) * (layer.amp * 0.42);
+
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.lineTo(width, height + 40);
+      ctx.lineTo(0, height + 40);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(215,184,106,${layer.alpha})`;
+      ctx.fill();
+    }
+
+    function animateWave() {
+      ctx.clearRect(0, 0, width, height);
+
+      const time = prefersReduced ? 0 : frame;
+      waveLayers.forEach(layer => drawLayer(layer, time));
+
+      frame += prefersReduced ? 0 : 0.55;
+      waveAnimationFrame = requestAnimationFrame(animateWave);
+    }
+
+    resizeWaveCanvas();
+    window.addEventListener('resize', resizeWaveCanvas, { passive: true });
+
+    if (waveAnimationFrame !== null) {
+      cancelAnimationFrame(waveAnimationFrame);
+      waveAnimationFrame = null;
+    }
+
+    console.log('Wave initialized once');
+    waveAnimationFrame = requestAnimationFrame(animateWave);
   }
 
-  function createResonator(freq = 220, type = 'sine', gainValue = 0.0025, attack = 2.2, release = 6.5) {
-    if (!audioCtx || !masterGain) return;
-
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
-
-    osc.type = type;
-    osc.frequency.value = freq;
-
-    filter.type = 'bandpass';
-    filter.frequency.value = freq * randomBetween(0.9, 1.08);
-    filter.Q.value = randomBetween(0.8, 2.4);
-
-    gain.gain.setValueAtTime(0.00001, audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(gainValue, audioCtx.currentTime + attack);
-    gain.gain.linearRampToValueAtTime(0.00001, audioCtx.currentTime + attack + release);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(masterGain);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + attack + release + 0.08);
-
-    resonators.push({ osc, gain, filter });
-    osc.onended = () => {
-      try { osc.disconnect(); } catch {}
-      try { gain.disconnect(); } catch {}
-      try { filter.disconnect(); } catch {}
-      resonators = resonators.filter(x => x.osc !== osc);
-    };
-  }
-
-  function scheduleResonanceLoop() {
-    clearTimeout(resonanceTimer);
-    if (!soundOn) return;
-
-    const palette = [110, 146.83, 164.81, 196, 220, 246.94, 293.66, 329.63, 392];
-    const freq = palette[Math.floor(Math.random() * palette.length)] * randomBetween(0.985, 1.018);
-    const type = Math.random() > 0.72 ? 'triangle' : 'sine';
-    const gainValue = randomBetween(0.0016, 0.0046);
-    const attack = randomBetween(1.8, 4.4);
-    const release = randomBetween(5.6, 11.8);
-
-    createResonator(freq, type, gainValue, attack, release);
-
-    resonanceTimer = setTimeout(scheduleResonanceLoop, randomBetween(1300, 4200));
-  }
-
-  async function initAudioEngine() {
-    if (audioCtx) return;
-
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return;
-
-    audioCtx = new Ctx();
-
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.0;
-    masterGain.connect(audioCtx.destination);
-
-    const lp = audioCtx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 1800;
-    lp.Q.value = 0.2;
-
-    masterGain.disconnect();
-    masterGain.connect(lp);
-    lp.connect(audioCtx.destination);
-  }
-
-  async function toggleSound() {
+  function initAudio() {
     const btn = $('#soundBar');
-    try {
-      await initAudioEngine();
+    if (!btn || btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+
+    function ensureAudio() {
+      if (audioInitialized) return;
+      audioInitialized = true;
+
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+
+      audioCtx = new AC();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.00001;
+      masterGain.connect(audioCtx.destination);
+
+      const freqs = [174.61, 261.63, 392.0];
+      oscillators = freqs.map((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = i === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.value = i === 0 ? 0.018 : 0.008;
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+
+        return { osc, gain };
+      });
+    }
+
+    async function turnOn() {
+      ensureAudio();
       if (!audioCtx || !masterGain) return;
 
       if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
+        try { await audioCtx.resume(); } catch {}
       }
 
-      soundOn = !soundOn;
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+      masterGain.gain.linearRampToValueAtTime(0.06, now + 1.2);
 
-      if (soundOn) {
-        btn?.classList.add('is-on');
-        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-        masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.8);
-        scheduleResonanceLoop();
-      } else {
-        btn?.classList.remove('is-on');
-        clearTimeout(resonanceTimer);
-        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-        masterGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.4);
-      }
-    } catch (err) {
-      console.error('sound error:', err);
-    }
-  }
-
-  function initSound() {
-    const btn = $('#soundBar');
-    if (!btn) return;
-    btn.addEventListener('click', toggleSound, { passive:true });
-  }
-
-  function initWaves() {
-    const canvas = $('#waves');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let w = 0;
-    let h = 0;
-    let t = 0;
-
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.width = Math.floor(innerWidth * dpr);
-      h = canvas.height = Math.floor(innerHeight * dpr);
-      canvas.style.width = innerWidth + 'px';
-      canvas.style.height = innerHeight + 'px';
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.scale(dpr, dpr);
+      audioEnabled = true;
+      btn.classList.add('is-on');
     }
 
-    function draw() {
-      const vw = innerWidth;
-      const vh = innerHeight;
-
-      ctx.clearRect(0,0,vw,vh);
-
-      for (let i = 0; i < 3; i++) {
-        const amp = 18 + i * 10;
-        const yBase = vh * (0.20 + i * 0.18);
-        const freq = 0.010 + i * 0.0022;
-        const speed = 0.00065 + i * 0.00018;
-
-        ctx.beginPath();
-        for (let x = -10; x <= vw + 10; x += 6) {
-          const y = yBase
-            + Math.sin((x * freq) + t * speed * 1000 + i) * amp
-            + Math.sin((x * freq * 0.42) - t * speed * 780) * (amp * 0.42);
-
-          if (x === -10) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-
-        const g = ctx.createLinearGradient(0, yBase - amp, vw, yBase + amp);
-        g.addColorStop(0, i === 1 ? 'rgba(121,167,255,.11)' : 'rgba(215,184,106,.11)');
-        g.addColorStop(0.5, i === 2 ? 'rgba(233,213,155,.12)' : 'rgba(121,167,255,.08)');
-        g.addColorStop(1, 'rgba(215,184,106,.06)');
-
-        ctx.strokeStyle = g;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-
-      t += 16;
-      requestAnimationFrame(draw);
-    }
-
-    resize();
-    draw();
-    window.addEventListener('resize', resize, { passive:true });
-  }
-
-  function initGlobalKeys() {
-    window.addEventListener('keydown', (e) => {
-      const bioOpen = !$('#bio-modal')?.hidden;
-      const lbOpen = $('#lightbox')?.classList.contains('is-open');
-
-      if (e.key === 'Escape') {
-        if (lbOpen) closeLightbox();
-        else if (bioOpen) closeBioModal();
+    function turnOff() {
+      if (!audioCtx || !masterGain) {
+        audioEnabled = false;
+        btn.classList.remove('is-on');
         return;
       }
 
-      if (lbOpen) {
-        if (e.key === 'ArrowRight') goNextLightboxImage();
-        if (e.key === 'ArrowLeft') goPrevLightboxImage();
-      }
+      const now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+      masterGain.gain.linearRampToValueAtTime(0.00001, now + 0.8);
+
+      audioEnabled = false;
+      btn.classList.remove('is-on');
+    }
+
+    btn.addEventListener('click', async () => {
+      if (audioEnabled) turnOff();
+      else await turnOn();
     });
+
+    btn.addEventListener('keydown', async (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (audioEnabled) turnOff();
+      else await turnOn();
+    });
+
+    btn.setAttribute('tabindex', '0');
   }
 
-  function syncHeaderGeometry() {
-    const header = document.querySelector('header');
-    if (!header) return;
-    document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
-  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if ($('#lightbox')?.classList.contains('is-open')) {
+        closeLightbox();
+        return;
+      }
+      if ($('#bio-modal') && !$('#bio-modal').hidden) {
+        closeBioModal();
+      }
+    }
+
+    if ($('#lightbox')?.classList.contains('is-open')) {
+      if (e.key === 'ArrowRight') goNextLightboxImage();
+      if (e.key === 'ArrowLeft') goPrevLightboxImage();
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
-    try { initNav(); }        catch (e) { console.error(e); }
-    try { initLanguage(); }   catch (e) { console.error(e); }
-    try { initWorksUI(); }    catch (e) { console.error(e); }
-    try { initReports(); }    catch (e) { console.error(e); }
-    try { initBioModal(); }   catch (e) { console.error(e); }
-    try { initSound(); }      catch (e) { console.error(e); }
-    try { initWaves(); }      catch (e) { console.error(e); }
-    try { initGlobalKeys(); } catch (e) { console.error(e); }
-    try { syncHeaderGeometry(); } catch (e) { console.error(e); }
-
-    window.addEventListener('load', syncHeaderGeometry, { passive:true });
-    window.addEventListener('resize', syncHeaderGeometry, { passive:true });
+    initNav();
+    initLanguage();
+    initWorksUI();
+    initReports();
+    initBioModal();
+    initAudio();
+    initWaveOnce();
+    initReportsOnce();
   });
 })();
 </script>

@@ -2546,25 +2546,24 @@
     reportsInitialized = true;
 
     try {
-      const response = await fetch('data/reports.json?v=' + Date.now(), {
+      const res = await fetch('data/reports.json?v=' + Date.now(), {
         cache: 'no-store'
       });
 
-      if (!response.ok) throw new Error('Failed to load reports.json');
+      if (!res.ok) throw new Error('Failed to load data/reports.json');
 
-      const data = await response.json();
+      const data = await res.json();
       REPORTS_DATA = Array.isArray(data.reports) ? data.reports.slice() : [];
 
       REPORTS_DATA.sort((a, b) => String(b.id || '').localeCompare(String(a.id || ''), undefined, { numeric: true }));
 
+      console.log('REPORT IDS:', REPORTS_DATA.map(r => r.id));
+
       currentReportCategory = 'All';
       setActiveReportTabByCategory(currentReportCategory);
-      renderFilteredReports();
-
-      console.log('Reports loaded:', REPORTS_DATA.length);
-      console.log('REPORT IDS:', REPORTS_DATA.map(r => r.id));
-    } catch (error) {
-      console.error('Reports load error:', error);
+      renderReports(REPORTS_DATA);
+    } catch (e) {
+      console.error('Reports load error:', e);
     }
   }
 
@@ -2608,225 +2607,237 @@
     const modal = $('#bio-modal');
     if (!modal) return;
 
-    modal.dataset.bio = 'kr';
-
+    const closeBtn = $('.bio-close', modal);
+    const backdrop = $('.bio-backdrop', modal);
+    const expoBtn = $('#expoToggle');
+    const expoBlock = $('#expoSlide');
     const langBtns = Array.from($$('.bio-lang .lang', modal));
+
+    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
+    if (backdrop) backdrop.addEventListener('click', closeBioModal, { passive: true });
+
+    if (expoBtn && expoBlock) {
+      expoBtn.addEventListener('click', () => {
+        const open = expoBlock.getAttribute('data-open') === 'true';
+        expoBlock.setAttribute('data-open', open ? 'false' : 'true');
+        expoBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      }, { passive: true });
+    }
+
     langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const mode = btn.dataset.bioLang || 'kr';
-        modal.dataset.bio = mode;
-
+        const lang = btn.dataset.bioLang || 'kr';
+        modal.dataset.bio = lang;
         langBtns.forEach(b => {
-          const active = b === btn;
-          b.classList.toggle('active', active);
-          b.setAttribute('aria-pressed', String(active));
+          const isActive = b === btn;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-pressed', String(isActive));
         });
       }, { passive: true });
     });
 
-    const closeBtn = $('.bio-close', modal);
-    const backdrop = $('.bio-backdrop', modal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if ($('#lightbox')?.classList.contains('is-open')) {
+          closeLightbox();
+          return;
+        }
+        if (!modal.hidden) closeBioModal();
+      }
 
-    if (closeBtn) closeBtn.addEventListener('click', closeBioModal, { passive: true });
-    if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeBioModal(); }, { passive: true });
+      if ($('#lightbox')?.classList.contains('is-open')) {
+        if (e.key === 'ArrowRight') goNextLightboxImage();
+        if (e.key === 'ArrowLeft') goPrevLightboxImage();
+      }
+    });
+  }
 
-    const expoBtn = $('#expoToggle');
-    const expoBlock = $('#expoSlide');
-    if (expoBtn && expoBlock) {
-      expoBtn.addEventListener('click', () => {
-        const isOpen = expoBlock.getAttribute('data-open') === 'true';
-        expoBlock.setAttribute('data-open', String(!isOpen));
-        expoBtn.setAttribute('aria-expanded', String(!isOpen));
+  function initAudio() {
+    const soundBar = $('#soundBar');
+    if (!soundBar) return;
+
+    function createAudio() {
+      if (audioInitialized) return;
+      audioInitialized = true;
+
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+
+      audioCtx = new Ctx();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.0001;
+      masterGain.connect(audioCtx.destination);
+
+      const baseFreqs = [130.81, 196.00, 261.63, 392.00];
+      oscillators = baseFreqs.map((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = f;
+        gain.gain.value = 0.008 / (i + 1);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        return { osc, gain, base: f };
+      });
+
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.08;
+      lfoGain.gain.value = 10;
+      lfo.connect(lfoGain);
+
+      oscillators.forEach(({ osc }) => lfoGain.connect(osc.frequency));
+      lfo.start();
+
+      let t = 0;
+      function shimmer() {
+        if (!audioCtx || !audioEnabled) return;
+        t += 0.016;
+        oscillators.forEach(({ gain }, i) => {
+          const base = 0.0032 / (i + 1);
+          gain.gain.setTargetAtTime(base + Math.sin(t * (0.6 + i * 0.12)) * base * 0.22, audioCtx.currentTime, 0.6);
+        });
+        requestAnimationFrame(shimmer);
+      }
+
+      soundBar.addEventListener('click', async () => {
+        try {
+          if (!audioCtx) return;
+          await audioCtx.resume();
+
+          audioEnabled = !audioEnabled;
+          soundBar.classList.toggle('is-on', audioEnabled);
+
+          if (audioEnabled) {
+            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+            masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.4);
+            shimmer();
+          } else {
+            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+            masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 1.6);
+          }
+        } catch (e) {
+          console.error('Audio resume error:', e);
+        }
       }, { passive: true });
     }
+
+    createAudio();
   }
 
   function initWaveOnce() {
     if (waveInitialized) return;
     waveInitialized = true;
 
-    const canvas = document.getElementById('waves');
+    const canvas = $('#waves');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    wavePrefersReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    wavePrefersReduced = prefersReduced.matches;
 
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015, yBase: 0.25 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010, yBase: 0.25 }
-    ];
-
+    const DPR_CAP = 1.6;
+    let w = 0;
+    let h = 0;
     let t = 0;
 
+    const palette = [
+      'rgba(215,184,106,0.09)',
+      'rgba(121,167,255,0.07)',
+      'rgba(233,213,155,0.05)'
+    ];
+
     function resize() {
-      const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
-      canvas.width = Math.round(window.innerWidth * dpr);
-      canvas.height = Math.round(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
+      const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function draw() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
       ctx.clearRect(0, 0, w, h);
 
-      for (let idx = 0; idx < gradients.length; idx++) {
-        const g = gradients[idx];
-        ctx.beginPath();
+      const bands = [
+        { y: h * 0.18, amp: 22, len: 180, speed: 0.38, stroke: palette[0], width: 1.2 },
+        { y: h * 0.36, amp: 28, len: 220, speed: 0.28, stroke: palette[1], width: 1.1 },
+        { y: h * 0.56, amp: 18, len: 160, speed: 0.22, stroke: palette[2], width: 1.0 },
+        { y: h * 0.76, amp: 24, len: 240, speed: 0.16, stroke: palette[1], width: 0.9 }
+      ];
 
-        for (let x = 0; x <= w; x += 10) {
-          const y = h * g.yBase + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
-          if (x === 0) ctx.moveTo(x, y);
+      for (const band of bands) {
+        ctx.beginPath();
+        ctx.lineWidth = band.width;
+        ctx.strokeStyle = band.stroke;
+
+        for (let x = -20; x <= w + 20; x += 4) {
+          const y = band.y + Math.sin((x / band.len) + t * band.speed) * band.amp;
+          if (x === -20) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
 
-        ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.3;
-        ctx.shadowColor = 'rgba(0,0,0,0.50)';
-        ctx.shadowBlur = 8;
         ctx.stroke();
       }
+    }
 
-      ctx.shadowBlur = 0;
-      t += 1;
-      waveAnimationFrame = requestAnimationFrame(waveDrawRef);
+    function animate() {
+      if (wavePrefersReduced || document.hidden) {
+        draw();
+        waveAnimationFrame = null;
+        return;
+      }
+
+      t += 0.012;
+      draw();
+      waveAnimationFrame = requestAnimationFrame(animate);
     }
 
     waveDrawRef = draw;
     resize();
+    draw();
+
     window.addEventListener('resize', resize, { passive: true });
 
     if (!waveVisibilityBound) {
       waveVisibilityBound = true;
       document.addEventListener('visibilitychange', () => {
-        if (wavePrefersReduced) return;
-
         if (document.hidden) {
-          if (waveAnimationFrame) {
-            cancelAnimationFrame(waveAnimationFrame);
-            waveAnimationFrame = null;
+          if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
+          waveAnimationFrame = null;
+          if (waveDrawRef) waveDrawRef();
+        } else {
+          if (!waveAnimationFrame && !wavePrefersReduced) {
+            waveAnimationFrame = requestAnimationFrame(animate);
           }
-        } else if (!waveAnimationFrame && waveDrawRef) {
-          waveAnimationFrame = requestAnimationFrame(waveDrawRef);
         }
-      }, { passive: true });
-    }
-
-    if (waveAnimationFrame !== null) {
-      cancelAnimationFrame(waveAnimationFrame);
-      waveAnimationFrame = null;
-    }
-
-    console.log('Wave initialized once');
-
-    if (!wavePrefersReduced) {
-      waveAnimationFrame = requestAnimationFrame(waveDrawRef);
-    }
-  }
-
-  function initAudio() {
-    const btn = $('#soundBar');
-    if (!btn || btn.dataset.bound === '1') return;
-    btn.dataset.bound = '1';
-
-    function ensureAudio() {
-      if (audioInitialized) return;
-      audioInitialized = true;
-
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-
-      audioCtx = new AC();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.value = 0.00001;
-      masterGain.connect(audioCtx.destination);
-
-      const freqs = [174.61, 261.63, 392.0];
-      oscillators = freqs.map((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = i === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.value = i === 0 ? 0.018 : 0.008;
-
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start();
-
-        return { osc, gain };
       });
     }
 
-    async function turnOn() {
-      ensureAudio();
-      if (!audioCtx || !masterGain) return;
-
-      if (audioCtx.state === 'suspended') {
-        try { await audioCtx.resume(); } catch {}
+    const onMotionChange = (e) => {
+      wavePrefersReduced = e.matches;
+      if (wavePrefersReduced) {
+        if (waveAnimationFrame) cancelAnimationFrame(waveAnimationFrame);
+        waveAnimationFrame = null;
+        draw();
+      } else if (!document.hidden && !waveAnimationFrame) {
+        waveAnimationFrame = requestAnimationFrame(animate);
       }
+    };
 
-      const now = audioCtx.currentTime;
-      masterGain.gain.cancelScheduledValues(now);
-      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-      masterGain.gain.linearRampToValueAtTime(0.06, now + 1.2);
+    if (prefersReduced.addEventListener) prefersReduced.addEventListener('change', onMotionChange);
+    else prefersReduced.addListener(onMotionChange);
 
-      audioEnabled = true;
-      btn.classList.add('is-on');
+    if (!wavePrefersReduced) {
+      waveAnimationFrame = requestAnimationFrame(animate);
     }
-
-    function turnOff() {
-      if (!audioCtx || !masterGain) {
-        audioEnabled = false;
-        btn.classList.remove('is-on');
-        return;
-      }
-
-      const now = audioCtx.currentTime;
-      masterGain.gain.cancelScheduledValues(now);
-      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-      masterGain.gain.linearRampToValueAtTime(0.00001, now + 0.8);
-
-      audioEnabled = false;
-      btn.classList.remove('is-on');
-    }
-
-    btn.addEventListener('click', async () => {
-      if (audioEnabled) turnOff();
-      else await turnOn();
-    });
-
-    btn.addEventListener('keydown', async (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      if (audioEnabled) turnOff();
-      else await turnOn();
-    });
-
-    btn.setAttribute('tabindex', '0');
   }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if ($('#lightbox')?.classList.contains('is-open')) {
-        closeLightbox();
-        return;
-      }
-      if ($('#bio-modal') && !$('#bio-modal').hidden) {
-        closeBioModal();
-      }
-    }
-
-    if ($('#lightbox')?.classList.contains('is-open')) {
-      if (e.key === 'ArrowRight') goNextLightboxImage();
-      if (e.key === 'ArrowLeft') goPrevLightboxImage();
-    }
-  });
 
   document.addEventListener('DOMContentLoaded', () => {
     initNav();

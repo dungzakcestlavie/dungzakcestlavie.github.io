@@ -1280,6 +1280,11 @@
     }
 
 
+    header .brand{
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     img.w-thumb[data-src]:not([src]){
       opacity: 0;
     }
@@ -2796,6 +2801,70 @@
     labLink.style.setProperty('--lab-shift', `${shift.toFixed(2)}px`);
   }
 
+
+  function initBrandReset() {
+    const brandEl = $('.brand');
+    if (!brandEl) return;
+
+    brandEl.setAttribute('role', 'button');
+    brandEl.setAttribute('tabindex', '0');
+    brandEl.setAttribute('aria-label', 'Reset to home');
+
+    const resetSite = () => {
+      const modal = $('#bio-modal');
+      if (modal && !modal.hidden) closeBioModal();
+
+      const lb = $('#lightbox');
+      if (lb && lb.classList.contains('is-open')) closeLightbox();
+
+      for (const sec of $$('main > section')) {
+        sec.classList.toggle('is-active', sec.id === 'poem');
+      }
+
+      const nav = $('nav.primary');
+      if (nav) {
+        for (const btn of $$('button', nav)) {
+          const isPoem = btn.dataset.target === 'poem';
+          btn.classList.toggle('active', isPoem);
+          if (isPoem) btn.setAttribute('aria-current', 'page');
+          else btn.removeAttribute('aria-current');
+        }
+      }
+
+      for (const tab of $$('.tabs .tab')) {
+        tab.classList.toggle('active', tab.dataset.panel === 'pray');
+      }
+      for (const panel of $$('.tabpanel')) {
+        panel.classList.toggle('active', panel.id === 'panel-pray');
+      }
+
+      currentReportCategory = 'all';
+      const tabsWrap = $('.r-tabs');
+      if (tabsWrap) {
+        for (const btn of $$('.r-tab', tabsWrap)) {
+          btn.classList.toggle('is-active', (btn.dataset.r || 'all').toLowerCase() === 'all');
+        }
+      }
+
+      const grid = $('#reportGrid');
+      if (grid) grid.style.display = 'none';
+      const toggle = $('#reportsToggle');
+      if (toggle) {
+        toggle.setAttribute('aria-expanded', 'false');
+        syncReportsToggleLabel();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    brandEl.addEventListener('click', resetSite, { passive: true });
+    brandEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      resetSite();
+    });
+  }
+
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -2816,6 +2885,7 @@
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
+    try { initBrandReset(); } catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
     try { syncHeaderGeometry(); } catch (e) { console.error(e); }
 

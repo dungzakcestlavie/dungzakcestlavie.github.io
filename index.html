@@ -1279,6 +1279,35 @@
       }
     }
 
+
+    img.w-thumb[data-src]:not([src]){
+      opacity: 0;
+    }
+    img.w-thumb.is-loaded{
+      opacity: 1;
+      transition: opacity .22s ease;
+    }
+
+    @media (max-width: 768px){
+      header{
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+      #lightbox,
+      .bio-backdrop{
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .w-card{
+        box-shadow: 0 8px 18px rgba(0,0,0,.62);
+        will-change: auto;
+      }
+      .r-item:hover,
+      .r-open:hover{
+        transform: none;
+      }
+    }
+
 @media (prefers-reduced-motion: reduce){
       *{
         scroll-behavior:auto !important;
@@ -1612,6 +1641,9 @@
 (() => {
   'use strict';
 
+  if (window.__LF_SITE_BOOTED__) return;
+  window.__LF_SITE_BOOTED__ = true;
+
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
@@ -1633,7 +1665,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_v2';
+  const VERSION = 'LF31_perf_20260425';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1660,7 +1692,7 @@
 
     if (inflight.has(cacheKey)) return inflight.get(cacheKey);
 
-    const p = fetch(url, { cache: 'no-store' })
+    const p = fetch(url, { cache: 'default' })
       .then(res => {
         if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
         return res.json();
@@ -1801,7 +1833,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchCached('data/works.json', 'LF_cache_works');
+      const json = await safeJSONFetchCached('data/works.json?v=20260425', 'LF_cache_works');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1867,7 +1899,9 @@
     }
 
     let html = '<div class="w-grid">';
-    for (const item of items) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const priority = i === 0 ? 'high' : 'low';
       const id      = item.id || '';
       const titleKr = item.title_kr || '';
       const titleEn = item.title_en || '';
@@ -1888,9 +1922,9 @@
                    data-id="${escAttr(id)}"
                    data-img="${escAttr(imgZoom || imgStd)}">
             <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
+                 data-src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
+                 loading="lazy" decoding="async" fetchpriority="${priority}" />
           </article>
         `;
       } else {
@@ -1907,9 +1941,9 @@
                    data-cap-kr="${capKrAttr}"
                    data-cap-en="${capEnAttr}">
             <img class="w-thumb"
-                 src="${escAttr(imgStd)}"
+                 data-src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" />
+                 loading="lazy" decoding="async" fetchpriority="${priority}" />
             <div class="w-meta">
               <div class="w-title">
                 <span class="ko">${escHTML(titleKr)}</span>
@@ -1930,6 +1964,19 @@
 
   let io = null;
 
+  function loadThumbImage(img) {
+    if (!img || img.dataset.loaded === '1') return;
+    const src = img.getAttribute('data-src');
+    if (!src) return;
+
+    img.dataset.loaded = '1';
+    img.addEventListener('load', () => {
+      img.classList.add('is-loaded');
+      if (img.decode) img.decode().catch(()=>{});
+    }, { once: true });
+    img.src = src;
+  }
+
   function ensureIO() {
     if (io) return io;
     if (!('IntersectionObserver' in window)) return null;
@@ -1939,24 +1986,25 @@
         if (!ent.isIntersecting) continue;
         const img = ent.target;
         io.unobserve(img);
-        if (img && img.decode) img.decode().catch(()=>{});
+        loadThumbImage(img);
       }
-    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+    }, { root: null, rootMargin: '260px 0px', threshold: 0.01 });
 
     return io;
   }
 
   function scheduleImageDecode(root) {
-    const imgs = $$('img.w-thumb', root || document);
+    const imgs = $$('img.w-thumb[data-src]', root || document);
     const observer = ensureIO();
 
     if (observer) {
-      for (const img of imgs) observer.observe(img);
+      for (const img of imgs) {
+        if (img.dataset.loaded === '1') continue;
+        observer.observe(img);
+      }
     } else {
       runIdle(() => {
-        for (const img of imgs) {
-          if (img && img.decode) img.decode().catch(()=>{});
-        }
+        for (const img of imgs) loadThumbImage(img);
       });
     }
   }
@@ -2041,20 +2089,6 @@
     return Array.from($$('.w-card', activePanel));
   }
 
-  function preloadImage(src) {
-    if (!src) return;
-    const img = new Image();
-    img.src = src;
-  }
-
-  function preloadNearbyLightboxImages() {
-    if (!lbItems.length) return;
-    const nextIndex = (lbIndex + 1) % lbItems.length;
-    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
-    preloadImage(lbItems[nextIndex]?.src);
-    preloadImage(lbItems[prevIndex]?.src);
-  }
-
   function setLightboxSlideContent(index) {
     const lbImg = $('#lbImg');
     if (!lbImg || !lbItems[index]) return;
@@ -2066,7 +2100,6 @@
     resetLbZoom(false);
 
     if (lbImg.decode) lbImg.decode().catch(()=>{});
-    preloadNearbyLightboxImages();
   }
 
   function animateLightboxTo(index, direction) {
@@ -2328,7 +2361,7 @@
     const cards = getActiveWorksCards();
     lbItems = cards.map((c) => ({
       card: c,
-      src: c.getAttribute('data-img') || c.querySelector('img')?.src || ''
+      src: c.getAttribute('data-img') || c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || ''
     }));
 
     const clickedIndex = cards.indexOf(card);
@@ -2501,7 +2534,7 @@
 
   async function loadReportsIntoGrid(grid) {
     try {
-      const raw = await safeJSONFetchCached('data/reports.json?v=' + Date.now(), 'LF_cache_reports');
+      const raw = await safeJSONFetchCached('data/reports.json?v=20260425', 'LF_cache_reports');
       const nextReports = getSafeReportsArray(raw);
 
       if (nextReports.length > 0) {
@@ -2610,30 +2643,33 @@
     bar.textContent = '';
 
     const AUDIO_SRC = 'https://dungzak.art/audio/lightflow_C_praha_quick6m.mp3';
-    const audio = new Audio(AUDIO_SRC);
-    audio.loop = true;
-    audio.preload = 'auto';
-
     const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
     const isMac = /Mac/i.test(navigator.userAgent);
 
-    if (isMobile) {
-      audio.volume = 0.08;
-    } else if (isMac) {
-      audio.volume = 0.17;
-    } else {
-      audio.volume = 0.18;
-    }
-
-    audio.playsInline = true;
-    try { audio.setAttribute('playsinline', ''); } catch {}
-
+    let audio = null;
     let playing = false;
     let busy = false;
 
+    function getAudio() {
+      if (audio) return audio;
+      audio = new Audio(AUDIO_SRC);
+      audio.loop = true;
+      audio.preload = 'none';
+      audio.playsInline = true;
+      try { audio.setAttribute('playsinline', ''); } catch {}
+
+      if (isMobile) audio.volume = 0.08;
+      else if (isMac) audio.volume = 0.17;
+      else audio.volume = 0.18;
+
+      return audio;
+    }
+
     async function playSound() {
+      if (playing) return;
       try {
-        await audio.play();
+        const a = getAudio();
+        await a.play();
         playing = true;
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
@@ -2643,7 +2679,7 @@
     }
 
     function stopSound() {
-      if (!playing) return;
+      if (!playing || !audio) return;
       audio.pause();
       playing = false;
       bar.classList.remove('is-on');

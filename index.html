@@ -1900,7 +1900,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-archivepro-sectionid-cardlock-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-sectionid-id-image-lock-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1959,10 +1959,29 @@
     }
   }
 
+  function buildCanonicalWorkImageUrl(id, folder) {
+    const cleanId = String(id ?? '').trim();
+    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
+    if (!cleanId) return '';
+
+    /*
+      DUNGZAK.ART IMAGE-ID LOCK FINAL RULE
+      - The visible image is generated from the artwork ID.
+      - DZ-057 always reads images/standard/DZ-057.jpg.
+      - OR-001 always reads images/standard/OR-001.jpg.
+      - JSON title/caption stays from the same object, but JSON image fields cannot drift the card.
+      - This prevents title-image mismatch in every section.
+    */
+    return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+  }
+
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
     const sectionId = normalizeSectionId(item);
+    const canonicalImage = buildCanonicalWorkImageUrl(id, 'standard');
+    const canonicalZoom = buildCanonicalWorkImageUrl(id, 'zoom');
+
     return {
       id,
       section_id: sectionId,
@@ -1973,8 +1992,8 @@
       size_kr: String(item.size_kr ?? '').trim(),
       size_en: String(item.size_en ?? '').trim(),
       year: String(item.year ?? '').trim(),
-      image: String(item.image || item.image_standard || '').trim().replace(/\s+/g, ''),
-      zoom: String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '')
+      image: canonicalImage,
+      zoom: canonicalZoom || canonicalImage
     };
   }
 

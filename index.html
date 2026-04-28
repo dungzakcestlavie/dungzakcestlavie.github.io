@@ -1695,7 +1695,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF34_image_title_canonical_cache_reset_20260429';
+  const VERSION = 'LF35_simple_id_image_cache_reset_20260429';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -2041,14 +2041,13 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-image-title-canonical-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-simple-id-image-cache-reset-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
-      const canonicalList = buildCanonicalWorks(list);
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      for (const item of canonicalList) {
+      for (const item of list) {
         const key = resolveWorkPanelKey(item);
         if (key && worksByPanel[key]) worksByPanel[key].push(item);
       }
@@ -2110,16 +2109,28 @@
   }
 
   function resolveWorkImageUrl(rawUrl, id, folder) {
+    const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
+    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
 
     /*
-      FINAL IMAGE SOURCE RULE
-      - Use the image/zoom path from the same canonical work object first.
-      - Do not rebuild DZ paths from id when JSON already has an image path.
-      - Rebuilding by id can create image/title mismatch when JSON uses a different stored filename or path.
+      SIMPLE ABSOLUTE MATCH RULE
+      - Card title/caption come from one JSON row.
+      - Card image is rebuilt from that same row's id.
+      - Therefore DZ-021 always shows DZ-021.jpg, DZ-022 always shows DZ-022.jpg.
+      - The image field in JSON is NOT trusted for DZ works because it may be stale or shifted.
+      - Origins/OR works use the dungzaklab-images path by id.
+      - Only unknown IDs fall back to the JSON image path.
     */
-    if (clean) return clean;
-    return buildFallbackWorkImageUrl(id, folder);
+    if (/^DZ[-_]?\d+/i.test(cleanId)) {
+      return buildFallbackWorkImageUrl(normalizeWorkId(cleanId), cleanFolder);
+    }
+
+    if (/^OR[-_]?\d+/i.test(cleanId)) {
+      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(normalizeWorkId(cleanId))}.jpg`;
+    }
+
+    return clean || buildFallbackWorkImageUrl(cleanId, cleanFolder);
   }
 
   function normalizeWorkCardItem(raw) {

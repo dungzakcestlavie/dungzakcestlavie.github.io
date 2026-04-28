@@ -1669,7 +1669,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF33_JSON_IMAGE_SECTION_LOCK_20260428';
+  const VERSION = 'LF32_section_hardfix_20260428';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1863,8 +1863,7 @@
     /*
       DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
       - Section placement uses JSON section_id only.
-      - Section 1 is not guessed from title text; it is only section_id === 1.
-      - section_kr, section_en, title, material, ID prefix, and image path are never used to decide section.
+      - section_kr, section_en, title, material, ID prefix, image path are never used to decide section.
       - Invalid or missing section_id is not rendered in any section.
       - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
     */
@@ -1883,90 +1882,68 @@
   }
 
   function sortWorksForSection(items, sectionKey) {
-    const list = Array.isArray(items) ? items.slice() : [];
-
-    if (sectionKey === 'origin') {
-      return list.sort(naturalIdCompare);
-    }
-
-    return list.sort((a, b) => {
-      const ay = parseWorkYear(a);
-      const by = parseWorkYear(b);
-
-      if (ay !== null && by !== null && ay !== by) return by - ay;
-      if (ay === null && by !== null) return 1;
-      if (ay !== null && by === null) return -1;
-      return naturalIdCompare(a, b);
-    });
+    /*
+      DUNGZAK.ART ALL SECTION FINAL RULE
+      - section_id is the only source for section placement.
+      - each section keeps natural ID order, matching Archive Pro's stable base order.
+      - no title, year, material, label, image path, or ID prefix can move a work between sections.
+    */
+    return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
   }
 
   async function loadWorks() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
-    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
-
-    if (worksLoaded) {
-      for (const key of panelKeys) {
-        const panel = $('#panel-' + key);
-        if (panel && !panel.dataset.rendered) {
-          renderWorksPanel(panel, worksByPanel[key] || [], key);
-          panel.dataset.rendered = '1';
-          scheduleImageDecode(panel);
-        }
-      }
-      return;
-    }
-
     worksLoaded = true;
 
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-json-image-section-lock-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-archivepro-sectionid-cardlock-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      /*
-        DUNGZAK.ART WORKS SECTION FINAL RULE
-        - section_id is the only section source.
-        - section_kr / section_en / title / material / id prefix are never used for section placement.
-        - Every panel is cleared before rendering.
-        - Every panel is rendered independently, so sections cannot visually overlap.
-        - dungzak.art has no price/status/inquiry layer.
-      */
-      for (const raw of list) {
-        const item = raw && typeof raw === 'object' ? raw : {};
+      for (const item of list) {
         const key = resolveWorkPanelKey(item);
-        if (!key) continue;
-        worksByPanel[key].push(item);
+        if (key && worksByPanel[key]) worksByPanel[key].push(item);
       }
 
       for (const key of panelKeys) {
         worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
-      }
-
-      for (const key of panelKeys) {
         const panel = $('#panel-' + key);
-        if (!panel) continue;
-        panel.innerHTML = '';
-        delete panel.dataset.rendered;
-        renderWorksPanel(panel, worksByPanel[key], key);
-        panel.dataset.rendered = '1';
+        if (panel) {
+          panel.innerHTML = '';
+          delete panel.dataset.rendered;
+        }
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      if (activePanel) scheduleImageDecode(activePanel);
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
 
       runIdle(() => {
         for (const key of panelKeys) {
           const panel = $('#panel-' + key);
-          if (panel) scheduleImageDecode(panel);
+          if (!panel || panel.dataset.rendered) continue;
+          renderWorksPanel(panel, worksByPanel[key], key);
+          panel.dataset.rendered = '1';
         }
+        runIdle(() => {
+          for (const key of panelKeys) {
+            const panel = $('#panel-' + key);
+            if (panel) scheduleImageDecode(panel);
+          }
+        });
       });
 
     } catch (err) {
-      worksLoaded = false;
       console.error('works.json load error:', err);
       for (const key of panelKeys) {
         const panel = $('#panel-' + key);
@@ -1982,38 +1959,10 @@
     }
   }
 
-  function getImageExtensionFromUrl(url) {
-    const m = String(url || '').trim().match(/\.([a-z0-9]+)(?:\?.*)?$/i);
-    const ext = m ? m[1].toLowerCase() : 'jpg';
-    return /^(jpg|jpeg|png|webp)$/.test(ext) ? ext : 'jpg';
-  }
-
-  function makeDungzakArtImageUrl(id, kind, fallbackUrl) {
-    const cleanId = String(id || '').trim();
-    const cleanFallback = String(fallbackUrl || '').trim().replace(/\s+/g, '');
-    const folder = kind === 'zoom' ? 'zoom' : 'standard';
-
-    /*
-      DUNGZAK.ART IMAGE SOURCE FINAL RULE
-      - Use the image/zoom URL written in works.json exactly as the first source.
-      - Do not rewrite dungzaklab-images URLs into github.io/images URLs.
-      - Title/image mismatch happened because the code rebuilt image URLs from ID and hit older files.
-      - Only when works.json has no URL, build a github.io fallback from the same work.id.
-    */
-    if (cleanFallback) return cleanFallback;
-    if (cleanId) {
-      return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + cleanId + '.jpg';
-    }
-    return '';
-  }
-
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
     const sectionId = normalizeSectionId(item);
-    const rawImage = String(item.image || item.image_standard || '').trim().replace(/\s+/g, '');
-    const rawZoom = String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '');
-
     return {
       id,
       section_id: sectionId,
@@ -2024,8 +1973,8 @@
       size_kr: String(item.size_kr ?? '').trim(),
       size_en: String(item.size_en ?? '').trim(),
       year: String(item.year ?? '').trim(),
-      image: makeDungzakArtImageUrl(id, 'standard', rawImage),
-      zoom: makeDungzakArtImageUrl(id, 'zoom', rawZoom || rawImage)
+      image: String(item.image || item.image_standard || '').trim().replace(/\s+/g, ''),
+      zoom: String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '')
     };
   }
 
@@ -2048,11 +1997,8 @@
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
     card.dataset.id = item.id;
     card.dataset.sectionId = String(item.section_id);
+    card.dataset.panel = key;
     card.dataset.img = imgZoom || imgStd;
-    card.dataset.thumb = imgStd;
-    card.dataset.titleKr = item.title_kr;
-    card.dataset.titleEn = item.title_en;
-    card.dataset.imageIdLock = item.id;
 
     const cardWork = {
       id: item.id,
@@ -2071,9 +2017,9 @@
 
     /*
       CARD MATCHING ABSOLUTE RULE
-      - One card is built from one work object only.
-      - Image, title, caption and lightbox data are never pulled from separate arrays.
-      - This prevents title/image mismatch inside Human Being or any other section.
+      - One visible card is built from one work object only.
+      - Image, title, caption, section, and lightbox data stay locked to that same object.
+      - No separate image/title arrays are used.
     */
 
     const img = document.createElement('img');
@@ -2118,6 +2064,7 @@
   function renderWorksPanel(panel, items, key) {
     if (!panel) return;
     panel.replaceChildren();
+    panel.dataset.panelKey = key;
 
     const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
 
@@ -2276,8 +2223,6 @@
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
     lbImg.src = lbItems[index].src;
-
-    /* Lightbox caption is tied to the same card/work object as the image. */
     syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
@@ -2541,12 +2486,10 @@
     if (!lb || !lbImg || !lbCap) return;
 
     const cards = getActiveWorksCards();
-    lbItems = cards.map((c) => {
-      let work = null;
-      try { work = JSON.parse(c.dataset.work || 'null'); } catch {}
-      const src = (work && (work.zoom || work.image)) || c.getAttribute('data-img') || c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
-      return { card: c, work, src };
-    });
+    lbItems = cards.map((c) => ({
+      card: c,
+      src: c.getAttribute('data-img') || c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || ''
+    }));
 
     const clickedIndex = cards.indexOf(card);
     if (clickedIndex < 0) return;
@@ -3060,7 +3003,6 @@
     try { initNav(); }        catch (e) { console.error(e); }
     try { initLanguage(); }   catch (e) { console.error(e); }
     try { initWorksUI(); }    catch (e) { console.error(e); }
-    try { loadWorks(); }       catch (e) { console.error(e); }
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }

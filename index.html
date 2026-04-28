@@ -1827,26 +1827,56 @@
     attachWorksLightbox();
   }
 
+  function resolveWorkPanelKey(item) {
+    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
+    const valid = new Set(['origin','pray','human','rebirth','exist','cosmos']);
+
+    const rawPanel = String(item?.panel || '').trim().toLowerCase();
+    if (valid.has(rawPanel)) return rawPanel;
+
+    const rawSection = String(item?.section || '').trim().toLowerCase();
+    if (valid.has(rawSection)) return rawSection;
+
+    if (item?.section_id !== undefined && item?.section_id !== null && item?.section_id !== '') {
+      const numericKey = idMap[Number(item.section_id)];
+      if (numericKey) return numericKey;
+    }
+
+    const joined = [
+      item?.id,
+      item?.section,
+      item?.section_kr,
+      item?.section_en
+    ].map(v => String(v || '').toLowerCase()).join(' ');
+
+    if (/^\s*or[-_]?\d+/i.test(String(item?.id || ''))) return 'origin';
+    if (joined.includes('기원') || joined.includes('origins')) return 'origin';
+    if (joined.includes('우리를 위해 기도') || joined.includes('pray for us')) return 'pray';
+    if (joined.includes('인간') || joined.includes('human being')) return 'human';
+    if (joined.includes('정신의 재탄생') || joined.includes('rebirth of mind')) return 'rebirth';
+    if (joined.includes('존재의 회복') || joined.includes('restoration of being')) return 'exist';
+    if (joined.includes('빛의 초의식') || joined.includes('metaconsciousness of light')) return 'cosmos';
+
+    return 'pray';
+  }
+
   async function loadWorks() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
     worksLoaded = true;
 
-    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchCached('data/works.json?v=20260425', 'LF_cache_works');
+      const json = await safeJSONFetchCached('data/works.json?v=20260428-section-fix', 'LF_cache_works_section_fix');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
       for (const item of list) {
-        let key = item.section || item.panel;
-        if (!key && item.section_id != null) key = idMap[Number(item.section_id)];
-        if (!key || !worksByPanel[key]) key = 'pray';
+        const key = resolveWorkPanelKey(item);
         worksByPanel[key].push(item);
       }
 

@@ -1835,6 +1835,21 @@
     attachWorksLightbox();
   }
 
+  const SECTION_LABELS = {
+    0: { kr: "A 기원", en: "Origins" },
+    1: { kr: "I 우리를 위해 기도해 주세요", en: "Pray for Us" },
+    2: { kr: "II 인간", en: "Human Being" },
+    3: { kr: "III 정신의 재탄생", en: "Rebirth of Mind" },
+    4: { kr: "IV 존재의 회복", en: "Restoration of Being" },
+    5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" }
+  };
+
+  function normalizeSectionId(work) {
+    const n = Number(work?.section_id);
+    if (Number.isInteger(n) && n >= 0 && n <= 5) return n;
+    return -1;
+  }
+
   function resolveWorkPanelKey(item) {
     const idMap = {
       0: 'origin',
@@ -1846,23 +1861,42 @@
     };
 
     /*
-      SECTION ONLY FIX
-      - OR-* is always Origins.
-      - All other works are placed ONLY by JSON section_id.
-      - No title, section text, panel text, English/Korean label, or ID prefix can move a work.
-      - If section_id is missing or invalid, the work is not rendered in any section.
+      DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
+      - Section placement uses JSON section_id only.
+      - section_kr, section_en, title, material, ID prefix, image path are never used to decide section.
+      - Invalid or missing section_id is not rendered in any section.
+      - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
     */
 
-    const id = String(item?.id || '').trim();
-    if (/^OR[-_]?\d+$/i.test(id)) return 'origin';
+    const n = normalizeSectionId(item);
+    return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
+  }
 
-    const rawSectionId = item?.section_id;
-    if (rawSectionId === undefined || rawSectionId === null || String(rawSectionId).trim() === '') return null;
+  function naturalIdCompare(a, b) {
+    return String(a?.id || '').localeCompare(String(b?.id || ''), 'ko', { numeric: true, sensitivity: 'base' });
+  }
 
-    const n = Number(String(rawSectionId).trim());
-    if (Number.isFinite(n) && Object.prototype.hasOwnProperty.call(idMap, n)) return idMap[n];
+  function parseWorkYear(work) {
+    const m = String(work?.year ?? '').match(/\d{4}/);
+    return m ? Number(m[0]) : null;
+  }
 
-    return null;
+  function sortWorksForSection(items, sectionKey) {
+    const list = Array.isArray(items) ? items.slice() : [];
+
+    if (sectionKey === 'origin') {
+      return list.sort(naturalIdCompare);
+    }
+
+    return list.sort((a, b) => {
+      const ay = parseWorkYear(a);
+      const by = parseWorkYear(b);
+
+      if (ay !== null && by !== null && ay !== by) return by - ay;
+      if (ay === null && by !== null) return 1;
+      if (ay !== null && by === null) return -1;
+      return naturalIdCompare(a, b);
+    });
   }
 
   async function loadWorks() {
@@ -1874,7 +1908,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-section-only-v1');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-section-id-only-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1883,6 +1917,15 @@
       for (const item of list) {
         const key = resolveWorkPanelKey(item);
         if (key && worksByPanel[key]) worksByPanel[key].push(item);
+      }
+
+      for (const key of panelKeys) {
+        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+        const panel = $('#panel-' + key);
+        if (panel) {
+          panel.innerHTML = '';
+          delete panel.dataset.rendered;
+        }
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
@@ -1925,6 +1968,9 @@
   }
 
   function renderWorksPanel(panel, items, key) {
+    if (!panel) return;
+    panel.innerHTML = '';
+
     const isOrigin = (key === 'origin');
 
     if (!items || !items.length) {

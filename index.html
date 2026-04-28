@@ -1850,6 +1850,19 @@
     return -1;
   }
 
+  function isPrayForUsWork(work) {
+    const titleKr = String(work?.title_kr || '').trim();
+    const titleEn = String(work?.title_en || '').trim().toLowerCase();
+
+    /*
+      SECTION 1 STRICT RULE
+      - The Pray for Us panel must not absorb other works just because section_id is 1.
+      - A work appears in section 1 only when the title itself belongs to the Pray for Us series.
+      - This fixes the only remaining issue: unrelated section_id 1 records appearing in "우리를 위해 기도해 주세요".
+    */
+    return titleKr.includes('우리를 위해 기도') || titleEn.includes('pray for us');
+  }
+
   function resolveWorkPanelKey(item) {
     const idMap = {
       0: 'origin',
@@ -1862,13 +1875,15 @@
 
     /*
       DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
-      - Section placement uses JSON section_id only.
-      - section_kr, section_en, title, material, ID prefix, image path are never used to decide section.
+      - Sections 0 and 2–5 use JSON section_id only.
+      - Section 1 is additionally locked to Pray for Us title text, so unrelated section_id 1 works cannot enter the Pray panel.
+      - section_kr, section_en, material, ID prefix, and image path are never used to decide section.
       - Invalid or missing section_id is not rendered in any section.
       - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
     */
 
     const n = normalizeSectionId(item);
+    if (n === 1 && !isPrayForUsWork(item)) return null;
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
 
@@ -1920,7 +1935,7 @@
     worksLoaded = true;
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-id-image-lock-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-pray-strict-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 

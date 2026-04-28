@@ -1669,7 +1669,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF32_section_hardfix_20260428';
+  const VERSION = 'LF32_CARD_IMAGE_ID_LOCK_20260428';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1920,7 +1920,7 @@
     worksLoaded = true;
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-card-match-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-id-image-lock-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1981,10 +1981,37 @@
     }
   }
 
+  function getImageExtensionFromUrl(url) {
+    const m = String(url || '').trim().match(/\.([a-z0-9]+)(?:\?.*)?$/i);
+    const ext = m ? m[1].toLowerCase() : 'jpg';
+    return /^(jpg|jpeg|png|webp)$/.test(ext) ? ext : 'jpg';
+  }
+
+  function makeDungzakArtImageUrl(id, kind, fallbackUrl) {
+    const cleanId = String(id || '').trim();
+    const cleanFallback = String(fallbackUrl || '').trim().replace(/\s+/g, '');
+    const folder = kind === 'zoom' ? 'zoom' : 'standard';
+
+    /*
+      DUNGZAK.ART IMAGE MATCH ABSOLUTE RULE
+      - Card title and card image are locked by the same work.id.
+      - If id is DZ-057, image must be images/standard/DZ-057.jpg and zoom must be images/zoom/DZ-057.jpg.
+      - Existing JSON fields are still accepted as fallback only when id is missing.
+      - This prevents title/image mismatch caused by stale image paths or cross-repo normalization.
+    */
+    if (cleanId) {
+      const ext = getImageExtensionFromUrl(cleanFallback);
+      return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + cleanId + '.' + ext;
+    }
+    return cleanFallback;
+  }
+
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
     const sectionId = normalizeSectionId(item);
+    const rawImage = String(item.image || item.image_standard || '').trim().replace(/\s+/g, '');
+    const rawZoom = String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '');
 
     return {
       id,
@@ -1996,8 +2023,8 @@
       size_kr: String(item.size_kr ?? '').trim(),
       size_en: String(item.size_en ?? '').trim(),
       year: String(item.year ?? '').trim(),
-      image: String(item.image || item.image_standard || '').trim().replace(/\s+/g, ''),
-      zoom: String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '')
+      image: makeDungzakArtImageUrl(id, 'standard', rawImage),
+      zoom: makeDungzakArtImageUrl(id, 'zoom', rawZoom || rawImage)
     };
   }
 
@@ -2021,6 +2048,25 @@
     card.dataset.id = item.id;
     card.dataset.sectionId = String(item.section_id);
     card.dataset.img = imgZoom || imgStd;
+    card.dataset.thumb = imgStd;
+    card.dataset.titleKr = item.title_kr;
+    card.dataset.titleEn = item.title_en;
+    card.dataset.imageIdLock = item.id;
+
+    const cardWork = {
+      id: item.id,
+      section_id: item.section_id,
+      title_kr: item.title_kr,
+      title_en: item.title_en,
+      material_kr: item.material_kr,
+      material_en: item.material_en,
+      size_kr: item.size_kr,
+      size_en: item.size_en,
+      year: item.year,
+      image: imgStd,
+      zoom: imgZoom || imgStd
+    };
+    card.dataset.work = JSON.stringify(cardWork);
 
     /*
       CARD MATCHING ABSOLUTE RULE
@@ -2229,6 +2275,8 @@
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
     lbImg.src = lbItems[index].src;
+
+    /* Lightbox caption is tied to the same card/work object as the image. */
     syncLightboxCaptionVisibility(buildCaptionForCard(lbItems[index].card, getLang()));
     resetLbZoom(false);
 
@@ -2492,10 +2540,12 @@
     if (!lb || !lbImg || !lbCap) return;
 
     const cards = getActiveWorksCards();
-    lbItems = cards.map((c) => ({
-      card: c,
-      src: c.getAttribute('data-img') || c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || ''
-    }));
+    lbItems = cards.map((c) => {
+      let work = null;
+      try { work = JSON.parse(c.dataset.work || 'null'); } catch {}
+      const src = (work && (work.zoom || work.image)) || c.getAttribute('data-img') || c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
+      return { card: c, work, src };
+    });
 
     const clickedIndex = cards.indexOf(card);
     if (clickedIndex < 0) return;

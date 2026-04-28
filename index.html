@@ -1358,7 +1358,7 @@
   <canvas id="waves" aria-hidden="true"></canvas>
 
   <header>
-    <div class="brand">등작 燈酌 DUNGZAK CESTLAVIE</div>
+    <div class="brand" onclick="resetToHome()" role="button" tabindex="0">등작 燈酌 DUNGZAK CESTLAVIE</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
@@ -3122,15 +3122,18 @@
   }
 
 
-  function initBrandReset() {
-    const brandEl = $('.brand');
-    if (!brandEl) return;
+  function resetToHome() {
+    try {
+      document.body.classList.remove('english', 'hybrid');
+      document.body.classList.add('korean');
 
-    brandEl.setAttribute('role', 'button');
-    brandEl.setAttribute('tabindex', '0');
-    brandEl.setAttribute('aria-label', 'Reset to home');
+      const koBtn = $('#koBtn');
+      const enBtn = $('#enBtn');
+      const hyBtn = $('#hyBtn');
+      if (koBtn) koBtn.classList.add('active');
+      if (enBtn) enBtn.classList.remove('active');
+      if (hyBtn) hyBtn.classList.remove('active');
 
-    const resetSite = () => {
       const modal = $('#bio-modal');
       if (modal && !modal.hidden) closeBioModal();
 
@@ -3159,6 +3162,7 @@
       }
 
       currentReportCategory = 'all';
+
       const tabsWrap = $('.r-tabs');
       if (tabsWrap) {
         for (const btn of $$('.r-tab', tabsWrap)) {
@@ -3168,23 +3172,36 @@
 
       const grid = $('#reportGrid');
       if (grid) grid.style.display = 'none';
+
       const toggle = $('#reportsToggle');
       if (toggle) {
         toggle.setAttribute('aria-expanded', 'false');
         syncReportsToggleLabel();
       }
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+      updateOpenLightboxCaption();
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-    brandEl.addEventListener('click', resetSite, { passive: true });
+  window.resetToHome = resetToHome;
+
+  function initBrandReset() {
+    const brandEl = $('.brand');
+    if (!brandEl) return;
+
+    brandEl.setAttribute('role', 'button');
+    brandEl.setAttribute('tabindex', '0');
+    brandEl.setAttribute('aria-label', 'Reset to home');
+
     brandEl.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       e.preventDefault();
-      resetSite();
+      resetToHome();
     });
   }
-
 
   function initCacheResetButton() {
     const btn = $('#clearCacheBtn');

@@ -1900,7 +1900,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-sectionid-id-image-lock-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-json-image-section-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1959,28 +1959,36 @@
     }
   }
 
-  function buildCanonicalWorkImageUrl(id, folder) {
+  function buildFallbackWorkImageUrl(id, folder) {
     const cleanId = String(id ?? '').trim();
     const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
     if (!cleanId) return '';
 
-    /*
-      DUNGZAK.ART IMAGE-ID LOCK FINAL RULE
-      - The visible image is generated from the artwork ID.
-      - DZ-057 always reads images/standard/DZ-057.jpg.
-      - OR-001 always reads images/standard/OR-001.jpg.
-      - JSON title/caption stays from the same object, but JSON image fields cannot drift the card.
-      - This prevents title-image mismatch in every section.
-    */
     return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+  }
+
+  function resolveWorkImageUrl(rawUrl, id, folder) {
+    const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
+
+    /*
+      DUNGZAK.ART SIMPLE IMAGE RULE
+      - Use works.json image / zoom exactly when it exists.
+      - This keeps Origins after OR-694 on dungzaklab-images alive.
+      - The card title, image, caption, section, and lightbox data still come from one same object.
+      - Only if JSON has no image, fall back to the old dungzak.art ID path.
+    */
+    if (clean) return clean;
+    return buildFallbackWorkImageUrl(id, folder);
   }
 
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
     const sectionId = normalizeSectionId(item);
-    const canonicalImage = buildCanonicalWorkImageUrl(id, 'standard');
-    const canonicalZoom = buildCanonicalWorkImageUrl(id, 'zoom');
+    const image = resolveWorkImageUrl(item.image, id, 'standard');
+    const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom') || image;
+    const fallbackImage = buildFallbackWorkImageUrl(id, 'standard');
+    const fallbackZoom = buildFallbackWorkImageUrl(id, 'zoom') || fallbackImage;
 
     return {
       id,
@@ -1992,8 +2000,10 @@
       size_kr: String(item.size_kr ?? '').trim(),
       size_en: String(item.size_en ?? '').trim(),
       year: String(item.year ?? '').trim(),
-      image: canonicalImage,
-      zoom: canonicalZoom || canonicalImage
+      image,
+      zoom,
+      fallbackImage,
+      fallbackZoom
     };
   }
 
@@ -2030,7 +2040,9 @@
       size_en: item.size_en,
       year: item.year,
       image: imgStd,
-      zoom: imgZoom || imgStd
+      zoom: imgZoom || imgStd,
+      fallbackImage: item.fallbackImage || '',
+      fallbackZoom: item.fallbackZoom || ''
     };
     card.dataset.work = JSON.stringify(cardWork);
 
@@ -2044,6 +2056,7 @@
     const img = document.createElement('img');
     img.className = 'w-thumb';
     img.setAttribute('data-src', imgStd);
+    if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
     img.loading = 'lazy';
     img.decoding = 'async';
@@ -2120,6 +2133,16 @@
       img.classList.add('is-loaded');
       if (img.decode) img.decode().catch(()=>{});
     }, { once: true });
+
+    img.addEventListener('error', () => {
+      const fallback = img.getAttribute('data-fallback-src');
+      if (fallback && img.src !== fallback) {
+        img.removeAttribute('data-fallback-src');
+        img.dataset.loaded = '1';
+        img.src = fallback;
+      }
+    });
+
     img.src = src;
   }
 

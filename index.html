@@ -1850,6 +1850,16 @@
     return -1;
   }
 
+  function normalizeSectionTextValue(v) {
+    return String(v ?? '')
+      .toLowerCase()
+      .normalize('NFKC')
+      .replace(/[ⅠⅡⅢⅣⅤ]/g, (m) => ({ 'Ⅰ':'i', 'Ⅱ':'ii', 'Ⅲ':'iii', 'Ⅳ':'iv', 'Ⅴ':'v' }[m] || m))
+      .replace(/[·ㆍ•]/g, ' ')
+      .replace(/[\s_\-–—]+/g, ' ')
+      .trim();
+  }
+
   function resolveWorkPanelKey(item) {
     const idMap = {
       0: 'origin',
@@ -1861,12 +1871,54 @@
     };
 
     /*
-      DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
-      - Section placement uses JSON section_id only.
-      - section_kr, section_en, title, material, ID prefix, image path are never used to decide section.
-      - Invalid or missing section_id is not rendered in any section.
-      - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
+      DUNGZAK.ART SECTION FINAL RULE
+      - section_kr / section_en labels are checked first.
+      - section_id is used only as a fallback.
+      - Title, material, image path, and ID prefix are never used for section placement.
+      - This prevents wrong section_id values in works.json from moving works into section II or IV.
     */
+
+    const label = normalizeSectionTextValue([
+      item?.section_kr,
+      item?.section_en
+    ].filter(Boolean).join(' '));
+
+    if (label) {
+      if (
+        label.includes('기원') ||
+        label.includes('origin')
+      ) return 'origin';
+
+      if (
+        label.includes('우리를 위해 기도') ||
+        label.includes('pray for us') ||
+        label.includes('pray')
+      ) return 'pray';
+
+      if (
+        label.includes('정신의 재탄생') ||
+        label.includes('rebirth of mind') ||
+        label.includes('rebirth')
+      ) return 'rebirth';
+
+      if (
+        label.includes('존재의 회복') ||
+        label.includes('restoration of being') ||
+        label.includes('restoration')
+      ) return 'exist';
+
+      if (
+        label.includes('빛의 초의식') ||
+        label.includes('metaconsciousness of light') ||
+        label.includes('metaconsciousness')
+      ) return 'cosmos';
+
+      if (
+        label.includes('인간') ||
+        label.includes('human being') ||
+        label.includes('human')
+      ) return 'human';
+    }
 
     const n = normalizeSectionId(item);
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
@@ -1884,9 +1936,9 @@
   function sortWorksForSection(items, sectionKey) {
     /*
       DUNGZAK.ART ALL SECTION FINAL RULE
-      - section_id is the only source for section placement.
-      - each section keeps natural ID order, matching Archive Pro's stable base order.
-      - no title, year, material, label, image path, or ID prefix can move a work between sections.
+      - section label decides placement first; section_id is fallback only.
+      - each section keeps natural ID order.
+      - no title, year, material, image path, or ID prefix can move a work between sections.
     */
     return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
   }
@@ -1900,7 +1952,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-section-label-restore-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-section-label-first-hardfix');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 

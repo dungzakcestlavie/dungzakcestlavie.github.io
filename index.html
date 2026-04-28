@@ -1952,7 +1952,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-section-label-first-hardfix');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-image-title-lock-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -2020,19 +2020,23 @@
   }
 
   function resolveWorkImageUrl(rawUrl, id, folder) {
+    const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
 
     /*
-      DUNGZAK.ART SIMPLE IMAGE RULE
-      - Use works.json image / zoom exactly when it exists.
-      - This keeps Origins after OR-694 on dungzaklab-images alive.
-      - The card title, image, caption, section, and lightbox data still come from one same object.
-      - Only if JSON has no image, fall back to the old dungzak.art ID path.
+      IMAGE / TITLE MATCH FINAL RULE
+      - For DZ-* works, image path is always rebuilt from the same work.id.
+      - This prevents a stale or wrong image field in works.json from showing a different image under the correct title.
+      - Origins / OR-* keeps the exact JSON image path because Origins images live in dungzaklab-images.
+      - Therefore one visible card is locked by ID: title + image + zoom all come from the same artwork identity.
     */
-    if (clean) return clean;
-    return buildFallbackWorkImageUrl(id, folder);
-  }
+    if (/^DZ[-_]?\d+/i.test(cleanId)) {
+      return buildFallbackWorkImageUrl(cleanId, folder);
+    }
 
+    if (clean) return clean;
+    return buildFallbackWorkImageUrl(cleanId, folder);
+  }
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();

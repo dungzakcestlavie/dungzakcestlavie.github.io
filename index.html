@@ -1669,7 +1669,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF31_perf_20260425';
+  const VERSION = 'LF32_section_hardfix_20260428';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1709,6 +1709,14 @@
 
     inflight.set(cacheKey, p);
     return p;
+  }
+
+  async function safeJSONFetchFresh(url) {
+    const sep = url.includes('?') ? '&' : '?';
+    const freshUrl = url + sep + 't=' + Date.now();
+    const res = await fetch(freshUrl, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
+    return res.json();
   }
 
   const getLang = () => {
@@ -1828,34 +1836,51 @@
   }
 
   function resolveWorkPanelKey(item) {
-    const idMap = { 0:'origin', 1:'pray', 2:'human', 3:'rebirth', 4:'exist', 5:'cosmos' };
+    const idMap = {
+      0: 'origin',
+      1: 'pray',
+      2: 'human',
+      3: 'rebirth',
+      4: 'exist',
+      5: 'cosmos'
+    };
     const valid = new Set(['origin','pray','human','rebirth','exist','cosmos']);
 
-    const rawPanel = String(item?.panel || '').trim().toLowerCase();
-    if (valid.has(rawPanel)) return rawPanel;
+    /*
+      SECTION HARD FIX
+      1) OR-* is always Origins.
+      2) section_id is the single source of truth for DZ works.
+      3) panel / section text is used only as a fallback.
+      This prevents titles or older cached labels from pushing works into the wrong tab.
+    */
 
-    const rawSection = String(item?.section || '').trim().toLowerCase();
-    if (valid.has(rawSection)) return rawSection;
+    const id = String(item?.id || '').trim();
+    if (/^OR[-_]?\d+$/i.test(id)) return 'origin';
 
-    if (item?.section_id !== undefined && item?.section_id !== null && item?.section_id !== '') {
-      const numericKey = idMap[Number(item.section_id)];
-      if (numericKey) return numericKey;
+    const rawSectionId = item?.section_id;
+    if (rawSectionId !== undefined && rawSectionId !== null && String(rawSectionId).trim() !== '') {
+      const n = Number(String(rawSectionId).trim());
+      if (Number.isFinite(n) && idMap[n]) return idMap[n];
     }
 
-    const joined = [
-      item?.id,
-      item?.section,
+    const panel = String(item?.panel || '').trim().toLowerCase();
+    if (valid.has(panel)) return panel;
+
+    const section = String(item?.section || '').trim().toLowerCase();
+    if (valid.has(section)) return section;
+
+    const label = [
       item?.section_kr,
-      item?.section_en
+      item?.section_en,
+      item?.section
     ].map(v => String(v || '').toLowerCase()).join(' ');
 
-    if (/^\s*or[-_]?\d+/i.test(String(item?.id || ''))) return 'origin';
-    if (joined.includes('기원') || joined.includes('origins')) return 'origin';
-    if (joined.includes('우리를 위해 기도') || joined.includes('pray for us')) return 'pray';
-    if (joined.includes('인간') || joined.includes('human being')) return 'human';
-    if (joined.includes('정신의 재탄생') || joined.includes('rebirth of mind')) return 'rebirth';
-    if (joined.includes('존재의 회복') || joined.includes('restoration of being')) return 'exist';
-    if (joined.includes('빛의 초의식') || joined.includes('metaconsciousness of light')) return 'cosmos';
+    if (label.includes('기원') || label.includes('origins')) return 'origin';
+    if (label.includes('우리를 위해 기도') || label.includes('pray for us')) return 'pray';
+    if (label.includes('인간') || label.includes('human being')) return 'human';
+    if (label.includes('정신의 재탄생') || label.includes('rebirth of mind')) return 'rebirth';
+    if (label.includes('존재의 회복') || label.includes('restoration of being')) return 'exist';
+    if (label.includes('빛의 초의식') || label.includes('metaconsciousness of light')) return 'cosmos';
 
     return 'pray';
   }
@@ -1869,7 +1894,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchCached('data/works.json?v=20260428-section-fix', 'LF_cache_works_section_fix');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-section-hardfix');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 

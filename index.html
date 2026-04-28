@@ -363,6 +363,31 @@
       outline-offset:2px;
     }
 
+
+
+    .cache-reset-btn{
+      appearance:none;
+      margin-left:8px;
+      min-height:30px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(214,184,106,.18);
+      background:rgba(255,255,255,.012);
+      color:rgba(233,213,155,.62);
+      font-size:11px;
+      line-height:1;
+      font-weight:700;
+      letter-spacing:.06em;
+      cursor:pointer;
+      text-shadow:0 1px 0 rgba(0,0,0,.62);
+      touch-action:manipulation;
+    }
+    .cache-reset-btn:hover{
+      color:rgba(233,213,155,.94);
+      border-color:rgba(214,184,106,.32);
+      background:rgba(214,184,106,.045);
+    }
+
     .mobile-top-links{
       display:none !important;
     }
@@ -1353,6 +1378,7 @@
 
     <div class="lab-row" aria-label="Lab entry">
       <a href="https://dungzaklab.art" target="_blank" rel="noopener" class="lab-link">dungzaklab.art</a>
+      <button type="button" id="clearCacheBtn" class="cache-reset-btn" aria-label="Clear site cache">RESET</button>
     </div>
 
     <div class="mobile-top-links" aria-label="External links">
@@ -1669,7 +1695,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF33_section_label_restore_20260429';
+  const VERSION = 'LF34_image_title_canonical_cache_reset_20260429';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1943,6 +1969,69 @@
     return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
   }
 
+
+  function extractWorkIdFromUrl(url) {
+    const clean = String(url ?? '').trim();
+    if (!clean) return '';
+    const file = clean.split('?')[0].split('#')[0].split('/').pop() || '';
+    const m = file.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
+    if (!m) return '';
+    const prefix = m[1].toUpperCase();
+    const num = String(Number(m[2]));
+    if (!Number.isFinite(Number(m[2]))) return '';
+    if (prefix === 'OR') return `OR-${num}`;
+    return `DZ-${String(num).padStart(3, '0')}`;
+  }
+
+  function normalizeWorkId(id) {
+    const raw = String(id ?? '').trim();
+    const m = raw.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
+    if (!m) return raw;
+    const prefix = m[1].toUpperCase();
+    const num = String(Number(m[2]));
+    if (!Number.isFinite(Number(m[2]))) return raw;
+    if (prefix === 'OR') return `OR-${num}`;
+    return `DZ-${String(num).padStart(3, '0')}`;
+  }
+
+  function buildCanonicalWorks(list) {
+    /*
+      IMAGE / TITLE CANONICAL MATCH RULE
+      - The filename inside image/zoom is treated as the visible artwork identity.
+      - If a row's image points to DZ-012.jpg, the card title/caption is taken from the DZ-012 JSON object.
+      - This fixes cases where an image URL and a title row were shifted in works.json.
+      - Origins keeps its image-only behavior; non-DZ/OR rows remain unchanged.
+    */
+    const byId = new Map();
+    for (const raw of Array.isArray(list) ? list : []) {
+      const id = normalizeWorkId(raw?.id);
+      if (id) byId.set(id, raw);
+    }
+
+    const out = [];
+    const seenKeys = new Set();
+
+    for (const raw of Array.isArray(list) ? list : []) {
+      const imageId = extractWorkIdFromUrl(raw?.image) || extractWorkIdFromUrl(raw?.zoom);
+      const rawId = normalizeWorkId(raw?.id);
+      const canonical = imageId && byId.has(imageId) ? byId.get(imageId) : raw;
+      const canonicalId = normalizeWorkId(canonical?.id) || rawId || imageId;
+
+      const merged = {
+        ...raw,
+        ...canonical,
+        image: canonical?.image || raw?.image || '',
+        zoom: canonical?.zoom || raw?.zoom || canonical?.image || raw?.image || ''
+      };
+
+      const key = canonicalId || `${out.length}`;
+      if (seenKeys.has(key)) continue;
+      seenKeys.add(key);
+      out.push(merged);
+    }
+    return out;
+  }
+
   async function loadWorks() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
@@ -1952,13 +2041,14 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-image-title-lock-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-image-title-canonical-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+      const canonicalList = buildCanonicalWorks(list);
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      for (const item of list) {
+      for (const item of canonicalList) {
         const key = resolveWorkPanelKey(item);
         if (key && worksByPanel[key]) worksByPanel[key].push(item);
       }
@@ -2020,23 +2110,18 @@
   }
 
   function resolveWorkImageUrl(rawUrl, id, folder) {
-    const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
 
     /*
-      IMAGE / TITLE MATCH FINAL RULE
-      - For DZ-* works, image path is always rebuilt from the same work.id.
-      - This prevents a stale or wrong image field in works.json from showing a different image under the correct title.
-      - Origins / OR-* keeps the exact JSON image path because Origins images live in dungzaklab-images.
-      - Therefore one visible card is locked by ID: title + image + zoom all come from the same artwork identity.
+      FINAL IMAGE SOURCE RULE
+      - Use the image/zoom path from the same canonical work object first.
+      - Do not rebuild DZ paths from id when JSON already has an image path.
+      - Rebuilding by id can create image/title mismatch when JSON uses a different stored filename or path.
     */
-    if (/^DZ[-_]?\d+/i.test(cleanId)) {
-      return buildFallbackWorkImageUrl(cleanId, folder);
-    }
-
     if (clean) return clean;
-    return buildFallbackWorkImageUrl(cleanId, folder);
+    return buildFallbackWorkImageUrl(id, folder);
   }
+
   function normalizeWorkCardItem(raw) {
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
@@ -3085,6 +3170,34 @@
     });
   }
 
+
+  function initCacheResetButton() {
+    const btn = $('#clearCacheBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', async () => {
+      try { localStorage.clear(); } catch {}
+      try { sessionStorage.clear(); } catch {}
+
+      if ('caches' in window) {
+        try {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(key => caches.delete(key)));
+        } catch {}
+      }
+
+      if ('serviceWorker' in navigator) {
+        try {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(reg => reg.unregister()));
+        } catch {}
+      }
+
+      const cleanPath = window.location.pathname || '/';
+      window.location.replace(cleanPath + '?fresh=' + Date.now());
+    }, { passive: true });
+  }
+
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -3106,6 +3219,7 @@
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
     try { initBrandReset(); } catch (e) { console.error(e); }
+    try { initCacheResetButton(); } catch (e) { console.error(e); }
     try { initGlobalKeys(); } catch (e) { console.error(e); }
     try { syncHeaderGeometry(); } catch (e) { console.error(e); }
 

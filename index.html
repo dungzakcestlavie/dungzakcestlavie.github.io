@@ -1844,45 +1844,25 @@
       4: 'exist',
       5: 'cosmos'
     };
-    const valid = new Set(['origin','pray','human','rebirth','exist','cosmos']);
 
     /*
-      SECTION HARD FIX
-      1) OR-* is always Origins.
-      2) section_id is the single source of truth for DZ works.
-      3) panel / section text is used only as a fallback.
-      This prevents titles or older cached labels from pushing works into the wrong tab.
+      SECTION ONLY FIX
+      - OR-* is always Origins.
+      - All other works are placed ONLY by JSON section_id.
+      - No title, section text, panel text, English/Korean label, or ID prefix can move a work.
+      - If section_id is missing or invalid, the work is not rendered in any section.
     */
 
     const id = String(item?.id || '').trim();
     if (/^OR[-_]?\d+$/i.test(id)) return 'origin';
 
     const rawSectionId = item?.section_id;
-    if (rawSectionId !== undefined && rawSectionId !== null && String(rawSectionId).trim() !== '') {
-      const n = Number(String(rawSectionId).trim());
-      if (Number.isFinite(n) && idMap[n]) return idMap[n];
-    }
+    if (rawSectionId === undefined || rawSectionId === null || String(rawSectionId).trim() === '') return null;
 
-    const panel = String(item?.panel || '').trim().toLowerCase();
-    if (valid.has(panel)) return panel;
+    const n = Number(String(rawSectionId).trim());
+    if (Number.isFinite(n) && Object.prototype.hasOwnProperty.call(idMap, n)) return idMap[n];
 
-    const section = String(item?.section || '').trim().toLowerCase();
-    if (valid.has(section)) return section;
-
-    const label = [
-      item?.section_kr,
-      item?.section_en,
-      item?.section
-    ].map(v => String(v || '').toLowerCase()).join(' ');
-
-    if (label.includes('기원') || label.includes('origins')) return 'origin';
-    if (label.includes('우리를 위해 기도') || label.includes('pray for us')) return 'pray';
-    if (label.includes('인간') || label.includes('human being')) return 'human';
-    if (label.includes('정신의 재탄생') || label.includes('rebirth of mind')) return 'rebirth';
-    if (label.includes('존재의 회복') || label.includes('restoration of being')) return 'exist';
-    if (label.includes('빛의 초의식') || label.includes('metaconsciousness of light')) return 'cosmos';
-
-    return 'pray';
+    return null;
   }
 
   async function loadWorks() {
@@ -1894,7 +1874,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-section-hardfix');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-section-only-v1');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1902,7 +1882,7 @@
 
       for (const item of list) {
         const key = resolveWorkPanelKey(item);
-        worksByPanel[key].push(item);
+        if (key && worksByPanel[key]) worksByPanel[key].push(item);
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');

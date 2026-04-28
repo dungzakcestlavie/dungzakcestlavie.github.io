@@ -1669,7 +1669,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF32_CARD_IMAGE_ID_LOCK_20260428';
+  const VERSION = 'LF33_JSON_IMAGE_SECTION_LOCK_20260428';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1850,19 +1850,6 @@
     return -1;
   }
 
-  function isPrayForUsWork(work) {
-    const titleKr = String(work?.title_kr || '').trim();
-    const titleEn = String(work?.title_en || '').trim().toLowerCase();
-
-    /*
-      SECTION 1 STRICT RULE
-      - The Pray for Us panel must not absorb other works just because section_id is 1.
-      - A work appears in section 1 only when the title itself belongs to the Pray for Us series.
-      - This fixes the only remaining issue: unrelated section_id 1 records appearing in "우리를 위해 기도해 주세요".
-    */
-    return titleKr.includes('우리를 위해 기도') || titleEn.includes('pray for us');
-  }
-
   function resolveWorkPanelKey(item) {
     const idMap = {
       0: 'origin',
@@ -1875,15 +1862,14 @@
 
     /*
       DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
-      - Sections 0 and 2–5 use JSON section_id only.
-      - Section 1 is additionally locked to Pray for Us title text, so unrelated section_id 1 works cannot enter the Pray panel.
-      - section_kr, section_en, material, ID prefix, and image path are never used to decide section.
+      - Section placement uses JSON section_id only.
+      - Section 1 is not guessed from title text; it is only section_id === 1.
+      - section_kr, section_en, title, material, ID prefix, and image path are never used to decide section.
       - Invalid or missing section_id is not rendered in any section.
       - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
     */
 
     const n = normalizeSectionId(item);
-    if (n === 1 && !isPrayForUsWork(item)) return null;
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
 
@@ -1935,7 +1921,7 @@
     worksLoaded = true;
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-pray-strict-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-json-image-section-lock-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -2008,17 +1994,17 @@
     const folder = kind === 'zoom' ? 'zoom' : 'standard';
 
     /*
-      DUNGZAK.ART IMAGE MATCH ABSOLUTE RULE
-      - Card title and card image are locked by the same work.id.
-      - If id is DZ-057, image must be images/standard/DZ-057.jpg and zoom must be images/zoom/DZ-057.jpg.
-      - Existing JSON fields are still accepted as fallback only when id is missing.
-      - This prevents title/image mismatch caused by stale image paths or cross-repo normalization.
+      DUNGZAK.ART IMAGE SOURCE FINAL RULE
+      - Use the image/zoom URL written in works.json exactly as the first source.
+      - Do not rewrite dungzaklab-images URLs into github.io/images URLs.
+      - Title/image mismatch happened because the code rebuilt image URLs from ID and hit older files.
+      - Only when works.json has no URL, build a github.io fallback from the same work.id.
     */
+    if (cleanFallback) return cleanFallback;
     if (cleanId) {
-      const ext = getImageExtensionFromUrl(cleanFallback);
-      return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + cleanId + '.' + ext;
+      return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + cleanId + '.jpg';
     }
-    return cleanFallback;
+    return '';
   }
 
   function normalizeWorkCardItem(raw) {

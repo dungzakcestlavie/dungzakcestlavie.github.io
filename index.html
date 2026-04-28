@@ -1727,7 +1727,6 @@
   };
 
   let lbOpenFrom = null;
-  let WORKS_DATA = [];
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
   let reportsLoaded = false;
@@ -1812,16 +1811,24 @@
         const btn = e.target.closest('.tab');
         if (!btn) return;
         const key = btn.dataset.panel;
-        if (!key || !panelIds.includes(key)) return;
+        if (!key) return;
 
-        for (const b of $$('.tabs .tab', worksRoot)) b.classList.toggle('active', b === btn);
+        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
+        btn.classList.add('active');
 
         for (const p of panelIds) {
           const el = $('#panel-' + p);
           if (el) el.classList.toggle('active', p === key);
         }
 
-        if (worksLoaded) renderCurrentWorksPanel(key);
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
       }, { passive: true });
     }
 
@@ -1837,24 +1844,6 @@
     5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" }
   };
 
-  const SECTION_TO_PANEL = {
-    0: 'origin',
-    1: 'pray',
-    2: 'human',
-    3: 'rebirth',
-    4: 'exist',
-    5: 'cosmos'
-  };
-
-  const PANEL_TO_SECTION = {
-    origin: 0,
-    pray: 1,
-    human: 2,
-    rebirth: 3,
-    exist: 4,
-    cosmos: 5
-  };
-
   function normalizeSectionId(work) {
     const n = Number(work?.section_id);
     if (Number.isInteger(n) && n >= 0 && n <= 5) return n;
@@ -1862,15 +1851,25 @@
   }
 
   function resolveWorkPanelKey(item) {
+    const idMap = {
+      0: 'origin',
+      1: 'pray',
+      2: 'human',
+      3: 'rebirth',
+      4: 'exist',
+      5: 'cosmos'
+    };
+
     /*
       DUNGZAK.ART WORKS SECTION ABSOLUTE RULE
       - Section placement uses JSON section_id only.
-      - section_kr, section_en, title, material, ID prefix, and image path are never used to decide section.
+      - section_kr, section_en, title, material, ID prefix, image path are never used to decide section.
       - Invalid or missing section_id is not rendered in any section.
       - dungzak.art remains a pure artwork archive: no price, status, or inquiry layer.
     */
-    const sectionId = normalizeSectionId(item);
-    return Object.prototype.hasOwnProperty.call(SECTION_TO_PANEL, sectionId) ? SECTION_TO_PANEL[sectionId] : null;
+
+    const n = normalizeSectionId(item);
+    return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
 
   function naturalIdCompare(a, b) {
@@ -1885,11 +1884,14 @@
   function sortWorksForSection(items, sectionKey) {
     const list = Array.isArray(items) ? items.slice() : [];
 
-    if (sectionKey === 'origin') return list.sort(naturalIdCompare);
+    if (sectionKey === 'origin') {
+      return list.sort(naturalIdCompare);
+    }
 
     return list.sort((a, b) => {
       const ay = parseWorkYear(a);
       const by = parseWorkYear(b);
+
       if (ay !== null && by !== null && ay !== by) return by - ay;
       if (ay === null && by !== null) return 1;
       if (ay !== null && by === null) return -1;
@@ -1897,65 +1899,75 @@
     });
   }
 
-  function clearWorksPanels() {
-    for (const key of Object.keys(PANEL_TO_SECTION)) {
-      const panel = $('#panel-' + key);
-      if (panel) {
-        panel.innerHTML = '';
-        delete panel.dataset.rendered;
-      }
-    }
-  }
-
-  function getActiveWorksKey() {
-    const activePanel = $('#works .tabpanel.active');
-    const key = (activePanel?.id || 'panel-pray').replace('panel-', '');
-    return Object.prototype.hasOwnProperty.call(PANEL_TO_SECTION, key) ? key : 'pray';
-  }
-
-  function renderCurrentWorksPanel(key = getActiveWorksKey()) {
-    const currentSectionId = PANEL_TO_SECTION[key];
-    const panel = $('#panel-' + key);
-    if (!panel || currentSectionId === undefined) return;
-
-    /*
-      STRICT SECTION RENDER RULE:
-      Before every render, the visible works grid panel is emptied.
-      Then works are filtered again by the current section_id only.
-      This prevents one section from visually inheriting another section's cards.
-    */
-    panel.innerHTML = '';
-    const sectionWorks = WORKS_DATA
-      .filter((work) => normalizeSectionId(work) === currentSectionId);
-
-    const sorted = sortWorksForSection(sectionWorks, key);
-    worksByPanel[key] = sorted;
-    renderWorksPanel(panel, sorted, key);
-    panel.dataset.rendered = '1';
-    scheduleImageDecode(panel);
-  }
-
   async function loadWorks() {
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+
+    if (worksLoaded) {
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (panel && !panel.dataset.rendered) {
+          renderWorksPanel(panel, worksByPanel[key] || [], key);
+          panel.dataset.rendered = '1';
+          scheduleImageDecode(panel);
+        }
+      }
+      return;
+    }
+
     worksLoaded = true;
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-section-id-only-clear-panels');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-section-id-direct-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-      WORKS_DATA = list.filter((item) => normalizeSectionId(item) >= 0);
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      clearWorksPanels();
-      renderCurrentWorksPanel(getActiveWorksKey());
+      /*
+        DUNGZAK.ART WORKS SECTION FINAL RULE
+        - section_id is the only section source.
+        - section_kr / section_en / title / material / id prefix are never used for section placement.
+        - Every panel is cleared before rendering.
+        - Every panel is rendered independently, so sections cannot visually overlap.
+        - dungzak.art has no price/status/inquiry layer.
+      */
+      for (const raw of list) {
+        const item = raw && typeof raw === 'object' ? raw : {};
+        const key = resolveWorkPanelKey(item);
+        if (!key) continue;
+        worksByPanel[key].push(item);
+      }
+
+      for (const key of panelKeys) {
+        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+      }
+
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = '';
+        delete panel.dataset.rendered;
+        renderWorksPanel(panel, worksByPanel[key], key);
+        panel.dataset.rendered = '1';
+      }
+
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      if (activePanel) scheduleImageDecode(activePanel);
+
+      runIdle(() => {
+        for (const key of panelKeys) {
+          const panel = $('#panel-' + key);
+          if (panel) scheduleImageDecode(panel);
+        }
+      });
 
     } catch (err) {
+      worksLoaded = false;
       console.error('works.json load error:', err);
-      clearWorksPanels();
-      for (const key of Object.keys(PANEL_TO_SECTION)) {
+      for (const key of panelKeys) {
         const panel = $('#panel-' + key);
         if (!panel) continue;
         panel.innerHTML = `
@@ -1973,13 +1985,9 @@
     if (!panel) return;
     panel.innerHTML = '';
 
-    const currentSectionId = PANEL_TO_SECTION[key];
-    const cleanItems = (Array.isArray(items) ? items : [])
-      .filter((item) => normalizeSectionId(item) === currentSectionId);
+    const isOrigin = (key === 'origin');
 
-    const isOrigin = (currentSectionId === 0);
-
-    if (!cleanItems.length) {
+    if (!items || !items.length) {
       panel.innerHTML = `
         <div class="w-msg">
           <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
@@ -1990,8 +1998,8 @@
     }
 
     let html = '<div class="w-grid">';
-    for (let i = 0; i < cleanItems.length; i++) {
-      const item = cleanItems[i];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       const priority = i === 0 ? 'high' : 'low';
       const id      = item.id || '';
       const titleKr = item.title_kr || '';
@@ -2022,12 +2030,15 @@
         const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
         const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
 
+        const capKrAttr = escAttrWithNL(captionKr);
+        const capEnAttr = escAttrWithNL(captionEn);
+
         html += `
           <article class="w-card"
                    data-id="${escAttr(id)}"
                    data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${escAttrWithNL(captionKr)}"
-                   data-cap-en="${escAttrWithNL(captionEn)}">
+                   data-cap-kr="${capKrAttr}"
+                   data-cap-en="${capEnAttr}">
             <img class="w-thumb"
                  data-src="${escAttr(imgStd)}"
                  alt="${escAttr(titleEn || titleKr || 'Artwork')}"
@@ -2964,6 +2975,7 @@
     try { initNav(); }        catch (e) { console.error(e); }
     try { initLanguage(); }   catch (e) { console.error(e); }
     try { initWorksUI(); }    catch (e) { console.error(e); }
+    try { loadWorks(); }       catch (e) { console.error(e); }
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }

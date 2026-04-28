@@ -1920,7 +1920,7 @@
     worksLoaded = true;
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-section-id-direct-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260428-dungzak-art-card-match-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -1981,84 +1981,118 @@
     }
   }
 
+  function normalizeWorkCardItem(raw) {
+    const item = raw && typeof raw === 'object' ? raw : {};
+    const id = String(item.id ?? '').trim();
+    const sectionId = normalizeSectionId(item);
+
+    return {
+      id,
+      section_id: sectionId,
+      title_kr: String(item.title_kr ?? '').trim(),
+      title_en: String(item.title_en ?? '').trim(),
+      material_kr: String(item.material_kr ?? '').trim(),
+      material_en: String(item.material_en ?? '').trim(),
+      size_kr: String(item.size_kr ?? '').trim(),
+      size_en: String(item.size_en ?? '').trim(),
+      year: String(item.year ?? '').trim(),
+      image: String(item.image || item.image_standard || '').trim().replace(/\s+/g, ''),
+      zoom: String(item.zoom || item.image_zoom || item.image || item.image_standard || '').trim().replace(/\s+/g, '')
+    };
+  }
+
+  function appendTextSpan(parent, className, text) {
+    const span = document.createElement('span');
+    span.className = className;
+    span.textContent = text || '';
+    parent.appendChild(span);
+    return span;
+  }
+
+  function makeWorkCard(raw, key, index) {
+    const item = normalizeWorkCardItem(raw);
+    const isOrigin = key === 'origin';
+    const imgStd = item.image;
+    const imgZoom = item.zoom || imgStd;
+    const priority = index === 0 ? 'high' : 'low';
+
+    const card = document.createElement('article');
+    card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
+    card.dataset.id = item.id;
+    card.dataset.sectionId = String(item.section_id);
+    card.dataset.img = imgZoom || imgStd;
+
+    /*
+      CARD MATCHING ABSOLUTE RULE
+      - One card is built from one work object only.
+      - Image, title, caption and lightbox data are never pulled from separate arrays.
+      - This prevents title/image mismatch inside Human Being or any other section.
+    */
+
+    const img = document.createElement('img');
+    img.className = 'w-thumb';
+    img.setAttribute('data-src', imgStd);
+    img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.fetchPriority = priority;
+    card.appendChild(img);
+
+    if (!isOrigin) {
+      const captionKr = [item.title_kr, item.material_kr, item.size_kr, item.year].filter(Boolean).join('\n');
+      const captionEn = [item.title_en, item.material_en, item.size_en, item.year].filter(Boolean).join('\n');
+      card.setAttribute('data-cap-kr', captionKr);
+      card.setAttribute('data-cap-en', captionEn);
+
+      const meta = document.createElement('div');
+      meta.className = 'w-meta';
+
+      const title = document.createElement('div');
+      title.className = 'w-title';
+      appendTextSpan(title, 'ko', item.title_kr);
+      appendTextSpan(title, 'en', item.title_en);
+
+      const subKr = (item.material_kr && item.year) ? `${item.material_kr} · ${item.year}` : (item.material_kr || item.year || '');
+      const subEn = (item.material_en && item.year) ? `${item.material_en} · ${item.year}` : (item.material_en || item.year || '');
+
+      const sub = document.createElement('div');
+      sub.className = 'w-sub';
+      appendTextSpan(sub, 'ko', subKr);
+      appendTextSpan(sub, 'en', subEn);
+
+      meta.appendChild(title);
+      meta.appendChild(sub);
+      card.appendChild(meta);
+    }
+
+    return card;
+  }
+
   function renderWorksPanel(panel, items, key) {
     if (!panel) return;
-    panel.innerHTML = '';
+    panel.replaceChildren();
 
-    const isOrigin = (key === 'origin');
+    const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
 
-    if (!items || !items.length) {
-      panel.innerHTML = `
-        <div class="w-msg">
-          <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
-          <div class="en">No artworks have been registered in this section yet.</div>
-        </div>
+    if (!validItems.length) {
+      const msg = document.createElement('div');
+      msg.className = 'w-msg';
+      msg.innerHTML = `
+        <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+        <div class="en">No artworks have been registered in this section yet.</div>
       `;
+      panel.appendChild(msg);
       return;
     }
 
-    let html = '<div class="w-grid">';
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const priority = i === 0 ? 'high' : 'low';
-      const id      = item.id || '';
-      const titleKr = item.title_kr || '';
-      const titleEn = item.title_en || '';
-      const matKr   = item.material_kr || '';
-      const matEn   = item.material_en || '';
-      const sizeKr  = item.size_kr || '';
-      const sizeEn  = item.size_en || '';
-      const year    = item.year || '';
-      const imgStd  = item.image || item.image_standard || '';
-      const imgZoom = item.zoom  || item.image_zoom || imgStd;
+    const grid = document.createElement('div');
+    grid.className = 'w-grid';
 
-      const captionKr = isOrigin ? '' : [titleKr, matKr, sizeKr, year].filter(Boolean).join('\n');
-      const captionEn = isOrigin ? '' : [titleEn, matEn, sizeEn, year].filter(Boolean).join('\n');
+    validItems.forEach((item, index) => {
+      grid.appendChild(makeWorkCard(item, key, index));
+    });
 
-      if (isOrigin) {
-        html += `
-          <article class="w-card w-card-origin"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}">
-            <img class="w-thumb"
-                 data-src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" fetchpriority="${priority}" />
-          </article>
-        `;
-      } else {
-        const subKr = (matKr && year) ? `${matKr} · ${year}` : (matKr || year || '');
-        const subEn = (matEn && year) ? `${matEn} · ${year}` : (matEn || year || '');
-
-        const capKrAttr = escAttrWithNL(captionKr);
-        const capEnAttr = escAttrWithNL(captionEn);
-
-        html += `
-          <article class="w-card"
-                   data-id="${escAttr(id)}"
-                   data-img="${escAttr(imgZoom || imgStd)}"
-                   data-cap-kr="${capKrAttr}"
-                   data-cap-en="${capEnAttr}">
-            <img class="w-thumb"
-                 data-src="${escAttr(imgStd)}"
-                 alt="${escAttr(titleEn || titleKr || 'Artwork')}"
-                 loading="lazy" decoding="async" fetchpriority="${priority}" />
-            <div class="w-meta">
-              <div class="w-title">
-                <span class="ko">${escHTML(titleKr)}</span>
-                <span class="en">${escHTML(titleEn)}</span>
-              </div>
-              <div class="w-sub">
-                <span class="ko">${escHTML(subKr)}</span>
-                <span class="en">${escHTML(subEn)}</span>
-              </div>
-            </div>
-          </article>
-        `;
-      }
-    }
-    html += '</div>';
-    panel.innerHTML = html;
+    panel.appendChild(grid);
   }
 
   let io = null;

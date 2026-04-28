@@ -19607,7 +19607,9 @@
       "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/DZ-047.jpg",
       "status": "collected"
     },
-    {
+   {
+  "works": [
+{
   "id": "DZ-048",
   "section_id": 1,
   "section_kr": "I 우리를 위해 기도해 주세요",
@@ -20034,7 +20036,7 @@
   "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/standard/DZ-050.jpg",
   "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/zoom/DZ-050.jpg",
   "status": "available"
-}
+},
     {
   "id": "ac1",
   "section_id": 4,

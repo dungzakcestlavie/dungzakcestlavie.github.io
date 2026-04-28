@@ -2041,7 +2041,7 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-simple-id-image-cache-reset-final');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-pray-archivepro-json-path-final');
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
@@ -2108,26 +2108,30 @@
     return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
   }
 
-  function resolveWorkImageUrl(rawUrl, id, folder) {
+  function resolveWorkImageUrl(rawUrl, id, folder, sectionId) {
     const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
     const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
+    const sid = Number(sectionId);
 
     /*
-      SIMPLE ABSOLUTE MATCH RULE
-      - Card title/caption come from one JSON row.
-      - Card image is rebuilt from that same row's id.
-      - Therefore DZ-021 always shows DZ-021.jpg, DZ-022 always shows DZ-022.jpg.
-      - The image field in JSON is NOT trusted for DZ works because it may be stale or shifted.
-      - Origins/OR works use the dungzaklab-images path by id.
-      - Only unknown IDs fall back to the JSON image path.
+      ARCHIVE PRO REFERENCE RULE — PRAY SECTION FIX
+      - One JSON row remains one card: title/caption from that row only.
+      - Section I / Pray for Us keeps the exact JSON image/zoom path when it exists.
+        This follows Archive Pro's rule and prevents Pray images from shifting.
+      - Sections II–V use the stable DZ id path.
+      - Origins/OR keeps the exact JSON path first, because Origins images live in dungzaklab-images.
+      - Unknown rows use JSON path first, then fallback.
     */
-    if (/^DZ[-_]?\d+/i.test(cleanId)) {
-      return buildFallbackWorkImageUrl(normalizeWorkId(cleanId), cleanFolder);
-    }
+    if (sid === 1 && clean) return clean;
 
     if (/^OR[-_]?\d+/i.test(cleanId)) {
+      if (clean) return clean;
       return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(normalizeWorkId(cleanId))}.jpg`;
+    }
+
+    if (/^DZ[-_]?\d+/i.test(cleanId)) {
+      return buildFallbackWorkImageUrl(normalizeWorkId(cleanId), cleanFolder);
     }
 
     return clean || buildFallbackWorkImageUrl(cleanId, cleanFolder);
@@ -2137,8 +2141,8 @@
     const item = raw && typeof raw === 'object' ? raw : {};
     const id = String(item.id ?? '').trim();
     const sectionId = normalizeSectionId(item);
-    const image = resolveWorkImageUrl(item.image, id, 'standard');
-    const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom') || image;
+    const image = resolveWorkImageUrl(item.image, id, 'standard', sectionId);
+    const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom', sectionId) || image;
     const fallbackImage = buildFallbackWorkImageUrl(id, 'standard');
     const fallbackZoom = buildFallbackWorkImageUrl(id, 'zoom') || fallbackImage;
 

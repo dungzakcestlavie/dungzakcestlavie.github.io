@@ -362,32 +362,6 @@
       outline:1px solid rgba(214,184,106,.30);
       outline-offset:2px;
     }
-
-
-
-    .cache-reset-btn{
-      appearance:none;
-      margin-left:8px;
-      min-height:30px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(214,184,106,.18);
-      background:rgba(255,255,255,.012);
-      color:rgba(233,213,155,.62);
-      font-size:11px;
-      line-height:1;
-      font-weight:700;
-      letter-spacing:.06em;
-      cursor:pointer;
-      text-shadow:0 1px 0 rgba(0,0,0,.62);
-      touch-action:manipulation;
-    }
-    .cache-reset-btn:hover{
-      color:rgba(233,213,155,.94);
-      border-color:rgba(214,184,106,.32);
-      background:rgba(214,184,106,.045);
-    }
-
     .mobile-top-links{
       display:none !important;
     }
@@ -1378,8 +1352,7 @@
 
     <div class="lab-row" aria-label="Lab entry">
       <a href="https://dungzaklab.art" target="_blank" rel="noopener" class="lab-link">dungzaklab.art</a>
-      <button type="button" id="clearCacheBtn" class="cache-reset-btn" aria-label="Clear site cache">RESET</button>
-    </div>
+</div>
 
     <div class="mobile-top-links" aria-label="External links">
       <div class="mobile-link-scroll">
@@ -3202,34 +3175,6 @@
       resetToHome();
     });
   }
-
-  function initCacheResetButton() {
-    const btn = $('#clearCacheBtn');
-    if (!btn) return;
-
-    btn.addEventListener('click', async () => {
-      try { localStorage.clear(); } catch {}
-      try { sessionStorage.clear(); } catch {}
-
-      if ('caches' in window) {
-        try {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(key => caches.delete(key)));
-        } catch {}
-      }
-
-      if ('serviceWorker' in navigator) {
-        try {
-          const regs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(regs.map(reg => reg.unregister()));
-        } catch {}
-      }
-
-      const cleanPath = window.location.pathname || '/';
-      window.location.replace(cleanPath + '?fresh=' + Date.now());
-    }, { passive: true });
-  }
-
   function initGlobalKeys() {
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -3251,8 +3196,7 @@
     try { initSound(); }      catch (e) { console.error(e); }
     try { initWaves(); }      catch (e) { console.error(e); }
     try { initBrandReset(); } catch (e) { console.error(e); }
-    try { initCacheResetButton(); } catch (e) { console.error(e); }
-    try { initGlobalKeys(); } catch (e) { console.error(e); }
+try { initGlobalKeys(); } catch (e) { console.error(e); }
     try { syncHeaderGeometry(); } catch (e) { console.error(e); }
 
     window.addEventListener('load', syncHeaderGeometry, { passive:true });

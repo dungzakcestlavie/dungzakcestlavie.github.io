@@ -1669,7 +1669,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF32_section_hardfix_20260428';
+  const VERSION = 'LF33_section_label_restore_20260429';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -1729,7 +1729,6 @@
   let lbOpenFrom = null;
   let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
   let worksLoaded = false;
-  let worksLoadingPromise = null;
   let reportsLoaded = false;
   let reportsInitialized = false;
   let currentReportCategory = 'all';
@@ -1812,7 +1811,7 @@
         const btn = e.target.closest('.tab');
         if (!btn) return;
         const key = btn.dataset.panel;
-        if (!key || !panelIds.includes(key)) return;
+        if (!key) return;
 
         for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
         btn.classList.add('active');
@@ -1822,21 +1821,13 @@
           if (el) el.classList.toggle('active', p === key);
         }
 
-        const panel = $('#panel-' + key);
-        if (!panel) return;
-
-        /*
-          WORKS TAB FINAL FIX
-          - Every tab click clears the active panel and rebuilds it from worksByPanel[key].
-          - Off-screen panels are not used as a second source.
-          - This prevents section 2 / 4 cards from remaining or reappearing inside another section.
-        */
-        if (worksLoaded && worksByPanel[key]) {
-          renderWorksPanel(panel, worksByPanel[key], key);
-          panel.dataset.rendered = '1';
-          scheduleImageDecode(panel);
-        } else {
-          loadWorks();
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
         }
       }, { passive: true });
     }
@@ -1902,68 +1893,70 @@
 
   async function loadWorks() {
     const worksRoot = $('#works');
-    if (!worksRoot) return worksLoadingPromise;
-    if (worksLoadingPromise) return worksLoadingPromise;
+    if (!worksRoot) return;
+
+    worksLoaded = true;
 
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
-    worksLoadingPromise = (async () => {
-      try {
-        const json = await safeJSONFetchFresh('data/works.json?v=20260429-dungzak-art-section-id-only-final');
-        const list = Array.isArray(json) ? json : (json.works || json.items || []);
-        if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+    try {
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-section-label-restore-final');
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-        worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-        for (const item of list) {
-          const key = resolveWorkPanelKey(item);
-          if (key && worksByPanel[key]) worksByPanel[key].push(item);
-        }
-
-        for (const key of panelKeys) {
-          worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
-          const panel = $('#panel-' + key);
-          if (panel) {
-            panel.replaceChildren();
-            delete panel.dataset.rendered;
-            panel.dataset.panelKey = key;
-          }
-        }
-
-        worksLoaded = true;
-
-        const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-        const activeKey = panelKeys.includes((activePanel?.id || '').replace('panel-',''))
-          ? activePanel.id.replace('panel-','')
-          : 'pray';
-
-        if (activePanel) {
-          renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
-          activePanel.dataset.rendered = '1';
-          scheduleImageDecode(activePanel);
-        }
-
-        return worksByPanel;
-      } catch (err) {
-        worksLoaded = false;
-        console.error('works.json load error:', err);
-        for (const key of panelKeys) {
-          const panel = $('#panel-' + key);
-          if (!panel) continue;
-          panel.innerHTML = `
-            <div class="w-msg">
-              <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
-              <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
-              <small>${escHTML(String(err?.message || err || ''))}</small>
-            </div>
-          `;
-        }
-      } finally {
-        worksLoadingPromise = null;
+      for (const item of list) {
+        const key = resolveWorkPanelKey(item);
+        if (key && worksByPanel[key]) worksByPanel[key].push(item);
       }
-    })();
 
-    return worksLoadingPromise;
+      for (const key of panelKeys) {
+        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+        const panel = $('#panel-' + key);
+        if (panel) {
+          panel.innerHTML = '';
+          delete panel.dataset.rendered;
+        }
+      }
+
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
+      if (activePanel) {
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
+        scheduleImageDecode(activePanel);
+      }
+
+      runIdle(() => {
+        for (const key of panelKeys) {
+          const panel = $('#panel-' + key);
+          if (!panel || panel.dataset.rendered) continue;
+          renderWorksPanel(panel, worksByPanel[key], key);
+          panel.dataset.rendered = '1';
+        }
+        runIdle(() => {
+          for (const key of panelKeys) {
+            const panel = $('#panel-' + key);
+            if (panel) scheduleImageDecode(panel);
+          }
+        });
+      });
+
+    } catch (err) {
+      console.error('works.json load error:', err);
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = `
+          <div class="w-msg">
+            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+            <small>${escHTML(String(err?.message || err || ''))}</small>
+          </div>
+        `;
+      }
+    }
   }
 
   function buildFallbackWorkImageUrl(id, folder) {

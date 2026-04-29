@@ -2317,9 +2317,9 @@
   let swipeRAF = null;
   let lastSwipeTime = 0;
 
-  const SWIPE_THRESHOLD = 42;
+  const SWIPE_THRESHOLD = 28;
   const SWIPE_VERTICAL_LIMIT = 70;
-  const SWIPE_COOLDOWN = 120;
+  const SWIPE_COOLDOWN = 45;
 
   function markViewerBusy() {
     viewerIsBusy = true;
@@ -2386,15 +2386,13 @@
     lbOpenFrom = lbItems[index].card;
     resetLightboxTransform();
 
-    lbImg.style.transition = 'none';
-    lbImg.style.opacity = '0.96';
-    lbImg.src = lbItems[index].src;
-    lbImg.alt = lbItems[index].alt || '';
+    const src = lbItems[index].src;
+    if (!src) return;
 
-    requestAnimationFrame(() => {
-      lbImg.style.transition = 'opacity .08s linear';
-      lbImg.style.opacity = '1';
-    });
+    lbImg.style.transition = 'none';
+    lbImg.style.opacity = '1';
+    lbImg.src = src;
+    lbImg.alt = lbItems[index].alt || '';
 
     preloadNeighborLightboxImages();
   }

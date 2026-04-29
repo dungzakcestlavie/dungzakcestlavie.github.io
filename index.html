@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
@@ -110,7 +110,14 @@
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html,body{
+      height:100%;
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      overscroll-behavior-x:none;
+      touch-action:pan-y;
+    }
 
     body{
       margin:0;
@@ -868,6 +875,8 @@
       transform: translateZ(0);
       overflow: hidden;
       touch-action: none;
+      overscroll-behavior: none;
+      contain: layout paint size;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -890,7 +899,8 @@
       max-width: 92vw;
       max-height: 92vh;
       object-fit: contain;
-      will-change: transform;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
       transform-origin: center center;
       transform: translate3d(0,0,0) scale(1);
       transition: transform .05s linear;
@@ -1237,6 +1247,14 @@
       }
     }
 
+    .w-card,
+    .w-card img,
+    .w-thumb{
+      touch-action: manipulation;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
 @media (prefers-reduced-motion: reduce){
       *{
         scroll-behavior:auto !important;
@@ -1247,7 +1265,11 @@
       #soundBar.is-on::after{ animation:none !important; }
     }
 
-    body.modal-open{ overflow:hidden; }
+    body.modal-open,
+    body.viewer-open{
+      overflow:hidden;
+      touch-action:none;
+    }
   </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2288,6 +2310,25 @@
   let lbTouchMoved = false;
   let lbLastTap = 0;
 
+  let viewerIsBusy = false;
+  let swipeDX = 0;
+  let swipeDY = 0;
+  let swipeLocked = false;
+  let swipeRAF = null;
+  let lastSwipeTime = 0;
+
+  const SWIPE_THRESHOLD = 42;
+  const SWIPE_VERTICAL_LIMIT = 70;
+  const SWIPE_COOLDOWN = 120;
+
+  function markViewerBusy() {
+    viewerIsBusy = true;
+    clearTimeout(window.__viewerBusyTimer);
+    window.__viewerBusyTimer = setTimeout(() => {
+      viewerIsBusy = false;
+    }, 180);
+  }
+
   function getActiveWorksCards() {
     const activePanel = $('#works .tabpanel.active');
     if (!activePanel) return [];
@@ -2322,16 +2363,40 @@
     return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
   }
 
+  function preloadNeighborLightboxImages() {
+    if (!lbItems || lbItems.length < 2) return;
+
+    const next = lbItems[(lbIndex + 1) % lbItems.length];
+    const prev = lbItems[(lbIndex - 1 + lbItems.length) % lbItems.length];
+
+    [next, prev].forEach((item) => {
+      if (!item || !item.src) return;
+      const pre = new Image();
+      pre.decoding = 'async';
+      pre.src = item.src;
+    });
+  }
+
   function setLightboxSlideContent(index) {
     const lbImg = $('#lf-image');
     if (!lbImg || !lbItems[index]) return;
 
+    markViewerBusy();
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
     resetLightboxTransform();
 
+    lbImg.style.transition = 'none';
+    lbImg.style.opacity = '0.96';
     lbImg.src = lbItems[index].src;
     lbImg.alt = lbItems[index].alt || '';
+
+    requestAnimationFrame(() => {
+      lbImg.style.transition = 'opacity .08s linear';
+      lbImg.style.opacity = '1';
+    });
+
+    preloadNeighborLightboxImages();
   }
 
   function goNextLightboxImage() {
@@ -2368,7 +2433,7 @@
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
+    document.body.classList.add('modal-open', 'viewer-open');
     document.body.style.overflow = 'hidden';
     setLightboxSlideContent(clickedIndex);
   }
@@ -2380,8 +2445,9 @@
 
     lb.classList.remove('active');
     lb.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove('modal-open', 'viewer-open');
     document.body.style.overflow = '';
+    viewerIsBusy = false;
 
     resetLightboxTransform();
 
@@ -2404,6 +2470,9 @@
       lbIsZooming = true;
       lbIsDragging = false;
       lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
       lbInitialDistance = getTouchDistance(e.touches[0], e.touches[1]);
       return;
     }
@@ -2414,6 +2483,9 @@
     lbStartY = e.touches[0].clientY;
     lbLastX = lbStartX;
     lbLastY = lbStartY;
+    swipeDX = 0;
+    swipeDY = 0;
+    swipeLocked = false;
     lbIsDragging = true;
     lbTouchMoved = false;
   }
@@ -2429,8 +2501,9 @@
       const delta = newDistance / lbInitialDistance;
       lbScale = Math.min(Math.max(1, lbScale * delta), 4);
       lbInitialDistance = newDistance;
-      if (lbScale === 1) { lbX = 0; lbY = 0; }
+      if (lbScale <= 1.02) { lbScale = 1; lbX = 0; lbY = 0; }
       applyLightboxTransform();
+      markViewerBusy();
       return;
     }
 
@@ -2438,20 +2511,36 @@
 
     const nowX = e.touches[0].clientX;
     const nowY = e.touches[0].clientY;
-    const dx = nowX - lbLastX;
-    const dy = nowY - lbLastY;
+    const moveX = nowX - lbStartX;
+    const moveY = nowY - lbStartY;
 
-    if (Math.abs(nowX - lbStartX) > 4 || Math.abs(nowY - lbStartY) > 4) lbTouchMoved = true;
+    swipeDX = moveX;
+    swipeDY = moveY;
 
-    if (lbScale > 1) {
+    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
+
+    if (lbScale > 1.02) {
       e.preventDefault();
-      lbX += dx;
-      lbY += dy;
+      lbX += nowX - lbLastX;
+      lbY += nowY - lbLastY;
+      lbLastX = nowX;
+      lbLastY = nowY;
       applyLightboxTransform();
+      markViewerBusy();
+      return;
     }
 
     lbLastX = nowX;
     lbLastY = nowY;
+
+    if (!swipeRAF) {
+      swipeRAF = requestAnimationFrame(() => {
+        swipeRAF = null;
+        if (Math.abs(swipeDX) > Math.abs(swipeDY) && Math.abs(swipeDX) > 8) {
+          swipeLocked = true;
+        }
+      });
+    }
   }
 
   function onLightboxTouchEnd(e) {
@@ -2467,29 +2556,46 @@
 
     if (!lbIsDragging) return;
 
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-    const dx = endX - lbStartX;
-    const dy = endY - lbStartY;
+    if (lbScale > 1.02) {
+      lbIsDragging = false;
+      lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
+      return;
+    }
 
-    if (lbScale === 1 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+    const horizontal = Math.abs(swipeDX);
+    const vertical = Math.abs(swipeDY);
+    const now = performance.now();
+
+    if (
+      swipeLocked &&
+      horizontal > SWIPE_THRESHOLD &&
+      vertical < SWIPE_VERTICAL_LIMIT &&
+      now - lastSwipeTime > SWIPE_COOLDOWN
+    ) {
       e.preventDefault();
-      if (dx > 0) goPrevLightboxImage();
+      lastSwipeTime = now;
+      if (swipeDX > 0) goPrevLightboxImage();
       else goNextLightboxImage();
       lbLastTap = 0;
-    } else if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && !lbTouchMoved) {
-      const now = Date.now();
-      if (now - lbLastTap < 300) {
+    } else if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
+      const tapNow = Date.now();
+      if (tapNow - lbLastTap < 300) {
         e.preventDefault();
         toggleLightboxZoom();
         lbLastTap = 0;
       } else {
-        lbLastTap = now;
+        lbLastTap = tapNow;
       }
     }
 
     lbIsDragging = false;
     lbTouchMoved = false;
+    swipeLocked = false;
+    swipeDX = 0;
+    swipeDY = 0;
   }
 
   function onLightboxTouchCancel() {
@@ -2497,6 +2603,13 @@
     lbIsZooming = false;
     lbInitialDistance = 0;
     lbTouchMoved = false;
+    swipeLocked = false;
+    swipeDX = 0;
+    swipeDY = 0;
+    if (swipeRAF) {
+      cancelAnimationFrame(swipeRAF);
+      swipeRAF = null;
+    }
   }
 
   function updateOpenLightboxCaption() {
@@ -2841,6 +2954,11 @@
 
     function draw() {
       if (prefersReduced) return;
+
+      if (viewerIsBusy || document.body.classList.contains('viewer-open')) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
 
       const dpr = window.devicePixelRatio || 1;
       const w = canvas.width  / dpr;

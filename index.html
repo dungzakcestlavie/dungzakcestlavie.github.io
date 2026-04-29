@@ -2149,8 +2149,8 @@
       appendTextSpan(title, 'ko', item.title_kr);
       appendTextSpan(title, 'en', item.title_en);
 
-      const subKr = (item.material_kr && item.year) ? `${item.material_kr} · ${item.year}` : (item.material_kr || item.year || '');
-      const subEn = (item.material_en && item.year) ? `${item.material_en} · ${item.year}` : (item.material_en || item.year || '');
+      const subKr = [item.material_kr, item.size_kr, item.year].filter(Boolean).join(' · ');
+      const subEn = [item.material_en, item.size_en, item.year].filter(Boolean).join(' · ');
 
       const sub = document.createElement('div');
       sub.className = 'w-sub';

@@ -1716,6 +1716,37 @@
       z-index:3 !important;
     }
 
+
+    /* MOBILE PERFORMANCE ONLY FIX — containment + mobile hover reduction */
+    .w-card,
+    .work-card,
+    .r-item,
+    .report-card {
+      content-visibility: auto;
+      contain-intrinsic-size: 360px 520px;
+    }
+
+    .w-grid,
+    #worksGrid,
+    .r-grid,
+    #reportGrid {
+      contain: layout paint style;
+    }
+
+    @media (max-width:768px){
+      .w-card:hover,
+      .work-card:hover,
+      .r-item:hover,
+      .report-card:hover,
+      nav.primary button:hover,
+      .nav-btn:hover,
+      .tabs .tab:hover,
+      .r-tab:hover {
+        transform:none !important;
+        box-shadow:none !important;
+      }
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2058,7 +2089,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF35_simple_id_image_cache_reset_20260429';
+  const VERSION = 'LF36_mobile_perf_only_20260430';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -2121,6 +2152,17 @@
   let reportsInitialized = false;
   let currentReportCategory = 'all';
   let REPORTS_DATA = [];
+
+  const isMobileViewport = () => window.matchMedia && window.matchMedia('(max-width:768px)').matches;
+
+  function getInitialWorksCount(){
+    return isMobileViewport() ? 8 : 24;
+  }
+
+  function getWorksChunkCount(){
+    return isMobileViewport() ? 16 : 32;
+  }
+
 
   function initNav() {
     const nav = $('nav.primary');
@@ -2431,20 +2473,12 @@
         scheduleImageDecode(activePanel);
       }
 
-      runIdle(() => {
-        for (const key of panelKeys) {
-          const panel = $('#panel-' + key);
-          if (!panel || panel.dataset.rendered) continue;
-          renderWorksPanel(panel, worksByPanel[key], key);
-          panel.dataset.rendered = '1';
-        }
-        runIdle(() => {
-          for (const key of panelKeys) {
-            const panel = $('#panel-' + key);
-            if (panel) scheduleImageDecode(panel);
-          }
-        });
-      });
+      /*
+        MOBILE PERFORMANCE ONLY FIX
+        - Do not render every Works panel during initial load.
+        - Inactive panels render only when their section tab is opened.
+        - Active panel paints the first slice immediately, then appends the rest after first paint.
+      */
 
     } catch (err) {
       console.error('works.json load error:', err);
@@ -2538,7 +2572,7 @@
     const isOrigin = key === 'origin';
     const imgStd = item.image;
     const imgZoom = item.zoom || imgStd;
-    const priority = index === 0 ? 'high' : 'low';
+    const priority = index < 4 ? 'high' : 'low';
 
     const card = document.createElement('article');
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
@@ -2576,7 +2610,7 @@
     img.setAttribute('data-src', imgStd);
     if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
-    img.loading = 'lazy';
+    img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
     img.fetchPriority = priority;
     card.appendChild(img);
@@ -2631,12 +2665,59 @@
 
     const grid = document.createElement('div');
     grid.className = 'w-grid';
-
-    validItems.forEach((item, index) => {
-      grid.appendChild(makeWorkCard(item, key, index));
-    });
-
     panel.appendChild(grid);
+
+    const firstCount = Math.min(getInitialWorksCount(), validItems.length);
+    for (let i = 0; i < firstCount; i++) {
+      grid.appendChild(makeWorkCard(validItems[i], key, i));
+    }
+
+    panel.dataset.totalCount = String(validItems.length);
+    panel.dataset.renderedCount = String(firstCount);
+
+    if (firstCount < validItems.length) {
+      const appendRest = () => appendRemainingWorks(panel, validItems, key);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(appendRest, { timeout: 1500 });
+      } else {
+        setTimeout(appendRest, 260);
+      }
+    }
+  }
+
+  function appendRemainingWorks(panel, validItems, key) {
+    if (!panel || !panel.isConnected) return;
+    const grid = panel.querySelector('.w-grid');
+    if (!grid) return;
+
+    let start = Number(panel.dataset.renderedCount || 0);
+    const total = validItems.length;
+    const chunk = getWorksChunkCount();
+
+    function step() {
+      if (!panel.isConnected) return;
+      const end = Math.min(start + chunk, total);
+      const frag = document.createDocumentFragment();
+
+      for (let i = start; i < end; i++) {
+        frag.appendChild(makeWorkCard(validItems[i], key, i));
+      }
+
+      grid.appendChild(frag);
+      panel.dataset.renderedCount = String(end);
+      scheduleImageDecode(panel);
+
+      start = end;
+      if (start < total) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(step, { timeout: 1500 });
+        } else {
+          setTimeout(step, 120);
+        }
+      }
+    }
+
+    step();
   }
 
   let io = null;
@@ -2675,23 +2756,32 @@
         io.unobserve(img);
         loadThumbImage(img);
       }
-    }, { root: null, rootMargin: '260px 0px', threshold: 0.01 });
+    }, { root: null, rootMargin: isMobileViewport() ? '120px 0px' : '260px 0px', threshold: 0.01 });
 
     return io;
   }
 
   function scheduleImageDecode(root) {
-    const imgs = $$('img.w-thumb[data-src]', root || document);
+    const scope = root || document;
+    const imgs = Array.from($$('img.w-thumb[data-src]', scope));
     const observer = ensureIO();
 
+    /*
+      MOBILE PERFORMANCE ONLY FIX
+      - Only the first visible four thumbnails are injected immediately.
+      - The rest keep data-src until IntersectionObserver brings them near viewport.
+    */
+    const immediate = imgs.slice(0, 4);
+    for (const img of immediate) loadThumbImage(img);
+
     if (observer) {
-      for (const img of imgs) {
+      for (const img of imgs.slice(4)) {
         if (img.dataset.loaded === '1') continue;
         observer.observe(img);
       }
     } else {
       runIdle(() => {
-        for (const img of imgs) loadThumbImage(img);
+        for (const img of imgs.slice(4)) loadThumbImage(img);
       });
     }
   }
@@ -3637,7 +3727,13 @@
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
-    try { initWaveOnce(); }   catch (e) { console.error(e); }
+    try {
+      const startWave = () => {
+        try { initWaveOnce(); } catch (e) { console.error(e); }
+      };
+      if ('requestIdleCallback' in window) requestIdleCallback(startWave, { timeout: 1200 });
+      else setTimeout(startWave, 300);
+    } catch (e) { console.error(e); }
     try { initBrandReset(); } catch (e) { console.error(e); }
 try { initGlobalKeys(); } catch (e) { console.error(e); }
     try { syncHeaderGeometry(); } catch (e) { console.error(e); }

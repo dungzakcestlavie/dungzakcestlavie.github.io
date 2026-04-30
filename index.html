@@ -162,7 +162,7 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.42;
+      opacity: 0.52;
       mix-blend-mode:screen;
     }
 
@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.58 !important;
+      opacity: 0.52 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -1543,7 +1543,7 @@
       height: 100dvh !important;
       z-index: 0 !important;
       pointer-events: none !important;
-      opacity: 0.58 !important;
+      opacity: 0.52 !important;
       mix-blend-mode: screen !important;
       display: block !important;
     }
@@ -1592,7 +1592,7 @@
 
     #waveCanvas,
     #waves {
-      opacity:0.58 !important;
+      opacity: 0.52 !important;
       mix-blend-mode:screen !important;
     }
 
@@ -1651,7 +1651,7 @@
       height: 100dvh !important;
       z-index: 0 !important;
       pointer-events: none !important;
-      opacity: 0.58 !important;
+      opacity: 0.52 !important;
       mix-blend-mode: screen !important;
       display: block !important;
     }
@@ -3368,21 +3368,23 @@
 
         const yBase =
           i === 0
-            ? h * 0.44 + Math.sin(t * 0.52) * 12
-            : h * 0.56 + Math.cos(t * 0.47) * 13;
+            ? h * 0.46 + Math.sin(t * 0.55) * 11
+            : h * 0.54 + Math.cos(t * 0.48) * 12;
 
         const amp =
           i === 0
-            ? 18 + Math.sin(t * 0.68) * 4
-            : 20 + Math.cos(t * 0.61) * 5;
+            ? 16 + Math.sin(t * 0.7) * 3
+            : 19 + Math.cos(t * 0.6) * 3;
 
         const freq = i === 0 ? 0.0042 : 0.0039;
 
-        ctx.lineWidth = i === 0 ? 1.35 : 1.2;
+        ctx.lineWidth = i === 0 ? 1.2 : 1.4;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.28)"
-            : "rgba(92,126,210,0.22)";
+            ? "rgba(212,180,109,0.22)"
+            : "rgba(212,180,109,0.16)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =
@@ -3398,7 +3400,7 @@
         ctx.stroke();
       }
 
-      t += 0.0044;
+      t += 0.006;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

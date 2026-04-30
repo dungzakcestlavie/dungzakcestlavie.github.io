@@ -3308,8 +3308,26 @@
     const isMac = /Mac/i.test(navigator.userAgent);
 
     let audio = null;
+    let audioCtx = null;
+    let sourceNode = null;
+    let gainNode = null;
     let playing = false;
     let busy = false;
+
+    function setupAudioGraph(a) {
+      if (sourceNode && gainNode && audioCtx) return;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      audioCtx = new AudioContextClass();
+      gainNode = audioCtx.createGain();
+      gainNode.gain.value = isMobile ? 0.9 : 1.35;
+
+      sourceNode = audioCtx.createMediaElementSource(a);
+      sourceNode.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+    }
 
     function getAudio() {
       if (audio) return audio;
@@ -3323,6 +3341,7 @@
       else if (isMac) audio.volume = 0.17;
       else audio.volume = 0.18;
 
+      setupAudioGraph(audio);
       return audio;
     }
 
@@ -3330,6 +3349,8 @@
       if (playing) return;
       try {
         const a = getAudio();
+        setupAudioGraph(a);
+        if (audioCtx && audioCtx.state !== 'running') await audioCtx.resume();
         await a.play();
         playing = true;
         bar.classList.add('is-on');

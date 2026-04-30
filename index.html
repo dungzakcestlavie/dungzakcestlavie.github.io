@@ -162,7 +162,8 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.42;
+      opacity:.58;
+      mix-blend-mode:screen;
     }
 
     body,
@@ -1489,6 +1490,51 @@
         opacity: 0.9 !important;
       }
     }
+
+
+    /* LIGHTFLOW WAVE VISIBILITY RESTORE — wave-only final override */
+    #waveCanvas{
+      position:fixed !important;
+      inset:0 !important;
+      width:100vw !important;
+      height:100dvh !important;
+      z-index:0 !important;
+      pointer-events:none !important;
+      opacity:0.58 !important;
+      mix-blend-mode:screen !important;
+      display:block !important;
+    }
+
+    body{
+      background:#070A14 !important;
+    }
+
+    .site,
+    header,
+    main,
+    section{
+      position:relative;
+      z-index:1;
+    }
+
+    main,
+    section,
+    #app,
+    .site,
+    .page{
+      background-color:transparent !important;
+    }
+
+    #works,
+    .works-section,
+    .works-panel,
+    .archive-panel{
+      background:
+        linear-gradient(180deg, rgba(18, 20, 29, 0.88), rgba(7, 10, 20, 0.90)) !important;
+      backdrop-filter:blur(2px);
+      -webkit-backdrop-filter:blur(2px);
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -3149,71 +3195,63 @@
     if (waveStarted) return;
     waveStarted = true;
 
-    const canvas = document.getElementById('waveCanvas') || document.getElementById('waves');
+    const canvas = document.getElementById("waveCanvas");
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-
-    const prefersReduced = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 
     function resizeWave() {
       canvas.width = Math.floor(window.innerWidth * DPR);
       canvas.height = Math.floor(window.innerHeight * DPR);
-      canvas.style.width = '100vw';
-      canvas.style.height = '100dvh';
+      canvas.style.width = "100vw";
+      canvas.style.height = "100dvh";
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
 
     resizeWave();
-    window.addEventListener('resize', resizeWave, { passive: true });
+    window.addEventListener("resize", resizeWave, { passive: true });
 
     let t = 0;
 
     function drawWave() {
-      if (prefersReduced) return;
-
-      if (viewerIsBusy || document.body.classList.contains('viewer-open')) {
-        waveRaf = requestAnimationFrame(drawWave);
-        return;
-      }
-
       const w = window.innerWidth;
       const h = window.innerHeight;
 
       ctx.clearRect(0, 0, w, h);
 
-      const g = ctx.createRadialGradient(
-        w * 0.5, h * 0.38, 20,
-        w * 0.5, h * 0.38, Math.max(w, h) * 0.75
+      const bg = ctx.createRadialGradient(
+        w * 0.50, h * 0.28, 10,
+        w * 0.50, h * 0.28, Math.max(w, h) * 0.75
       );
-      g.addColorStop(0, 'rgba(212,180,109,0.10)');
-      g.addColorStop(0.45, 'rgba(40,70,120,0.08)');
-      g.addColorStop(1, 'rgba(7,10,20,0)');
+      bg.addColorStop(0, "rgba(212,180,109,0.16)");
+      bg.addColorStop(0.35, "rgba(70,120,180,0.12)");
+      bg.addColorStop(0.70, "rgba(90,40,150,0.08)");
+      bg.addColorStop(1, "rgba(7,10,20,0)");
 
-      ctx.fillStyle = g;
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(212,180,109,0.18)';
-      ctx.shadowColor = 'rgba(0,0,0,0.34)';
-      ctx.shadowBlur = 6;
-
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 4; i++) {
         ctx.beginPath();
 
-        const yBase = h * (0.34 + i * 0.16);
-        const amp = 18 + i * 7;
-        const freq = 0.006 + i * 0.0015;
+        const yBase = h * (0.22 + i * 0.18);
+        const amp = 20 + i * 7;
+        const freq = 0.0055 + i * 0.0012;
 
-        for (let x = 0; x <= w; x += 8) {
+        ctx.lineWidth = i === 0 ? 1.4 : 1;
+        ctx.strokeStyle =
+          i % 2 === 0
+            ? "rgba(212,180,109,0.22)"
+            : "rgba(110,150,220,0.16)";
+
+        for (let x = 0; x <= w; x += 7) {
           const y =
             yBase +
-            Math.sin(x * freq + t + i * 1.7) * amp +
-            Math.sin(x * freq * 0.45 + t * 0.7) * amp * 0.45;
+            Math.sin(x * freq + t + i * 1.6) * amp +
+            Math.sin(x * freq * 0.42 + t * 0.72) * amp * 0.55;
 
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
@@ -3222,30 +3260,11 @@
         ctx.stroke();
       }
 
-      ctx.shadowBlur = 0;
-      t += 0.006;
+      t += 0.007;
       waveRaf = requestAnimationFrame(drawWave);
     }
 
-    if (!prefersReduced) {
-      waveRaf = requestAnimationFrame(drawWave);
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (prefersReduced) return;
-
-      if (document.hidden) {
-        if (waveRaf) {
-          cancelAnimationFrame(waveRaf);
-          waveRaf = null;
-        }
-        return;
-      }
-
-      if (!waveRaf) {
-        waveRaf = requestAnimationFrame(drawWave);
-      }
-    }, { passive: true });
+    drawWave();
   }
 
   function initWaves() {

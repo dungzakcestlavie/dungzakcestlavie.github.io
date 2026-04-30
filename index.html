@@ -1747,44 +1747,6 @@
       }
     }
 
-
-    /* MOBILE 77 → 85 PERFORMANCE FIX — no visual change, paint/composite reduction only */
-    .w-card,
-    .work-card,
-    .r-item,
-    .report-card,
-    .bio-panel,
-    .bio-card {
-      content-visibility: auto;
-      contain-intrinsic-size: 360px 520px;
-    }
-
-    .w-grid,
-    #worksGrid,
-    .r-grid,
-    #reportGrid {
-      contain: layout paint style;
-    }
-
-    @media (max-width:768px){
-      header,
-      .glass,
-      .panel,
-      .modal,
-      .bio-modal,
-      #bio-modal,
-      .bio-backdrop,
-      .bio-card {
-        backdrop-filter:none !important;
-        -webkit-backdrop-filter:none !important;
-      }
-
-      *:hover{
-        transform:none !important;
-        box-shadow:none !important;
-      }
-    }
-
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2127,7 +2089,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF37_mobile_85_perf_20260430';
+  const VERSION = 'LF36_mobile_perf_only_20260430';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -2190,12 +2152,11 @@
   let reportsInitialized = false;
   let currentReportCategory = 'all';
   let REPORTS_DATA = [];
-  let bioInitialized = false;
 
   const isMobileViewport = () => window.matchMedia && window.matchMedia('(max-width:768px)').matches;
 
   function getInitialWorksCount(){
-    return isMobileViewport() ? 6 : 24;
+    return isMobileViewport() ? 8 : 24;
   }
 
   function getWorksChunkCount(){
@@ -2228,9 +2189,6 @@
         setActiveBtn(target);
         showSection(target);
         if (target === 'works' && !worksLoaded) loadWorks();
-        if (target === 'reports' && (!reportsLoaded || REPORTS_DATA.length === 0)) {
-          runIdle(() => { ensureReportsDataFetched(); });
-        }
         return;
       }
       if (btn.id === 'tab-bio') openBioModal();
@@ -2614,7 +2572,7 @@
     const isOrigin = key === 'origin';
     const imgStd = item.image;
     const imgZoom = item.zoom || imgStd;
-    const priority = index < 2 ? 'high' : 'low';
+    const priority = index < 4 ? 'high' : 'low';
 
     const card = document.createElement('article');
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
@@ -2652,7 +2610,7 @@
     img.setAttribute('data-src', imgStd);
     if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
-    img.loading = index < 2 ? 'eager' : 'lazy';
+    img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
     img.fetchPriority = priority;
     card.appendChild(img);
@@ -2810,20 +2768,20 @@
 
     /*
       MOBILE PERFORMANCE ONLY FIX
-      - Only the first visible two thumbnails are injected immediately.
+      - Only the first visible four thumbnails are injected immediately.
       - The rest keep data-src until IntersectionObserver brings them near viewport.
     */
-    const immediate = imgs.slice(0, 2);
+    const immediate = imgs.slice(0, 4);
     for (const img of immediate) loadThumbImage(img);
 
     if (observer) {
-      for (const img of imgs.slice(2)) {
+      for (const img of imgs.slice(4)) {
         if (img.dataset.loaded === '1') continue;
         observer.observe(img);
       }
     } else {
       runIdle(() => {
-        for (const img of imgs.slice(2)) loadThumbImage(img);
+        for (const img of imgs.slice(4)) loadThumbImage(img);
       });
     }
   }
@@ -3325,20 +3283,6 @@
     grid.innerHTML = html;
   }
 
-  async function ensureReportsDataFetched() {
-    if (reportsLoaded && REPORTS_DATA.length > 0) return;
-    try {
-      const raw = await safeJSONFetchCached('data/reports.json?v=20260425', 'LF_cache_reports');
-      const nextReports = getSafeReportsArray(raw);
-      if (nextReports.length > 0) {
-        REPORTS_DATA = nextReports;
-        reportsLoaded = true;
-      }
-    } catch (err) {
-      console.error('reports.json load error:', err);
-    }
-  }
-
   async function loadReportsIntoGrid(grid) {
     try {
       const raw = await safeJSONFetchCached('data/reports.json?v=20260425', 'LF_cache_reports');
@@ -3365,7 +3309,6 @@
   }
 
   function openBioModal() {
-    initBioModal();
     const modal = $('#bio-modal');
     if (!modal) return;
 
@@ -3402,10 +3345,8 @@
   }
 
   function initBioModal() {
-    if (bioInitialized) return;
     const modal = $('#bio-modal');
     if (!modal) return;
-    bioInitialized = true;
 
     modal.dataset.bio = 'kr';
 
@@ -3784,15 +3725,14 @@
     try { initLanguage(); }   catch (e) { console.error(e); }
     try { initWorksUI(); }    catch (e) { console.error(e); }
     try { initReports(); }    catch (e) { console.error(e); }
-    /* Bio modal event binding is delayed until Artist Bio is opened. */
+    try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
-    /* MOBILE 85 PERFORMANCE FIX: wave starts after full load + LCP window. */
     try {
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          try { initWaveOnce(); } catch (e) { console.error(e); }
-        }, 900);
-      }, { once: true, passive: true });
+      const startWave = () => {
+        try { initWaveOnce(); } catch (e) { console.error(e); }
+      };
+      if ('requestIdleCallback' in window) requestIdleCallback(startWave, { timeout: 1200 });
+      else setTimeout(startWave, 300);
     } catch (e) { console.error(e); }
     try { initBrandReset(); } catch (e) { console.error(e); }
 try { initGlobalKeys(); } catch (e) { console.error(e); }

@@ -162,7 +162,7 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.44;
+      opacity:.52;
       mix-blend-mode:screen;
     }
 
@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.44 !important;
+      opacity:0.52 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -1543,7 +1543,7 @@
       height: 100dvh !important;
       z-index: 0 !important;
       pointer-events: none !important;
-      opacity: 0.44 !important;
+      opacity: 0.52 !important;
       mix-blend-mode: screen !important;
       display: block !important;
     }
@@ -3258,15 +3258,15 @@
       for (let i = 0; i < 2; i++) {
         ctx.beginPath();
 
-        const yBase = i === 0 ? h * 0.34 : h * 0.72;
-        const amp = i === 0 ? 13 : 16;
+        const yBase = i === 0 ? h * 0.42 : h * 0.58;
+        const amp = i === 0 ? 16 : 18;
         const freq = i === 0 ? 0.0048 : 0.0042;
 
-        ctx.lineWidth = 1.1;
+        ctx.lineWidth = 1.25;
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.18)"
-            : "rgba(90,125,210,0.14)";
+            ? "rgba(212,180,109,0.22)"
+            : "rgba(90,125,210,0.18)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =
@@ -3281,7 +3281,7 @@
         ctx.stroke();
       }
 
-      t += 0.0045;
+      t += 0.004;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

@@ -154,14 +154,30 @@
     #bio-modal[data-bio="kr"] .en{ display:none !important; }
     #bio-modal[data-bio="en"] .ko{ display:none !important; }
 
+    #waveCanvas,
     #waves{
       position:fixed;
       inset:0;
-      width:100%;
-      height:100%;
-      z-index:-2;
+      width:100vw;
+      height:100dvh;
+      z-index:0;
       pointer-events:none;
-      opacity:1;
+      opacity:.42;
+    }
+
+    body,
+    .site,
+    main,
+    header,
+    section{
+      position:relative;
+    }
+
+    .site,
+    header,
+    main,
+    section{
+      z-index:1;
     }
 
     header{
@@ -1479,7 +1495,7 @@
 </head>
 
 <body class="korean" style="background-color:#070A14;">
-  <canvas id="waves" aria-hidden="true"></canvas>
+  <canvas id="waveCanvas" aria-hidden="true"></canvas>
 
   <header>
     <div class="brand" onclick="resetToHome()" role="button" tabindex="0">등작 燈酌 DUNGZAK CESTLAVIE</div>
@@ -3126,77 +3142,114 @@
     bar.classList.remove('is-on');
   }
 
-  function initWaves() {
-    const canvas = $('#waves');
+  let waveStarted = false;
+  let waveRaf = null;
+
+  function initWaveOnce() {
+    if (waveStarted) return;
+    waveStarted = true;
+
+    const canvas = document.getElementById('waveCanvas') || document.getElementById('waves');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const prefersReduced = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const gradients = [
-      { color: 'rgba(215,184,106,0.20)', amp: 26, freq: 0.0015, speed: 0.015 },
-      { color: 'rgba(121,167,255,0.18)', amp: 40, freq: 0.0011, speed: -0.010 }
-    ];
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 
-    function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width  = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    function resizeWave() {
+      canvas.width = Math.floor(window.innerWidth * DPR);
+      canvas.height = Math.floor(window.innerHeight * DPR);
+      canvas.style.width = '100vw';
+      canvas.style.height = '100dvh';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
-    resize();
-    window.addEventListener('resize', resize, { passive:true });
+
+    resizeWave();
+    window.addEventListener('resize', resizeWave, { passive: true });
 
     let t = 0;
-    let animId = null;
 
-    function draw() {
+    function drawWave() {
       if (prefersReduced) return;
 
       if (viewerIsBusy || document.body.classList.contains('viewer-open')) {
-        animId = requestAnimationFrame(draw);
+        waveRaf = requestAnimationFrame(drawWave);
         return;
       }
 
-      const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  / dpr;
-      const h = canvas.height / dpr;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
 
       ctx.clearRect(0, 0, w, h);
 
-      for (let idx = 0; idx < gradients.length; idx++) {
-        const g = gradients[idx];
+      const g = ctx.createRadialGradient(
+        w * 0.5, h * 0.38, 20,
+        w * 0.5, h * 0.38, Math.max(w, h) * 0.75
+      );
+      g.addColorStop(0, 'rgba(212,180,109,0.10)');
+      g.addColorStop(0.45, 'rgba(40,70,120,0.08)');
+      g.addColorStop(1, 'rgba(7,10,20,0)');
+
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(212,180,109,0.18)';
+      ctx.shadowColor = 'rgba(0,0,0,0.34)';
+      ctx.shadowBlur = 6;
+
+      for (let i = 0; i < 3; i++) {
         ctx.beginPath();
-        for (let x = 0; x <= w; x += 10) {
-          const y = h * 0.25 + idx * 80 + Math.sin(x * g.freq + t * g.speed + idx) * g.amp;
+
+        const yBase = h * (0.34 + i * 0.16);
+        const amp = 18 + i * 7;
+        const freq = 0.006 + i * 0.0015;
+
+        for (let x = 0; x <= w; x += 8) {
+          const y =
+            yBase +
+            Math.sin(x * freq + t + i * 1.7) * amp +
+            Math.sin(x * freq * 0.45 + t * 0.7) * amp * 0.45;
+
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = g.color;
-        ctx.lineWidth = 1.3;
-        ctx.shadowColor = 'rgba(0,0,0,0.50)';
-        ctx.shadowBlur = 8;
+
         ctx.stroke();
       }
 
       ctx.shadowBlur = 0;
-      t += 1;
-      animId = requestAnimationFrame(draw);
+      t += 0.006;
+      waveRaf = requestAnimationFrame(drawWave);
     }
 
-    if (!prefersReduced) animId = requestAnimationFrame(draw);
+    if (!prefersReduced) {
+      waveRaf = requestAnimationFrame(drawWave);
+    }
 
     document.addEventListener('visibilitychange', () => {
       if (prefersReduced) return;
+
       if (document.hidden) {
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
-      } else if (!animId) {
-        animId = requestAnimationFrame(draw);
+        if (waveRaf) {
+          cancelAnimationFrame(waveRaf);
+          waveRaf = null;
+        }
+        return;
       }
-    }, { passive:true });
+
+      if (!waveRaf) {
+        waveRaf = requestAnimationFrame(drawWave);
+      }
+    }, { passive: true });
+  }
+
+  function initWaves() {
+    initWaveOnce();
   }
 
 
@@ -3324,7 +3377,7 @@
     try { initReports(); }    catch (e) { console.error(e); }
     try { initBioModal(); }   catch (e) { console.error(e); }
     try { initSound(); }      catch (e) { console.error(e); }
-    try { initWaves(); }      catch (e) { console.error(e); }
+    try { initWaveOnce(); }   catch (e) { console.error(e); }
     try { initBrandReset(); } catch (e) { console.error(e); }
 try { initGlobalKeys(); } catch (e) { console.error(e); }
     try { syncHeaderGeometry(); } catch (e) { console.error(e); }

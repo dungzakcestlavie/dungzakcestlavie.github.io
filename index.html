@@ -1677,7 +1677,7 @@
     }
 
 
-    /* LIGHTFLOW WAVE LAYER LIFT FIX — wave only, final override */
+    /* LIGHTFLOW BREATHING WAVE LAYER FIX — wave only, final override */
     #waveCanvas,
     #waves{
       position:fixed !important;
@@ -1686,7 +1686,7 @@
       height:100dvh !important;
       z-index:2 !important;
       pointer-events:none !important;
-      opacity:0.55 !important;
+      opacity:0.58 !important;
       mix-blend-mode:normal !important;
       display:block !important;
     }
@@ -1699,16 +1699,20 @@
 
     body,
     .site,
+    .site-shell,
     main,
     header,
-    section{
+    section,
+    footer{
       position:relative !important;
     }
 
     .site,
+    .site-shell,
     main,
     header,
-    section{
+    section,
+    footer{
       z-index:3 !important;
     }
 
@@ -3404,22 +3408,22 @@
 
         const yBase =
           i === 0
-            ? h * 0.46 + Math.sin(t * 0.55) * 11
-            : h * 0.54 + Math.cos(t * 0.48) * 12;
+            ? h * 0.43 + Math.sin(t * 0.42) * 16
+            : h * 0.57 + Math.cos(t * 0.36) * 18;
 
         const amp =
           i === 0
-            ? 20 + Math.sin(t * 0.6) * 4
-            : 24 + Math.cos(t * 0.5) * 5;
+            ? 24 + Math.sin(t * 0.58) * 5
+            : 30 + Math.cos(t * 0.47) * 6;
 
         const freq = i === 0 ? 0.0042 : 0.0039;
 
-        ctx.lineWidth = i === 0 ? 1.6 : 1.8;
+        ctx.lineWidth = i === 0 ? 1.45 : 1.65;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.28)"
+            ? "rgba(212,180,109,0.30)"
             : "rgba(212,180,109,0.22)";
 
         for (let x = 0; x <= w; x += 6) {
@@ -3436,7 +3440,7 @@
         ctx.stroke();
       }
 
-      t += 0.006;
+      t += 0.007;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.42 !important;
+      opacity:0.58 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -1592,7 +1592,7 @@
 
     #waveCanvas,
     #waves {
-      opacity:0.42 !important;
+      opacity:0.58 !important;
       mix-blend-mode:screen !important;
     }
 
@@ -1651,7 +1651,7 @@
       height: 100dvh !important;
       z-index: 0 !important;
       pointer-events: none !important;
-      opacity: 0.46 !important;
+      opacity: 0.58 !important;
       mix-blend-mode: screen !important;
       display: block !important;
     }
@@ -3378,11 +3378,11 @@
 
         const freq = i === 0 ? 0.0042 : 0.0039;
 
-        ctx.lineWidth = i === 0 ? 1.25 : 1.1;
+        ctx.lineWidth = i === 0 ? 1.35 : 1.2;
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.22)"
-            : "rgba(92,126,210,0.13)";
+            ? "rgba(212,180,109,0.28)"
+            : "rgba(92,126,210,0.22)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =
@@ -3398,7 +3398,7 @@
         ctx.stroke();
       }
 
-      t += 0.0042;
+      t += 0.0044;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

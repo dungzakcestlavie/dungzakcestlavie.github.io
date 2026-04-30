@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" style="background:#070A14;">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -1354,12 +1354,131 @@
       }
     }
 
+
+    /* WORKS FIRST LOAD WHITE FLASH FIX + CAPTION FINAL POLISH — FINAL OVERRIDE */
+    html,
+    body,
+    #app,
+    .site,
+    .page,
+    main,
+    section,
+    #works,
+    .works-section,
+    .works-panel,
+    .archive-panel,
+    .works-wrap,
+    .works-grid,
+    .w-grid,
+    .tabpanel,
+    .w-msg {
+      background-color: #070A14 !important;
+    }
+
+    #works,
+    .works-section,
+    .works-panel,
+    .archive-panel {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(212,180,109,0.07), transparent 38%),
+        linear-gradient(180deg, rgba(18,20,29,0.96), rgba(7,10,20,0.98)) !important;
+      color: #f4efe6 !important;
+    }
+
+    .w-grid,
+    .works-grid,
+    .works-wrap,
+    .tabpanel {
+      background: transparent !important;
+      color: #f4efe6 !important;
+    }
+
+    .w-card,
+    .work-card,
+    .card,
+    .art-card {
+      background: rgba(8, 12, 22, 0.94) !important;
+      color: #f4efe6 !important;
+    }
+
+    .w-thumb,
+    .work-card img,
+    .card img,
+    .art-card img {
+      background-color: #070A14 !important;
+    }
+
+    .w-meta,
+    .card-body,
+    .work-meta,
+    .artwork-meta,
+    .caption-meta {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    .w-title,
+    .work-title,
+    .card-title,
+    .art-title {
+      font-size: clamp(15px, 3.8vw, 18px) !important;
+      line-height: 1.35 !important;
+      font-weight: 700 !important;
+      color: rgba(233,213,155,.94) !important;
+    }
+
+    .w-sub,
+    .work-meta,
+    .card-meta,
+    .art-meta,
+    .caption-meta,
+    .card .meta,
+    .artwork-meta {
+      font-size: clamp(13.5px, 3.3vw, 15px) !important;
+      line-height: 1.55 !important;
+      opacity: 0.9 !important;
+      color: rgba(233,213,155,.76) !important;
+    }
+
+    @media (max-width: 768px) {
+      #works,
+      .works-section,
+      .works-panel,
+      .archive-panel,
+      .works-wrap,
+      .works-grid,
+      .w-grid,
+      .tabpanel {
+        background-color: #070A14 !important;
+      }
+
+      .w-title,
+      .work-title,
+      .card-title,
+      .art-title {
+        font-size: clamp(15px, 3.8vw, 18px) !important;
+        line-height: 1.35 !important;
+        font-weight: 700 !important;
+      }
+
+      .w-sub,
+      .work-meta,
+      .card-meta,
+      .art-meta,
+      .caption-meta,
+      .card .meta,
+      .artwork-meta {
+        font-size: 14px !important;
+        line-height: 1.55 !important;
+        opacity: 0.9 !important;
+      }
+    }
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
 </head>
 
-<body class="korean">
+<body class="korean" style="background-color:#070A14;">
   <canvas id="waves" aria-hidden="true"></canvas>
 
   <header>

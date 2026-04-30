@@ -1642,6 +1642,40 @@
       background: rgba(7, 10, 20, 0.92) !important;
     }
 
+
+    /* DUNGZAK.ART HEADER RESET + LIGHTFLOW WAVE RESTORE — FINAL OVERRIDE */
+    #waveCanvas {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      opacity: 0.46 !important;
+      mix-blend-mode: screen !important;
+      display: block !important;
+    }
+
+    body,
+    .site,
+    header,
+    main,
+    section {
+      position: relative;
+    }
+
+    .site,
+    header,
+    main,
+    section {
+      z-index: 1;
+    }
+
+    #siteResetBrand {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -1651,7 +1685,7 @@
   <canvas id="waveCanvas" aria-hidden="true"></canvas>
 
   <header>
-    <div class="brand" onclick="resetToHome()" role="button" tabindex="0">등작 燈酌 DUNGZAK CESTLAVIE</div>
+    <div id="siteResetBrand" class="brand" role="button" tabindex="0">등작 燈酌 DUNGZAK CESTLAVIE</div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">
@@ -3329,17 +3363,6 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      const bg = ctx.createRadialGradient(
-        w * 0.50, h * 0.28, 10,
-        w * 0.50, h * 0.28, Math.max(w, h) * 0.75
-      );
-      bg.addColorStop(0, "rgba(212,180,109,0.09)");
-      bg.addColorStop(0.45, "rgba(70,120,180,0.03)");
-      bg.addColorStop(1, "rgba(7,10,20,0)");
-
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, w, h);
-
       for (let i = 0; i < 2; i++) {
         ctx.beginPath();
 
@@ -3353,16 +3376,13 @@
             ? 18 + Math.sin(t * 0.68) * 4
             : 20 + Math.cos(t * 0.61) * 5;
 
-        const freq =
-          i === 0
-            ? 0.0042
-            : 0.0039;
+        const freq = i === 0 ? 0.0042 : 0.0039;
 
-        ctx.lineWidth = i === 0 ? 1.35 : 1.2;
+        ctx.lineWidth = i === 0 ? 1.25 : 1.1;
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.24)"
-            : "rgba(90,125,210,0.10)";
+            ? "rgba(212,180,109,0.22)"
+            : "rgba(92,126,210,0.13)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =
@@ -3378,7 +3398,7 @@
         ctx.stroke();
       }
 
-      t += 0.0044;
+      t += 0.0042;
       waveRaf = requestAnimationFrame(drawWave);
     }
 
@@ -3476,18 +3496,58 @@
 
   window.resetToHome = resetToHome;
 
+  function resetSiteToHome() {
+    document.body.classList.remove(
+      "works-open",
+      "reports-open",
+      "bio-open",
+      "viewer-open",
+      "lightbox-open"
+    );
+
+    const bioModal = document.querySelector("#bioModal, #bio-modal, .bio-modal");
+    if (bioModal) {
+      bioModal.classList.remove("open", "active");
+      bioModal.setAttribute("aria-hidden", "true");
+    }
+
+    const viewer = document.querySelector("#viewer, #lf-lightbox, .viewer, .lightbox, .lf-lightbox");
+    if (viewer) {
+      viewer.classList.remove("open", "active");
+      viewer.setAttribute("aria-hidden", "true");
+    }
+
+    if (typeof resetToHome === "function") {
+      resetToHome();
+      return;
+    }
+
+    const poem = document.querySelector("#poem, .poem-section");
+    if (poem) {
+      poem.scrollIntoView({ behavior: "auto", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }
+
+  window.resetSiteToHome = resetSiteToHome;
+
   function initBrandReset() {
-    const brandEl = $('.brand');
+    const brandEl = document.getElementById("siteResetBrand");
     if (!brandEl) return;
 
-    brandEl.setAttribute('role', 'button');
-    brandEl.setAttribute('tabindex', '0');
-    brandEl.setAttribute('aria-label', 'Reset to home');
+    brandEl.style.cursor = "pointer";
+    brandEl.setAttribute("role", "button");
+    brandEl.setAttribute("tabindex", "0");
+    brandEl.setAttribute("aria-label", "Reset to home");
 
-    brandEl.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      resetToHome();
+    brandEl.addEventListener("click", resetSiteToHome);
+
+    brandEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        resetSiteToHome();
+      }
     });
   }
   function initGlobalKeys() {

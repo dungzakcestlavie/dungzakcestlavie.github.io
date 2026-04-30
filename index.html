@@ -162,7 +162,7 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.58;
+      opacity:.32;
       mix-blend-mode:screen;
     }
 
@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.58 !important;
+      opacity:0.32 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -3226,26 +3226,26 @@
         w * 0.50, h * 0.28, 10,
         w * 0.50, h * 0.28, Math.max(w, h) * 0.75
       );
-      bg.addColorStop(0, "rgba(212,180,109,0.16)");
-      bg.addColorStop(0.35, "rgba(70,120,180,0.12)");
-      bg.addColorStop(0.70, "rgba(90,40,150,0.08)");
+      bg.addColorStop(0, "rgba(212,180,109,0.08)");
+      bg.addColorStop(0.35, "rgba(70,120,180,0.06)");
+      bg.addColorStop(0.70, "rgba(90,40,150,0.04)");
       bg.addColorStop(1, "rgba(7,10,20,0)");
 
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 2; i++) {
         ctx.beginPath();
 
         const yBase = h * (0.22 + i * 0.18);
-        const amp = 20 + i * 7;
+        const amp = 10 + i * 4;
         const freq = 0.0055 + i * 0.0012;
 
         ctx.lineWidth = i === 0 ? 1.4 : 1;
         ctx.strokeStyle =
-          i % 2 === 0
-            ? "rgba(212,180,109,0.22)"
-            : "rgba(110,150,220,0.16)";
+          i === 0
+            ? "rgba(212,180,109,0.12)"
+            : "rgba(110,150,220,0.09)";
 
         for (let x = 0; x <= w; x += 7) {
           const y =
@@ -3260,7 +3260,7 @@
         ctx.stroke();
       }
 
-      t += 0.007;
+      t += 0.0035;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

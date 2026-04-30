@@ -1270,7 +1270,91 @@
       overflow:hidden;
       touch-action:none;
     }
-  </style>
+  
+    /* WORKS CAPTION READABILITY FIX — material / size / year only */
+    .w-sub,
+    .card .meta,
+    .work-meta,
+    .artwork-meta,
+    .caption-meta {
+      font-size: clamp(13px, 3.2vw, 15px);
+      line-height: 1.55;
+      letter-spacing: 0.01em;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .w-sub,
+      .card .meta,
+      .work-meta,
+      .artwork-meta,
+      .caption-meta {
+        font-size: 14px;
+        line-height: 1.6;
+        opacity: 0.92;
+      }
+    }
+
+    /* WORKS WHITE BACKGROUND FIX — mobile-safe cosmic dark restoration */
+    #works,
+    .works-section,
+    .works-panel,
+    .works-wrap,
+    .archive-panel {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(212,180,109,0.08), transparent 36%),
+        linear-gradient(180deg, rgba(12,16,28,0.94), rgba(7,10,20,0.98));
+      color: #f4efe6;
+    }
+
+    .w-card,
+    .work-card,
+    .card,
+    .art-card {
+      background: rgba(10, 14, 24, 0.92);
+      color: #f4efe6;
+    }
+
+    .w-meta,
+    .card-body,
+    .work-meta,
+    .artwork-meta,
+    .caption-meta {
+      background: transparent;
+      color: inherit;
+    }
+
+    @media (max-width: 768px) {
+      #works,
+      .works-section,
+      .works-panel,
+      .works-wrap,
+      .archive-panel {
+        background:
+          radial-gradient(circle at 50% 0%, rgba(212,180,109,0.08), transparent 36%),
+          linear-gradient(180deg, rgba(12,16,28,0.94), rgba(7,10,20,0.98)) !important;
+        color: #f4efe6 !important;
+      }
+
+      .w-card,
+      .work-card,
+      .card,
+      .art-card {
+        background: rgba(10, 14, 24, 0.92) !important;
+        color: #f4efe6 !important;
+      }
+
+      .w-meta,
+      .card-body,
+      .work-meta,
+      .artwork-meta,
+      .caption-meta {
+        background: transparent !important;
+        color: inherit !important;
+      }
+    }
+
+</style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
 </head>

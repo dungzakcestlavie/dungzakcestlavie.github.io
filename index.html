@@ -122,7 +122,7 @@
     body{
       margin:0;
       background:
-        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(121,167,255,.06) 40%, rgba(0,0,0,0) 72%),
+        radial-gradient(1200px 700px at 50% 0%, rgba(215,184,106,.10), rgba(90,125,210,.04) 40%, rgba(0,0,0,0) 72%),
         linear-gradient(180deg, var(--bg1), var(--bg0) 65%, #03040A);
       color: rgba(233,213,155,.86);
       font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -162,7 +162,7 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.58;
+      opacity:.42;
       mix-blend-mode:screen;
     }
 
@@ -639,7 +639,7 @@
       content:"";
       position:absolute;
       inset:-2px;
-      background: radial-gradient(120px 60px at 20% 50%, rgba(121,167,255,.12), rgba(0,0,0,0) 70%);
+      background: radial-gradient(120px 60px at 20% 50%, rgba(90,125,210,.04), rgba(0,0,0,0) 70%);
       opacity:.45;
       pointer-events:none;
       transition: opacity .25s ease;
@@ -686,7 +686,7 @@
       inset:0;
       background:
         radial-gradient(260px 120px at 10% 0%, rgba(215,184,106,.10), rgba(0,0,0,0) 60%),
-        radial-gradient(240px 120px at 90% 10%, rgba(121,167,255,.08), rgba(0,0,0,0) 62%);
+        radial-gradient(240px 120px at 90% 10%, rgba(90,125,210,.04), rgba(0,0,0,0) 62%);
       opacity:.55;
       pointer-events:none;
     }
@@ -971,7 +971,7 @@
       z-index: 71;
       background:
         radial-gradient(circle at 50% 40%, rgba(233,213,155,.14), rgba(0,0,0,0) 55%),
-        radial-gradient(circle at 50% 70%, rgba(121,167,255,.10), rgba(0,0,0,0) 62%),
+        radial-gradient(circle at 50% 70%, rgba(90,125,210,.04), rgba(0,0,0,0) 62%),
         radial-gradient(circle at 50% 50%, var(--orb-fill), rgba(0,0,0,0) 72%);
       box-shadow:
         0 0 0 1px rgba(0,0,0,.75),
@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.58 !important;
+      opacity:0.42 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -1555,6 +1555,91 @@
     .bio-panel,
     .archive-panel {
       background: rgba(7, 10, 20, 0.86) !important;
+    }
+
+
+
+    /* LIGHTFLOW BACKGROUND TONE LOCK FIX — deep navy + gold fixed tone */
+    html,
+    body {
+      background: #070A14 !important;
+      background-color: #070A14 !important;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(212,180,109,0.06), transparent 34%),
+        linear-gradient(180deg, #070A14 0%, #090D18 48%, #070A14 100%) !important;
+    }
+
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(212,180,109,0.06), transparent 34%),
+        linear-gradient(180deg, #070A14 0%, #090D18 48%, #070A14 100%) !important;
+    }
+
+    .site::before,
+    main::before {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(212,180,109,0.06), transparent 34%),
+        linear-gradient(180deg, #070A14 0%, #090D18 48%, #070A14 100%) !important;
+    }
+
+    #waveCanvas,
+    #waves {
+      opacity:0.42 !important;
+      mix-blend-mode:screen !important;
+    }
+
+    #bio-modal,
+    .bio-modal,
+    .modal,
+    .overlay,
+    .lightbox,
+    .viewer,
+    .lf-lightbox {
+      background: rgba(7, 10, 20, 0.92) !important;
+    }
+
+    .bio-backdrop,
+    .bio-modal::backdrop,
+    .modal::backdrop {
+      background: rgba(7, 10, 20, 0.72) !important;
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+    }
+
+    .bio-card {
+      background: linear-gradient(180deg, rgba(7,10,20,0.94), rgba(7,10,20,0.96)) !important;
+    }
+
+    .bio-modal,
+    .modal,
+    .panel {
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
+    }
+
+    .panel,
+    .poem-panel,
+    .works-panel,
+    .reports-panel,
+    .bio-panel,
+    .archive-panel,
+    section {
+      background-color: rgba(7, 10, 20, 0.86) !important;
+    }
+
+    .lf-lightbox.active,
+    .lightbox.active,
+    .viewer.open,
+    .viewer.active {
+      background: rgba(7, 10, 20, 0.92) !important;
     }
 
 </style>
@@ -3249,7 +3334,7 @@
         w * 0.50, h * 0.28, Math.max(w, h) * 0.75
       );
       bg.addColorStop(0, "rgba(212,180,109,0.09)");
-      bg.addColorStop(0.45, "rgba(70,120,180,0.07)");
+      bg.addColorStop(0.45, "rgba(70,120,180,0.03)");
       bg.addColorStop(1, "rgba(7,10,20,0)");
 
       ctx.fillStyle = bg;
@@ -3276,8 +3361,8 @@
         ctx.lineWidth = i === 0 ? 1.35 : 1.2;
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.28)"
-            : "rgba(92,126,210,0.22)";
+            ? "rgba(212,180,109,0.24)"
+            : "rgba(90,125,210,0.10)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =

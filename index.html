@@ -1676,6 +1676,42 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+
+    /* LIGHTFLOW WAVE LAYER LIFT FIX — wave only, final override */
+    #waveCanvas,
+    #waves{
+      position:fixed !important;
+      inset:0 !important;
+      width:100vw !important;
+      height:100dvh !important;
+      z-index:2 !important;
+      pointer-events:none !important;
+      opacity:0.55 !important;
+      mix-blend-mode:normal !important;
+      display:block !important;
+    }
+
+    body::before,
+    .site::before,
+    main::before{
+      z-index:1 !important;
+    }
+
+    body,
+    .site,
+    main,
+    header,
+    section{
+      position:relative !important;
+    }
+
+    .site,
+    main,
+    header,
+    section{
+      z-index:3 !important;
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -3373,18 +3409,18 @@
 
         const amp =
           i === 0
-            ? 16 + Math.sin(t * 0.7) * 3
-            : 19 + Math.cos(t * 0.6) * 3;
+            ? 20 + Math.sin(t * 0.6) * 4
+            : 24 + Math.cos(t * 0.5) * 5;
 
         const freq = i === 0 ? 0.0042 : 0.0039;
 
-        ctx.lineWidth = i === 0 ? 1.2 : 1.4;
+        ctx.lineWidth = i === 0 ? 1.6 : 1.8;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.22)"
-            : "rgba(212,180,109,0.16)";
+            ? "rgba(212,180,109,0.28)"
+            : "rgba(212,180,109,0.22)";
 
         for (let x = 0; x <= w; x += 6) {
           const y =

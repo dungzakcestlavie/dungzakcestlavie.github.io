@@ -162,7 +162,7 @@
       height:100dvh;
       z-index:0;
       pointer-events:none;
-      opacity:.32;
+      opacity:.44;
       mix-blend-mode:screen;
     }
 
@@ -1500,7 +1500,7 @@
       height:100dvh !important;
       z-index:0 !important;
       pointer-events:none !important;
-      opacity:0.32 !important;
+      opacity:0.44 !important;
       mix-blend-mode:screen !important;
       display:block !important;
     }
@@ -1533,6 +1533,28 @@
         linear-gradient(180deg, rgba(18, 20, 29, 0.88), rgba(7, 10, 20, 0.90)) !important;
       backdrop-filter:blur(2px);
       -webkit-backdrop-filter:blur(2px);
+    }
+
+    /* LIGHTFLOW TWO-WAVE RESTORE — panel transparency + canvas visibility only */
+    #waveCanvas {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      z-index: 0 !important;
+      pointer-events: none !important;
+      opacity: 0.44 !important;
+      mix-blend-mode: screen !important;
+      display: block !important;
+    }
+
+    .panel,
+    .poem-panel,
+    .works-panel,
+    .reports-panel,
+    .bio-panel,
+    .archive-panel {
+      background: rgba(7, 10, 20, 0.86) !important;
     }
 
 </style>
@@ -3226,9 +3248,8 @@
         w * 0.50, h * 0.28, 10,
         w * 0.50, h * 0.28, Math.max(w, h) * 0.75
       );
-      bg.addColorStop(0, "rgba(212,180,109,0.08)");
-      bg.addColorStop(0.35, "rgba(70,120,180,0.06)");
-      bg.addColorStop(0.70, "rgba(90,40,150,0.04)");
+      bg.addColorStop(0, "rgba(212,180,109,0.09)");
+      bg.addColorStop(0.45, "rgba(70,120,180,0.07)");
       bg.addColorStop(1, "rgba(7,10,20,0)");
 
       ctx.fillStyle = bg;
@@ -3237,21 +3258,21 @@
       for (let i = 0; i < 2; i++) {
         ctx.beginPath();
 
-        const yBase = h * (0.22 + i * 0.18);
-        const amp = 10 + i * 4;
-        const freq = 0.0055 + i * 0.0012;
+        const yBase = i === 0 ? h * 0.34 : h * 0.72;
+        const amp = i === 0 ? 13 : 16;
+        const freq = i === 0 ? 0.0048 : 0.0042;
 
-        ctx.lineWidth = i === 0 ? 1.4 : 1;
+        ctx.lineWidth = 1.1;
         ctx.strokeStyle =
           i === 0
-            ? "rgba(212,180,109,0.12)"
-            : "rgba(110,150,220,0.09)";
+            ? "rgba(212,180,109,0.18)"
+            : "rgba(90,125,210,0.14)";
 
-        for (let x = 0; x <= w; x += 7) {
+        for (let x = 0; x <= w; x += 6) {
           const y =
             yBase +
-            Math.sin(x * freq + t + i * 1.6) * amp +
-            Math.sin(x * freq * 0.42 + t * 0.72) * amp * 0.55;
+            Math.sin(x * freq + t + i * 1.8) * amp +
+            Math.sin(x * freq * 0.38 + t * 0.65) * amp * 0.45;
 
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
@@ -3260,7 +3281,7 @@
         ctx.stroke();
       }
 
-      t += 0.0035;
+      t += 0.0045;
       waveRaf = requestAnimationFrame(drawWave);
     }
 

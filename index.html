@@ -1823,6 +1823,108 @@
       cursor:zoom-out;
     }
 
+
+    /* KYWOO / LIGHTFLOW LIGHTBOX SMOOTH WIDTH-ZOOM SCROLL FIX — iOS mobile final override */
+    .lf-lightbox,
+    .lightbox{
+      overflow: hidden !important;
+      touch-action: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      overscroll-behavior: contain !important;
+      -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .lf-lightbox.active,
+    .lightbox.active{
+      display: block !important;
+    }
+
+    #lf-stage,
+    .lightbox-scroll{
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      overflow: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior: contain !important;
+      touch-action: pan-x pan-y !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #lf-stage.zoomed,
+    .lightbox-scroll.zoomed,
+    .lf-lightbox.zoomed #lf-stage{
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      display: flex !important;
+    }
+
+    #lf-image,
+    .lightbox-img{
+      display: block !important;
+      width: auto !important;
+      max-width: 92vw !important;
+      max-height: 82vh !important;
+      height: auto !important;
+      object-fit: contain !important;
+      transition: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      image-rendering: auto !important;
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      -webkit-user-drag: none !important;
+      touch-action: manipulation !important;
+      cursor: zoom-in !important;
+      margin: auto !important;
+    }
+
+    #lf-image.is-zoomed,
+    #lf-image.zoomed,
+    .lightbox-img.zoomed{
+      width: 180vw !important;
+      max-width: none !important;
+      max-height: none !important;
+      height: auto !important;
+      cursor: zoom-out !important;
+      margin: 0 !important;
+    }
+
+    @media (max-width: 768px){
+      #lf-image,
+      .lightbox-img{
+        max-width: 92vw !important;
+        max-height: 82vh !important;
+      }
+
+      #lf-image.is-zoomed,
+      #lf-image.zoomed,
+      .lightbox-img.zoomed{
+        width: 170vw !important;
+      }
+    }
+
+    body.zoomed,
+    main.zoomed,
+    section.zoomed,
+    .work-card.zoomed,
+    .w-card.zoomed{
+      transform: none !important;
+      scale: 1 !important;
+      zoom: 1 !important;
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2118,7 +2220,7 @@
 
   <div id="lf-lightbox" class="lf-lightbox" aria-hidden="true">
     <button id="lf-close" type="button" aria-label="Close">×</button>
-    <div id="lf-stage">
+    <div id="lf-stage" class="lightbox-scroll">
       <img id="lf-image" draggable="false" alt="">
     </div>
   </div>
@@ -2993,12 +3095,23 @@
     return $('#lf-stage') || $('#lf-lightbox');
   }
 
+  function getLightboxClientPoint(evt) {
+    const point = evt?.changedTouches?.[0] || evt?.touches?.[0] || evt;
+    return {
+      clientX: Number.isFinite(point?.clientX) ? point.clientX : window.innerWidth / 2,
+      clientY: Number.isFinite(point?.clientY) ? point.clientY : window.innerHeight / 2
+    };
+  }
+
   function applyLightboxTransform() {
     const lb = $('#lf-lightbox');
     const lbImg = $('#lf-image');
+    const scroller = getLightboxScroller();
     if (!lbImg) return;
     lbImg.classList.toggle('is-zoomed', lightboxZoomed);
+    lbImg.classList.toggle('zoomed', lightboxZoomed);
     if (lb) lb.classList.toggle('zoomed', lightboxZoomed);
+    if (scroller) scroller.classList.toggle('zoomed', lightboxZoomed);
   }
 
   function resetLightboxTransform() {
@@ -3023,8 +3136,12 @@
     lbLastTap = 0;
 
     if (lb) lb.classList.remove('zoomed');
-    if (lbImg) lbImg.classList.remove('is-zoomed');
+    if (lbImg) {
+      lbImg.classList.remove('is-zoomed');
+      lbImg.classList.remove('zoomed');
+    }
     if (scroller) {
+      scroller.classList.remove('zoomed');
       scroller.scrollLeft = 0;
       scroller.scrollTop = 0;
     }
@@ -3037,21 +3154,32 @@
     if (!lb || !lbImg || !scroller) return;
 
     if (lightboxZoomed) {
-      resetLightboxTransform();
+      lightboxZoomed = false;
+      zoomed = false;
+      lb.classList.remove('zoomed');
+      scroller.classList.remove('zoomed');
+      lbImg.classList.remove('is-zoomed');
+      lbImg.classList.remove('zoomed');
+      scroller.scrollLeft = 0;
+      scroller.scrollTop = 0;
       return;
     }
 
-    const p = getLightboxPoint(evt);
+    const point = getLightboxClientPoint(evt);
+    const rect = scroller.getBoundingClientRect();
+    const xRatio = rect.width > 0 ? Math.min(1, Math.max(0, (point.clientX - rect.left) / rect.width)) : 0.5;
+    const yRatio = rect.height > 0 ? Math.min(1, Math.max(0, (point.clientY - rect.top) / rect.height)) : 0.5;
+
     lightboxZoomed = true;
     zoomed = true;
     lb.classList.add('zoomed');
+    scroller.classList.add('zoomed');
     lbImg.classList.add('is-zoomed');
+    lbImg.classList.add('zoomed');
 
     requestAnimationFrame(() => {
-      const targetX = Math.max(0, (lbImg.scrollWidth || lbImg.offsetWidth || 0) * p.ratioX - scroller.clientWidth / 2);
-      const targetY = Math.max(0, (lbImg.scrollHeight || lbImg.offsetHeight || 0) * p.ratioY - scroller.clientHeight / 2);
-      scroller.scrollLeft = targetX;
-      scroller.scrollTop = targetY;
+      scroller.scrollLeft = Math.max(0, (scroller.scrollWidth - scroller.clientWidth) * xRatio);
+      scroller.scrollTop = Math.max(0, (scroller.scrollHeight - scroller.clientHeight) * yRatio);
     });
   }
 

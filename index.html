@@ -1757,11 +1757,24 @@
     }
 
 
-    /* LIGHTBOX NATIVE SMOOTH PINCH ZOOM FINAL FIX — no JS zoom, no width zoom, no transform zoom */
+    /* LIGHTBOX FAST NATIVE PINCH FIX — page locked, browser-native image pinch only */
+    html.lightbox-open,
+    body.lightbox-open{
+      overflow:hidden !important;
+      height:100% !important;
+      position:fixed !important;
+      width:100% !important;
+      touch-action:none !important;
+    }
+
+    body.lightbox-open{
+      left:0 !important;
+      right:0 !important;
+    }
+
     body.modal-open,
     body.viewer-open{
       overflow:hidden !important;
-      touch-action:auto !important;
     }
 
     .lf-lightbox,
@@ -1771,14 +1784,14 @@
       z-index:9999 !important;
       display:none;
       background:rgba(3,7,18,0.92) !important;
-      overflow:auto !important;
-      -webkit-overflow-scrolling:touch !important;
-      overscroll-behavior:contain !important;
-      touch-action:auto !important;
+      overflow:hidden !important;
+      touch-action:none !important;
       filter:none !important;
       backdrop-filter:none !important;
       -webkit-backdrop-filter:none !important;
+      overscroll-behavior:contain !important;
       contain:none !important;
+      -webkit-tap-highlight-color:transparent !important;
     }
 
     .lf-lightbox.active,
@@ -1795,33 +1808,25 @@
       min-width:0 !important;
       min-height:0 !important;
       overflow:visible !important;
-      -webkit-overflow-scrolling:touch !important;
-      overscroll-behavior:contain !important;
-      touch-action:auto !important;
       display:flex !important;
       align-items:center !important;
       justify-content:center !important;
       padding:0 !important;
       user-select:none !important;
       -webkit-user-select:none !important;
+      touch-action:auto !important;
       filter:none !important;
       backdrop-filter:none !important;
       -webkit-backdrop-filter:none !important;
     }
 
-    #lf-stage.zoomed,
-    .lightbox-scroll.zoomed,
-
     #lf-image,
-    #lf-image.is-zoomed,
-    #lf-image.zoomed,
-    .lightbox-img,
-    .lightbox-img.zoomed{
+    .lightbox-img{
       display:block !important;
       width:auto !important;
       height:auto !important;
       max-width:100vw !important;
-      max-height:none !important;
+      max-height:100vh !important;
       object-fit:contain !important;
       image-rendering:auto !important;
       -webkit-user-select:none !important;
@@ -1840,33 +1845,28 @@
     @media (max-width:768px){
       .lf-lightbox.active,
       .lightbox.active{
-        align-items:flex-start !important;
-        justify-content:flex-start !important;
-        overflow:auto !important;
-        -webkit-overflow-scrolling:touch !important;
-        touch-action:auto !important;
+        display:block !important;
+        overflow:hidden !important;
       }
 
       #lf-stage,
       .lightbox-scroll{
-        width:auto !important;
-        height:auto !important;
-        min-width:0 !important;
-        min-height:0 !important;
-        overflow:visible !important;
+        width:100% !important;
+        min-height:100% !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
         touch-action:auto !important;
       }
 
       #lf-image,
-      #lf-image.is-zoomed,
-      #lf-image.zoomed,
-      .lightbox-img,
-      .lightbox-img.zoomed{
+      .lightbox-img{
         max-width:none !important;
         width:100vw !important;
         height:auto !important;
         max-height:none !important;
         transform:none !important;
+        touch-action:auto !important;
       }
     }
 
@@ -2953,6 +2953,7 @@
   let lbItems = [];
   let lbIndex = 0;
   let lbOpenFrom = null;
+  let savedLightboxScrollY = 0;
 
   function resetLightboxNativeView() {
     const lb = $('#lf-lightbox');
@@ -2960,20 +2961,16 @@
     const stage = $('#lf-stage');
 
     if (lb) {
-      lb.classList.remove('zoomed');
       lb.scrollLeft = 0;
       lb.scrollTop = 0;
     }
 
     if (stage) {
-      stage.classList.remove('zoomed');
       stage.scrollLeft = 0;
       stage.scrollTop = 0;
     }
 
     if (lbImg) {
-      lbImg.classList.remove('is-zoomed');
-      lbImg.classList.remove('zoomed');
       lbImg.style.transform = '';
       lbImg.style.width = '';
       lbImg.style.maxWidth = '';
@@ -3080,10 +3077,13 @@
     const clickedIndex = cards.indexOf(card);
     if (clickedIndex < 0) return;
 
+    savedLightboxScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.documentElement.classList.add('lightbox-open');
+    document.body.classList.add('lightbox-open', 'modal-open', 'viewer-open');
+    document.body.style.top = `-${savedLightboxScrollY}px`;
+
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open', 'viewer-open');
-    document.body.style.overflow = 'hidden';
     setLightboxSlideContent(clickedIndex);
   }
 
@@ -3094,8 +3094,6 @@
 
     lb.classList.remove('active');
     lb.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open', 'viewer-open');
-    document.body.style.overflow = '';
     viewerIsBusy = false;
 
     resetLightboxNativeView();
@@ -3104,6 +3102,11 @@
       lbImg.removeAttribute('src');
       lbImg.alt = '';
     }
+
+    document.documentElement.classList.remove('lightbox-open');
+    document.body.classList.remove('lightbox-open', 'modal-open', 'viewer-open');
+    document.body.style.top = '';
+    window.scrollTo(0, savedLightboxScrollY || 0);
 
     lbOpenFrom = null;
     lbItems = [];

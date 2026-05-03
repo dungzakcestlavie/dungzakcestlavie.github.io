@@ -2,7 +2,7 @@
 <html lang="ko" style="background:#070A14;">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
@@ -504,7 +504,6 @@
       cursor:pointer;
       display:flex;
       flex-direction:column;
-      will-change: transform;
     }
     .w-thumb{
       width:100%;
@@ -916,13 +915,6 @@
       padding: 0;
     }
 
-    .lf-lightbox.zoomed #lf-stage{
-      display: block;
-      min-width: 100%;
-      min-height: 100%;
-      text-align: left;
-    }
-
     #lf-image{
       display: block;
       width: auto;
@@ -941,15 +933,6 @@
       touch-action: manipulation;
       cursor: zoom-in;
       margin: auto;
-    }
-
-    #lf-image.is-zoomed{
-      width: 200vw;
-      max-width: none;
-      max-height: none;
-      height: auto;
-      cursor: zoom-out;
-      margin: 0;
     }
 
     #lf-close{
@@ -1774,155 +1757,117 @@
     }
 
 
-    /* WORKS LIGHTBOX iOS BLACKOUT + WIDTH ZOOM RESTORE — image width only */
-    .lf-lightbox,
-    #lf-stage{
-      filter:none !important;
-      backdrop-filter:none !important;
-      -webkit-backdrop-filter:none !important;
-      overscroll-behavior:contain !important;
-      -webkit-tap-highlight-color:transparent !important;
+    /* LIGHTBOX NATIVE SMOOTH PINCH ZOOM FINAL FIX — no JS zoom, no width zoom, no transform zoom */
+    body.modal-open,
+    body.viewer-open{
+      overflow:hidden !important;
+      touch-action:auto !important;
     }
 
-    .lf-lightbox{
-      overflow:auto !important;
-      -webkit-overflow-scrolling:touch !important;
-      touch-action:pan-x pan-y !important;
-    }
-
-    #lf-stage{
-      overflow:auto !important;
-      -webkit-overflow-scrolling:touch !important;
-      touch-action:pan-x pan-y !important;
-    }
-
-    #lf-image{
-      display:block !important;
-      width:auto !important;
-      max-width:92vw !important;
-      max-height:92vh !important;
-      height:auto !important;
-      object-fit:contain !important;
-      transition:none !important;
-      filter:none !important;
-      backdrop-filter:none !important;
-      -webkit-backdrop-filter:none !important;
-      image-rendering:auto !important;
-      user-select:none !important;
-      -webkit-user-select:none !important;
-      -webkit-user-drag:none !important;
-      touch-action:manipulation !important;
-      cursor:zoom-in;
-    }
-
-    #lf-image.is-zoomed{
-      width:200vw !important;
-      max-width:none !important;
-      max-height:none !important;
-      height:auto !important;
-      cursor:zoom-out;
-    }
-
-
-    /* KYWOO / LIGHTFLOW LIGHTBOX SMOOTH WIDTH-ZOOM SCROLL FIX — iOS mobile final override */
     .lf-lightbox,
     .lightbox{
-      overflow: hidden !important;
-      touch-action: none !important;
-      filter: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      overscroll-behavior: contain !important;
-      -webkit-tap-highlight-color: transparent !important;
+      position:fixed !important;
+      inset:0 !important;
+      z-index:9999 !important;
+      display:none;
+      background:rgba(3,7,18,0.92) !important;
+      overflow:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior:contain !important;
+      touch-action:auto !important;
+      filter:none !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      contain:none !important;
     }
 
     .lf-lightbox.active,
     .lightbox.active{
-      display: block !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
     }
 
     #lf-stage,
     .lightbox-scroll{
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 100% !important;
-      overflow: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      overscroll-behavior: contain !important;
-      touch-action: pan-x pan-y !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      padding: 0 !important;
-      user-select: none !important;
-      -webkit-user-select: none !important;
-      filter: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+      width:auto !important;
+      height:auto !important;
+      min-width:0 !important;
+      min-height:0 !important;
+      overflow:visible !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior:contain !important;
+      touch-action:auto !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      padding:0 !important;
+      user-select:none !important;
+      -webkit-user-select:none !important;
+      filter:none !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
     }
 
     #lf-stage.zoomed,
     .lightbox-scroll.zoomed,
-    .lf-lightbox.zoomed #lf-stage{
-      align-items: flex-start !important;
-      justify-content: flex-start !important;
-      display: flex !important;
-    }
 
     #lf-image,
-    .lightbox-img{
-      display: block !important;
-      width: auto !important;
-      max-width: 92vw !important;
-      max-height: 82vh !important;
-      height: auto !important;
-      object-fit: contain !important;
-      transition: none !important;
-      filter: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      image-rendering: auto !important;
-      -webkit-user-select: none !important;
-      user-select: none !important;
-      -webkit-user-drag: none !important;
-      touch-action: manipulation !important;
-      cursor: zoom-in !important;
-      margin: auto !important;
-    }
-
     #lf-image.is-zoomed,
     #lf-image.zoomed,
+    .lightbox-img,
     .lightbox-img.zoomed{
-      width: 180vw !important;
-      max-width: none !important;
-      max-height: none !important;
-      height: auto !important;
-      cursor: zoom-out !important;
-      margin: 0 !important;
+      display:block !important;
+      width:auto !important;
+      height:auto !important;
+      max-width:100vw !important;
+      max-height:none !important;
+      object-fit:contain !important;
+      image-rendering:auto !important;
+      -webkit-user-select:none !important;
+      user-select:none !important;
+      -webkit-user-drag:none !important;
+      touch-action:auto !important;
+      transform:none !important;
+      transition:none !important;
+      filter:none !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      cursor:auto !important;
+      margin:auto !important;
     }
 
-    @media (max-width: 768px){
-      #lf-image,
-      .lightbox-img{
-        max-width: 92vw !important;
-        max-height: 82vh !important;
+    @media (max-width:768px){
+      .lf-lightbox.active,
+      .lightbox.active{
+        align-items:flex-start !important;
+        justify-content:flex-start !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        touch-action:auto !important;
       }
 
+      #lf-stage,
+      .lightbox-scroll{
+        width:auto !important;
+        height:auto !important;
+        min-width:0 !important;
+        min-height:0 !important;
+        overflow:visible !important;
+        touch-action:auto !important;
+      }
+
+      #lf-image,
       #lf-image.is-zoomed,
       #lf-image.zoomed,
+      .lightbox-img,
       .lightbox-img.zoomed{
-        width: 170vw !important;
+        max-width:none !important;
+        width:100vw !important;
+        height:auto !important;
+        max-height:none !important;
+        transform:none !important;
       }
-    }
-
-    body.zoomed,
-    main.zoomed,
-    section.zoomed,
-    .work-card.zoomed,
-    .w-card.zoomed{
-      transform: none !important;
-      scale: 1 !important;
-      zoom: 1 !important;
     }
 
 </style>
@@ -2991,13 +2936,9 @@
         if (e.target && e.target.id === 'lf-close') return;
         e.preventDefault();
         e.stopPropagation();
-        toggleLightboxZoom(e);
+        lb.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        if (stage) stage.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
-
-      lb.addEventListener('touchstart', onLightboxTouchStart, { passive: false });
-      lb.addEventListener('touchmove', onLightboxTouchMove, { passive: false });
-      lb.addEventListener('touchend', onLightboxTouchEnd, { passive: false });
-      lb.addEventListener('touchcancel', onLightboxTouchCancel, { passive: false });
     }
 
     if (btnX && btnX.dataset.bound !== '1') {
@@ -3013,32 +2954,40 @@
   let lbIndex = 0;
   let lbOpenFrom = null;
 
-  const LIGHTBOX_DEFAULT_ZOOM = 2.5;
+  function resetLightboxNativeView() {
+    const lb = $('#lf-lightbox');
+    const lbImg = $('#lf-image');
+    const stage = $('#lf-stage');
 
-  let lightboxZoomed = false;
+    if (lb) {
+      lb.classList.remove('zoomed');
+      lb.scrollLeft = 0;
+      lb.scrollTop = 0;
+    }
 
-  let zoomed = false;
-  let lastScale = LIGHTBOX_DEFAULT_ZOOM;
-  let lastOriginX = 50;
-  let lastOriginY = 50;
-  let lastTranslateX = 0;
-  let lastTranslateY = 0;
-  let hasLastZoomState = false;
+    if (stage) {
+      stage.classList.remove('zoomed');
+      stage.scrollLeft = 0;
+      stage.scrollTop = 0;
+    }
 
-  let lbScale = 1;
-  let lbX = 0;
-  let lbY = 0;
-  let lbOriginX = 50;
-  let lbOriginY = 50;
-  let lbStartX = 0;
-  let lbStartY = 0;
-  let lbLastX = 0;
-  let lbLastY = 0;
-  let lbIsDragging = false;
-  let lbIsZooming = false;
-  let lbInitialDistance = 0;
-  let lbTouchMoved = false;
-  let lbLastTap = 0;
+    if (lbImg) {
+      lbImg.classList.remove('is-zoomed');
+      lbImg.classList.remove('zoomed');
+      lbImg.style.transform = '';
+      lbImg.style.width = '';
+      lbImg.style.maxWidth = '';
+      lbImg.style.maxHeight = '';
+    }
+
+    swipeLocked = false;
+    swipeDX = 0;
+    swipeDY = 0;
+    if (swipeRAF) {
+      cancelAnimationFrame(swipeRAF);
+      swipeRAF = null;
+    }
+  }
 
   let viewerIsBusy = false;
   let swipeDX = 0;
@@ -3065,128 +3014,6 @@
     return Array.from($$('.w-card', activePanel));
   }
 
-  function clampZoomScale(value) {
-    const n = Number(value);
-    if (!Number.isFinite(n)) return LIGHTBOX_DEFAULT_ZOOM;
-    return Math.min(3, Math.max(2, n));
-  }
-
-  function getLightboxPoint(evt) {
-    const lbImg = $('#lf-image');
-    const rect = lbImg ? lbImg.getBoundingClientRect() : null;
-    const fallbackX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
-    const fallbackY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
-
-    const point = evt?.changedTouches?.[0] || evt?.touches?.[0] || evt;
-    const clientX = Number.isFinite(point?.clientX) ? point.clientX : fallbackX;
-    const clientY = Number.isFinite(point?.clientY) ? point.clientY : fallbackY;
-
-    if (!rect || rect.width <= 0 || rect.height <= 0) {
-      return { ratioX: 0.5, ratioY: 0.5 };
-    }
-
-    return {
-      ratioX: Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)),
-      ratioY: Math.min(1, Math.max(0, (clientY - rect.top) / rect.height))
-    };
-  }
-
-  function getLightboxScroller() {
-    return $('#lf-stage') || $('#lf-lightbox');
-  }
-
-  function getLightboxClientPoint(evt) {
-    const point = evt?.changedTouches?.[0] || evt?.touches?.[0] || evt;
-    return {
-      clientX: Number.isFinite(point?.clientX) ? point.clientX : window.innerWidth / 2,
-      clientY: Number.isFinite(point?.clientY) ? point.clientY : window.innerHeight / 2
-    };
-  }
-
-  function applyLightboxTransform() {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    const scroller = getLightboxScroller();
-    if (!lbImg) return;
-    lbImg.classList.toggle('is-zoomed', lightboxZoomed);
-    lbImg.classList.toggle('zoomed', lightboxZoomed);
-    if (lb) lb.classList.toggle('zoomed', lightboxZoomed);
-    if (scroller) scroller.classList.toggle('zoomed', lightboxZoomed);
-  }
-
-  function resetLightboxTransform() {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    const scroller = getLightboxScroller();
-
-    lightboxZoomed = false;
-    zoomed = false;
-    lbScale = 1;
-    lbX = 0;
-    lbY = 0;
-    lbOriginX = 50;
-    lbOriginY = 50;
-    lbIsDragging = false;
-    lbIsZooming = false;
-    lbInitialDistance = 0;
-    lbTouchMoved = false;
-    swipeLocked = false;
-    swipeDX = 0;
-    swipeDY = 0;
-    lbLastTap = 0;
-
-    if (lb) lb.classList.remove('zoomed');
-    if (lbImg) {
-      lbImg.classList.remove('is-zoomed');
-      lbImg.classList.remove('zoomed');
-    }
-    if (scroller) {
-      scroller.classList.remove('zoomed');
-      scroller.scrollLeft = 0;
-      scroller.scrollTop = 0;
-    }
-  }
-
-  function toggleLightboxZoom(evt) {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    const scroller = getLightboxScroller();
-    if (!lb || !lbImg || !scroller) return;
-
-    if (lightboxZoomed) {
-      lightboxZoomed = false;
-      zoomed = false;
-      lb.classList.remove('zoomed');
-      scroller.classList.remove('zoomed');
-      lbImg.classList.remove('is-zoomed');
-      lbImg.classList.remove('zoomed');
-      scroller.scrollLeft = 0;
-      scroller.scrollTop = 0;
-      return;
-    }
-
-    const point = getLightboxClientPoint(evt);
-    const rect = scroller.getBoundingClientRect();
-    const xRatio = rect.width > 0 ? Math.min(1, Math.max(0, (point.clientX - rect.left) / rect.width)) : 0.5;
-    const yRatio = rect.height > 0 ? Math.min(1, Math.max(0, (point.clientY - rect.top) / rect.height)) : 0.5;
-
-    lightboxZoomed = true;
-    zoomed = true;
-    lb.classList.add('zoomed');
-    scroller.classList.add('zoomed');
-    lbImg.classList.add('is-zoomed');
-    lbImg.classList.add('zoomed');
-
-    requestAnimationFrame(() => {
-      scroller.scrollLeft = Math.max(0, (scroller.scrollWidth - scroller.clientWidth) * xRatio);
-      scroller.scrollTop = Math.max(0, (scroller.scrollHeight - scroller.clientHeight) * yRatio);
-    });
-  }
-
-  function getTouchDistance(t1, t2) {
-    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-  }
-
   function preloadNeighborLightboxImages() {
     if (!lbItems || lbItems.length < 2) return;
 
@@ -3208,7 +3035,7 @@
     markViewerBusy();
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
-    resetLightboxTransform({ save: false });
+    resetLightboxNativeView();
 
     const src = lbItems[index].src;
     if (!src) return;
@@ -3271,7 +3098,7 @@
     document.body.style.overflow = '';
     viewerIsBusy = false;
 
-    resetLightboxTransform();
+    resetLightboxNativeView();
 
     if (lbImg) {
       lbImg.removeAttribute('src');
@@ -3281,116 +3108,6 @@
     lbOpenFrom = null;
     lbItems = [];
     lbIndex = 0;
-  }
-
-  function onLightboxTouchStart(e) {
-    const lb = $('#lf-lightbox');
-    if (!lb || !lb.classList.contains('active')) return;
-
-    if (e.touches.length > 1) {
-      e.preventDefault();
-      return;
-    }
-
-    if (e.touches.length !== 1) return;
-
-    lbStartX = e.touches[0].clientX;
-    lbStartY = e.touches[0].clientY;
-    lbLastX = lbStartX;
-    lbLastY = lbStartY;
-    swipeDX = 0;
-    swipeDY = 0;
-    swipeLocked = false;
-    lbIsDragging = true;
-    lbTouchMoved = false;
-  }
-
-  function onLightboxTouchMove(e) {
-    const lb = $('#lf-lightbox');
-    if (!lb || !lb.classList.contains('active')) return;
-
-    if (e.touches.length > 1) {
-      e.preventDefault();
-      return;
-    }
-
-    if (!lbIsDragging || e.touches.length !== 1) return;
-
-    const nowX = e.touches[0].clientX;
-    const nowY = e.touches[0].clientY;
-    const moveX = nowX - lbStartX;
-    const moveY = nowY - lbStartY;
-
-    swipeDX = moveX;
-    swipeDY = moveY;
-
-    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
-
-    if (lightboxZoomed) {
-      return;
-    }
-
-    if (!swipeRAF) {
-      swipeRAF = requestAnimationFrame(() => {
-        swipeRAF = null;
-        if (Math.abs(swipeDX) > Math.abs(swipeDY) && Math.abs(swipeDX) > 8) {
-          swipeLocked = true;
-        }
-      });
-    }
-  }
-
-  function onLightboxTouchEnd(e) {
-    const lb = $('#lf-lightbox');
-    if (!lb || !lb.classList.contains('active')) return;
-
-    const horizontal = Math.abs(swipeDX);
-    const vertical = Math.abs(swipeDY);
-    const now = performance.now();
-
-    if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
-      const tapNow = Date.now();
-      if (tapNow - lbLastTap < 300) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleLightboxZoom(e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
-        lbLastTap = 0;
-      } else {
-        lbLastTap = tapNow;
-      }
-    } else if (
-      !lightboxZoomed &&
-      swipeLocked &&
-      horizontal > SWIPE_THRESHOLD &&
-      vertical < SWIPE_VERTICAL_LIMIT &&
-      now - lastSwipeTime > SWIPE_COOLDOWN
-    ) {
-      e.preventDefault();
-      lastSwipeTime = now;
-      if (swipeDX > 0) goPrevLightboxImage();
-      else goNextLightboxImage();
-      lbLastTap = 0;
-    }
-
-    lbIsDragging = false;
-    lbTouchMoved = false;
-    swipeLocked = false;
-    swipeDX = 0;
-    swipeDY = 0;
-  }
-
-  function onLightboxTouchCancel() {
-    lbIsDragging = false;
-    lbIsZooming = false;
-    lbInitialDistance = 0;
-    lbTouchMoved = false;
-    swipeLocked = false;
-    swipeDX = 0;
-    swipeDY = 0;
-    if (swipeRAF) {
-      cancelAnimationFrame(swipeRAF);
-      swipeRAF = null;
-    }
   }
 
   function updateOpenLightboxCaption() {

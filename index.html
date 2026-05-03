@@ -1748,23 +1748,37 @@
     }
 
 
-    /* DUNGZAK.ART LIGHTBOX LAPTOP/PC NO OVERSIZE FLASH FINAL
-       Scope: only Works lightbox image sizing/loading and laptop arrows.
-       Fix:
-       - Prevents image from appearing too large before returning to normal.
-       - Keeps arrows only on laptop/PC and outside artwork focus.
-       - Keeps mobile behavior unchanged. */
+    /* DUNGZAK.ART LIGHTBOX PRELOAD STABILITY FINAL
+       Referenced from Archive Pro stable image-lock method.
+       Scope: Works Lightbox only.
+       - Prevents the image from appearing huge for one frame before resizing.
+       - Keeps laptop/PC arrows only.
+       - Keeps current color/design/text/data/language/menu behavior unchanged. */
 
     .lf-lightbox,
     .lf-lightbox.active{
       background: rgba(3, 7, 18, 0.82) !important;
       backdrop-filter: blur(4px) !important;
       -webkit-backdrop-filter: blur(4px) !important;
+      overflow:hidden !important;
     }
 
-    #lf-prev,
-    #lf-next{
-      display:none !important;
+    #lf-stage{
+      overflow:hidden !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      contain:layout paint size !important;
+    }
+
+    #lf-image{
+      display:block !important;
+      width:auto !important;
+      height:auto !important;
+      object-fit:contain !important;
+      transform:translate3d(0,0,0) scale(1) !important;
+      transform-origin:center center !important;
+      transition:none !important;
     }
 
     #lf-image.is-loading{
@@ -1775,33 +1789,21 @@
       opacity:1 !important;
     }
 
-    @media (min-width: 769px){
-      .lf-lightbox{
-        overflow:hidden !important;
-      }
+    #lf-prev,
+    #lf-next{
+      display:none !important;
+    }
 
+    @media (min-width: 769px){
       #lf-stage{
         width:100vw !important;
         height:100vh !important;
-        overflow:hidden !important;
-        display:flex !important;
-        align-items:center !important;
-        justify-content:center !important;
         padding:72px 112px 42px 112px !important;
-        contain:layout paint size !important;
       }
 
       #lf-image{
-        display:block !important;
-        width:auto !important;
-        height:auto !important;
         max-width:min(calc(100vw - 260px), 900px) !important;
         max-height:calc(100vh - 150px) !important;
-        object-fit:contain !important;
-        transform:translate3d(0,0,0) scale(1) !important;
-        transform-origin:center center !important;
-        transition:none !important;
-        will-change:auto !important;
       }
 
       #lf-prev,
@@ -3949,6 +3951,98 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     document.addEventListener('DOMContentLoaded', apply, { once:true });
   } else {
     apply();
+  }
+})();
+</script>
+
+
+<script>
+/* DUNGZAK.ART LIGHTBOX PRELOAD STABILITY PATCH — Works Lightbox only */
+(() => {
+  const applyLightboxPreloadStability = () => {
+    const box = document.querySelector('.lf-lightbox') || document.getElementById('lf-lightbox');
+    const img = document.getElementById('lf-image');
+    if (!box || !img || img.__dczPreloadStablePatched) return;
+
+    img.__dczPreloadStablePatched = true;
+    let committing = false;
+    let pendingSrc = '';
+
+    const resetImageBox = () => {
+      img.style.transform = 'translate3d(0,0,0) scale(1)';
+      img.style.width = 'auto';
+      img.style.height = 'auto';
+    };
+
+    const commitLoadedSrc = (src) => {
+      committing = true;
+      resetImageBox();
+      img.src = src;
+      requestAnimationFrame(() => {
+        resetImageBox();
+        img.classList.remove('is-loading');
+        img.classList.add('is-ready');
+        committing = false;
+      });
+    };
+
+    const preloadAndCommit = (src) => {
+      if (!src || src === pendingSrc) return;
+      pendingSrc = src;
+
+      img.classList.remove('is-ready');
+      img.classList.add('is-loading');
+      resetImageBox();
+
+      const pre = new Image();
+      pre.decoding = 'async';
+
+      pre.onload = () => {
+        if (pendingSrc !== src) return;
+        commitLoadedSrc(src);
+      };
+
+      pre.onerror = () => {
+        if (pendingSrc !== src) return;
+        img.classList.remove('is-loading');
+        img.classList.add('is-ready');
+      };
+
+      pre.src = src;
+    };
+
+    const observer = new MutationObserver(() => {
+      if (committing) return;
+      const src = img.getAttribute('src');
+      if (!src) {
+        pendingSrc = '';
+        img.classList.remove('is-loading', 'is-ready');
+        return;
+      }
+
+      if (box.classList.contains('active')) {
+        preloadAndCommit(src);
+      }
+    });
+
+    observer.observe(img, { attributes:true, attributeFilter:['src'] });
+
+    img.addEventListener('load', () => {
+      resetImageBox();
+      img.classList.remove('is-loading');
+      img.classList.add('is-ready');
+    });
+
+    img.addEventListener('error', () => {
+      img.classList.remove('is-loading');
+      img.classList.add('is-ready');
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyLightboxPreloadStability, { once:true });
+  } else {
+    applyLightboxPreloadStability();
   }
 })();
 </script>

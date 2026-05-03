@@ -2,7 +2,7 @@
 <html lang="ko" style="background:#070A14;">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
@@ -116,7 +116,7 @@
       max-width:100%;
       overflow-x:hidden;
       overscroll-behavior-x:none;
-      touch-action:pan-y;
+      touch-action:auto;
     }
 
     body{
@@ -1773,10 +1773,10 @@
       width:auto !important;
       height:auto !important;
       object-fit:contain !important;
-      transform:translate3d(0,0,0) scale(1) !important;
+      transform:translate3d(0,0,0) scale(1);
       transform-origin:center center !important;
       transition:none !important;
-      will-change:auto !important;
+      will-change:transform !important;
     }
 
     #lf-prev,
@@ -1857,6 +1857,114 @@
       #lf-image{
         max-width:94vw !important;
         max-height:90vh !important;
+      }
+    }
+
+
+
+    /* DUNGZAK.ART WAVE + ZOOM PERFORMANCE FINAL OVERRIDE
+       - Browser zoom restored by viewport + touch-action:auto.
+       - Wave stays alive but returns to true background layer.
+       - Removes high-cost foreground canvas compositing.
+       - Keeps Works, Reports, Bio, KR/EN, data, and visual tone unchanged. */
+    html,
+    body{
+      touch-action:auto !important;
+      overscroll-behavior-x:none !important;
+      background:#070A14 !important;
+    }
+
+    body.modal-open,
+    body.viewer-open{
+      overflow:hidden !important;
+      touch-action:none !important;
+    }
+
+    #waveCanvas,
+    #waves{
+      position:fixed !important;
+      inset:0 !important;
+      width:100vw !important;
+      height:100dvh !important;
+      z-index:0 !important;
+      pointer-events:none !important;
+      opacity:.44 !important;
+      mix-blend-mode:screen !important;
+      display:block !important;
+      contain:strict !important;
+      transform:translateZ(0) !important;
+      will-change:auto !important;
+    }
+
+    body::before,
+    .site::before,
+    main::before{
+      z-index:0 !important;
+      pointer-events:none !important;
+    }
+
+    .site,
+    .site-shell,
+    header,
+    main,
+    section,
+    footer{
+      position:relative !important;
+      z-index:1 !important;
+    }
+
+    header{
+      z-index:20 !important;
+    }
+
+    #bio-modal{
+      z-index:50 !important;
+    }
+
+    .lf-lightbox,
+    .lf-lightbox.active{
+      z-index:9999 !important;
+      contain:layout paint size !important;
+      transform:none !important;
+      will-change:auto !important;
+      background:rgba(3,7,18,.86) !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+    }
+
+    #lf-stage{
+      contain:layout paint size !important;
+      transform:translateZ(0) !important;
+      will-change:auto !important;
+      touch-action:none !important;
+    }
+
+    #lf-image{
+      transform-origin:center center !important;
+      will-change:transform !important;
+      backface-visibility:hidden !important;
+      -webkit-backface-visibility:hidden !important;
+      transition:none !important;
+      touch-action:none !important;
+    }
+
+    @media (max-width:768px){
+      header{
+        backdrop-filter:none !important;
+        -webkit-backdrop-filter:none !important;
+      }
+
+      #waveCanvas,
+      #waves{
+        opacity:.38 !important;
+        mix-blend-mode:screen !important;
+      }
+
+      .w-card,
+      .work-card,
+      .r-item,
+      .report-card{
+        will-change:auto !important;
       }
     }
 
@@ -2968,6 +3076,7 @@
   let lbIndex = 0;
   let lbOpenFrom = null;
 
+  let lbRAF = 0;
   let lbScale = 1;
   let lbX = 0;
   let lbY = 0;
@@ -3009,7 +3118,11 @@
   function applyLightboxTransform() {
     const lbImg = $('#lf-image');
     if (!lbImg) return;
-    lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+    if (lbRAF) return;
+    lbRAF = requestAnimationFrame(() => {
+      lbRAF = 0;
+      lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+    });
   }
 
   function resetLightboxTransform() {

@@ -1968,6 +1968,28 @@
       }
     }
 
+
+
+    /* DUNGZAK.ART LIGHTBOX BACKGROUND QUIET FOCUS FIX — FINAL OVERRIDE
+       Scope: Lightbox background darkness / blur only.
+       Keeps design, layout, text, Works data, KR/EN, menu, and Lightbox structure unchanged. */
+    .lf-lightbox,
+    .lf-lightbox.active,
+    .lightbox,
+    .lightbox.active{
+      background: rgba(3, 7, 18, 0.92) !important;
+      backdrop-filter: blur(2px) brightness(0.45) !important;
+      -webkit-backdrop-filter: blur(2px) brightness(0.45) !important;
+    }
+
+    .lf-lightbox img,
+    .lightbox img,
+    #lf-image{
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />

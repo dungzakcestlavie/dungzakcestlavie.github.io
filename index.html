@@ -1747,6 +1747,62 @@
       }
     }
 
+
+    /* LIGHTBOX DESKTOP ARROWS ONLY — viewport fixed, artwork-safe */
+    #lf-prev,
+    #lf-next{
+      display:none !important;
+    }
+
+    @media (min-width: 769px){
+      #lf-prev,
+      #lf-next{
+        position:fixed !important;
+        top:50% !important;
+        transform:translateY(-50%) !important;
+        z-index:10040 !important;
+        width:52px !important;
+        height:72px !important;
+        border-radius:999px !important;
+        border:1px solid rgba(215,184,106,.30) !important;
+        background:rgba(7,10,20,.48) !important;
+        color:rgba(233,213,155,.92) !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        font-size:34px !important;
+        line-height:1 !important;
+        font-weight:400 !important;
+        cursor:pointer !important;
+        box-shadow:0 10px 26px rgba(0,0,0,.30) !important;
+        text-shadow:0 1px 0 rgba(0,0,0,.72) !important;
+        touch-action:manipulation !important;
+        -webkit-tap-highlight-color:transparent !important;
+      }
+
+      #lf-prev{
+        left:calc(16px + var(--safe-left)) !important;
+      }
+
+      #lf-next{
+        right:calc(16px + var(--safe-right)) !important;
+      }
+
+      #lf-prev:hover,
+      #lf-next:hover{
+        background:rgba(7,10,20,.68) !important;
+        border-color:rgba(215,184,106,.54) !important;
+        color:rgba(233,213,155,1) !important;
+      }
+    }
+
+    @media (max-width: 768px){
+      #lf-prev,
+      #lf-next{
+        display:none !important;
+      }
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2042,6 +2098,8 @@
 
   <div id="lf-lightbox" class="lf-lightbox" aria-hidden="true">
     <button id="lf-close" type="button" aria-label="Close">×</button>
+    <button id="lf-prev" type="button" aria-label="Previous artwork">‹</button>
+    <button id="lf-next" type="button" aria-label="Next artwork">›</button>
     <div id="lf-stage">
       <img id="lf-image" draggable="false" alt="">
     </div>
@@ -2800,6 +2858,8 @@
     const lb = $('#lf-lightbox');
     const stage = $('#lf-stage');
     const btnX = $('#lf-close');
+    const btnPrev = $('#lf-prev');
+    const btnNext = $('#lf-next');
 
     if (lb && lb.dataset.bound !== '1') {
       lb.dataset.bound = '1';
@@ -2825,6 +2885,24 @@
       btnX.addEventListener('click', (e) => {
         e.preventDefault();
         closeLightbox();
+      });
+    }
+
+    if (btnPrev && btnPrev.dataset.bound !== '1') {
+      btnPrev.dataset.bound = '1';
+      btnPrev.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        goPrevLightboxImage();
+      });
+    }
+
+    if (btnNext && btnNext.dataset.bound !== '1') {
+      btnNext.dataset.bound = '1';
+      btnNext.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        goNextLightboxImage();
       });
     }
   }

@@ -1748,12 +1748,131 @@
     }
 
 
-    /* DUNGZAK.ART LIGHTBOX PRELOAD STABILITY FINAL
-       Referenced from Archive Pro stable image-lock method.
-       Scope: Works Lightbox only.
-       - Prevents the image from appearing huge for one frame before resizing.
-       - Keeps laptop/PC arrows only.
-       - Keeps current color/design/text/data/language/menu behavior unchanged. */
+    /* DUNGZAK.ART LIGHTBOX LAPTOP/PC NO OVERSIZE FLASH FINAL
+       Scope: only Works lightbox image sizing/loading and laptop arrows.
+       Fix:
+       - Prevents image from appearing too large before returning to normal.
+       - Keeps arrows only on laptop/PC and outside artwork focus.
+       - Keeps mobile behavior unchanged. */
+
+    .lf-lightbox,
+    .lf-lightbox.active{
+      background: rgba(3, 7, 18, 0.82) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+    }
+
+    #lf-prev,
+    #lf-next{
+      display:none !important;
+    }
+
+    #lf-image.is-loading{
+      opacity:0 !important;
+    }
+
+    #lf-image.is-ready{
+      opacity:1 !important;
+    }
+
+    @media (min-width: 769px){
+      .lf-lightbox{
+        overflow:hidden !important;
+      }
+
+      #lf-stage{
+        width:100vw !important;
+        height:100vh !important;
+        overflow:hidden !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:72px 112px 42px 112px !important;
+        contain:layout paint size !important;
+      }
+
+      #lf-image{
+        display:block !important;
+        width:auto !important;
+        height:auto !important;
+        max-width:min(calc(100vw - 260px), 900px) !important;
+        max-height:calc(100vh - 150px) !important;
+        object-fit:contain !important;
+        transform:translate3d(0,0,0) scale(1) !important;
+        transform-origin:center center !important;
+        transition:none !important;
+        will-change:auto !important;
+      }
+
+      #lf-prev,
+      #lf-next{
+        position:fixed !important;
+        top:50% !important;
+        transform:translateY(-50%) !important;
+        z-index:10040 !important;
+        width:52px !important;
+        height:72px !important;
+        border-radius:999px !important;
+        border:1px solid rgba(215,184,106,.30) !important;
+        background:rgba(7,10,20,.48) !important;
+        color:rgba(233,213,155,.92) !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        font-size:34px !important;
+        line-height:1 !important;
+        font-weight:400 !important;
+        cursor:pointer !important;
+        box-shadow:0 10px 26px rgba(0,0,0,.30) !important;
+        text-shadow:0 1px 0 rgba(0,0,0,.72) !important;
+        touch-action:manipulation !important;
+        -webkit-tap-highlight-color:transparent !important;
+      }
+
+      #lf-prev{
+        left:calc(20px + var(--safe-left)) !important;
+      }
+
+      #lf-next{
+        right:calc(20px + var(--safe-right)) !important;
+      }
+
+      #lf-prev:hover,
+      #lf-next:hover{
+        background:rgba(7,10,20,.68) !important;
+        border-color:rgba(215,184,106,.54) !important;
+        color:rgba(233,213,155,1) !important;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1180px){
+      #lf-stage{
+        padding:72px 92px 40px 92px !important;
+      }
+
+      #lf-image{
+        max-width:min(calc(100vw - 220px), 780px) !important;
+        max-height:calc(100vh - 155px) !important;
+      }
+    }
+
+    @media (max-width: 768px){
+      #lf-prev,
+      #lf-next{
+        display:none !important;
+      }
+
+      #lf-image{
+        max-width:94vw !important;
+        max-height:90vh !important;
+      }
+    }
+
+
+
+    /* DUNGZAK.ART LIGHTBOX STABLE IMAGE FINAL
+       Works Lightbox only.
+       Fixes oversized first-frame flash without touching text/data/menu/language. */
 
     .lf-lightbox,
     .lf-lightbox.active{
@@ -1837,13 +1956,6 @@
 
       #lf-next{
         right:calc(20px + var(--safe-right)) !important;
-      }
-
-      #lf-prev:hover,
-      #lf-next:hover{
-        background:rgba(7,10,20,.68) !important;
-        border-color:rgba(215,184,106,.54) !important;
-        color:rgba(233,213,155,1) !important;
       }
     }
 
@@ -3957,78 +4069,76 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 <script>
-/* DUNGZAK.ART LIGHTBOX PRELOAD STABILITY PATCH — Works Lightbox only */
+/* DUNGZAK.ART LIGHTBOX SAFE PRELOAD PATCH — no undefined variable, no data change */
 (() => {
-  const applyLightboxPreloadStability = () => {
-    const box = document.querySelector('.lf-lightbox') || document.getElementById('lf-lightbox');
+  function initStableLightboxImage(){
     const img = document.getElementById('lf-image');
-    if (!box || !img || img.__dczPreloadStablePatched) return;
+    if (!img || img.__stablePreloadReady) return;
+    img.__stablePreloadReady = true;
 
-    img.__dczPreloadStablePatched = true;
-    let committing = false;
-    let pendingSrc = '';
+    const proto = HTMLImageElement.prototype;
+    const desc = Object.getOwnPropertyDescriptor(proto, 'src');
+    if (!desc || !desc.set || !desc.get) return;
 
-    const resetImageBox = () => {
+    let internalCommit = false;
+    let latestWanted = '';
+
+    function resetBox(){
       img.style.transform = 'translate3d(0,0,0) scale(1)';
       img.style.width = 'auto';
       img.style.height = 'auto';
-    };
+    }
 
-    const commitLoadedSrc = (src) => {
-      committing = true;
-      resetImageBox();
-      img.src = src;
-      requestAnimationFrame(() => {
-        resetImageBox();
-        img.classList.remove('is-loading');
-        img.classList.add('is-ready');
-        committing = false;
-      });
-    };
+    Object.defineProperty(img, 'src', {
+      configurable: true,
+      enumerable: true,
+      get(){
+        return desc.get.call(img);
+      },
+      set(value){
+        const src = String(value || '');
 
-    const preloadAndCommit = (src) => {
-      if (!src || src === pendingSrc) return;
-      pendingSrc = src;
+        if (internalCommit || !src || src.startsWith('data:')) {
+          desc.set.call(img, src);
+          return;
+        }
 
-      img.classList.remove('is-ready');
-      img.classList.add('is-loading');
-      resetImageBox();
+        latestWanted = src;
+        img.classList.remove('is-ready');
+        img.classList.add('is-loading');
+        resetBox();
 
-      const pre = new Image();
-      pre.decoding = 'async';
+        const pre = new Image();
+        pre.decoding = 'async';
 
-      pre.onload = () => {
-        if (pendingSrc !== src) return;
-        commitLoadedSrc(src);
-      };
+        pre.onload = () => {
+          if (latestWanted !== src) return;
+          internalCommit = true;
+          resetBox();
+          desc.set.call(img, src);
+          requestAnimationFrame(() => {
+            resetBox();
+            img.classList.remove('is-loading');
+            img.classList.add('is-ready');
+            internalCommit = false;
+          });
+        };
 
-      pre.onerror = () => {
-        if (pendingSrc !== src) return;
-        img.classList.remove('is-loading');
-        img.classList.add('is-ready');
-      };
+        pre.onerror = () => {
+          if (latestWanted !== src) return;
+          internalCommit = true;
+          desc.set.call(img, src);
+          img.classList.remove('is-loading');
+          img.classList.add('is-ready');
+          internalCommit = false;
+        };
 
-      pre.src = src;
-    };
-
-    const observer = new MutationObserver(() => {
-      if (committing) return;
-      const src = img.getAttribute('src');
-      if (!src) {
-        pendingSrc = '';
-        img.classList.remove('is-loading', 'is-ready');
-        return;
-      }
-
-      if (box.classList.contains('active')) {
-        preloadAndCommit(src);
+        pre.src = src;
       }
     });
 
-    observer.observe(img, { attributes:true, attributeFilter:['src'] });
-
     img.addEventListener('load', () => {
-      resetImageBox();
+      resetBox();
       img.classList.remove('is-loading');
       img.classList.add('is-ready');
     });
@@ -4037,12 +4147,12 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       img.classList.remove('is-loading');
       img.classList.add('is-ready');
     });
-  };
+  }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyLightboxPreloadStability, { once:true });
+    document.addEventListener('DOMContentLoaded', initStableLightboxImage, { once:true });
   } else {
-    applyLightboxPreloadStability();
+    initStableLightboxImage();
   }
 })();
 </script>

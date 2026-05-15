@@ -2666,6 +2666,51 @@ function initWorksUI() {
     return String(url || '').trim().replace(/\s+/g, '');
   }
 
+  function normalizeCanonicalDzId(id) {
+    const raw = String(id || '').trim();
+    const m = raw.match(/^DZ[-_]?([0-9]+)$/i);
+    if (!m) return raw;
+    const n = Number(m[1]);
+    if (!Number.isFinite(n)) return raw;
+    return 'DZ-' + String(n).padStart(3, '0');
+  }
+
+  function buildDungzakMainImageUrlById(id, kind) {
+    const cleanId = normalizeCanonicalDzId(id);
+    if (!/^DZ-[0-9]{3}$/i.test(cleanId)) return '';
+    const folder = kind === 'zoom' ? 'zoom' : 'standard';
+    return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
+  }
+
+  function getLockedRepresentativeImage(item) {
+    const sectionId = normalizeSectionId(item);
+    const id = String(item && item.id || '').trim();
+
+    /*
+      DUNGZAK.ART HUMAN SECTION IMAGE LOCK
+      - Origins keep their archivepro image paths from works.json.
+      - DZ works use the artwork id itself as the image key.
+      - This prevents section II Human Being titles from being paired with images
+        left over from another section or from stale/mixed image fields.
+    */
+    if (sectionId !== 0 && /^DZ[-_]?[0-9]+$/i.test(id)) {
+      return buildDungzakMainImageUrlById(id, 'standard');
+    }
+
+    return cleanUrl(item && item.image);
+  }
+
+  function getLockedZoomImage(item, representativeImage) {
+    const sectionId = normalizeSectionId(item);
+    const id = String(item && item.id || '').trim();
+
+    if (sectionId !== 0 && /^DZ[-_]?[0-9]+$/i.test(id)) {
+      return buildDungzakMainImageUrlById(id, 'zoom') || representativeImage || '';
+    }
+
+    return cleanUrl(item && item.zoom) || representativeImage || '';
+  }
+
   function withCacheBust(url) {
     const clean = cleanUrl(url);
     if (!clean) return '';
@@ -2675,16 +2720,18 @@ function initWorksUI() {
 
   function normalizeWorkCardItem(work) {
     const item = work && typeof work === 'object' ? work : {};
-    const image = cleanUrl(item.image);
+    const image = getLockedRepresentativeImage(item);
+    const zoom = getLockedZoomImage(item, image);
 
     /*
       MAIN INDEX IMAGE LOCK
-      - Card image uses only work.image.
-      - thumbnail / thumb / src / zoom are never used as representative image.
-      - zoom is used only for the lightbox enlargement after a card is opened.
+      - Section placement is locked by numeric section_id.
+      - For DZ works, representative image and zoom are locked to the same DZ id.
+      - II 인간/Human Being can no longer inherit images from another section.
+      - Origins keep the original archivepro image/zoom paths from works.json.
     */
     return {
-      id: String(item.id || '').trim(),
+      id: normalizeCanonicalDzId(String(item.id || '').trim()),
       section_id: normalizeSectionId(item),
       section_kr: String(item.section_kr || '').trim(),
       section_en: String(item.section_en || '').trim(),
@@ -2696,8 +2743,8 @@ function initWorksUI() {
       size_en: String(item.size_en || '').trim(),
       year: String(item.year || '').trim(),
       status: String(item.status || '').trim(),
-      image: image ? image : '',
-      zoom: cleanUrl(item.zoom) || image || ''
+      image: image || '',
+      zoom: zoom || image || ''
     };
   }
 

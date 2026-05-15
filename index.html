@@ -2474,40 +2474,43 @@
     if (koBtn) koBtn.classList.add('active');
   }
 
-  function initWorksUI() {
-    const worksRoot = $('#works');
+  
+function initWorksUI() {
+    const worksRoot = document.getElementById('works');
     if (!worksRoot) return;
 
-    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
 
-    const tabs = $('.tabs', worksRoot);
-    if (tabs) {
+    const tabs = worksRoot.querySelector('.tabs');
+    if (tabs && tabs.dataset.sectionLockBound !== '1') {
+      tabs.dataset.sectionLockBound = '1';
+
       tabs.addEventListener('click', (e) => {
         const btn = e.target.closest('.tab');
         if (!btn) return;
+
         const key = btn.dataset.panel;
-        if (!key) return;
+        if (!panelKeys.includes(key)) return;
 
-        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
-        btn.classList.add('active');
+        worksRoot.querySelectorAll('.tabs .tab').forEach((tab) => {
+          const active = tab.dataset.panel === key;
+          tab.classList.toggle('active', active);
+          if (active) tab.setAttribute('aria-current', 'page');
+          else tab.removeAttribute('aria-current');
+        });
 
-        for (const p of panelIds) {
-          const el = $('#panel-' + p);
-          if (el) el.classList.toggle('active', p === key);
+        panelKeys.forEach((panelKey) => {
+          const panel = document.getElementById('panel-' + panelKey);
+          if (!panel) return;
+          panel.classList.toggle('active', panelKey === key);
+        });
+
+        const panel = document.getElementById('panel-' + key);
+        if (panel) {
+          renderWorksPanel(panel, key);
+          scheduleImageDecode(panel);
         }
-
-        if (worksLoaded && worksByPanel[key]) {
-          const panel = $('#panel-' + key);
-          if (panel) {
-            /* SECTION LOCK FIX
-               Re-render the selected section from its own section_id-only array every time.
-               This prevents any previously rendered/cached mixed cards from staying in the DOM. */
-            renderWorksPanel(panel, worksByPanel[key], key);
-            panel.dataset.rendered = '1';
-            scheduleImageDecode(panel);
-          }
-        }
-      }, { passive: true });
+      });
     }
 
     attachWorksLightbox();
@@ -2522,224 +2525,179 @@
     5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" }
   };
 
+  const PANEL_SECTION_ID = {
+    origin: 0,
+    pray: 1,
+    human: 2,
+    rebirth: 3,
+    exist: 4,
+    cosmos: 5
+  };
+
+  let MAIN_INDEX_WORKS = [];
+  let MAIN_INDEX_RENDER_TOKEN = 0;
+
   function normalizeSectionId(work) {
-    const n = Number(work?.section_id);
-    if (Number.isInteger(n) && n >= 0 && n <= 5) return n;
-    return -1;
-  }
-
-  function normalizeSectionTextValue(v) {
-    return String(v ?? '')
-      .toLowerCase()
-      .normalize('NFKC')
-      .replace(/[ⅠⅡⅢⅣⅤ]/g, (m) => ({ 'Ⅰ':'i', 'Ⅱ':'ii', 'Ⅲ':'iii', 'Ⅳ':'iv', 'Ⅴ':'v' }[m] || m))
-      .replace(/[·ㆍ•]/g, ' ')
-      .replace(/[\s_\-–—]+/g, ' ')
-      .trim();
-  }
-
-  function resolveWorkPanelKey(item) {
-    const idMap = {
-      0: 'origin',
-      1: 'pray',
-      2: 'human',
-      3: 'rebirth',
-      4: 'exist',
-      5: 'cosmos'
-    };
-
-    /*
-      DUNGZAK.ART SECTION ABSOLUTE RULE
-      - Every section is separated only by numeric section_id.
-      - section_kr / section_en text is never used for filtering.
-      - Array order, title, material, image path, and ID prefix never decide section placement.
-    */
-
-    const n = normalizeSectionId(item);
-    return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
+    const n = Number(work && work.section_id);
+    return Number.isFinite(n) ? n : -1;
   }
 
   function getPanelSectionId(key) {
-    const panelIdMap = {
-      origin: 0,
-      pray: 1,
-      human: 2,
-      rebirth: 3,
-      exist: 4,
-      cosmos: 5
-    };
-    return Object.prototype.hasOwnProperty.call(panelIdMap, key) ? panelIdMap[key] : null;
+    return Object.prototype.hasOwnProperty.call(PANEL_SECTION_ID, key) ? PANEL_SECTION_ID[key] : null;
   }
 
   function naturalIdCompare(a, b) {
-    return String(a?.id || '').localeCompare(String(b?.id || ''), 'ko', { numeric: true, sensitivity: 'base' });
+    return String(a && a.id || '').localeCompare(String(b && b.id || ''), 'ko', {
+      numeric: true,
+      sensitivity: 'base'
+    });
   }
 
-  function parseWorkYear(work) {
-    const m = String(work?.year ?? '').match(/\d{4}/);
-    return m ? Number(m[0]) : null;
-  }
+  function parseWorksPayload(json) {
+    const seen = new Set();
 
-  function sortWorksForSection(items, sectionKey) {
-    /*
-      DUNGZAK.ART ALL SECTION FINAL RULE
-      - Numeric section_id decides placement.
-      - Each section keeps natural ID order.
-      - No title, year, material, image path, label text, or ID prefix can move a work between sections.
-    */
-    return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
-  }
+    function unwrap(value) {
+      if (!value || seen.has(value)) return [];
+      if (typeof value === 'object') seen.add(value);
 
+      if (Array.isArray(value)) {
+        if (value.length === 1) {
+          const nested = unwrap(value[0]);
+          if (nested.length) return nested;
+        }
+        if (value.some((item) => item && typeof item === 'object' && Object.prototype.hasOwnProperty.call(item, 'id'))) {
+          return value;
+        }
+        for (const item of value) {
+          const nested = unwrap(item);
+          if (nested.length) return nested;
+        }
+        return value;
+      }
 
-  function extractWorkIdFromUrl(url) {
-    const clean = String(url ?? '').trim();
-    if (!clean) return '';
-    const file = clean.split('?')[0].split('#')[0].split('/').pop() || '';
-    const m = file.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
-    if (!m) return '';
-    const prefix = m[1].toUpperCase();
-    const num = String(Number(m[2]));
-    if (!Number.isFinite(Number(m[2]))) return '';
-    if (prefix === 'OR') return `OR-${num}`;
-    return `DZ-${String(num).padStart(3, '0')}`;
-  }
-
-  function normalizeWorkId(id) {
-    const raw = String(id ?? '').trim();
-    const m = raw.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
-    if (!m) return raw;
-    const prefix = m[1].toUpperCase();
-    const num = String(Number(m[2]));
-    if (!Number.isFinite(Number(m[2]))) return raw;
-    if (prefix === 'OR') return `OR-${num}`;
-    return `DZ-${String(num).padStart(3, '0')}`;
-  }
-
-  function buildCanonicalWorks(list) {
-    /*
-      CARD DATA ABSOLUTE RULE
-      - Do not merge or remap artwork rows by image filename.
-      - Do not build separate image/text arrays.
-      - One card must always be generated from one original work object.
-    */
-    return Array.isArray(list) ? list.slice() : [];
-  }
-
-  async function loadWorks() {
-    const worksRoot = $('#works');
-    if (!worksRoot) return;
-
-    worksLoaded = true;
-
-    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
-    const sectionMap = {
-      origin: 0,
-      pray: 1,
-      human: 2,
-      rebirth: 3,
-      exist: 4,
-      cosmos: 5
-    };
-
-    try {
-      const json = await safeJSONFetchFresh('data/works.json');
-      const rawList = Array.isArray(json) ? json : (json.works || json.items || []);
-      if (!Array.isArray(rawList)) throw new Error('Invalid works.json structure');
-
-      /* SECTION ABSOLUTE LOCK — 2026-05-16
-         - Every panel is rebuilt directly from the original works.json rows.
-         - Only numeric section_id decides placement.
-         - section_kr / section_en / title / material / image path / id prefix never move a work.
-         - No canonical merge, no image-title remap, no separate image/text arrays.
-      */
-      const list = rawList.filter(item => item && typeof item === 'object');
-
-      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
-
-      for (const key of panelKeys) {
-        const sid = Number(sectionMap[key]);
-        worksByPanel[key] = sortWorksForSection(
-          list.filter(work => Number(work?.section_id) === sid),
-          key
-        );
-
-        const panel = $('#panel-' + key);
-        if (panel) {
-          panel.replaceChildren();
-          delete panel.dataset.rendered;
-          delete panel.dataset.renderedCount;
-          delete panel.dataset.totalCount;
-          panel.dataset.sectionId = String(sid);
+      if (typeof value === 'object') {
+        const keys = ['works', 'items', 'data', 'archive', 'artworks', 'records'];
+        for (const key of keys) {
+          const nested = unwrap(value[key]);
+          if (nested.length) return nested;
         }
       }
 
-      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
-      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
-      if (activePanel && worksByPanel[activeKey]) {
-        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
-        activePanel.dataset.rendered = '1';
+      return [];
+    }
+
+    return unwrap(json);
+  }
+
+  function getSectionWorksByKey(key) {
+    const sectionId = getPanelSectionId(key);
+    if (sectionId === null) return [];
+
+    /*
+      DUNGZAK.ART MAIN INDEX SECTION LOCK
+      - Section placement is decided only by numeric section_id.
+      - No title, section_kr, section_en, image path, id prefix, or array index is used.
+      - II 인간 = section_id === 2 only.
+      - V 빛의 초의식 = section_id === 5 only.
+    */
+    return MAIN_INDEX_WORKS
+      .filter((work) => Number(work && work.section_id) === Number(sectionId))
+      .slice()
+      .sort(naturalIdCompare);
+  }
+
+  async function loadWorks() {
+    const worksRoot = document.getElementById('works');
+    if (!worksRoot) return;
+
+    worksLoaded = true;
+    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+
+    try {
+      const json = await safeJSONFetchFresh('data/works.json');
+      const rawList = parseWorksPayload(json);
+      if (!Array.isArray(rawList)) throw new Error('Invalid works.json structure');
+
+      MAIN_INDEX_WORKS = rawList
+        .filter((work) => work && typeof work === 'object')
+        .map((work, index) => {
+          return Object.assign({}, work, {
+            _mainIndex: index,
+            section_id: normalizeSectionId(work)
+          });
+        });
+
+      worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
+      panelKeys.forEach((key) => {
+        worksByPanel[key] = getSectionWorksByKey(key);
+        const panel = document.getElementById('panel-' + key);
+        if (panel) {
+          panel.replaceChildren();
+          delete panel.dataset.rendered;
+          delete panel.dataset.renderToken;
+          delete panel.dataset.renderedCount;
+        }
+      });
+
+      const activePanel = worksRoot.querySelector('.tabpanel.active') || document.getElementById('panel-pray');
+      const activeKey = activePanel && activePanel.id ? activePanel.id.replace('panel-', '') : 'pray';
+
+      if (activePanel) {
+        renderWorksPanel(activePanel, activeKey);
         scheduleImageDecode(activePanel);
       }
-
     } catch (err) {
       console.error('works.json load error:', err);
-      for (const key of panelKeys) {
-        const panel = $('#panel-' + key);
-        if (!panel) continue;
-        panel.innerHTML = `
-          <div class="w-msg">
-            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
-            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
-            <small>${escHTML(String(err?.message || err || ''))}</small>
-          </div>
-        `;
-      }
+      panelKeys.forEach((key) => {
+        const panel = document.getElementById('panel-' + key);
+        if (!panel) return;
+        panel.innerHTML = [
+          '<div class="w-msg">',
+          '<div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>',
+          '<div class="en">Unable to load artworks. Please check data/works.json path, filename, and structure.</div>',
+          '<small>', escHTML(String((err && err.message) || err || '')), '</small>',
+          '</div>'
+        ].join('');
+      });
     }
   }
 
-  function buildFallbackWorkImageUrl(id, folder) {
-    const cleanId = String(id ?? '').trim();
-    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
-    if (!cleanId) return '';
-
-    return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+  function cleanUrl(url) {
+    return String(url || '').trim().replace(/\s+/g, '');
   }
 
-  function resolveWorkImageUrl(rawUrl, id, folder, sectionId) {
-    const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
+  function withCacheBust(url) {
+    const clean = cleanUrl(url);
+    if (!clean) return '';
+    const joiner = clean.includes('?') ? '&' : '?';
+    return clean + joiner + 'v=' + Date.now();
+  }
+
+  function normalizeWorkCardItem(work) {
+    const item = work && typeof work === 'object' ? work : {};
+    const image = cleanUrl(item.image);
 
     /*
-      MAIN INDEX IMAGE ABSOLUTE RULE
-      - Main site cards must render from the exact JSON field only.
-      - No thumbnail / thumb / src / id-based generated path is used for card images.
-      - If image is missing, keep it empty so the UI remains stable.
+      MAIN INDEX IMAGE LOCK
+      - Card image uses only work.image.
+      - thumbnail / thumb / src / zoom are never used as representative image.
+      - zoom is used only for the lightbox enlargement after a card is opened.
     */
-    return clean || '';
-  }
-
-  function normalizeWorkCardItem(raw) {
-    const item = raw && typeof raw === 'object' ? raw : {};
-    const id = String(item.id ?? '').trim();
-    const sectionId = normalizeSectionId(item);
-    const image = resolveWorkImageUrl(item.image, id, 'standard', sectionId);
-    const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom', sectionId) || image;
-    const fallbackImage = '';
-    const fallbackZoom = '';
-
     return {
-      id,
-      section_id: sectionId,
-      title_kr: String(item.title_kr ?? '').trim(),
-      title_en: String(item.title_en ?? '').trim(),
-      material_kr: String(item.material_kr ?? '').trim(),
-      material_en: String(item.material_en ?? '').trim(),
-      size_kr: String(item.size_kr ?? '').trim(),
-      size_en: String(item.size_en ?? '').trim(),
-      year: String(item.year ?? '').trim(),
-      image,
-      zoom,
-      fallbackImage,
-      fallbackZoom
+      id: String(item.id || '').trim(),
+      section_id: normalizeSectionId(item),
+      section_kr: String(item.section_kr || '').trim(),
+      section_en: String(item.section_en || '').trim(),
+      title_kr: String(item.title_kr || '').trim(),
+      title_en: String(item.title_en || '').trim(),
+      material_kr: String(item.material_kr || '').trim(),
+      material_en: String(item.material_en || '').trim(),
+      size_kr: String(item.size_kr || '').trim(),
+      size_en: String(item.size_en || '').trim(),
+      year: String(item.year || '').trim(),
+      status: String(item.status || '').trim(),
+      image: image ? image : '',
+      zoom: cleanUrl(item.zoom) || image || ''
     };
   }
 
@@ -2751,23 +2709,27 @@
     return span;
   }
 
-  function makeWorkCard(raw, key, index) {
-    const item = normalizeWorkCardItem(raw);
-    const isOrigin = key === 'origin';
-    const imgStd = item.image;
-    const imgZoom = item.zoom || imgStd;
-    const priority = index < 4 ? 'high' : 'low';
+  function renderCard(work, key, index) {
+    const item = normalizeWorkCardItem(work);
+    const expectedSectionId = getPanelSectionId(key);
+
+    if (expectedSectionId === null || Number(item.section_id) !== Number(expectedSectionId)) {
+      return null;
+    }
+
+    const isOrigin = Number(item.section_id) === 0;
 
     const card = document.createElement('article');
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
     card.dataset.id = item.id;
     card.dataset.sectionId = String(item.section_id);
     card.dataset.panel = key;
-    card.dataset.img = imgZoom || imgStd;
 
-    const cardWork = {
+    const lockedWork = {
       id: item.id,
       section_id: item.section_id,
+      section_kr: item.section_kr,
+      section_en: item.section_en,
       title_kr: item.title_kr,
       title_en: item.title_en,
       material_kr: item.material_kr,
@@ -2775,38 +2737,27 @@
       size_kr: item.size_kr,
       size_en: item.size_en,
       year: item.year,
-      image: imgStd,
-      zoom: imgZoom || imgStd,
-      fallbackImage: '',
-      fallbackZoom: ''
+      status: item.status,
+      image: item.image,
+      zoom: item.zoom || item.image
     };
-    card.dataset.work = JSON.stringify(cardWork);
 
-    /*
-      CARD MATCHING ABSOLUTE RULE
-      - One visible card is built from one work object only.
-      - Image, title, caption, section, and lightbox data stay locked to that same object.
-      - No separate image/title arrays are used.
-    */
+    card.dataset.work = JSON.stringify(lockedWork);
+    card.dataset.img = item.zoom || item.image || '';
 
     const img = document.createElement('img');
     img.className = 'w-thumb';
-    img.setAttribute('data-src', imgStd || '');
+    img.setAttribute('data-src', item.image ? item.image : '');
     img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
-    img.fetchPriority = priority;
+    img.fetchPriority = index < 4 ? 'high' : 'low';
     img.onerror = () => {
       img.style.display = 'none';
     };
     card.appendChild(img);
 
     if (!isOrigin) {
-      const captionKr = [item.title_kr, item.material_kr, item.size_kr, item.year].filter(Boolean).join('\n');
-      const captionEn = [item.title_en, item.material_en, item.size_en, item.year].filter(Boolean).join('\n');
-      card.setAttribute('data-cap-kr', captionKr);
-      card.setAttribute('data-cap-en', captionEn);
-
       const meta = document.createElement('div');
       meta.className = 'w-meta';
 
@@ -2831,110 +2782,107 @@
     return card;
   }
 
-  function renderWorksPanel(panel, items, key) {
+  function renderWorksPanel(panel, key) {
     if (!panel) return;
-    panel.replaceChildren();
+    const sectionId = getPanelSectionId(key);
+    const token = ++MAIN_INDEX_RENDER_TOKEN;
+
     panel.dataset.panelKey = key;
+    panel.dataset.renderToken = String(token);
+    panel.replaceChildren();
 
-    const targetSectionId = getPanelSectionId(key);
-    const validItems = (Array.isArray(items) ? items : []).filter(item => {
-      const sectionId = Number(item?.section_id);
-      return Number.isInteger(sectionId) && sectionId === Number(targetSectionId);
-    });
+    const items = getSectionWorksByKey(key);
 
-    if (!validItems.length) {
+    if (!items.length) {
       const msg = document.createElement('div');
       msg.className = 'w-msg';
-      msg.innerHTML = `
-        <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
-        <div class="en">No artworks have been registered in this section yet.</div>
-      `;
+      msg.innerHTML = [
+        '<div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>',
+        '<div class="en">No artworks have been registered in this section yet.</div>'
+      ].join('');
       panel.appendChild(msg);
+      panel.dataset.rendered = '1';
       return;
     }
 
     const grid = document.createElement('div');
     grid.className = 'w-grid';
+    grid.dataset.sectionId = String(sectionId);
     panel.appendChild(grid);
 
-    const firstCount = Math.min(getInitialWorksCount(), validItems.length);
+    const firstCount = Math.min(getInitialWorksCount(), items.length);
+    const firstFrag = document.createDocumentFragment();
+
     for (let i = 0; i < firstCount; i++) {
-      grid.appendChild(makeWorkCard(validItems[i], key, i));
+      const card = renderCard(items[i], key, i);
+      if (card) firstFrag.appendChild(card);
     }
 
-    panel.dataset.totalCount = String(validItems.length);
+    grid.appendChild(firstFrag);
+    panel.dataset.rendered = '1';
+    panel.dataset.totalCount = String(items.length);
     panel.dataset.renderedCount = String(firstCount);
 
-    if (firstCount < validItems.length) {
-      const appendRest = () => appendRemainingWorks(panel, validItems, key);
+    if (firstCount < items.length) {
+      const appendRest = () => appendRemainingWorks(panel, key, token);
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(appendRest, { timeout: 1500 });
+        requestIdleCallback(appendRest, { timeout: 1000 });
       } else {
-        setTimeout(appendRest, 260);
+        setTimeout(appendRest, 160);
       }
     }
   }
 
-  function appendRemainingWorks(panel, validItems, key) {
+  function appendRemainingWorks(panel, key, token) {
     if (!panel || !panel.isConnected) return;
+    if (String(panel.dataset.renderToken || '') !== String(token)) return;
+
     const grid = panel.querySelector('.w-grid');
     if (!grid) return;
 
+    const items = getSectionWorksByKey(key);
     let start = Number(panel.dataset.renderedCount || 0);
-    const total = validItems.length;
     const chunk = getWorksChunkCount();
+    const end = Math.min(start + chunk, items.length);
+    const frag = document.createDocumentFragment();
 
-    function step() {
-      if (!panel.isConnected) return;
-      const end = Math.min(start + chunk, total);
-      const frag = document.createDocumentFragment();
-
-      for (let i = start; i < end; i++) {
-        frag.appendChild(makeWorkCard(validItems[i], key, i));
-      }
-
-      grid.appendChild(frag);
-      panel.dataset.renderedCount = String(end);
-      scheduleImageDecode(panel);
-
-      start = end;
-      if (start < total) {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(step, { timeout: 1500 });
-        } else {
-          setTimeout(step, 120);
-        }
-      }
+    for (let i = start; i < end; i++) {
+      const card = renderCard(items[i], key, i);
+      if (card) frag.appendChild(card);
     }
 
-    step();
+    grid.appendChild(frag);
+    panel.dataset.renderedCount = String(end);
+    scheduleImageDecode(panel);
+
+    if (end < items.length && String(panel.dataset.renderToken || '') === String(token)) {
+      const next = () => appendRemainingWorks(panel, key, token);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(next, { timeout: 1000 });
+      } else {
+        setTimeout(next, 120);
+      }
+    }
   }
 
   let io = null;
 
-  function withCacheBust(url) {
-    const clean = String(url ?? '').trim();
-    if (!clean) return '';
-    const joiner = clean.includes('?') ? '&' : '?';
-    return clean + joiner + 'v=' + Date.now();
-  }
-
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
-    const workImage = img.getAttribute('data-src') || '';
-    const src = workImage ? withCacheBust(workImage) : '';
-
+    const src = img.getAttribute('data-src') || '';
     img.dataset.loaded = '1';
+
     img.addEventListener('load', () => {
       img.classList.add('is-loaded');
-      if (img.decode) img.decode().catch(()=>{});
+      if (img.decode) img.decode().catch(() => {});
     }, { once: true });
 
     img.onerror = () => {
       img.style.display = 'none';
     };
 
-    img.src = src;
+    img.src = src ? withCacheBust(src) : '';
+    if (!src) img.style.display = 'none';
   }
 
   function ensureIO() {
@@ -2942,44 +2890,42 @@
     if (!('IntersectionObserver' in window)) return null;
 
     io = new IntersectionObserver((entries) => {
-      for (const ent of entries) {
-        if (!ent.isIntersecting) continue;
-        const img = ent.target;
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target;
         io.unobserve(img);
         loadThumbImage(img);
-      }
-    }, { root: null, rootMargin: isMobileViewport() ? '120px 0px' : '260px 0px', threshold: 0.01 });
+      });
+    }, {
+      root: null,
+      rootMargin: isMobileViewport() ? '120px 0px' : '260px 0px',
+      threshold: 0.01
+    });
 
     return io;
   }
 
   function scheduleImageDecode(root) {
     const scope = root || document;
-    const imgs = Array.from($$('img.w-thumb[data-src]', scope));
+    const imgs = Array.from(scope.querySelectorAll('img.w-thumb[data-src]'));
     const observer = ensureIO();
+    const immediateCount = isMobileViewport() ? 4 : 8;
 
-    /*
-      MOBILE PERFORMANCE ONLY FIX
-      - Only the first visible four thumbnails are injected immediately.
-      - The rest keep data-src until IntersectionObserver brings them near viewport.
-    */
-    const immediate = imgs.slice(0, 4);
-    for (const img of immediate) loadThumbImage(img);
+    imgs.slice(0, immediateCount).forEach(loadThumbImage);
 
     if (observer) {
-      for (const img of imgs.slice(4)) {
-        if (img.dataset.loaded === '1') continue;
-        observer.observe(img);
-      }
-    } else {
-      runIdle(() => {
-        for (const img of imgs.slice(4)) loadThumbImage(img);
+      imgs.slice(immediateCount).forEach((img) => {
+        if (img.dataset.loaded !== '1') observer.observe(img);
       });
+    } else {
+      setTimeout(() => {
+        imgs.slice(immediateCount).forEach(loadThumbImage);
+      }, 80);
     }
   }
 
   function attachWorksLightbox() {
-    const worksRoot = $('#works');
+    const worksRoot = document.getElementById('works');
     if (!worksRoot || worksRoot.dataset.lightboxBound === '1') return;
     worksRoot.dataset.lightboxBound = '1';
 
@@ -2987,385 +2933,126 @@
       const card = e.target.closest('.w-card');
       if (!card) return;
       openLightboxFromCard(card);
-    }, { passive: true });
+    });
 
-    const lb = $('#lf-lightbox');
-    const stage = $('#lf-stage');
-    const btnX = $('#lf-close');
-    const btnPrev = $('#lf-prev');
-    const btnNext = $('#lf-next');
+    const lb = document.getElementById('lf-lightbox');
+    const stage = document.getElementById('lf-stage');
+    const close = document.getElementById('lf-close');
+    const prev = document.getElementById('lf-prev');
+    const next = document.getElementById('lf-next');
 
     if (lb && lb.dataset.bound !== '1') {
       lb.dataset.bound = '1';
-
       lb.addEventListener('click', (e) => {
         if (e.target === lb || e.target === stage) closeLightbox();
       });
-
-      lb.addEventListener('dblclick', (e) => {
-        if (!lb.classList.contains('active')) return;
-        e.preventDefault();
-        toggleLightboxZoom();
-      });
-
-      lb.addEventListener('touchstart', onLightboxTouchStart, { passive: false });
-      lb.addEventListener('touchmove', onLightboxTouchMove, { passive: false });
-      lb.addEventListener('touchend', onLightboxTouchEnd, { passive: false });
-      lb.addEventListener('touchcancel', onLightboxTouchCancel, { passive: false });
     }
 
-    if (btnX && btnX.dataset.bound !== '1') {
-      btnX.dataset.bound = '1';
-      btnX.addEventListener('click', (e) => {
+    if (close && close.dataset.bound !== '1') {
+      close.dataset.bound = '1';
+      close.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         closeLightbox();
       });
     }
 
-    if (btnPrev && btnPrev.dataset.bound !== '1') {
-      btnPrev.dataset.bound = '1';
-      btnPrev.addEventListener('click', (e) => {
+    if (prev && prev.dataset.bound !== '1') {
+      prev.dataset.bound = '1';
+      prev.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        goPrevLightboxImage();
+        goLightbox(-1);
       });
     }
 
-    if (btnNext && btnNext.dataset.bound !== '1') {
-      btnNext.dataset.bound = '1';
-      btnNext.addEventListener('click', (e) => {
+    if (next && next.dataset.bound !== '1') {
+      next.dataset.bound = '1';
+      next.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        goNextLightboxImage();
+        goLightbox(1);
       });
     }
   }
 
   let lbItems = [];
   let lbIndex = 0;
-  let lbOpenFrom = null;
-
-  let lbRAF = 0;
-  let lbScale = 1;
-  let lbX = 0;
-  let lbY = 0;
-  let lbStartX = 0;
-  let lbStartY = 0;
-  let lbLastX = 0;
-  let lbLastY = 0;
-  let lbIsDragging = false;
-  let lbIsZooming = false;
-  let lbInitialDistance = 0;
-  let lbTouchMoved = false;
-  let lbLastTap = 0;
-
-  let viewerIsBusy = false;
-  let swipeDX = 0;
-  let swipeDY = 0;
-  let swipeLocked = false;
-  let swipeRAF = null;
-  let lastSwipeTime = 0;
-
-  const SWIPE_THRESHOLD = 28;
-  const SWIPE_VERTICAL_LIMIT = 70;
-  const SWIPE_COOLDOWN = 45;
-
-  function markViewerBusy() {
-    viewerIsBusy = true;
-    clearTimeout(window.__viewerBusyTimer);
-    window.__viewerBusyTimer = setTimeout(() => {
-      viewerIsBusy = false;
-    }, 180);
-  }
 
   function getActiveWorksCards() {
-    const activePanel = $('#works .tabpanel.active');
+    const activePanel = document.querySelector('#works .tabpanel.active');
     if (!activePanel) return [];
-    return Array.from($$('.w-card', activePanel));
-  }
-
-  function applyLightboxTransform() {
-    const lbImg = $('#lf-image');
-    if (!lbImg) return;
-    if (lbRAF) return;
-    lbRAF = requestAnimationFrame(() => {
-      lbRAF = 0;
-      lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
-    });
-  }
-
-  function resetLightboxTransform() {
-    lbScale = 1;
-    lbX = 0;
-    lbY = 0;
-    lbIsDragging = false;
-    lbIsZooming = false;
-    lbInitialDistance = 0;
-    lbTouchMoved = false;
-    applyLightboxTransform();
-  }
-
-  function toggleLightboxZoom() {
-    lbScale = lbScale > 1 ? 1 : 2;
-    lbX = 0;
-    lbY = 0;
-    applyLightboxTransform();
-  }
-
-  function getTouchDistance(t1, t2) {
-    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-  }
-
-  function preloadNeighborLightboxImages() {
-    if (!lbItems || lbItems.length < 2) return;
-
-    const next = lbItems[(lbIndex + 1) % lbItems.length];
-    const prev = lbItems[(lbIndex - 1 + lbItems.length) % lbItems.length];
-
-    [next, prev].forEach((item) => {
-      if (!item || !item.src) return;
-      const pre = new Image();
-      pre.decoding = 'async';
-      pre.src = item.src;
-    });
-  }
-
-  function setLightboxSlideContent(index) {
-    const lbImg = $('#lf-image');
-    if (!lbImg || !lbItems[index]) return;
-
-    markViewerBusy();
-    lbIndex = index;
-    lbOpenFrom = lbItems[index].card;
-    resetLightboxTransform();
-
-    const src = lbItems[index].src;
-    if (!src) return;
-
-    lbImg.style.transition = 'none';
-    lbImg.style.opacity = '1';
-    lbImg.src = src;
-    lbImg.alt = lbItems[index].alt || '';
-
-    preloadNeighborLightboxImages();
-  }
-
-  function goNextLightboxImage() {
-    if (lbItems.length < 2) return;
-    const nextIndex = (lbIndex + 1) % lbItems.length;
-    setLightboxSlideContent(nextIndex);
-  }
-
-  function goPrevLightboxImage() {
-    if (lbItems.length < 2) return;
-    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
-    setLightboxSlideContent(prevIndex);
+    return Array.from(activePanel.querySelectorAll('.w-card'));
   }
 
   function openLightboxFromCard(card) {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    if (!lb || !lbImg) return;
+    lbItems = getActiveWorksCards();
+    lbIndex = Math.max(0, lbItems.indexOf(card));
+    showLightboxItem(lbIndex);
+  }
 
-    const cards = getActiveWorksCards();
-    lbItems = cards.map((c) => {
-      let parsed = null;
-      try { parsed = JSON.parse(c.dataset.work || '{}'); } catch (_) { parsed = null; }
-      const fallbackSrc = c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
-      return {
-        card: c,
-        src: c.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
-        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
-      };
-    });
+  function showLightboxItem(index) {
+    if (!lbItems.length) return;
 
-    const clickedIndex = cards.indexOf(card);
-    if (clickedIndex < 0) return;
+    lbIndex = (index + lbItems.length) % lbItems.length;
+    const card = lbItems[lbIndex];
+    const img = document.getElementById('lf-image');
+    const lb = document.getElementById('lf-lightbox');
+    if (!card || !img || !lb) return;
+
+    let item = {};
+    try {
+      item = JSON.parse(card.dataset.work || '{}');
+    } catch (_) {
+      item = {};
+    }
+
+    const displayUrl = item.zoom || item.image || card.dataset.img || '';
+    img.style.transform = 'translate3d(0,0,0) scale(1)';
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
+
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
+
+    img.onload = () => {
+      img.style.display = 'block';
+    };
+
+    img.src = displayUrl ? withCacheBust(displayUrl) : '';
+    if (!displayUrl) img.style.display = 'none';
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open', 'viewer-open');
-    document.body.style.overflow = 'hidden';
-    setLightboxSlideContent(clickedIndex);
+    document.body.classList.add('viewer-open');
+  }
+
+  function goLightbox(delta) {
+    if (!lbItems.length) return;
+    showLightboxItem(lbIndex + delta);
   }
 
   function closeLightbox() {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    if (!lb) return;
-
-    lb.classList.remove('active');
-    lb.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open', 'viewer-open');
-    document.body.style.overflow = '';
-    viewerIsBusy = false;
-
-    resetLightboxTransform();
-
-    if (lbImg) {
-      lbImg.removeAttribute('src');
-      lbImg.alt = '';
+    const lb = document.getElementById('lf-lightbox');
+    const img = document.getElementById('lf-image');
+    if (lb) {
+      lb.classList.remove('active');
+      lb.setAttribute('aria-hidden', 'true');
     }
-
-    lbOpenFrom = null;
-    lbItems = [];
-    lbIndex = 0;
+    if (img) img.removeAttribute('src');
+    document.body.classList.remove('viewer-open');
   }
 
-  function onLightboxTouchStart(e) {
-    const lb = $('#lf-lightbox');
+  document.addEventListener('keydown', (e) => {
+    const lb = document.getElementById('lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      lbIsZooming = true;
-      lbIsDragging = false;
-      lbTouchMoved = false;
-      swipeLocked = false;
-      swipeDX = 0;
-      swipeDY = 0;
-      lbInitialDistance = getTouchDistance(e.touches[0], e.touches[1]);
-      return;
-    }
-
-    if (e.touches.length !== 1) return;
-
-    lbStartX = e.touches[0].clientX;
-    lbStartY = e.touches[0].clientY;
-    lbLastX = lbStartX;
-    lbLastY = lbStartY;
-    swipeDX = 0;
-    swipeDY = 0;
-    swipeLocked = false;
-    lbIsDragging = true;
-    lbTouchMoved = false;
-  }
-
-  function onLightboxTouchMove(e) {
-    const lb = $('#lf-lightbox');
-    if (!lb || !lb.classList.contains('active')) return;
-
-    if (lbIsZooming && e.touches.length === 2) {
-      e.preventDefault();
-      const newDistance = getTouchDistance(e.touches[0], e.touches[1]);
-      if (!lbInitialDistance) lbInitialDistance = newDistance;
-      const delta = newDistance / lbInitialDistance;
-      lbScale = Math.min(Math.max(1, lbScale * delta), 4);
-      lbInitialDistance = newDistance;
-      if (lbScale <= 1.02) { lbScale = 1; lbX = 0; lbY = 0; }
-      applyLightboxTransform();
-      markViewerBusy();
-      return;
-    }
-
-    if (!lbIsDragging || e.touches.length !== 1) return;
-
-    const nowX = e.touches[0].clientX;
-    const nowY = e.touches[0].clientY;
-    const moveX = nowX - lbStartX;
-    const moveY = nowY - lbStartY;
-
-    swipeDX = moveX;
-    swipeDY = moveY;
-
-    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
-
-    if (lbScale > 1.02) {
-      e.preventDefault();
-      lbX += nowX - lbLastX;
-      lbY += nowY - lbLastY;
-      lbLastX = nowX;
-      lbLastY = nowY;
-      applyLightboxTransform();
-      markViewerBusy();
-      return;
-    }
-
-    lbLastX = nowX;
-    lbLastY = nowY;
-
-    if (!swipeRAF) {
-      swipeRAF = requestAnimationFrame(() => {
-        swipeRAF = null;
-        if (Math.abs(swipeDX) > Math.abs(swipeDY) && Math.abs(swipeDX) > 8) {
-          swipeLocked = true;
-        }
-      });
-    }
-  }
-
-  function onLightboxTouchEnd(e) {
-    const lb = $('#lf-lightbox');
-    if (!lb || !lb.classList.contains('active')) return;
-
-    if (lbIsZooming) {
-      e.preventDefault();
-      lbIsZooming = false;
-      lbInitialDistance = 0;
-      return;
-    }
-
-    if (!lbIsDragging) return;
-
-    if (lbScale > 1.02) {
-      lbIsDragging = false;
-      lbTouchMoved = false;
-      swipeLocked = false;
-      swipeDX = 0;
-      swipeDY = 0;
-      return;
-    }
-
-    const horizontal = Math.abs(swipeDX);
-    const vertical = Math.abs(swipeDY);
-    const now = performance.now();
-
-    if (
-      swipeLocked &&
-      horizontal > SWIPE_THRESHOLD &&
-      vertical < SWIPE_VERTICAL_LIMIT &&
-      now - lastSwipeTime > SWIPE_COOLDOWN
-    ) {
-      e.preventDefault();
-      lastSwipeTime = now;
-      if (swipeDX > 0) goPrevLightboxImage();
-      else goNextLightboxImage();
-      lbLastTap = 0;
-    } else if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
-      const tapNow = Date.now();
-      if (tapNow - lbLastTap < 300) {
-        e.preventDefault();
-        toggleLightboxZoom();
-        lbLastTap = 0;
-      } else {
-        lbLastTap = tapNow;
-      }
-    }
-
-    lbIsDragging = false;
-    lbTouchMoved = false;
-    swipeLocked = false;
-    swipeDX = 0;
-    swipeDY = 0;
-  }
-
-  function onLightboxTouchCancel() {
-    lbIsDragging = false;
-    lbIsZooming = false;
-    lbInitialDistance = 0;
-    lbTouchMoved = false;
-    swipeLocked = false;
-    swipeDX = 0;
-    swipeDY = 0;
-    if (swipeRAF) {
-      cancelAnimationFrame(swipeRAF);
-      swipeRAF = null;
-    }
-  }
-
-  function updateOpenLightboxCaption() {
-    return;
-  }
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') goLightbox(-1);
+    if (e.key === 'ArrowRight') goLightbox(1);
+  });
 
   function initReports() {
     if (reportsInitialized) return;

@@ -2589,6 +2589,39 @@ function initWorksUI() {
     return unwrap(json);
   }
 
+  function normalizePanelMatchText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[\s·:：,._\-–—()\[\]{}\/\]+/g, '');
+  }
+
+  function isPrayForUsWork(work) {
+    const titleText = normalizePanelMatchText([
+      work && work.title_kr,
+      work && work.title_en
+    ].join(' '));
+
+    /*
+      SECTION I PRAY-FOR-US HARD LOCK
+      - The panel is still section_id === 1.
+      - In addition, the artwork title itself must belong to the Pray for Us series.
+      - This prevents wrongly tagged Human/Rebirth/Restoration images from entering this panel.
+    */
+    return titleText.includes('우리를위해기도') ||
+      titleText.includes('prayforus') ||
+      titleText.includes('pleaseprayforus');
+  }
+
+  function isPanelLockedWork(work, key) {
+    const sectionId = getPanelSectionId(key);
+    if (sectionId === null) return false;
+    if (Number(work && work.section_id) !== Number(sectionId)) return false;
+
+    if (key === 'pray') return isPrayForUsWork(work);
+
+    return true;
+  }
+
   function getSectionWorksByKey(key) {
     const sectionId = getPanelSectionId(key);
     if (sectionId === null) return [];
@@ -2596,12 +2629,11 @@ function initWorksUI() {
     /*
       DUNGZAK.ART MAIN INDEX SECTION LOCK
       - Section placement is decided only by numeric section_id.
-      - No title, section_kr, section_en, image path, id prefix, or array index is used.
-      - II 인간 = section_id === 2 only.
-      - V 빛의 초의식 = section_id === 5 only.
+      - Section I is additionally title-locked to the Pray for Us series.
+      - No image path, array index, or browser cache state can decide panel placement.
     */
     return MAIN_INDEX_WORKS
-      .filter((work) => Number(work && work.section_id) === Number(sectionId))
+      .filter((work) => isPanelLockedWork(work, key))
       .slice()
       .sort(naturalIdCompare);
   }
@@ -2666,49 +2698,31 @@ function initWorksUI() {
     return String(url || '').trim().replace(/\s+/g, '');
   }
 
-  function normalizeCanonicalDzId(id) {
-    const raw = String(id || '').trim();
-    const m = raw.match(/^DZ[-_]?([0-9]+)$/i);
-    if (!m) return raw;
-    const n = Number(m[1]);
-    if (!Number.isFinite(n)) return raw;
-    return 'DZ-' + String(n).padStart(3, '0');
+  function getWorkIdFileName(id, fallbackUrl) {
+    const cleanId = String(id || '').trim();
+    const fallback = cleanUrl(fallbackUrl);
+    const extMatch = fallback.match(/\.(jpg|jpeg|png|webp)(?=\?|#|$)/i);
+    const ext = extMatch ? extMatch[0] : '.jpg';
+    return cleanId ? cleanId + ext : '';
   }
 
-  function buildDungzakMainImageUrlById(id, kind) {
-    const cleanId = normalizeCanonicalDzId(id);
-    if (!/^DZ-[0-9]{3}$/i.test(cleanId)) return '';
-    const folder = kind === 'zoom' ? 'zoom' : 'standard';
-    return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
+  function lockImageUrlToWorkId(url, id) {
+    const clean = cleanUrl(url);
+    const fileName = getWorkIdFileName(id, clean);
+    if (!clean || !fileName) return clean;
+
+    const split = clean.match(/^([^?#]*\/)([^\/?#]+)([?#].*)?$/);
+    if (!split) return clean;
+
+    return split[1] + fileName + (split[3] || '');
   }
 
-  function getLockedRepresentativeImage(item) {
-    const sectionId = normalizeSectionId(item);
-    const id = String(item && item.id || '').trim();
-
-    /*
-      DUNGZAK.ART HUMAN SECTION IMAGE LOCK
-      - Origins keep their archivepro image paths from works.json.
-      - DZ works use the artwork id itself as the image key.
-      - This prevents section II Human Being titles from being paired with images
-        left over from another section or from stale/mixed image fields.
-    */
-    if (sectionId !== 0 && /^DZ[-_]?[0-9]+$/i.test(id)) {
-      return buildDungzakMainImageUrlById(id, 'standard');
-    }
-
-    return cleanUrl(item && item.image);
-  }
-
-  function getLockedZoomImage(item, representativeImage) {
-    const sectionId = normalizeSectionId(item);
-    const id = String(item && item.id || '').trim();
-
-    if (sectionId !== 0 && /^DZ[-_]?[0-9]+$/i.test(id)) {
-      return buildDungzakMainImageUrlById(id, 'zoom') || representativeImage || '';
-    }
-
-    return cleanUrl(item && item.zoom) || representativeImage || '';
+  function getLockedImageUrl(item, fieldName) {
+    const source = cleanUrl(item && item[fieldName]);
+    const imageSource = cleanUrl(item && item.image);
+    const zoomSource = cleanUrl(item && item.zoom);
+    const base = source || (fieldName === 'zoom' ? zoomSource || imageSource : imageSource || zoomSource);
+    return lockImageUrlToWorkId(base, item && item.id);
   }
 
   function withCacheBust(url) {
@@ -2720,18 +2734,17 @@ function initWorksUI() {
 
   function normalizeWorkCardItem(work) {
     const item = work && typeof work === 'object' ? work : {};
-    const image = getLockedRepresentativeImage(item);
-    const zoom = getLockedZoomImage(item, image);
+    const image = getLockedImageUrl(item, 'image');
+    const zoom = getLockedImageUrl(item, 'zoom') || image;
 
     /*
       MAIN INDEX IMAGE LOCK
-      - Section placement is locked by numeric section_id.
-      - For DZ works, representative image and zoom are locked to the same DZ id.
-      - II 인간/Human Being can no longer inherit images from another section.
-      - Origins keep the original archivepro image/zoom paths from works.json.
+      - Card image is locked to the artwork id filename.
+      - Example: DZ-211 always displays .../DZ-211.jpg, never another work's image.
+      - zoom is also locked to the same id and used only after opening the lightbox.
     */
     return {
-      id: normalizeCanonicalDzId(String(item.id || '').trim()),
+      id: String(item.id || '').trim(),
       section_id: normalizeSectionId(item),
       section_kr: String(item.section_kr || '').trim(),
       section_en: String(item.section_en || '').trim(),
@@ -2743,7 +2756,7 @@ function initWorksUI() {
       size_en: String(item.size_en || '').trim(),
       year: String(item.year || '').trim(),
       status: String(item.status || '').trim(),
-      image: image || '',
+      image: image ? image : '',
       zoom: zoom || image || ''
     };
   }
@@ -2760,7 +2773,7 @@ function initWorksUI() {
     const item = normalizeWorkCardItem(work);
     const expectedSectionId = getPanelSectionId(key);
 
-    if (expectedSectionId === null || Number(item.section_id) !== Number(expectedSectionId)) {
+    if (expectedSectionId === null || !isPanelLockedWork(item, key)) {
       return null;
     }
 

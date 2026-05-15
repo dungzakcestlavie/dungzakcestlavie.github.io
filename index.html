@@ -2750,32 +2750,15 @@
   }
 
   function resolveWorkImageUrl(rawUrl, id, folder, sectionId) {
-    const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
-    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
-    const sid = Number(sectionId);
 
     /*
-      ARCHIVE PRO REFERENCE RULE — PRAY SECTION FIX
-      - One JSON row remains one card: title/caption from that row only.
-      - Section I / Pray for Us keeps the exact JSON image/zoom path when it exists.
-        This follows Archive Pro's rule and prevents Pray images from shifting.
-      - Sections II–V use the stable DZ id path.
-      - Origins/OR keeps the exact JSON path first, because Origins images live in dungzaklab-images.
-      - Unknown rows use JSON path first, then fallback.
+      MAIN INDEX IMAGE ABSOLUTE RULE
+      - Main site cards must render from the exact JSON field only.
+      - No thumbnail / thumb / src / id-based generated path is used for card images.
+      - If image is missing, keep it empty so the UI remains stable.
     */
-    if (sid === 1 && clean) return clean;
-
-    if (/^OR[-_]?\d+/i.test(cleanId)) {
-      if (clean) return clean;
-      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(normalizeWorkId(cleanId))}.jpg`;
-    }
-
-    if (/^DZ[-_]?\d+/i.test(cleanId)) {
-      return buildFallbackWorkImageUrl(normalizeWorkId(cleanId), cleanFolder);
-    }
-
-    return clean || buildFallbackWorkImageUrl(cleanId, cleanFolder);
+    return clean || '';
   }
 
   function normalizeWorkCardItem(raw) {
@@ -2784,8 +2767,8 @@
     const sectionId = normalizeSectionId(item);
     const image = resolveWorkImageUrl(item.image, id, 'standard', sectionId);
     const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom', sectionId) || image;
-    const fallbackImage = buildFallbackWorkImageUrl(id, 'standard');
-    const fallbackZoom = buildFallbackWorkImageUrl(id, 'zoom') || fallbackImage;
+    const fallbackImage = '';
+    const fallbackZoom = '';
 
     return {
       id,
@@ -2838,8 +2821,8 @@
       year: item.year,
       image: imgStd,
       zoom: imgZoom || imgStd,
-      fallbackImage: item.fallbackImage || '',
-      fallbackZoom: item.fallbackZoom || ''
+      fallbackImage: '',
+      fallbackZoom: ''
     };
     card.dataset.work = JSON.stringify(cardWork);
 
@@ -2853,7 +2836,6 @@
     const img = document.createElement('img');
     img.className = 'w-thumb';
     img.setAttribute('data-src', imgStd);
-    if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
@@ -2967,6 +2949,13 @@
 
   let io = null;
 
+  function withCacheBust(url) {
+    const clean = String(url ?? '').trim();
+    if (!clean) return '';
+    const joiner = clean.includes('?') ? '&' : '?';
+    return clean + joiner + 'v=' + Date.now();
+  }
+
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
     const src = img.getAttribute('data-src');
@@ -2978,16 +2967,11 @@
       if (img.decode) img.decode().catch(()=>{});
     }, { once: true });
 
-    img.addEventListener('error', () => {
-      const fallback = img.getAttribute('data-fallback-src');
-      if (fallback && img.src !== fallback) {
-        img.removeAttribute('data-fallback-src');
-        img.dataset.loaded = '1';
-        img.src = fallback;
-      }
-    });
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
 
-    img.src = src;
+    img.src = withCacheBust(src);
   }
 
   function ensureIO() {

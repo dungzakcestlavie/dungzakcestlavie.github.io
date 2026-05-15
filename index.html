@@ -2496,9 +2496,12 @@
           if (el) el.classList.toggle('active', p === key);
         }
 
-        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+        if (worksLoaded && worksByPanel[key]) {
           const panel = $('#panel-' + key);
           if (panel) {
+            /* SECTION LOCK FIX
+               Re-render the selected section from its own section_id-only array every time.
+               This prevents any previously rendered/cached mixed cards from staying in the DOM. */
             renderWorksPanel(panel, worksByPanel[key], key);
             panel.dataset.rendered = '1';
             scheduleImageDecode(panel);
@@ -2629,43 +2632,54 @@
     worksLoaded = true;
 
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+    const sectionMap = {
+      origin: 0,
+      pray: 1,
+      human: 2,
+      rebirth: 3,
+      exist: 4,
+      cosmos: 5
+    };
 
     try {
       const json = await safeJSONFetchFresh('data/works.json');
       const rawList = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(rawList)) throw new Error('Invalid works.json structure');
-      const list = buildCanonicalWorks(rawList);
+
+      /* SECTION ABSOLUTE LOCK — 2026-05-16
+         - Every panel is rebuilt directly from the original works.json rows.
+         - Only numeric section_id decides placement.
+         - section_kr / section_en / title / material / image path / id prefix never move a work.
+         - No canonical merge, no image-title remap, no separate image/text arrays.
+      */
+      const list = rawList.filter(item => item && typeof item === 'object');
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      for (const item of list) {
-        const key = resolveWorkPanelKey(item);
-        if (key && worksByPanel[key]) worksByPanel[key].push(item);
-      }
-
       for (const key of panelKeys) {
-        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+        const sid = Number(sectionMap[key]);
+        worksByPanel[key] = sortWorksForSection(
+          list.filter(work => Number(work?.section_id) === sid),
+          key
+        );
+
         const panel = $('#panel-' + key);
         if (panel) {
-          panel.innerHTML = '';
+          panel.replaceChildren();
           delete panel.dataset.rendered;
+          delete panel.dataset.renderedCount;
+          delete panel.dataset.totalCount;
+          panel.dataset.sectionId = String(sid);
         }
       }
 
       const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
       const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
-      if (activePanel) {
+      if (activePanel && worksByPanel[activeKey]) {
         renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
         activePanel.dataset.rendered = '1';
         scheduleImageDecode(activePanel);
       }
-
-      /*
-        MOBILE PERFORMANCE ONLY FIX
-        - Do not render every Works panel during initial load.
-        - Inactive panels render only when their section tab is opened.
-        - Active panel paints the first slice immediately, then appends the rest after first paint.
-      */
 
     } catch (err) {
       console.error('works.json load error:', err);
@@ -2823,7 +2837,10 @@
     panel.dataset.panelKey = key;
 
     const targetSectionId = getPanelSectionId(key);
-    const validItems = (Array.isArray(items) ? items : []).filter(item => Number(item?.section_id) === Number(targetSectionId));
+    const validItems = (Array.isArray(items) ? items : []).filter(item => {
+      const sectionId = Number(item?.section_id);
+      return Number.isInteger(sectionId) && sectionId === Number(targetSectionId);
+    });
 
     if (!validItems.length) {
       const msg = document.createElement('div');

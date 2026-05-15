@@ -2546,57 +2546,26 @@
     };
 
     /*
-      DUNGZAK.ART SECTION FINAL RULE
-      - section_kr / section_en labels are checked first.
-      - section_id is used only as a fallback.
-      - Title, material, image path, and ID prefix are never used for section placement.
-      - This prevents wrong section_id values in works.json from moving works into section II or IV.
+      DUNGZAK.ART SECTION ABSOLUTE RULE
+      - Every section is separated only by numeric section_id.
+      - section_kr / section_en text is never used for filtering.
+      - Array order, title, material, image path, and ID prefix never decide section placement.
     */
-
-    const label = normalizeSectionTextValue([
-      item?.section_kr,
-      item?.section_en
-    ].filter(Boolean).join(' '));
-
-    if (label) {
-      if (
-        label.includes('기원') ||
-        label.includes('origin')
-      ) return 'origin';
-
-      if (
-        label.includes('우리를 위해 기도') ||
-        label.includes('pray for us') ||
-        label.includes('pray')
-      ) return 'pray';
-
-      if (
-        label.includes('정신의 재탄생') ||
-        label.includes('rebirth of mind') ||
-        label.includes('rebirth')
-      ) return 'rebirth';
-
-      if (
-        label.includes('존재의 회복') ||
-        label.includes('restoration of being') ||
-        label.includes('restoration')
-      ) return 'exist';
-
-      if (
-        label.includes('빛의 초의식') ||
-        label.includes('metaconsciousness of light') ||
-        label.includes('metaconsciousness')
-      ) return 'cosmos';
-
-      if (
-        label.includes('인간') ||
-        label.includes('human being') ||
-        label.includes('human')
-      ) return 'human';
-    }
 
     const n = normalizeSectionId(item);
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
+  }
+
+  function getPanelSectionId(key) {
+    const panelIdMap = {
+      origin: 0,
+      pray: 1,
+      human: 2,
+      rebirth: 3,
+      exist: 4,
+      cosmos: 5
+    };
+    return Object.prototype.hasOwnProperty.call(panelIdMap, key) ? panelIdMap[key] : null;
   }
 
   function naturalIdCompare(a, b) {
@@ -2611,9 +2580,9 @@
   function sortWorksForSection(items, sectionKey) {
     /*
       DUNGZAK.ART ALL SECTION FINAL RULE
-      - section label decides placement first; section_id is fallback only.
-      - each section keeps natural ID order.
-      - no title, year, material, image path, or ID prefix can move a work between sections.
+      - Numeric section_id decides placement.
+      - Each section keeps natural ID order.
+      - No title, year, material, image path, label text, or ID prefix can move a work between sections.
     */
     return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
   }
@@ -2645,40 +2614,12 @@
 
   function buildCanonicalWorks(list) {
     /*
-      IMAGE / TITLE CANONICAL MATCH RULE
-      - The filename inside image/zoom is treated as the visible artwork identity.
-      - If a row's image points to DZ-012.jpg, the card title/caption is taken from the DZ-012 JSON object.
-      - This fixes cases where an image URL and a title row were shifted in works.json.
-      - Origins keeps its image-only behavior; non-DZ/OR rows remain unchanged.
+      CARD DATA ABSOLUTE RULE
+      - Do not merge or remap artwork rows by image filename.
+      - Do not build separate image/text arrays.
+      - One card must always be generated from one original work object.
     */
-    const byId = new Map();
-    for (const raw of Array.isArray(list) ? list : []) {
-      const id = normalizeWorkId(raw?.id);
-      if (id) byId.set(id, raw);
-    }
-
-    const out = [];
-    const seenKeys = new Set();
-
-    for (const raw of Array.isArray(list) ? list : []) {
-      const imageId = extractWorkIdFromUrl(raw?.image) || extractWorkIdFromUrl(raw?.zoom);
-      const rawId = normalizeWorkId(raw?.id);
-      const canonical = imageId && byId.has(imageId) ? byId.get(imageId) : raw;
-      const canonicalId = normalizeWorkId(canonical?.id) || rawId || imageId;
-
-      const merged = {
-        ...raw,
-        ...canonical,
-        image: canonical?.image || raw?.image || '',
-        zoom: canonical?.zoom || raw?.zoom || canonical?.image || raw?.image || ''
-      };
-
-      const key = canonicalId || `${out.length}`;
-      if (seenKeys.has(key)) continue;
-      seenKeys.add(key);
-      out.push(merged);
-    }
-    return out;
+    return Array.isArray(list) ? list.slice() : [];
   }
 
   async function loadWorks() {
@@ -2690,9 +2631,10 @@
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-pray-archivepro-json-path-final');
-      const list = Array.isArray(json) ? json : (json.works || json.items || []);
-      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+      const json = await safeJSONFetchFresh('data/works.json');
+      const rawList = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(rawList)) throw new Error('Invalid works.json structure');
+      const list = buildCanonicalWorks(rawList);
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
@@ -2835,11 +2777,14 @@
 
     const img = document.createElement('img');
     img.className = 'w-thumb';
-    img.setAttribute('data-src', imgStd);
-    img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
+    img.setAttribute('data-src', imgStd || '');
+    img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
     img.fetchPriority = priority;
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
     card.appendChild(img);
 
     if (!isOrigin) {
@@ -2877,7 +2822,8 @@
     panel.replaceChildren();
     panel.dataset.panelKey = key;
 
-    const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
+    const targetSectionId = getPanelSectionId(key);
+    const validItems = (Array.isArray(items) ? items : []).filter(item => Number(item?.section_id) === Number(targetSectionId));
 
     if (!validItems.length) {
       const msg = document.createElement('div');
@@ -2958,8 +2904,8 @@
 
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
-    const src = img.getAttribute('data-src');
-    if (!src) return;
+    const workImage = img.getAttribute('data-src') || '';
+    const src = workImage ? withCacheBust(workImage) : '';
 
     img.dataset.loaded = '1';
     img.addEventListener('load', () => {
@@ -2971,7 +2917,7 @@
       img.style.display = 'none';
     };
 
-    img.src = withCacheBust(src);
+    img.src = src;
   }
 
   function ensureIO() {

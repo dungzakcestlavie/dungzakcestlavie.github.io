@@ -2147,7 +2147,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'DZ_ART_SECTION_ID_IMAGE_MATCH_FINAL_20260516';
+  const VERSION = 'LF36_mobile_perf_only_20260430';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -2359,11 +2359,55 @@
     };
 
     /*
-      DUNGZAK.ART FINAL SECTION RULE — ARCHIVE PRO MATCH
-      - Section placement uses section_id only.
-      - section_kr / section_en / title / material / image path / id prefix never move a work.
-      - This prevents DZ-034, DZ-038, and other rows from appearing in the wrong section.
+      DUNGZAK.ART SECTION FINAL RULE
+      - section_kr / section_en labels are checked first.
+      - section_id is used only as a fallback.
+      - Title, material, image path, and ID prefix are never used for section placement.
+      - This prevents wrong section_id values in works.json from moving works into section II or IV.
     */
+
+    const label = normalizeSectionTextValue([
+      item?.section_kr,
+      item?.section_en
+    ].filter(Boolean).join(' '));
+
+    if (label) {
+      if (
+        label.includes('기원') ||
+        label.includes('origin')
+      ) return 'origin';
+
+      if (
+        label.includes('우리를 위해 기도') ||
+        label.includes('pray for us') ||
+        label.includes('pray')
+      ) return 'pray';
+
+      if (
+        label.includes('정신의 재탄생') ||
+        label.includes('rebirth of mind') ||
+        label.includes('rebirth')
+      ) return 'rebirth';
+
+      if (
+        label.includes('존재의 회복') ||
+        label.includes('restoration of being') ||
+        label.includes('restoration')
+      ) return 'exist';
+
+      if (
+        label.includes('빛의 초의식') ||
+        label.includes('metaconsciousness of light') ||
+        label.includes('metaconsciousness')
+      ) return 'cosmos';
+
+      if (
+        label.includes('인간') ||
+        label.includes('human being') ||
+        label.includes('human')
+      ) return 'human';
+    }
+
     const n = normalizeSectionId(item);
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
@@ -2414,13 +2458,40 @@
 
   function buildCanonicalWorks(list) {
     /*
-      DUNGZAK.ART FINAL IMAGE RULE — ONE ROW = ONE CARD
-      - Do not remap titles by image filename.
-      - Do not merge a row with another JSON row.
-      - Use the row's own id, title, section_id, image, and zoom together.
-      - This is the same stable principle as Archive Pro.
+      IMAGE / TITLE CANONICAL MATCH RULE
+      - The filename inside image/zoom is treated as the visible artwork identity.
+      - If a row's image points to DZ-012.jpg, the card title/caption is taken from the DZ-012 JSON object.
+      - This fixes cases where an image URL and a title row were shifted in works.json.
+      - Origins keeps its image-only behavior; non-DZ/OR rows remain unchanged.
     */
-    return Array.isArray(list) ? list.slice() : [];
+    const byId = new Map();
+    for (const raw of Array.isArray(list) ? list : []) {
+      const id = normalizeWorkId(raw?.id);
+      if (id) byId.set(id, raw);
+    }
+
+    const out = [];
+    const seenKeys = new Set();
+
+    for (const raw of Array.isArray(list) ? list : []) {
+      const imageId = extractWorkIdFromUrl(raw?.image) || extractWorkIdFromUrl(raw?.zoom);
+      const rawId = normalizeWorkId(raw?.id);
+      const canonical = imageId && byId.has(imageId) ? byId.get(imageId) : raw;
+      const canonicalId = normalizeWorkId(canonical?.id) || rawId || imageId;
+
+      const merged = {
+        ...raw,
+        ...canonical,
+        image: canonical?.image || raw?.image || '',
+        zoom: canonical?.zoom || raw?.zoom || canonical?.image || raw?.image || ''
+      };
+
+      const key = canonicalId || `${out.length}`;
+      if (seenKeys.has(key)) continue;
+      seenKeys.add(key);
+      out.push(merged);
+    }
+    return out;
   }
 
   async function loadWorks() {
@@ -2433,8 +2504,7 @@
 
     try {
       const json = await safeJSONFetchFresh('data/works.json?v=20260429-pray-archivepro-json-path-final');
-      const rawList = Array.isArray(json) ? json : (json.works || json.items || []);
-      const list = buildCanonicalWorks(rawList);
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
@@ -2493,27 +2563,32 @@
   }
 
   function resolveWorkImageUrl(rawUrl, id, folder, sectionId) {
-    const cleanId = normalizeWorkId(id);
+    const cleanId = String(id ?? '').trim();
     const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
     const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
+    const sid = Number(sectionId);
 
     /*
-      DUNGZAK.ART FINAL IMAGE RULE — ARCHIVE PRO MATCH
-      - Use works.json image / zoom first.
-      - Never generate another row's image by title, section, or image filename.
-      - Fallback is used only when the JSON row has no usable path or the image fails.
+      ARCHIVE PRO REFERENCE RULE — PRAY SECTION FIX
+      - One JSON row remains one card: title/caption from that row only.
+      - Section I / Pray for Us keeps the exact JSON image/zoom path when it exists.
+        This follows Archive Pro's rule and prevents Pray images from shifting.
+      - Sections II–V use the stable DZ id path.
+      - Origins/OR keeps the exact JSON path first, because Origins images live in dungzaklab-images.
+      - Unknown rows use JSON path first, then fallback.
     */
-    if (clean) return clean;
+    if (sid === 1 && clean) return clean;
 
     if (/^OR[-_]?\d+/i.test(cleanId)) {
-      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+      if (clean) return clean;
+      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(normalizeWorkId(cleanId))}.jpg`;
     }
 
     if (/^DZ[-_]?\d+/i.test(cleanId)) {
-      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+      return buildFallbackWorkImageUrl(normalizeWorkId(cleanId), cleanFolder);
     }
 
-    return buildFallbackWorkImageUrl(cleanId, cleanFolder);
+    return clean || buildFallbackWorkImageUrl(cleanId, cleanFolder);
   }
 
   function normalizeWorkCardItem(raw) {

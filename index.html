@@ -2,7 +2,7 @@
 <html lang="ko" style="background:#070A14;">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
@@ -116,7 +116,7 @@
       max-width:100%;
       overflow-x:hidden;
       overscroll-behavior-x:none;
-      touch-action:auto;
+      touch-action:pan-y;
     }
 
     body{
@@ -1748,54 +1748,13 @@
     }
 
 
-    /* DUNGZAK.ART WORKS LIGHTBOX SAFE FINAL
-       - Restores Works loading by avoiding any undefined JS variable patch.
-       - Only adjusts Lightbox visual sizing/arrows.
-       - Keeps design, data, text, KR/EN, menu, reports, bio unchanged. */
-    .lf-lightbox,
-    .lf-lightbox.active{
-      background: rgba(3, 7, 18, 0.82) !important;
-      backdrop-filter: blur(4px) !important;
-      -webkit-backdrop-filter: blur(4px) !important;
-      overflow:hidden !important;
-    }
-
-    #lf-stage{
-      overflow:hidden !important;
-      display:flex !important;
-      align-items:center !important;
-      justify-content:center !important;
-      contain:layout paint size !important;
-    }
-
-    #lf-image{
-      display:block !important;
-      width:auto !important;
-      height:auto !important;
-      object-fit:contain !important;
-      transform:translate3d(0,0,0) scale(1);
-      transform-origin:center center !important;
-      transition:none !important;
-      will-change:transform !important;
-    }
-
+    /* LIGHTBOX DESKTOP ARROWS ONLY — viewport fixed, artwork-safe */
     #lf-prev,
     #lf-next{
       display:none !important;
     }
 
     @media (min-width: 769px){
-      #lf-stage{
-        width:100vw !important;
-        height:100vh !important;
-        padding:72px 112px 42px 112px !important;
-      }
-
-      #lf-image{
-        max-width:min(calc(100vw - 260px), 900px) !important;
-        max-height:calc(100vh - 150px) !important;
-      }
-
       #lf-prev,
       #lf-next{
         position:fixed !important;
@@ -1822,11 +1781,11 @@
       }
 
       #lf-prev{
-        left:calc(20px + var(--safe-left)) !important;
+        left:calc(16px + var(--safe-left)) !important;
       }
 
       #lf-next{
-        right:calc(20px + var(--safe-right)) !important;
+        right:calc(16px + var(--safe-right)) !important;
       }
 
       #lf-prev:hover,
@@ -1837,157 +1796,11 @@
       }
     }
 
-    @media (min-width: 769px) and (max-width: 1180px){
-      #lf-stage{
-        padding:72px 92px 40px 92px !important;
-      }
-
-      #lf-image{
-        max-width:min(calc(100vw - 220px), 780px) !important;
-        max-height:calc(100vh - 155px) !important;
-      }
-    }
-
     @media (max-width: 768px){
       #lf-prev,
       #lf-next{
         display:none !important;
       }
-
-      #lf-image{
-        max-width:94vw !important;
-        max-height:90vh !important;
-      }
-    }
-
-
-
-    /* DUNGZAK.ART WAVE + ZOOM PERFORMANCE FINAL OVERRIDE
-       - Browser zoom restored by viewport + touch-action:auto.
-       - Wave stays alive but returns to true background layer.
-       - Removes high-cost foreground canvas compositing.
-       - Keeps Works, Reports, Bio, KR/EN, data, and visual tone unchanged. */
-    html,
-    body{
-      touch-action:auto !important;
-      overscroll-behavior-x:none !important;
-      background:#070A14 !important;
-    }
-
-    body.modal-open,
-    body.viewer-open{
-      overflow:hidden !important;
-      touch-action:none !important;
-    }
-
-    #waveCanvas,
-    #waves{
-      position:fixed !important;
-      inset:0 !important;
-      width:100vw !important;
-      height:100dvh !important;
-      z-index:0 !important;
-      pointer-events:none !important;
-      opacity:.44 !important;
-      mix-blend-mode:screen !important;
-      display:block !important;
-      contain:strict !important;
-      transform:translateZ(0) !important;
-      will-change:auto !important;
-    }
-
-    body::before,
-    .site::before,
-    main::before{
-      z-index:0 !important;
-      pointer-events:none !important;
-    }
-
-    .site,
-    .site-shell,
-    header,
-    main,
-    section,
-    footer{
-      position:relative !important;
-      z-index:1 !important;
-    }
-
-    header{
-      z-index:20 !important;
-    }
-
-    #bio-modal{
-      z-index:50 !important;
-    }
-
-    .lf-lightbox,
-    .lf-lightbox.active{
-      z-index:9999 !important;
-      contain:layout paint size !important;
-      transform:none !important;
-      will-change:auto !important;
-      background:rgba(3,7,18,.86) !important;
-      backdrop-filter:none !important;
-      -webkit-backdrop-filter:none !important;
-    }
-
-    #lf-stage{
-      contain:layout paint size !important;
-      transform:translateZ(0) !important;
-      will-change:auto !important;
-      touch-action:none !important;
-    }
-
-    #lf-image{
-      transform-origin:center center !important;
-      will-change:transform !important;
-      backface-visibility:hidden !important;
-      -webkit-backface-visibility:hidden !important;
-      transition:none !important;
-      touch-action:none !important;
-    }
-
-    @media (max-width:768px){
-      header{
-        backdrop-filter:none !important;
-        -webkit-backdrop-filter:none !important;
-      }
-
-      #waveCanvas,
-      #waves{
-        opacity:.38 !important;
-        mix-blend-mode:screen !important;
-      }
-
-      .w-card,
-      .work-card,
-      .r-item,
-      .report-card{
-        will-change:auto !important;
-      }
-    }
-
-
-
-    /* DUNGZAK.ART LIGHTBOX BACKGROUND QUIET FOCUS FIX — FINAL OVERRIDE
-       Scope: Lightbox background darkness / blur only.
-       Keeps design, layout, text, Works data, KR/EN, menu, and Lightbox structure unchanged. */
-    .lf-lightbox,
-    .lf-lightbox.active,
-    .lightbox,
-    .lightbox.active{
-      background: rgba(3, 7, 18, 0.92) !important;
-      backdrop-filter: blur(2px) brightness(0.45) !important;
-      -webkit-backdrop-filter: blur(2px) brightness(0.45) !important;
-    }
-
-    .lf-lightbox img,
-    .lightbox img,
-    #lf-image{
-      filter: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
     }
 
 </style>
@@ -2334,7 +2147,7 @@
     else setTimeout(fn, 50);
   };
 
-  const VERSION = 'LF36_mobile_perf_only_20260430';
+  const VERSION = 'DZ_ART_SECTION_ID_IMAGE_MATCH_FINAL_20260516';
   const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
   function cacheGet(key) {
@@ -2474,43 +2287,37 @@
     if (koBtn) koBtn.classList.add('active');
   }
 
-  
-function initWorksUI() {
-    const worksRoot = document.getElementById('works');
+  function initWorksUI() {
+    const worksRoot = $('#works');
     if (!worksRoot) return;
 
-    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
 
-    const tabs = worksRoot.querySelector('.tabs');
-    if (tabs && tabs.dataset.sectionLockBound !== '1') {
-      tabs.dataset.sectionLockBound = '1';
-
+    const tabs = $('.tabs', worksRoot);
+    if (tabs) {
       tabs.addEventListener('click', (e) => {
         const btn = e.target.closest('.tab');
         if (!btn) return;
-
         const key = btn.dataset.panel;
-        if (!panelKeys.includes(key)) return;
+        if (!key) return;
 
-        worksRoot.querySelectorAll('.tabs .tab').forEach((tab) => {
-          const active = tab.dataset.panel === key;
-          tab.classList.toggle('active', active);
-          if (active) tab.setAttribute('aria-current', 'page');
-          else tab.removeAttribute('aria-current');
-        });
+        for (const b of $$('.tabs .tab', worksRoot)) b.classList.remove('active');
+        btn.classList.add('active');
 
-        panelKeys.forEach((panelKey) => {
-          const panel = document.getElementById('panel-' + panelKey);
-          if (!panel) return;
-          panel.classList.toggle('active', panelKey === key);
-        });
-
-        const panel = document.getElementById('panel-' + key);
-        if (panel) {
-          renderWorksPanel(panel, key);
-          scheduleImageDecode(panel);
+        for (const p of panelIds) {
+          const el = $('#panel-' + p);
+          if (el) el.classList.toggle('active', p === key);
         }
-      });
+
+        if (worksLoaded && worksByPanel[key] && !$('#panel-' + key)?.dataset.rendered) {
+          const panel = $('#panel-' + key);
+          if (panel) {
+            renderWorksPanel(panel, worksByPanel[key], key);
+            panel.dataset.rendered = '1';
+            scheduleImageDecode(panel);
+          }
+        }
+      }, { passive: true });
     }
 
     attachWorksLightbox();
@@ -2525,216 +2332,213 @@ function initWorksUI() {
     5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" }
   };
 
-  const PANEL_SECTION_ID = {
-    origin: 0,
-    pray: 1,
-    human: 2,
-    rebirth: 3,
-    exist: 4,
-    cosmos: 5
-  };
-
-  let MAIN_INDEX_WORKS = [];
-  let MAIN_INDEX_RENDER_TOKEN = 0;
-
   function normalizeSectionId(work) {
-    const n = Number(work && work.section_id);
-    return Number.isFinite(n) ? n : -1;
+    const n = Number(work?.section_id);
+    if (Number.isInteger(n) && n >= 0 && n <= 5) return n;
+    return -1;
   }
 
-  function getPanelSectionId(key) {
-    return Object.prototype.hasOwnProperty.call(PANEL_SECTION_ID, key) ? PANEL_SECTION_ID[key] : null;
+  function normalizeSectionTextValue(v) {
+    return String(v ?? '')
+      .toLowerCase()
+      .normalize('NFKC')
+      .replace(/[ⅠⅡⅢⅣⅤ]/g, (m) => ({ 'Ⅰ':'i', 'Ⅱ':'ii', 'Ⅲ':'iii', 'Ⅳ':'iv', 'Ⅴ':'v' }[m] || m))
+      .replace(/[·ㆍ•]/g, ' ')
+      .replace(/[\s_\-–—]+/g, ' ')
+      .trim();
+  }
+
+  function resolveWorkPanelKey(item) {
+    const idMap = {
+      0: 'origin',
+      1: 'pray',
+      2: 'human',
+      3: 'rebirth',
+      4: 'exist',
+      5: 'cosmos'
+    };
+
+    /*
+      DUNGZAK.ART FINAL SECTION RULE — ARCHIVE PRO MATCH
+      - Section placement uses section_id only.
+      - section_kr / section_en / title / material / image path / id prefix never move a work.
+      - This prevents DZ-034, DZ-038, and other rows from appearing in the wrong section.
+    */
+    const n = normalizeSectionId(item);
+    return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
 
   function naturalIdCompare(a, b) {
-    return String(a && a.id || '').localeCompare(String(b && b.id || ''), 'ko', {
-      numeric: true,
-      sensitivity: 'base'
-    });
+    return String(a?.id || '').localeCompare(String(b?.id || ''), 'ko', { numeric: true, sensitivity: 'base' });
   }
 
-  function parseWorksPayload(json) {
-    const seen = new Set();
-
-    function unwrap(value) {
-      if (!value || seen.has(value)) return [];
-      if (typeof value === 'object') seen.add(value);
-
-      if (Array.isArray(value)) {
-        if (value.length === 1) {
-          const nested = unwrap(value[0]);
-          if (nested.length) return nested;
-        }
-        if (value.some((item) => item && typeof item === 'object' && Object.prototype.hasOwnProperty.call(item, 'id'))) {
-          return value;
-        }
-        for (const item of value) {
-          const nested = unwrap(item);
-          if (nested.length) return nested;
-        }
-        return value;
-      }
-
-      if (typeof value === 'object') {
-        const keys = ['works', 'items', 'data', 'archive', 'artworks', 'records'];
-        for (const key of keys) {
-          const nested = unwrap(value[key]);
-          if (nested.length) return nested;
-        }
-      }
-
-      return [];
-    }
-
-    return unwrap(json);
+  function parseWorkYear(work) {
+    const m = String(work?.year ?? '').match(/\d{4}/);
+    return m ? Number(m[0]) : null;
   }
 
-  function isPrayForUsWork(work) {
-    if (Number(work && work.section_id) !== 1) return false;
-
-    const titleText = [
-      work && work.title_kr,
-      work && work.title_en
-    ].map((value) => String(value || '').trim()).join(' ');
-
+  function sortWorksForSection(items, sectionKey) {
     /*
-      PRAY FOR US SECTION HARD LOCK
-      - Section I must not accept unrelated works that were accidentally given section_id: 1.
-      - The visible card must be an actual "우리를 위해 기도해 주세요 / Pray for Us" work.
-      - This prevents titles/images from other sections such as Human, Rebirth, Restoration, or Metaconsciousness from entering section I.
+      DUNGZAK.ART ALL SECTION FINAL RULE
+      - section label decides placement first; section_id is fallback only.
+      - each section keeps natural ID order.
+      - no title, year, material, image path, or ID prefix can move a work between sections.
     */
-    return /우리를\s*위해\s*기도해\s*주세요|우리를\s*위해\s*기도|Pray\s*for\s*Us/i.test(titleText);
+    return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
   }
 
-  function getSectionWorksByKey(key) {
-    const sectionId = getPanelSectionId(key);
-    if (sectionId === null) return [];
 
+  function extractWorkIdFromUrl(url) {
+    const clean = String(url ?? '').trim();
+    if (!clean) return '';
+    const file = clean.split('?')[0].split('#')[0].split('/').pop() || '';
+    const m = file.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
+    if (!m) return '';
+    const prefix = m[1].toUpperCase();
+    const num = String(Number(m[2]));
+    if (!Number.isFinite(Number(m[2]))) return '';
+    if (prefix === 'OR') return `OR-${num}`;
+    return `DZ-${String(num).padStart(3, '0')}`;
+  }
+
+  function normalizeWorkId(id) {
+    const raw = String(id ?? '').trim();
+    const m = raw.match(/\b(OR|DZ)[-_]?(\d+)\b/i);
+    if (!m) return raw;
+    const prefix = m[1].toUpperCase();
+    const num = String(Number(m[2]));
+    if (!Number.isFinite(Number(m[2]))) return raw;
+    if (prefix === 'OR') return `OR-${num}`;
+    return `DZ-${String(num).padStart(3, '0')}`;
+  }
+
+  function buildCanonicalWorks(list) {
     /*
-      DUNGZAK.ART MAIN INDEX SECTION LOCK
-      - Each panel is locked by numeric section_id.
-      - Section I has an additional title lock because the current live data contains mixed/wrong records.
-      - No array index or previously rendered card can leak into another section.
+      DUNGZAK.ART FINAL IMAGE RULE — ONE ROW = ONE CARD
+      - Do not remap titles by image filename.
+      - Do not merge a row with another JSON row.
+      - Use the row's own id, title, section_id, image, and zoom together.
+      - This is the same stable principle as Archive Pro.
     */
-    return MAIN_INDEX_WORKS
-      .filter((work) => {
-        return Number(work && work.section_id) === Number(sectionId);
-      })
-      .slice()
-      .sort(naturalIdCompare);
+    return Array.isArray(list) ? list.slice() : [];
   }
 
   async function loadWorks() {
-    const worksRoot = document.getElementById('works');
+    const worksRoot = $('#works');
     if (!worksRoot) return;
 
     worksLoaded = true;
-    const panelKeys = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
 
     try {
-      const json = await safeJSONFetchFresh('data/works.json');
-      const rawList = parseWorksPayload(json);
-      if (!Array.isArray(rawList)) throw new Error('Invalid works.json structure');
+      const json = await safeJSONFetchFresh('data/works.json?v=20260429-pray-archivepro-json-path-final');
+      const rawList = Array.isArray(json) ? json : (json.works || json.items || []);
+      const list = buildCanonicalWorks(rawList);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-      MAIN_INDEX_WORKS = rawList
-        .filter((work) => work && typeof work === 'object')
-        .map((work, index) => {
-          return Object.assign({}, work, {
-            _mainIndex: index,
-            section_id: normalizeSectionId(work)
-          });
-        });
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
-      worksByPanel = { origin: [], pray: [], human: [], rebirth: [], exist: [], cosmos: [] };
-      panelKeys.forEach((key) => {
-        worksByPanel[key] = getSectionWorksByKey(key);
-        const panel = document.getElementById('panel-' + key);
+      for (const item of list) {
+        const key = resolveWorkPanelKey(item);
+        if (key && worksByPanel[key]) worksByPanel[key].push(item);
+      }
+
+      for (const key of panelKeys) {
+        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+        const panel = $('#panel-' + key);
         if (panel) {
-          panel.replaceChildren();
+          panel.innerHTML = '';
           delete panel.dataset.rendered;
-          delete panel.dataset.renderToken;
-          delete panel.dataset.renderedCount;
         }
-      });
+      }
 
-      const activePanel = worksRoot.querySelector('.tabpanel.active') || document.getElementById('panel-pray');
-      const activeKey = activePanel && activePanel.id ? activePanel.id.replace('panel-', '') : 'pray';
-
+      const activePanel = $('#works .tabpanel.active') || $('#panel-pray');
+      const activeKey = (activePanel?.id || 'panel-pray').replace('panel-','');
       if (activePanel) {
-        renderWorksPanel(activePanel, activeKey);
+        renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
+        activePanel.dataset.rendered = '1';
         scheduleImageDecode(activePanel);
       }
+
+      /*
+        MOBILE PERFORMANCE ONLY FIX
+        - Do not render every Works panel during initial load.
+        - Inactive panels render only when their section tab is opened.
+        - Active panel paints the first slice immediately, then appends the rest after first paint.
+      */
+
     } catch (err) {
       console.error('works.json load error:', err);
-      panelKeys.forEach((key) => {
-        const panel = document.getElementById('panel-' + key);
-        if (!panel) return;
-        panel.innerHTML = [
-          '<div class="w-msg">',
-          '<div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>',
-          '<div class="en">Unable to load artworks. Please check data/works.json path, filename, and structure.</div>',
-          '<small>', escHTML(String((err && err.message) || err || '')), '</small>',
-          '</div>'
-        ].join('');
-      });
+      for (const key of panelKeys) {
+        const panel = $('#panel-' + key);
+        if (!panel) continue;
+        panel.innerHTML = `
+          <div class="w-msg">
+            <div class="ko">작품 정보를 불러오는 중 문제가 발생했습니다. data/works.json 경로·파일명(대소문자)·구성을 확인해 주세요.</div>
+            <div class="en">Unable to load artworks. Please check data/works.json path, filename (case-sensitive), and structure.</div>
+            <small>${escHTML(String(err?.message || err || ''))}</small>
+          </div>
+        `;
+      }
     }
   }
 
-  function cleanUrl(url) {
-    return String(url || '').trim().replace(/\s+/g, '');
-  }
-
-  function withCacheBust(url) {
-    const clean = cleanUrl(url);
-    if (!clean) return '';
-    const joiner = clean.includes('?') ? '&' : '?';
-    return clean + joiner + 'v=' + Date.now();
-  }
-
-  function getIdLockedImageUrl(id, kind) {
-    const cleanId = String(id || '').trim();
+  function buildFallbackWorkImageUrl(id, folder) {
+    const cleanId = String(id ?? '').trim();
+    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
     if (!cleanId) return '';
-    const folder = kind === 'zoom' ? 'zoom' : 'standard';
 
-    /*
-      MAIN SITE IMAGE LOCK
-      - dungzak.art must use the image file that has the same filename as the artwork id.
-      - Example: DZ-211 -> /images/standard/DZ-211.jpg, /images/zoom/DZ-211.jpg
-      - This blocks stale or mixed image fields inside works.json from changing the displayed thumbnail.
-    */
-    return 'images/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
+    return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
   }
 
-  function normalizeWorkCardItem(work) {
-    const item = work && typeof work === 'object' ? work : {};
-    const id = String(item.id || '').trim();
-    const originalImage = cleanUrl(item.image);
-    const originalZoom = cleanUrl(item.zoom);
-
-    const idImage = getIdLockedImageUrl(id, 'standard');
-    const idZoom = getIdLockedImageUrl(id, 'zoom');
+  function resolveWorkImageUrl(rawUrl, id, folder, sectionId) {
+    const cleanId = normalizeWorkId(id);
+    const clean = String(rawUrl ?? '').trim().replace(/\s+/g, '');
+    const cleanFolder = folder === 'zoom' ? 'zoom' : 'standard';
 
     /*
-      MAIN INDEX IMAGE LOCK
-      - Card image is locked to the artwork id filename.
-      - thumbnail / thumb / src / stale image fields are never used as representative image.
-      - If an id is missing, it falls back to the original image field only to avoid a blank screen.
+      DUNGZAK.ART FINAL IMAGE RULE — ARCHIVE PRO MATCH
+      - Use works.json image / zoom first.
+      - Never generate another row's image by title, section, or image filename.
+      - Fallback is used only when the JSON row has no usable path or the image fails.
     */
+    if (clean) return clean;
+
+    if (/^OR[-_]?\d+/i.test(cleanId)) {
+      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+    }
+
+    if (/^DZ[-_]?\d+/i.test(cleanId)) {
+      return `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${cleanFolder}/${encodeURIComponent(cleanId)}.jpg`;
+    }
+
+    return buildFallbackWorkImageUrl(cleanId, cleanFolder);
+  }
+
+  function normalizeWorkCardItem(raw) {
+    const item = raw && typeof raw === 'object' ? raw : {};
+    const id = String(item.id ?? '').trim();
+    const sectionId = normalizeSectionId(item);
+    const image = resolveWorkImageUrl(item.image, id, 'standard', sectionId);
+    const zoom = resolveWorkImageUrl(item.zoom, id, 'zoom', sectionId) || image;
+    const fallbackImage = buildFallbackWorkImageUrl(id, 'standard');
+    const fallbackZoom = buildFallbackWorkImageUrl(id, 'zoom') || fallbackImage;
+
     return {
       id,
-      section_id: normalizeSectionId(item),
-      section_kr: String(item.section_kr || '').trim(),
-      section_en: String(item.section_en || '').trim(),
-      title_kr: String(item.title_kr || '').trim(),
-      title_en: String(item.title_en || '').trim(),
-      material_kr: String(item.material_kr || '').trim(),
-      material_en: String(item.material_en || '').trim(),
-      size_kr: String(item.size_kr || '').trim(),
-      size_en: String(item.size_en || '').trim(),
-      year: String(item.year || '').trim(),
-      status: String(item.status || '').trim(),
-      image: originalImage || idImage || '',
-      zoom: originalZoom || originalImage || idZoom || idImage || ''
+      section_id: sectionId,
+      title_kr: String(item.title_kr ?? '').trim(),
+      title_en: String(item.title_en ?? '').trim(),
+      material_kr: String(item.material_kr ?? '').trim(),
+      material_en: String(item.material_en ?? '').trim(),
+      size_kr: String(item.size_kr ?? '').trim(),
+      size_en: String(item.size_en ?? '').trim(),
+      year: String(item.year ?? '').trim(),
+      image,
+      zoom,
+      fallbackImage,
+      fallbackZoom
     };
   }
 
@@ -2746,27 +2550,23 @@ function initWorksUI() {
     return span;
   }
 
-  function renderCard(work, key, index) {
-    const item = normalizeWorkCardItem(work);
-    const expectedSectionId = getPanelSectionId(key);
-
-    if (expectedSectionId === null || Number(item.section_id) !== Number(expectedSectionId)) {
-      return null;
-    }
-
-    const isOrigin = Number(item.section_id) === 0;
+  function makeWorkCard(raw, key, index) {
+    const item = normalizeWorkCardItem(raw);
+    const isOrigin = key === 'origin';
+    const imgStd = item.image;
+    const imgZoom = item.zoom || imgStd;
+    const priority = index < 4 ? 'high' : 'low';
 
     const card = document.createElement('article');
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
     card.dataset.id = item.id;
     card.dataset.sectionId = String(item.section_id);
     card.dataset.panel = key;
+    card.dataset.img = imgZoom || imgStd;
 
-    const lockedWork = {
+    const cardWork = {
       id: item.id,
       section_id: item.section_id,
-      section_kr: item.section_kr,
-      section_en: item.section_en,
       title_kr: item.title_kr,
       title_en: item.title_en,
       material_kr: item.material_kr,
@@ -2774,27 +2574,36 @@ function initWorksUI() {
       size_kr: item.size_kr,
       size_en: item.size_en,
       year: item.year,
-      status: item.status,
-      image: item.image,
-      zoom: item.zoom || item.image
+      image: imgStd,
+      zoom: imgZoom || imgStd,
+      fallbackImage: item.fallbackImage || '',
+      fallbackZoom: item.fallbackZoom || ''
     };
+    card.dataset.work = JSON.stringify(cardWork);
 
-    card.dataset.work = JSON.stringify(lockedWork);
-    card.dataset.img = item.zoom || item.image || '';
+    /*
+      CARD MATCHING ABSOLUTE RULE
+      - One visible card is built from one work object only.
+      - Image, title, caption, section, and lightbox data stay locked to that same object.
+      - No separate image/title arrays are used.
+    */
 
     const img = document.createElement('img');
     img.className = 'w-thumb';
-    img.setAttribute('data-src', item.image ? item.image : '');
-    img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
+    img.setAttribute('data-src', imgStd);
+    if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
+    img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
-    img.fetchPriority = index < 4 ? 'high' : 'low';
-    img.onerror = () => {
-      img.style.display = 'none';
-    };
+    img.fetchPriority = priority;
     card.appendChild(img);
 
     if (!isOrigin) {
+      const captionKr = [item.title_kr, item.material_kr, item.size_kr, item.year].filter(Boolean).join('\n');
+      const captionEn = [item.title_en, item.material_en, item.size_en, item.year].filter(Boolean).join('\n');
+      card.setAttribute('data-cap-kr', captionKr);
+      card.setAttribute('data-cap-en', captionEn);
+
       const meta = document.createElement('div');
       meta.className = 'w-meta';
 
@@ -2819,107 +2628,104 @@ function initWorksUI() {
     return card;
   }
 
-  function renderWorksPanel(panel, key) {
+  function renderWorksPanel(panel, items, key) {
     if (!panel) return;
-    const sectionId = getPanelSectionId(key);
-    const token = ++MAIN_INDEX_RENDER_TOKEN;
-
-    panel.dataset.panelKey = key;
-    panel.dataset.renderToken = String(token);
     panel.replaceChildren();
+    panel.dataset.panelKey = key;
 
-    const items = getSectionWorksByKey(key);
+    const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
 
-    if (!items.length) {
+    if (!validItems.length) {
       const msg = document.createElement('div');
       msg.className = 'w-msg';
-      msg.innerHTML = [
-        '<div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>',
-        '<div class="en">No artworks have been registered in this section yet.</div>'
-      ].join('');
+      msg.innerHTML = `
+        <div class="ko">이 섹션에는 아직 등록된 작품이 없습니다.</div>
+        <div class="en">No artworks have been registered in this section yet.</div>
+      `;
       panel.appendChild(msg);
-      panel.dataset.rendered = '1';
       return;
     }
 
     const grid = document.createElement('div');
     grid.className = 'w-grid';
-    grid.dataset.sectionId = String(sectionId);
     panel.appendChild(grid);
 
-    const firstCount = Math.min(getInitialWorksCount(), items.length);
-    const firstFrag = document.createDocumentFragment();
-
+    const firstCount = Math.min(getInitialWorksCount(), validItems.length);
     for (let i = 0; i < firstCount; i++) {
-      const card = renderCard(items[i], key, i);
-      if (card) firstFrag.appendChild(card);
+      grid.appendChild(makeWorkCard(validItems[i], key, i));
     }
 
-    grid.appendChild(firstFrag);
-    panel.dataset.rendered = '1';
-    panel.dataset.totalCount = String(items.length);
+    panel.dataset.totalCount = String(validItems.length);
     panel.dataset.renderedCount = String(firstCount);
 
-    if (firstCount < items.length) {
-      const appendRest = () => appendRemainingWorks(panel, key, token);
+    if (firstCount < validItems.length) {
+      const appendRest = () => appendRemainingWorks(panel, validItems, key);
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(appendRest, { timeout: 1000 });
+        requestIdleCallback(appendRest, { timeout: 1500 });
       } else {
-        setTimeout(appendRest, 160);
+        setTimeout(appendRest, 260);
       }
     }
   }
 
-  function appendRemainingWorks(panel, key, token) {
+  function appendRemainingWorks(panel, validItems, key) {
     if (!panel || !panel.isConnected) return;
-    if (String(panel.dataset.renderToken || '') !== String(token)) return;
-
     const grid = panel.querySelector('.w-grid');
     if (!grid) return;
 
-    const items = getSectionWorksByKey(key);
     let start = Number(panel.dataset.renderedCount || 0);
+    const total = validItems.length;
     const chunk = getWorksChunkCount();
-    const end = Math.min(start + chunk, items.length);
-    const frag = document.createDocumentFragment();
 
-    for (let i = start; i < end; i++) {
-      const card = renderCard(items[i], key, i);
-      if (card) frag.appendChild(card);
-    }
+    function step() {
+      if (!panel.isConnected) return;
+      const end = Math.min(start + chunk, total);
+      const frag = document.createDocumentFragment();
 
-    grid.appendChild(frag);
-    panel.dataset.renderedCount = String(end);
-    scheduleImageDecode(panel);
+      for (let i = start; i < end; i++) {
+        frag.appendChild(makeWorkCard(validItems[i], key, i));
+      }
 
-    if (end < items.length && String(panel.dataset.renderToken || '') === String(token)) {
-      const next = () => appendRemainingWorks(panel, key, token);
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(next, { timeout: 1000 });
-      } else {
-        setTimeout(next, 120);
+      grid.appendChild(frag);
+      panel.dataset.renderedCount = String(end);
+      scheduleImageDecode(panel);
+
+      start = end;
+      if (start < total) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(step, { timeout: 1500 });
+        } else {
+          setTimeout(step, 120);
+        }
       }
     }
+
+    step();
   }
 
   let io = null;
 
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
-    const src = img.getAttribute('data-src') || '';
-    img.dataset.loaded = '1';
+    const src = img.getAttribute('data-src');
+    if (!src) return;
 
+    img.dataset.loaded = '1';
     img.addEventListener('load', () => {
       img.classList.add('is-loaded');
-      if (img.decode) img.decode().catch(() => {});
+      if (img.decode) img.decode().catch(()=>{});
     }, { once: true });
 
-    img.onerror = () => {
-      img.style.display = 'none';
-    };
+    img.addEventListener('error', () => {
+      const fallback = img.getAttribute('data-fallback-src');
+      if (fallback && img.src !== fallback) {
+        img.removeAttribute('data-fallback-src');
+        img.dataset.loaded = '1';
+        img.src = fallback;
+      }
+    });
 
-    img.src = src ? withCacheBust(src) : '';
-    if (!src) img.style.display = 'none';
+    img.src = src;
   }
 
   function ensureIO() {
@@ -2927,42 +2733,44 @@ function initWorksUI() {
     if (!('IntersectionObserver' in window)) return null;
 
     io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const img = entry.target;
+      for (const ent of entries) {
+        if (!ent.isIntersecting) continue;
+        const img = ent.target;
         io.unobserve(img);
         loadThumbImage(img);
-      });
-    }, {
-      root: null,
-      rootMargin: isMobileViewport() ? '120px 0px' : '260px 0px',
-      threshold: 0.01
-    });
+      }
+    }, { root: null, rootMargin: isMobileViewport() ? '120px 0px' : '260px 0px', threshold: 0.01 });
 
     return io;
   }
 
   function scheduleImageDecode(root) {
     const scope = root || document;
-    const imgs = Array.from(scope.querySelectorAll('img.w-thumb[data-src]'));
+    const imgs = Array.from($$('img.w-thumb[data-src]', scope));
     const observer = ensureIO();
-    const immediateCount = isMobileViewport() ? 4 : 8;
 
-    imgs.slice(0, immediateCount).forEach(loadThumbImage);
+    /*
+      MOBILE PERFORMANCE ONLY FIX
+      - Only the first visible four thumbnails are injected immediately.
+      - The rest keep data-src until IntersectionObserver brings them near viewport.
+    */
+    const immediate = imgs.slice(0, 4);
+    for (const img of immediate) loadThumbImage(img);
 
     if (observer) {
-      imgs.slice(immediateCount).forEach((img) => {
-        if (img.dataset.loaded !== '1') observer.observe(img);
-      });
+      for (const img of imgs.slice(4)) {
+        if (img.dataset.loaded === '1') continue;
+        observer.observe(img);
+      }
     } else {
-      setTimeout(() => {
-        imgs.slice(immediateCount).forEach(loadThumbImage);
-      }, 80);
+      runIdle(() => {
+        for (const img of imgs.slice(4)) loadThumbImage(img);
+      });
     }
   }
 
   function attachWorksLightbox() {
-    const worksRoot = document.getElementById('works');
+    const worksRoot = $('#works');
     if (!worksRoot || worksRoot.dataset.lightboxBound === '1') return;
     worksRoot.dataset.lightboxBound = '1';
 
@@ -2970,126 +2778,380 @@ function initWorksUI() {
       const card = e.target.closest('.w-card');
       if (!card) return;
       openLightboxFromCard(card);
-    });
+    }, { passive: true });
 
-    const lb = document.getElementById('lf-lightbox');
-    const stage = document.getElementById('lf-stage');
-    const close = document.getElementById('lf-close');
-    const prev = document.getElementById('lf-prev');
-    const next = document.getElementById('lf-next');
+    const lb = $('#lf-lightbox');
+    const stage = $('#lf-stage');
+    const btnX = $('#lf-close');
+    const btnPrev = $('#lf-prev');
+    const btnNext = $('#lf-next');
 
     if (lb && lb.dataset.bound !== '1') {
       lb.dataset.bound = '1';
+
       lb.addEventListener('click', (e) => {
         if (e.target === lb || e.target === stage) closeLightbox();
       });
+
+      lb.addEventListener('dblclick', (e) => {
+        if (!lb.classList.contains('active')) return;
+        e.preventDefault();
+        toggleLightboxZoom();
+      });
+
+      lb.addEventListener('touchstart', onLightboxTouchStart, { passive: false });
+      lb.addEventListener('touchmove', onLightboxTouchMove, { passive: false });
+      lb.addEventListener('touchend', onLightboxTouchEnd, { passive: false });
+      lb.addEventListener('touchcancel', onLightboxTouchCancel, { passive: false });
     }
 
-    if (close && close.dataset.bound !== '1') {
-      close.dataset.bound = '1';
-      close.addEventListener('click', (e) => {
+    if (btnX && btnX.dataset.bound !== '1') {
+      btnX.dataset.bound = '1';
+      btnX.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
         closeLightbox();
       });
     }
 
-    if (prev && prev.dataset.bound !== '1') {
-      prev.dataset.bound = '1';
-      prev.addEventListener('click', (e) => {
+    if (btnPrev && btnPrev.dataset.bound !== '1') {
+      btnPrev.dataset.bound = '1';
+      btnPrev.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        goLightbox(-1);
+        goPrevLightboxImage();
       });
     }
 
-    if (next && next.dataset.bound !== '1') {
-      next.dataset.bound = '1';
-      next.addEventListener('click', (e) => {
+    if (btnNext && btnNext.dataset.bound !== '1') {
+      btnNext.dataset.bound = '1';
+      btnNext.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        goLightbox(1);
+        goNextLightboxImage();
       });
     }
   }
 
   let lbItems = [];
   let lbIndex = 0;
+  let lbOpenFrom = null;
+
+  let lbScale = 1;
+  let lbX = 0;
+  let lbY = 0;
+  let lbStartX = 0;
+  let lbStartY = 0;
+  let lbLastX = 0;
+  let lbLastY = 0;
+  let lbIsDragging = false;
+  let lbIsZooming = false;
+  let lbInitialDistance = 0;
+  let lbTouchMoved = false;
+  let lbLastTap = 0;
+
+  let viewerIsBusy = false;
+  let swipeDX = 0;
+  let swipeDY = 0;
+  let swipeLocked = false;
+  let swipeRAF = null;
+  let lastSwipeTime = 0;
+
+  const SWIPE_THRESHOLD = 28;
+  const SWIPE_VERTICAL_LIMIT = 70;
+  const SWIPE_COOLDOWN = 45;
+
+  function markViewerBusy() {
+    viewerIsBusy = true;
+    clearTimeout(window.__viewerBusyTimer);
+    window.__viewerBusyTimer = setTimeout(() => {
+      viewerIsBusy = false;
+    }, 180);
+  }
 
   function getActiveWorksCards() {
-    const activePanel = document.querySelector('#works .tabpanel.active');
+    const activePanel = $('#works .tabpanel.active');
     if (!activePanel) return [];
-    return Array.from(activePanel.querySelectorAll('.w-card'));
+    return Array.from($$('.w-card', activePanel));
+  }
+
+  function applyLightboxTransform() {
+    const lbImg = $('#lf-image');
+    if (!lbImg) return;
+    lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+  }
+
+  function resetLightboxTransform() {
+    lbScale = 1;
+    lbX = 0;
+    lbY = 0;
+    lbIsDragging = false;
+    lbIsZooming = false;
+    lbInitialDistance = 0;
+    lbTouchMoved = false;
+    applyLightboxTransform();
+  }
+
+  function toggleLightboxZoom() {
+    lbScale = lbScale > 1 ? 1 : 2;
+    lbX = 0;
+    lbY = 0;
+    applyLightboxTransform();
+  }
+
+  function getTouchDistance(t1, t2) {
+    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+  }
+
+  function preloadNeighborLightboxImages() {
+    if (!lbItems || lbItems.length < 2) return;
+
+    const next = lbItems[(lbIndex + 1) % lbItems.length];
+    const prev = lbItems[(lbIndex - 1 + lbItems.length) % lbItems.length];
+
+    [next, prev].forEach((item) => {
+      if (!item || !item.src) return;
+      const pre = new Image();
+      pre.decoding = 'async';
+      pre.src = item.src;
+    });
+  }
+
+  function setLightboxSlideContent(index) {
+    const lbImg = $('#lf-image');
+    if (!lbImg || !lbItems[index]) return;
+
+    markViewerBusy();
+    lbIndex = index;
+    lbOpenFrom = lbItems[index].card;
+    resetLightboxTransform();
+
+    const src = lbItems[index].src;
+    if (!src) return;
+
+    lbImg.style.transition = 'none';
+    lbImg.style.opacity = '1';
+    lbImg.src = src;
+    lbImg.alt = lbItems[index].alt || '';
+
+    preloadNeighborLightboxImages();
+  }
+
+  function goNextLightboxImage() {
+    if (lbItems.length < 2) return;
+    const nextIndex = (lbIndex + 1) % lbItems.length;
+    setLightboxSlideContent(nextIndex);
+  }
+
+  function goPrevLightboxImage() {
+    if (lbItems.length < 2) return;
+    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+    setLightboxSlideContent(prevIndex);
   }
 
   function openLightboxFromCard(card) {
-    lbItems = getActiveWorksCards();
-    lbIndex = Math.max(0, lbItems.indexOf(card));
-    showLightboxItem(lbIndex);
-  }
+    const lb = $('#lf-lightbox');
+    const lbImg = $('#lf-image');
+    if (!lb || !lbImg) return;
 
-  function showLightboxItem(index) {
-    if (!lbItems.length) return;
+    const cards = getActiveWorksCards();
+    lbItems = cards.map((c) => {
+      let parsed = null;
+      try { parsed = JSON.parse(c.dataset.work || '{}'); } catch (_) { parsed = null; }
+      const fallbackSrc = c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
+      return {
+        card: c,
+        src: c.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
+        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
+      };
+    });
 
-    lbIndex = (index + lbItems.length) % lbItems.length;
-    const card = lbItems[lbIndex];
-    const img = document.getElementById('lf-image');
-    const lb = document.getElementById('lf-lightbox');
-    if (!card || !img || !lb) return;
-
-    let item = {};
-    try {
-      item = JSON.parse(card.dataset.work || '{}');
-    } catch (_) {
-      item = {};
-    }
-
-    const displayUrl = item.zoom || item.image || card.dataset.img || '';
-    img.style.transform = 'translate3d(0,0,0) scale(1)';
-    img.style.width = 'auto';
-    img.style.height = 'auto';
-    img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
-
-    img.onerror = () => {
-      img.style.display = 'none';
-    };
-
-    img.onload = () => {
-      img.style.display = 'block';
-    };
-
-    img.src = displayUrl ? withCacheBust(displayUrl) : '';
-    if (!displayUrl) img.style.display = 'none';
+    const clickedIndex = cards.indexOf(card);
+    if (clickedIndex < 0) return;
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('viewer-open');
-  }
-
-  function goLightbox(delta) {
-    if (!lbItems.length) return;
-    showLightboxItem(lbIndex + delta);
+    document.body.classList.add('modal-open', 'viewer-open');
+    document.body.style.overflow = 'hidden';
+    setLightboxSlideContent(clickedIndex);
   }
 
   function closeLightbox() {
-    const lb = document.getElementById('lf-lightbox');
-    const img = document.getElementById('lf-image');
-    if (lb) {
-      lb.classList.remove('active');
-      lb.setAttribute('aria-hidden', 'true');
+    const lb = $('#lf-lightbox');
+    const lbImg = $('#lf-image');
+    if (!lb) return;
+
+    lb.classList.remove('active');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open', 'viewer-open');
+    document.body.style.overflow = '';
+    viewerIsBusy = false;
+
+    resetLightboxTransform();
+
+    if (lbImg) {
+      lbImg.removeAttribute('src');
+      lbImg.alt = '';
     }
-    if (img) img.removeAttribute('src');
-    document.body.classList.remove('viewer-open');
+
+    lbOpenFrom = null;
+    lbItems = [];
+    lbIndex = 0;
   }
 
-  document.addEventListener('keydown', (e) => {
-    const lb = document.getElementById('lf-lightbox');
+  function onLightboxTouchStart(e) {
+    const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') goLightbox(-1);
-    if (e.key === 'ArrowRight') goLightbox(1);
-  });
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      lbIsZooming = true;
+      lbIsDragging = false;
+      lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
+      lbInitialDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      return;
+    }
+
+    if (e.touches.length !== 1) return;
+
+    lbStartX = e.touches[0].clientX;
+    lbStartY = e.touches[0].clientY;
+    lbLastX = lbStartX;
+    lbLastY = lbStartY;
+    swipeDX = 0;
+    swipeDY = 0;
+    swipeLocked = false;
+    lbIsDragging = true;
+    lbTouchMoved = false;
+  }
+
+  function onLightboxTouchMove(e) {
+    const lb = $('#lf-lightbox');
+    if (!lb || !lb.classList.contains('active')) return;
+
+    if (lbIsZooming && e.touches.length === 2) {
+      e.preventDefault();
+      const newDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      if (!lbInitialDistance) lbInitialDistance = newDistance;
+      const delta = newDistance / lbInitialDistance;
+      lbScale = Math.min(Math.max(1, lbScale * delta), 4);
+      lbInitialDistance = newDistance;
+      if (lbScale <= 1.02) { lbScale = 1; lbX = 0; lbY = 0; }
+      applyLightboxTransform();
+      markViewerBusy();
+      return;
+    }
+
+    if (!lbIsDragging || e.touches.length !== 1) return;
+
+    const nowX = e.touches[0].clientX;
+    const nowY = e.touches[0].clientY;
+    const moveX = nowX - lbStartX;
+    const moveY = nowY - lbStartY;
+
+    swipeDX = moveX;
+    swipeDY = moveY;
+
+    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
+
+    if (lbScale > 1.02) {
+      e.preventDefault();
+      lbX += nowX - lbLastX;
+      lbY += nowY - lbLastY;
+      lbLastX = nowX;
+      lbLastY = nowY;
+      applyLightboxTransform();
+      markViewerBusy();
+      return;
+    }
+
+    lbLastX = nowX;
+    lbLastY = nowY;
+
+    if (!swipeRAF) {
+      swipeRAF = requestAnimationFrame(() => {
+        swipeRAF = null;
+        if (Math.abs(swipeDX) > Math.abs(swipeDY) && Math.abs(swipeDX) > 8) {
+          swipeLocked = true;
+        }
+      });
+    }
+  }
+
+  function onLightboxTouchEnd(e) {
+    const lb = $('#lf-lightbox');
+    if (!lb || !lb.classList.contains('active')) return;
+
+    if (lbIsZooming) {
+      e.preventDefault();
+      lbIsZooming = false;
+      lbInitialDistance = 0;
+      return;
+    }
+
+    if (!lbIsDragging) return;
+
+    if (lbScale > 1.02) {
+      lbIsDragging = false;
+      lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
+      return;
+    }
+
+    const horizontal = Math.abs(swipeDX);
+    const vertical = Math.abs(swipeDY);
+    const now = performance.now();
+
+    if (
+      swipeLocked &&
+      horizontal > SWIPE_THRESHOLD &&
+      vertical < SWIPE_VERTICAL_LIMIT &&
+      now - lastSwipeTime > SWIPE_COOLDOWN
+    ) {
+      e.preventDefault();
+      lastSwipeTime = now;
+      if (swipeDX > 0) goPrevLightboxImage();
+      else goNextLightboxImage();
+      lbLastTap = 0;
+    } else if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
+      const tapNow = Date.now();
+      if (tapNow - lbLastTap < 300) {
+        e.preventDefault();
+        toggleLightboxZoom();
+        lbLastTap = 0;
+      } else {
+        lbLastTap = tapNow;
+      }
+    }
+
+    lbIsDragging = false;
+    lbTouchMoved = false;
+    swipeLocked = false;
+    swipeDX = 0;
+    swipeDY = 0;
+  }
+
+  function onLightboxTouchCancel() {
+    lbIsDragging = false;
+    lbIsZooming = false;
+    lbInitialDistance = 0;
+    lbTouchMoved = false;
+    swipeLocked = false;
+    swipeDX = 0;
+    swipeDY = 0;
+    if (swipeRAF) {
+      cancelAnimationFrame(swipeRAF);
+      swipeRAF = null;
+    }
+  }
+
+  function updateOpenLightboxCaption() {
+    return;
+  }
 
   function initReports() {
     if (reportsInitialized) return;
@@ -3682,37 +3744,6 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     window.addEventListener('load', syncHeaderGeometry, { passive:true });
     window.addEventListener('resize', syncHeaderGeometry, { passive:true });
   });
-})();
-</script>
-
-
-<script>
-/* DUNGZAK.ART LIGHTBOX IMAGE STYLE RESET — safe, non-invasive */
-(() => {
-  function initLightboxImageReset(){
-    const img = document.getElementById('lf-image');
-    if (!img || img.__dczImageResetReady) return;
-    img.__dczImageResetReady = true;
-
-    const reset = () => {
-      img.style.transform = 'translate3d(0,0,0) scale(1)';
-      img.style.width = 'auto';
-      img.style.height = 'auto';
-    };
-
-    img.addEventListener('load', () => {
-      reset();
-      requestAnimationFrame(reset);
-    });
-
-    img.addEventListener('error', reset);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLightboxImageReset, { once:true });
-  } else {
-    initLightboxImageReset();
-  }
 })();
 </script>
 

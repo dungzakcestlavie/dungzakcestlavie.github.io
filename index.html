@@ -2589,20 +2589,39 @@ function initWorksUI() {
     return unwrap(json);
   }
 
+  function isPrayForUsWork(work) {
+    if (Number(work && work.section_id) !== 1) return false;
+
+    const titleText = [
+      work && work.title_kr,
+      work && work.title_en
+    ].map((value) => String(value || '').trim()).join(' ');
+
+    /*
+      PRAY FOR US SECTION HARD LOCK
+      - Section I must not accept unrelated works that were accidentally given section_id: 1.
+      - The visible card must be an actual "우리를 위해 기도해 주세요 / Pray for Us" work.
+      - This prevents titles/images from other sections such as Human, Rebirth, Restoration, or Metaconsciousness from entering section I.
+    */
+    return /우리를\s*위해\s*기도해\s*주세요|우리를\s*위해\s*기도|Pray\s*for\s*Us/i.test(titleText);
+  }
+
   function getSectionWorksByKey(key) {
     const sectionId = getPanelSectionId(key);
     if (sectionId === null) return [];
 
     /*
       DUNGZAK.ART MAIN INDEX SECTION LOCK
-      - Section placement is decided only by numeric section_id.
-      - No title, section_kr, section_en, image path, id prefix, or array index is used.
-      - I 우리를 위해 기도해 주세요 = section_id === 1 only.
-      - II 인간 = section_id === 2 only.
-      - V 빛의 초의식 = section_id === 5 only.
+      - Each panel is locked by numeric section_id.
+      - Section I has an additional title lock because the current live data contains mixed/wrong records.
+      - No array index or previously rendered card can leak into another section.
     */
     return MAIN_INDEX_WORKS
-      .filter((work) => Number(work && work.section_id) === Number(sectionId))
+      .filter((work) => {
+        if (Number(work && work.section_id) !== Number(sectionId)) return false;
+        if (key === 'pray') return isPrayForUsWork(work);
+        return true;
+      })
       .slice()
       .sort(naturalIdCompare);
   }
@@ -2667,73 +2686,6 @@ function initWorksUI() {
     return String(url || '').trim().replace(/\s+/g, '');
   }
 
-  function uniqueCleanUrls(list) {
-    const seen = new Set();
-    return (Array.isArray(list) ? list : [])
-      .map(cleanUrl)
-      .filter((url) => {
-        if (!url || seen.has(url)) return false;
-        seen.add(url);
-        return true;
-      });
-  }
-
-  function getCanonicalWorkImageCandidates(work, kind) {
-    const item = work && typeof work === 'object' ? work : {};
-    const id = String(item.id || '').trim();
-    const sectionId = normalizeSectionId(item);
-    const folder = kind === 'zoom' ? 'zoom' : 'standard';
-    const original = kind === 'zoom' ? cleanUrl(item.zoom) : cleanUrl(item.image);
-    const originalImage = cleanUrl(item.image);
-
-    if (!id) return uniqueCleanUrls([original, originalImage]);
-
-    const isOrigin = sectionId === 0 || /^OR-/i.test(id);
-
-    if (isOrigin) {
-      return uniqueCleanUrls([
-        original,
-        originalImage,
-        `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${folder}/${id}.jpg`,
-        `/archivepro/${folder}/${id}.jpg`,
-        `/images/${folder}/${id}.jpg`
-      ]);
-    }
-
-    return uniqueCleanUrls([
-      `https://raw.githubusercontent.com/dungzakcestlavie/dungzakcestlavie.github.io/main/images/${folder}/${id}.jpg`,
-      `/images/${folder}/${id}.jpg`,
-      `https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/${folder}/${id}.jpg`,
-      original,
-      originalImage
-    ]);
-  }
-
-  function loadImageWithFallback(img, urls) {
-    if (!img) return;
-    const list = uniqueCleanUrls(urls);
-    let index = 0;
-
-    function tryNext() {
-      if (index >= list.length) {
-        img.style.display = 'none';
-        return;
-      }
-      const src = list[index++];
-      img.style.display = '';
-      img.src = withCacheBust(src);
-    }
-
-    img.onerror = tryNext;
-    img.onload = () => {
-      img.style.display = '';
-      img.classList.add('is-loaded');
-      if (img.decode) img.decode().catch(() => {});
-    };
-
-    tryNext();
-  }
-
   function withCacheBust(url) {
     const clean = cleanUrl(url);
     if (!clean) return '';
@@ -2741,22 +2693,37 @@ function initWorksUI() {
     return clean + joiner + 'v=' + Date.now();
   }
 
+  function getIdLockedImageUrl(id, kind) {
+    const cleanId = String(id || '').trim();
+    if (!cleanId) return '';
+    const folder = kind === 'zoom' ? 'zoom' : 'standard';
+
+    /*
+      MAIN SITE IMAGE LOCK
+      - dungzak.art must use the image file that has the same filename as the artwork id.
+      - Example: DZ-211 -> /images/standard/DZ-211.jpg, /images/zoom/DZ-211.jpg
+      - This blocks stale or mixed image fields inside works.json from changing the displayed thumbnail.
+    */
+    return 'images/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
+  }
+
   function normalizeWorkCardItem(work) {
     const item = work && typeof work === 'object' ? work : {};
-    const imageCandidates = getCanonicalWorkImageCandidates(item, 'standard');
-    const zoomCandidates = getCanonicalWorkImageCandidates(item, 'zoom');
-    const image = imageCandidates[0] || '';
-    const zoom = zoomCandidates[0] || image || '';
+    const id = String(item.id || '').trim();
+    const originalImage = cleanUrl(item.image);
+    const originalZoom = cleanUrl(item.zoom);
+
+    const idImage = getIdLockedImageUrl(id, 'standard');
+    const idZoom = getIdLockedImageUrl(id, 'zoom');
 
     /*
       MAIN INDEX IMAGE LOCK
-      - Section placement is fixed only by numeric section_id.
-      - For DZ works, representative image is resolved by artwork id first.
-      - Each card keeps fallback candidates so the page never becomes blank if one URL is stale.
-      - zoom is used only for the lightbox enlargement after a card is opened.
+      - Card image is locked to the artwork id filename.
+      - thumbnail / thumb / src / stale image fields are never used as representative image.
+      - If an id is missing, it falls back to the original image field only to avoid a blank screen.
     */
     return {
-      id: String(item.id || '').trim(),
+      id,
       section_id: normalizeSectionId(item),
       section_kr: String(item.section_kr || '').trim(),
       section_en: String(item.section_en || '').trim(),
@@ -2768,10 +2735,8 @@ function initWorksUI() {
       size_en: String(item.size_en || '').trim(),
       year: String(item.year || '').trim(),
       status: String(item.status || '').trim(),
-      image: image,
-      zoom: zoom,
-      imageCandidates: imageCandidates,
-      zoomCandidates: zoomCandidates
+      image: idImage || originalImage || '',
+      zoom: idZoom || originalZoom || idImage || originalImage || ''
     };
   }
 
@@ -2813,9 +2778,7 @@ function initWorksUI() {
       year: item.year,
       status: item.status,
       image: item.image,
-      zoom: item.zoom || item.image,
-      imageCandidates: item.imageCandidates || [],
-      zoomCandidates: item.zoomCandidates || []
+      zoom: item.zoom || item.image
     };
 
     card.dataset.work = JSON.stringify(lockedWork);
@@ -2824,7 +2787,6 @@ function initWorksUI() {
     const img = document.createElement('img');
     img.className = 'w-thumb';
     img.setAttribute('data-src', item.image ? item.image : '');
-    img.dataset.srcList = JSON.stringify(item.imageCandidates || (item.image ? [item.image] : []));
     img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';
@@ -2947,14 +2909,19 @@ function initWorksUI() {
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
     const src = img.getAttribute('data-src') || '';
-    let list = [];
-    try {
-      list = JSON.parse(img.dataset.srcList || '[]');
-    } catch (_) {
-      list = [];
-    }
     img.dataset.loaded = '1';
-    loadImageWithFallback(img, list.length ? list : [src]);
+
+    img.addEventListener('load', () => {
+      img.classList.add('is-loaded');
+      if (img.decode) img.decode().catch(() => {});
+    }, { once: true });
+
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
+
+    img.src = src ? withCacheBust(src) : '';
+    if (!src) img.style.display = 'none';
   }
 
   function ensureIO() {
@@ -3080,13 +3047,21 @@ function initWorksUI() {
     }
 
     const displayUrl = item.zoom || item.image || card.dataset.img || '';
-    const displayCandidates = uniqueCleanUrls([].concat(item.zoomCandidates || [], item.imageCandidates || [], [displayUrl]));
     img.style.transform = 'translate3d(0,0,0) scale(1)';
     img.style.width = 'auto';
     img.style.height = 'auto';
     img.alt = item.title_kr || item.title_en || item.id || 'Artwork';
 
-    loadImageWithFallback(img, displayCandidates.length ? displayCandidates : [displayUrl]);
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
+
+    img.onload = () => {
+      img.style.display = 'block';
+    };
+
+    img.src = displayUrl ? withCacheBust(displayUrl) : '';
+    if (!displayUrl) img.style.display = 'none';
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');

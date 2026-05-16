@@ -2612,12 +2612,14 @@ function initWorksUI() {
 
     /*
       DUNGZAK.ART MAIN INDEX SECTION LOCK
-      - Each panel is locked ONLY by numeric section_id, the same stable rule used by Archive Pro.
-      - No title text, image filename, array position, previous panel, or rendered card can decide a section.
-      - This prevents wrong-section leakage while keeping the original data and UI unchanged.
+      - Each panel is locked by numeric section_id.
+      - Section I has an additional title lock because the current live data contains mixed/wrong records.
+      - No array index or previously rendered card can leak into another section.
     */
     return MAIN_INDEX_WORKS
-      .filter((work) => Number(work && work.section_id) === Number(sectionId))
+      .filter((work) => {
+        return Number(work && work.section_id) === Number(sectionId);
+      })
       .slice()
       .sort(naturalIdCompare);
   }
@@ -2689,33 +2691,34 @@ function initWorksUI() {
     return clean + joiner + 'v=' + Date.now();
   }
 
-  function getIdFallbackImageUrl(id, kind) {
+  function getIdLockedImageUrl(id, kind) {
     const cleanId = String(id || '').trim();
     if (!cleanId) return '';
     const folder = kind === 'zoom' ? 'zoom' : 'standard';
 
     /*
-      IMAGE FALLBACK ONLY
-      - Primary image/zoom comes from works.json, matching Archive Pro's corrected data.
-      - This fallback is used only when the data field is empty, so local stale/mixed files cannot override the archive data.
+      MAIN SITE IMAGE LOCK
+      - dungzak.art must use the image file that has the same filename as the artwork id.
+      - Example: DZ-211 -> /images/standard/DZ-211.jpg, /images/zoom/DZ-211.jpg
+      - This blocks stale or mixed image fields inside works.json from changing the displayed thumbnail.
     */
-    return 'https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
+    return 'images/' + folder + '/' + encodeURIComponent(cleanId) + '.jpg';
   }
 
   function normalizeWorkCardItem(work) {
     const item = work && typeof work === 'object' ? work : {};
     const id = String(item.id || '').trim();
-    const originalImage = cleanUrl(item.image || item.thumbnail || item.thumb || item.src);
-    const originalZoom = cleanUrl(item.zoom || item.zoom_image || item.large || item.full);
+    const originalImage = cleanUrl(item.image);
+    const originalZoom = cleanUrl(item.zoom);
 
-    const idImage = getIdFallbackImageUrl(id, 'standard');
-    const idZoom = getIdFallbackImageUrl(id, 'zoom');
+    const idImage = getIdLockedImageUrl(id, 'standard');
+    const idZoom = getIdLockedImageUrl(id, 'zoom');
 
     /*
-      MAIN INDEX IMAGE SOURCE FIX
-      - Use works.json image/zoom first, so dungzak.art follows the same corrected artwork data as Archive Pro.
-      - Use id-based GitHub archive paths only as fallback when a data image is missing.
-      - This avoids local dungzak.art image files being shown under the wrong section/title.
+      MAIN INDEX IMAGE LOCK
+      - Card image is locked to the artwork id filename.
+      - thumbnail / thumb / src / stale image fields are never used as representative image.
+      - If an id is missing, it falls back to the original image field only to avoid a blank screen.
     */
     return {
       id,
@@ -2730,8 +2733,8 @@ function initWorksUI() {
       size_en: String(item.size_en || '').trim(),
       year: String(item.year || '').trim(),
       status: String(item.status || '').trim(),
-      image: idImage || originalImage || '',
-      zoom: idZoom || originalZoom || idImage || originalImage || ''
+      image: originalImage || idImage || '',
+      zoom: originalZoom || originalImage || idZoom || idImage || ''
     };
   }
 

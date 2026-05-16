@@ -2632,7 +2632,7 @@
     const isOrigin = key === 'origin';
     const isDZ048 = String(item.id) === 'DZ-048';
     const imgStd = isDZ048 ? DZ048_IMAGE : item.image;
-    const imgZoom = item.zoom || imgStd;
+    const imgZoom = isDZ048 ? DZ048_IMAGE : (item.zoom || imgStd);
     const priority = index < 4 ? 'high' : 'low';
 
     const card = document.createElement('article');

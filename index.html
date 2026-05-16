@@ -2211,6 +2211,8 @@
   let currentReportCategory = 'all';
   let REPORTS_DATA = [];
 
+  const DZ048_IMAGE = 'https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/DZ-048.jpg';
+
   const isMobileViewport = () => window.matchMedia && window.matchMedia('(max-width:768px)').matches;
 
   function getInitialWorksCount(){
@@ -2628,7 +2630,8 @@
   function makeWorkCard(raw, key, index) {
     const item = normalizeWorkCardItem(raw);
     const isOrigin = key === 'origin';
-    const imgStd = item.image;
+    const isDZ048 = String(item.id) === 'DZ-048';
+    const imgStd = isDZ048 ? DZ048_IMAGE : item.image;
     const imgZoom = item.zoom || imgStd;
     const priority = index < 4 ? 'high' : 'low';
 
@@ -2666,7 +2669,15 @@
     const img = document.createElement('img');
     img.className = 'w-thumb';
     img.setAttribute('data-src', imgStd);
-    if (item.fallbackImage && item.fallbackImage !== imgStd) img.setAttribute('data-fallback-src', item.fallbackImage);
+    if (isDZ048) {
+      img.setAttribute('data-fallback-src', DZ048_IMAGE);
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = DZ048_IMAGE;
+      };
+    } else if (item.fallbackImage && item.fallbackImage !== imgStd) {
+      img.setAttribute('data-fallback-src', item.fallbackImage);
+    }
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
     img.loading = index < 4 ? 'eager' : 'lazy';
     img.decoding = 'async';

@@ -2728,6 +2728,7 @@
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
     card.dataset.id = item.id;
     card.dataset.workId = item.id;
+    card.setAttribute('data-work-id', item.id);
     card.dataset.sectionId = String(item.section_id);
     card.dataset.panel = key;
     card.dataset.img = imgZoom || imgStd;
@@ -3031,6 +3032,8 @@
   let viewerTransitionTimer = null;
   let lightboxScrollY = 0;
   let lastViewerWorkId = '';
+  let currentViewerWorkId = null;
+  let closeReturnWorkId = null;
   let lastViewerCard = null;
   let desktopWheelLastAt = 0;
   let swipeDX = 0;
@@ -3186,6 +3189,7 @@
     lbOpenFrom = lbItems[index].card;
     lastViewerCard = lbItems[index].card || null;
     lastViewerWorkId = lbItems[index].id || (lastViewerCard ? lastViewerCard.dataset.id : '') || '';
+    setCurrentViewerWork(lbItems[index]);
     resetLightboxTransform();
 
     const src = lbItems[index].src;
@@ -3253,6 +3257,8 @@
     lightboxScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     lastViewerCard = card;
     lastViewerWorkId = card.dataset.workId || card.dataset.id || '';
+    currentViewerWorkId = lastViewerWorkId;
+    closeReturnWorkId = lastViewerWorkId;
     desktopWheelLastAt = 0;
 
     lb.classList.add('active');
@@ -3267,8 +3273,9 @@
     const lbImg = $('#lf-image');
     if (!lb) return;
 
-    const returnWorkId = lastViewerWorkId || (lbItems[lbIndex] ? lbItems[lbIndex].id : '') || '';
-    const returnCard = lastViewerCard || (lbItems[lbIndex] ? lbItems[lbIndex].card : null) || lbOpenFrom;
+    closeReturnWorkId = currentViewerWorkId || lastViewerWorkId || (lbItems[lbIndex] ? lbItems[lbIndex].id : '') || '';
+    const returnWorkId = closeReturnWorkId;
+    const returnCard = (lbItems[lbIndex] ? lbItems[lbIndex].card : null) || lastViewerCard || lbOpenFrom;
 
     lb.classList.remove('active');
     lb.setAttribute('aria-hidden', 'true');
@@ -3290,7 +3297,11 @@
     lbIndex = 0;
 
     if (returnWorkId || returnCard) {
-      scrollToCurrentWorkCard(returnWorkId, returnCard);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToWorkCard(returnWorkId, returnCard);
+        });
+      });
     } else if (lightboxScrollY) {
       window.scrollTo({ top: lightboxScrollY, behavior: 'auto' });
     }

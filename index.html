@@ -3430,6 +3430,8 @@
           scrollToWorkCard(returnWorkId, returnCard);
         });
       });
+      setTimeout(() => scrollToWorkCard(returnWorkId, returnCard), 80);
+      setTimeout(() => scrollToWorkCard(returnWorkId, returnCard), 180);
     } else if (lightboxScrollY) {
       window.scrollTo({ top: lightboxScrollY, behavior: 'auto' });
     }

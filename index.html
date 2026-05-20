@@ -3060,10 +3060,11 @@
   function preloadNeighborLightboxImages() {
     if (!lbItems || lbItems.length < 2) return;
 
-    const next = lbItems[(lbIndex + 1) % lbItems.length];
-    const prev = lbItems[(lbIndex - 1 + lbItems.length) % lbItems.length];
+    const neighbors = [];
+    if (lbIndex + 1 < lbItems.length) neighbors.push(lbItems[lbIndex + 1]);
+    if (lbIndex - 1 >= 0) lbItems[lbIndex - 1] && neighbors.push(lbItems[lbIndex - 1]);
 
-    [next, prev].forEach((item) => {
+    neighbors.forEach((item) => {
       if (!item || !item.src) return;
       const pre = new Image();
       pre.decoding = 'async';
@@ -3077,7 +3078,8 @@
 
     markViewerBusy();
     lbIndex = index;
-    lbOpenFrom = lbItems[index].card;
+    lbOpenFrom = lbItems[index].card || (lbItems[index].id ? ensureWorkCardRenderedForReturn(lbItems[index].id) : null);
+    if (lbItems[index]) lbItems[index].card = lbOpenFrom;
     lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
     lightboxReturnWorkId = lastViewedWorkId;
     resetLightboxTransform();
@@ -3094,24 +3096,47 @@
   }
 
   function goNextLightboxImage() {
-    if (lbItems.length < 2) return;
-    const nextIndex = (lbIndex + 1) % lbItems.length;
+    if (!lbItems.length) return;
+    const nextIndex = Math.min(lbIndex + 1, lbItems.length - 1);
+    if (nextIndex === lbIndex) return;
     setLightboxSlideContent(nextIndex);
   }
 
   function goPrevLightboxImage() {
-    if (lbItems.length < 2) return;
-    const prevIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+    if (!lbItems.length) return;
+    const prevIndex = Math.max(lbIndex - 1, 0);
+    if (prevIndex === lbIndex) return;
     setLightboxSlideContent(prevIndex);
   }
 
-  function openLightboxFromCard(card) {
-    const lb = $('#lf-lightbox');
-    const lbImg = $('#lf-image');
-    if (!lb || !lbImg) return;
+  function getLightboxItemsForCard(card) {
+    const activePanel = card?.closest('.tabpanel') || $('#works .tabpanel.active');
+    const key = String(card?.dataset?.panel || activePanel?.dataset?.panelKey || '').trim();
+    const panelList = key && worksByPanel && Array.isArray(worksByPanel[key])
+      ? worksByPanel[key].filter(item => resolveWorkPanelKey(item) === key)
+      : [];
+
+    if (panelList.length) {
+      return panelList.map((raw, index) => {
+        const item = normalizeWorkCardItem(raw);
+        const id = String(item.id || '').trim();
+        const safeId = (window.CSS && CSS.escape) ? CSS.escape(id) : id.replace(/"/g, '\"');
+        const renderedCard = id ? activePanel?.querySelector(`[data-work-id="${safeId}"]`) : null;
+        const isDZ048 = id === 'DZ-048';
+        const imgStd = isDZ048 ? DZ048_IMAGE : item.image;
+        const imgZoom = isDZ048 ? DZ048_IMAGE : (item.zoom || imgStd);
+
+        return {
+          card: renderedCard,
+          id,
+          src: imgZoom || imgStd,
+          alt: item.title_kr || item.title_en || id || `Artwork ${index + 1}`
+        };
+      });
+    }
 
     const cards = getSectionScopedWorksCards(card);
-    lbItems = cards.map((c) => {
+    return cards.map((c) => {
       let parsed = null;
       try { parsed = JSON.parse(c.dataset.work || '{}'); } catch (_) { parsed = null; }
       const fallbackSrc = c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
@@ -3122,8 +3147,29 @@
         alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
       };
     });
+  }
 
-    const clickedIndex = cards.indexOf(card);
+  function openLightboxFromCard(card) {
+    const lb = $('#lf-lightbox');
+    const lbImg = $('#lf-image');
+    if (!lb || !lbImg || !card) return;
+
+    resetLightboxTransform();
+    swipeDX = 0;
+    swipeDY = 0;
+    swipeLocked = false;
+    lbIsDragging = false;
+    lbIsZooming = false;
+    viewerIsBusy = false;
+
+    lbItems = getLightboxItemsForCard(card);
+
+    const clickedId = String(card.dataset.workId || card.dataset.id || '').trim();
+    let clickedIndex = lbItems.findIndex(item => String(item.id || '') === clickedId);
+    if (clickedIndex < 0) {
+      const cards = getSectionScopedWorksCards(card);
+      clickedIndex = cards.indexOf(card);
+    }
     if (clickedIndex < 0) return;
 
     lastLightboxScrollY = window.scrollY || window.pageYOffset || 0;
@@ -3171,6 +3217,13 @@
     document.body.classList.remove('modal-open', 'viewer-open');
     document.body.style.overflow = '';
     viewerIsBusy = false;
+    swipeDX = 0;
+    swipeDY = 0;
+    swipeLocked = false;
+    if (swipeRAF) {
+      cancelAnimationFrame(swipeRAF);
+      swipeRAF = null;
+    }
 
     resetLightboxTransform();
 
@@ -3292,13 +3345,19 @@
 
     if (
       swipeLocked &&
+      !viewerIsBusy &&
+      now - lastSwipeTime > SWIPE_COOLDOWN &&
       horizontal > SWIPE_THRESHOLD &&
       vertical < SWIPE_VERTICAL_LIMIT
     ) {
       e.preventDefault();
       lastSwipeTime = now;
-      if (swipeDX > 0) requestAnimationFrame(() => goPrevLightboxImage());
-      else requestAnimationFrame(() => goNextLightboxImage());
+      const direction = swipeDX > 0 ? -1 : 1;
+      swipeRAF = requestAnimationFrame(() => {
+        swipeRAF = null;
+        if (direction < 0) goPrevLightboxImage();
+        else goNextLightboxImage();
+      });
       lbLastTap = 0;
     } else if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
       const tapNow = Date.now();

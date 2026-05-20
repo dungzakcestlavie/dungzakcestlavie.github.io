@@ -1941,6 +1941,66 @@
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
+
+<style id="dungzak-mobile-swipe-pinch-hard-css">
+/* DUNGZAK.ART MOBILE LIGHTBOX SWIPE + PINCH ZOOM HARD RESTORE */
+.lightbox,
+.viewer,
+.modal,
+.lf-lightbox,
+#lf-lightbox{
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+}
+
+.lightbox-media,
+.viewer-media,
+.modal-media,
+#lf-stage{
+  touch-action:pan-y pinch-zoom !important;
+}
+
+.lightbox-image,
+.viewer-image,
+.modal-image,
+.lightbox img,
+.viewer img,
+.modal img,
+#lf-image{
+  touch-action:none !important;
+  user-select:none !important;
+  -webkit-user-drag:none !important;
+  transform-origin:center center !important;
+  will-change:transform !important;
+}
+
+@media (max-width:768px){
+  body.viewer-open,
+  body.modal-open{
+    touch-action:pan-y !important;
+    overscroll-behavior:contain !important;
+  }
+
+  #lf-lightbox,
+  .lf-lightbox{
+    touch-action:pan-y !important;
+    overscroll-behavior:contain !important;
+  }
+
+  #lf-stage{
+    touch-action:pan-y pinch-zoom !important;
+  }
+
+  #lf-image{
+    touch-action:none !important;
+    user-select:none !important;
+    -webkit-user-drag:none !important;
+    transform-origin:center center !important;
+    will-change:transform !important;
+  }
+}
+</style>
+
 </head>
 
 <body class="korean" style="background-color:#070A14;">
@@ -4208,6 +4268,255 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     window.addEventListener('load', syncHeaderGeometry, { passive:true });
     window.addEventListener('resize', syncHeaderGeometry, { passive:true });
   });
+})();
+</script>
+
+
+<script id="dungzak-mobile-swipe-pinch-hard-js">
+/* DUNGZAK.ART MOBILE LIGHTBOX SWIPE + PINCH ZOOM HARD RESTORE */
+(function(){
+  let dzScale = 1;
+  let dzTranslateX = 0;
+  let dzTranslateY = 0;
+
+  let dzIsPinching = false;
+  let dzIsDraggingImage = false;
+  let dzIsSwiping = false;
+  let dzSwipeConsumed = false;
+
+  let dzStartDistance = 0;
+  let dzStartScale = 1;
+  let dzStartX = 0;
+  let dzStartY = 0;
+  let dzLastX = 0;
+  let dzLastY = 0;
+  let dzLastTapTime = 0;
+  let dzLastTapX = 0;
+  let dzLastTapY = 0;
+
+  function dzLightbox(){
+    return document.getElementById('lf-lightbox') ||
+      document.querySelector('.lf-lightbox.active') ||
+      document.querySelector('.lightbox.active,.viewer.open,.modal.open');
+  }
+
+  function dzMedia(){
+    return document.getElementById('lf-stage') ||
+      document.querySelector('.lightbox-media,.viewer-media,.modal-media');
+  }
+
+  function dzImage(){
+    return document.getElementById('lf-image') ||
+      document.querySelector('.lf-lightbox.active img,.lightbox.active img,.viewer.open img,.modal.open img');
+  }
+
+  function dzIsOpen(){
+    const box = dzLightbox();
+    if(!box) return false;
+    return box.classList.contains('active') ||
+      box.classList.contains('open') ||
+      getComputedStyle(box).display !== 'none';
+  }
+
+  function dzDistance(a, b) {
+    const dx = a.clientX - b.clientX;
+    const dy = a.clientY - b.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function dzClamp(v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  }
+
+  function dzApplyTransform() {
+    const imageEl = dzImage();
+    if(!imageEl) return;
+    imageEl.style.transform =
+      'translate3d(' + dzTranslateX + 'px, ' + dzTranslateY + 'px, 0) scale(' + dzScale + ')';
+  }
+
+  function dzResetZoom() {
+    dzScale = 1;
+    dzTranslateX = 0;
+    dzTranslateY = 0;
+    dzApplyTransform();
+  }
+
+  function dzNextImage() {
+    if (typeof window.nextImage === 'function') return window.nextImage();
+    if (typeof window.nextWork === 'function') return window.nextWork();
+    if (typeof window.nextLightbox === 'function') return window.nextLightbox();
+    const next = document.getElementById('lf-next') || document.querySelector('.lightbox-next,.viewer-next,[data-next]');
+    if (next) next.click();
+  }
+
+  function dzPrevImage() {
+    if (typeof window.prevImage === 'function') return window.prevImage();
+    if (typeof window.prevWork === 'function') return window.prevWork();
+    if (typeof window.prevLightbox === 'function') return window.prevLightbox();
+    const prev = document.getElementById('lf-prev') || document.querySelector('.lightbox-prev,.viewer-prev,[data-prev]');
+    if (prev) prev.click();
+  }
+
+  function dzTouchStart(event) {
+    if (!dzIsOpen()) return;
+    const mediaEl = dzMedia();
+    if (mediaEl && !mediaEl.contains(event.target)) return;
+
+    if (event.touches.length === 2) {
+      dzIsPinching = true;
+      dzIsSwiping = false;
+      dzIsDraggingImage = false;
+      dzSwipeConsumed = false;
+      dzStartDistance = dzDistance(event.touches[0], event.touches[1]);
+      dzStartScale = dzScale;
+      return;
+    }
+
+    if (event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    dzStartX = touch.clientX;
+    dzStartY = touch.clientY;
+    dzLastX = touch.clientX;
+    dzLastY = touch.clientY;
+    dzSwipeConsumed = false;
+
+    if (dzScale > 1) {
+      dzIsDraggingImage = true;
+      dzIsSwiping = false;
+      dzIsPinching = false;
+    } else {
+      dzIsSwiping = true;
+      dzIsPinching = false;
+      dzIsDraggingImage = false;
+    }
+  }
+
+  function dzTouchMove(event) {
+    if (!dzIsOpen()) return;
+    const mediaEl = dzMedia();
+    if (mediaEl && !mediaEl.contains(event.target)) return;
+
+    if (dzIsPinching && event.touches.length === 2) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const newDistance = dzDistance(event.touches[0], event.touches[1]);
+      dzScale = dzClamp(dzStartScale * (newDistance / dzStartDistance), 1, 4);
+      if (dzScale < 1.02) {
+        dzScale = 1;
+        dzTranslateX = 0;
+        dzTranslateY = 0;
+      }
+      dzApplyTransform();
+      return;
+    }
+
+    if (dzIsDraggingImage && dzScale > 1 && event.touches.length === 1) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const touch = event.touches[0];
+      dzTranslateX += touch.clientX - dzLastX;
+      dzTranslateY += touch.clientY - dzLastY;
+      dzLastX = touch.clientX;
+      dzLastY = touch.clientY;
+      dzApplyTransform();
+      return;
+    }
+
+    if (dzIsSwiping && dzScale === 1 && event.touches.length === 1 && !dzSwipeConsumed) {
+      const touch = event.touches[0];
+      const dx = touch.clientX - dzStartX;
+      const dy = touch.clientY - dzStartY;
+
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
+        dzSwipeConsumed = true;
+        dzIsSwiping = false;
+        if (dx < 0) dzNextImage();
+        else dzPrevImage();
+      }
+    }
+  }
+
+  function dzTouchEnd(event) {
+    if (!dzIsOpen()) return;
+
+    if (event.touches && event.touches.length > 0) {
+      if (event.touches.length < 2) dzIsPinching = false;
+      return;
+    }
+
+    if (dzScale < 1.02) {
+      dzScale = 1;
+      dzTranslateX = 0;
+      dzTranslateY = 0;
+      dzApplyTransform();
+    }
+
+    const changed = event.changedTouches && event.changedTouches[0];
+    if (changed && !dzSwipeConsumed && !dzIsPinching && !dzIsDraggingImage) {
+      const dx = changed.clientX - dzStartX;
+      const dy = changed.clientY - dzStartY;
+      const now = Date.now();
+
+      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+        if (now - dzLastTapTime < 300 &&
+            Math.abs(changed.clientX - dzLastTapX) < 24 &&
+            Math.abs(changed.clientY - dzLastTapY) < 24) {
+          if (dzScale === 1) {
+            dzScale = 2;
+          } else {
+            dzScale = 1;
+            dzTranslateX = 0;
+            dzTranslateY = 0;
+          }
+          dzApplyTransform();
+          dzLastTapTime = 0;
+        } else {
+          dzLastTapTime = now;
+          dzLastTapX = changed.clientX;
+          dzLastTapY = changed.clientY;
+        }
+      }
+    }
+
+    dzIsPinching = false;
+    dzIsDraggingImage = false;
+    dzIsSwiping = false;
+    dzSwipeConsumed = false;
+  }
+
+  function dzBind() {
+    const mediaEl = dzMedia();
+    if (!mediaEl || mediaEl.__dzSwipePinchHardBound) return;
+    mediaEl.__dzSwipePinchHardBound = true;
+
+    mediaEl.addEventListener('touchstart', dzTouchStart, { passive: true, capture: true });
+    mediaEl.addEventListener('touchmove', dzTouchMove, { passive: false, capture: true });
+    mediaEl.addEventListener('touchend', dzTouchEnd, { passive: true, capture: true });
+    mediaEl.addEventListener('touchcancel', dzTouchEnd, { passive: true, capture: true });
+  }
+
+  const observer = new MutationObserver(function(){
+    const imageEl = dzImage();
+    if (imageEl && imageEl.src !== imageEl.__dzLastSrc) {
+      imageEl.__dzLastSrc = imageEl.src;
+      dzResetZoom();
+    }
+    dzBind();
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'src', 'style']
+  });
+
+  document.addEventListener('DOMContentLoaded', dzBind, { once: true });
+  window.addEventListener('load', dzBind, { once: true });
+
+  window.__dungzakLightboxResetZoom = dzResetZoom;
 })();
 </script>
 

@@ -2922,9 +2922,10 @@
   let lbItems = [];
   let lbIndex = 0;
   let lbOpenFrom = null;
-  let lastLightboxScrollY = 0;
   let lastViewedWorkId = null;
   let lightboxReturnWorkId = null;
+  let viewerScopeIds = [];
+  let viewerCurrentId = null;
 
   let lbScale = 1;
   let lbX = 0;
@@ -2961,7 +2962,7 @@
   function getActiveWorksCards() {
     const activePanel = $('#works .tabpanel.active');
     if (!activePanel) return [];
-    return Array.from($$('.w-card', activePanel));
+    return Array.from($$('[data-work-id]', activePanel));
   }
 
   function applyLightboxTransform() {
@@ -3013,8 +3014,9 @@
     markViewerBusy();
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
-    lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
-    lightboxReturnWorkId = lastViewedWorkId;
+    viewerCurrentId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || viewerCurrentId;
+    lastViewedWorkId = viewerCurrentId || lastViewedWorkId;
+    lightboxReturnWorkId = viewerCurrentId || lastViewedWorkId;
     resetLightboxTransform();
 
     const src = lbItems[index].src;
@@ -3043,37 +3045,49 @@
   function openLightboxFromCard(card) {
     const lb = $('#lf-lightbox');
     const lbImg = $('#lf-image');
-    if (!lb || !lbImg) return;
+    if (!lb || !lbImg || !card) return;
 
-    const cards = getActiveWorksCards();
-    lbItems = cards.map((c) => {
-      let parsed = null;
-      try { parsed = JSON.parse(c.dataset.work || '{}'); } catch (_) { parsed = null; }
-      const fallbackSrc = c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
-      return {
-        card: c,
-        id: parsed?.id || c.dataset.workId || c.dataset.id || '',
-        src: c.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
-        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
-      };
-    });
+    const activePanel = $('#works .tabpanel.active');
+    const cards = activePanel ? Array.from(activePanel.querySelectorAll('[data-work-id]')) : [];
 
-    const clickedIndex = cards.indexOf(card);
+    viewerScopeIds = cards
+      .map((c) => c.dataset.workId || c.dataset.id || '')
+      .filter(Boolean);
+
+    const clickedId = card.dataset.workId || card.dataset.id || '';
+    const clickedIndex = viewerScopeIds.indexOf(clickedId);
     if (clickedIndex < 0) return;
 
-    lastLightboxScrollY = window.scrollY || window.pageYOffset || 0;
-    lastViewedWorkId = lbItems[clickedIndex]?.id || card.dataset.workId || card.dataset.id || null;
-    lightboxReturnWorkId = lastViewedWorkId;
+    lbItems = viewerScopeIds.map((workId) => {
+      const safeId = (window.CSS && CSS.escape) ? CSS.escape(workId) : String(workId).replace(/"/g, '\"');
+      const c = activePanel.querySelector(`[data-work-id="${safeId}"]`);
+      let parsed = null;
+      try { parsed = JSON.parse(c?.dataset?.work || '{}'); } catch (_) { parsed = null; }
+      const fallbackSrc = c?.querySelector('img')?.getAttribute('data-src') || c?.querySelector('img')?.src || '';
+      return {
+        card: c,
+        id: workId,
+        src: c?.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
+        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || workId || ''
+      };
+    }).filter((item) => item && item.id && item.src);
+
+    const safeClickedIndex = lbItems.findIndex((item) => item.id === clickedId);
+    if (safeClickedIndex < 0) return;
+
+    viewerCurrentId = clickedId;
+    lastViewedWorkId = viewerCurrentId;
+    lightboxReturnWorkId = viewerCurrentId;
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open', 'viewer-open');
     document.body.style.overflow = 'hidden';
-    setLightboxSlideContent(clickedIndex);
+    setLightboxSlideContent(safeClickedIndex);
   }
 
   function returnToLastViewedWork() {
-    const restoreWorkId = lightboxReturnWorkId || lastViewedWorkId;
+    const restoreWorkId = viewerCurrentId || lightboxReturnWorkId || lastViewedWorkId;
     if (!restoreWorkId) return;
 
     const safeId = (window.CSS && CSS.escape) ? CSS.escape(restoreWorkId) : String(restoreWorkId).replace(/"/g, '\\"');
@@ -3129,6 +3143,7 @@
     lbOpenFrom = null;
     lbItems = [];
     lbIndex = 0;
+    viewerScopeIds = [];
   }
 
   function onLightboxTouchStart(e) {

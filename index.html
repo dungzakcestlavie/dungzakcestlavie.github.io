@@ -3082,15 +3082,56 @@
     if (lbItems[index]) lbItems[index].card = lbOpenFrom;
     lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
     lightboxReturnWorkId = lastViewedWorkId;
+
+    /* DUNGZAK.ART DESKTOP LIGHTBOX IMAGE SCALE RESET ONLY
+       Prevents previous zoom/transform state from carrying into arrow navigation. */
     resetLightboxTransform();
+    lbScale = 1;
+    lbX = 0;
+    lbY = 0;
+    lbIsDragging = false;
+    lbIsZooming = false;
+    lbInitialDistance = 0;
+    lbTouchMoved = false;
+    swipeDX = 0;
+    swipeDY = 0;
+    swipeLocked = false;
+
+    lbImg.style.transition = 'none';
+    lbImg.style.transformOrigin = 'center center';
+    lbImg.style.transform = 'translate3d(0,0,0) scale(1)';
+    lbImg.style.width = 'auto';
+    lbImg.style.height = 'auto';
+    lbImg.style.maxWidth = '92vw';
+    lbImg.style.maxHeight = '92vh';
+    lbImg.style.objectFit = 'contain';
 
     const src = lbItems[index].src;
     if (!src) return;
 
-    lbImg.style.transition = 'none';
+    lbImg.onload = () => {
+      requestAnimationFrame(() => {
+        lbScale = 1;
+        lbX = 0;
+        lbY = 0;
+        lbImg.style.transition = 'none';
+        lbImg.style.transformOrigin = 'center center';
+        lbImg.style.transform = 'translate3d(0,0,0) scale(1)';
+        lbImg.style.width = 'auto';
+        lbImg.style.height = 'auto';
+        lbImg.style.maxWidth = '92vw';
+        lbImg.style.maxHeight = '92vh';
+        lbImg.style.objectFit = 'contain';
+      });
+    };
+
     lbImg.style.opacity = '1';
     lbImg.src = src;
     lbImg.alt = lbItems[index].alt || '';
+
+    requestAnimationFrame(() => {
+      lbImg.style.transform = 'translate3d(0,0,0) scale(1)';
+    });
 
     preloadNeighborLightboxImages();
   }

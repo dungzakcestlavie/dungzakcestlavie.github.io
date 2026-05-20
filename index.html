@@ -3109,7 +3109,7 @@
     return !!document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`);
   }
 
-  function scrollToWorkCard(workId, fallbackCard) {
+  function scrollToWorkCard(workId, fallbackCard, behavior) {
     const id = workId ? String(workId) : '';
     const safe = (window.CSS && CSS.escape && id) ? CSS.escape(id) : id.replace(/"/g, '\\"');
     let card = fallbackCard || (safe ? document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`) : null);
@@ -3119,15 +3119,45 @@
       card = document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`);
     }
 
-    if (!card) return;
+    if (!card) return false;
 
-    const offset = window.innerWidth <= 768 ? 72 : 96;
-    const y = card.getBoundingClientRect().top + window.pageYOffset - offset;
-    window.scrollTo({
-      top: Math.max(0, y),
-      behavior: 'smooth'
+    try {
+      card.scrollIntoView({
+        behavior: behavior || 'auto',
+        block: 'center',
+        inline: 'nearest'
+      });
+    } catch (_) {}
+
+    requestAnimationFrame(() => {
+      const offset = window.innerWidth <= 768 ? 72 : 96;
+      const y = card.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({
+        top: Math.max(0, y),
+        behavior: behavior || 'smooth'
+      });
     });
+
+    return true;
   }
+
+  function returnToLastViewedWorkCard(workId, fallbackCard) {
+    const id = workId ? String(workId) : '';
+    if (!id && !fallbackCard) return;
+
+    const run = (behavior) => {
+      scrollToWorkCard(id, fallbackCard, behavior || 'smooth');
+    };
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => run('smooth'));
+    });
+
+    window.setTimeout(() => run('auto'), 80);
+    window.setTimeout(() => run('auto'), 180);
+    window.setTimeout(() => run('smooth'), 360);
+  }
+
 
 
   function markViewerBusy() {
@@ -3425,17 +3455,12 @@
     lbIndex = 0;
 
     if (returnWorkId || returnCard) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          scrollToWorkCard(returnWorkId, returnCard);
-        });
-      });
-      setTimeout(() => scrollToWorkCard(returnWorkId, returnCard), 80);
-      setTimeout(() => scrollToWorkCard(returnWorkId, returnCard), 180);
+      returnToLastViewedWorkCard(returnWorkId, returnCard);
     } else if (lightboxScrollY) {
       window.scrollTo({ top: lightboxScrollY, behavior: 'auto' });
     }
   }
+
 
   function onLightboxTouchStart(e) {
     const lb = $('#lf-lightbox');

@@ -2924,6 +2924,7 @@
   let lbOpenFrom = null;
   let lastLightboxScrollY = 0;
   let lastViewedWorkId = null;
+  let lightboxReturnWorkId = null;
 
   let lbScale = 1;
   let lbX = 0;
@@ -3013,6 +3014,7 @@
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
     lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
+    lightboxReturnWorkId = lastViewedWorkId;
     resetLightboxTransform();
 
     const src = lbItems[index].src;
@@ -3061,12 +3063,47 @@
 
     lastLightboxScrollY = window.scrollY || window.pageYOffset || 0;
     lastViewedWorkId = lbItems[clickedIndex]?.id || card.dataset.workId || card.dataset.id || null;
+    lightboxReturnWorkId = lastViewedWorkId;
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open', 'viewer-open');
     document.body.style.overflow = 'hidden';
     setLightboxSlideContent(clickedIndex);
+  }
+
+  function returnToLastViewedWork() {
+    const restoreWorkId = lightboxReturnWorkId || lastViewedWorkId;
+    if (!restoreWorkId) return;
+
+    const safeId = (window.CSS && CSS.escape) ? CSS.escape(restoreWorkId) : String(restoreWorkId).replace(/"/g, '\\"');
+    const selector = `[data-work-id="${safeId}"]`;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const target = document.querySelector(selector);
+        if (!target) return;
+
+        target.scrollIntoView({
+          block: "center",
+          inline: "nearest",
+          behavior: "auto"
+        });
+
+        setTimeout(() => {
+          const again = document.querySelector(selector);
+          if (!again) return;
+
+          const rect = again.getBoundingClientRect();
+          const y = window.scrollY + rect.top - (window.innerHeight * 0.28);
+
+          window.scrollTo({
+            top: Math.max(0, y),
+            behavior: "auto"
+          });
+        }, 80);
+      });
+    });
   }
 
   function closeLightbox() {
@@ -3087,20 +3124,7 @@
       lbImg.alt = '';
     }
 
-    const restoreWorkId = lastViewedWorkId;
-    const restoreScrollY = lastLightboxScrollY;
-
-    requestAnimationFrame(() => {
-      const target = restoreWorkId
-        ? document.querySelector(`[data-work-id="${CSS.escape(restoreWorkId)}"]`)
-        : null;
-
-      if (target) {
-        target.scrollIntoView({ block: "center", inline: "nearest" });
-      } else {
-        window.scrollTo(0, restoreScrollY);
-      }
-    });
+    returnToLastViewedWork();
 
     lbOpenFrom = null;
     lbItems = [];

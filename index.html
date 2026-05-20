@@ -2946,7 +2946,7 @@
   let swipeRAF = null;
   let lastSwipeTime = 0;
 
-  const SWIPE_THRESHOLD = 28;
+  const SWIPE_THRESHOLD = 45;
   const SWIPE_VERTICAL_LIMIT = 70;
   const SWIPE_COOLDOWN = 45;
 
@@ -3258,13 +3258,9 @@
     lbLastX = nowX;
     lbLastY = nowY;
 
-    if (!swipeRAF) {
-      swipeRAF = requestAnimationFrame(() => {
-        swipeRAF = null;
-        if (Math.abs(swipeDX) > Math.abs(swipeDY) && Math.abs(swipeDX) > 8) {
-          swipeLocked = true;
-        }
-      });
+    if (Math.abs(swipeDX) > Math.abs(swipeDY)) {
+      if (Math.abs(swipeDX) > 12) swipeLocked = true;
+      e.preventDefault();
     }
   }
 
@@ -3297,13 +3293,12 @@
     if (
       swipeLocked &&
       horizontal > SWIPE_THRESHOLD &&
-      vertical < SWIPE_VERTICAL_LIMIT &&
-      now - lastSwipeTime > SWIPE_COOLDOWN
+      vertical < SWIPE_VERTICAL_LIMIT
     ) {
       e.preventDefault();
       lastSwipeTime = now;
-      if (swipeDX > 0) goPrevLightboxImage();
-      else goNextLightboxImage();
+      if (swipeDX > 0) requestAnimationFrame(() => goPrevLightboxImage());
+      else requestAnimationFrame(() => goNextLightboxImage());
       lbLastTap = 0;
     } else if (horizontal < 12 && vertical < 12 && !lbTouchMoved) {
       const tapNow = Date.now();

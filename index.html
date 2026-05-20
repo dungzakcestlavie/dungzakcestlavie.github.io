@@ -1803,6 +1803,36 @@
       }
     }
 
+
+    /* DUNGZAK.ART DESKTOP VIEWER IMAGE SCALE LOCK FIX — image size lock only */
+    @media (min-width: 769px){
+      #lf-stage{
+        width:100% !important;
+        height:100% !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        overflow:hidden !important;
+      }
+
+      #lf-image,
+      .lf-lightbox img,
+      .viewer img,
+      .lightbox img,
+      .modal img{
+        max-width:min(92vw, 1200px) !important;
+        max-height:82vh !important;
+        width:auto !important;
+        height:auto !important;
+        object-fit:contain !important;
+        object-position:center center !important;
+      }
+
+      #lf-image:not(.is-zoomed){
+        transform:none !important;
+      }
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -2963,7 +2993,28 @@
   function applyLightboxTransform() {
     const lbImg = $('#lf-image');
     if (!lbImg) return;
-    lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+
+    if (lbScale > 1.02) {
+      lbImg.classList.add('is-zoomed');
+      lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+    } else {
+      lbImg.classList.remove('is-zoomed');
+      lbImg.style.transform = 'none';
+      lbImg.style.width = 'auto';
+      lbImg.style.height = 'auto';
+      lbImg.style.objectFit = 'contain';
+    }
+  }
+
+  function lockLightboxImageScale() {
+    const lbImg = $('#lf-image');
+    if (!lbImg) return;
+    lbImg.classList.remove('is-zoomed');
+    lbImg.style.transform = 'none';
+    lbImg.style.width = 'auto';
+    lbImg.style.height = 'auto';
+    lbImg.style.objectFit = 'contain';
+    lbImg.style.objectPosition = 'center center';
   }
 
   function resetLightboxTransform() {
@@ -2974,7 +3025,7 @@
     lbIsZooming = false;
     lbInitialDistance = 0;
     lbTouchMoved = false;
-    applyLightboxTransform();
+    lockLightboxImageScale();
   }
 
   function toggleLightboxZoom() {
@@ -3014,10 +3065,19 @@
     const src = lbItems[index].src;
     if (!src) return;
 
+    lockLightboxImageScale();
     lbImg.style.transition = 'none';
     lbImg.style.opacity = '1';
+    lbImg.style.width = 'auto';
+    lbImg.style.height = 'auto';
+    lbImg.style.objectFit = 'contain';
+    lbImg.style.transform = 'none';
     lbImg.src = src;
     lbImg.alt = lbItems[index].alt || '';
+
+    lbImg.onload = () => {
+      lockLightboxImageScale();
+    };
 
     preloadNeighborLightboxImages();
   }
@@ -3075,6 +3135,7 @@
     resetLightboxTransform();
 
     if (lbImg) {
+      lockLightboxImageScale();
       lbImg.removeAttribute('src');
       lbImg.alt = '';
     }

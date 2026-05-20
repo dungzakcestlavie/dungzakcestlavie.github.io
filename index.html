@@ -1918,6 +1918,26 @@
       }
     }
 
+
+    /* DUNGZAK.ART VIEWER IMAGE VISIBILITY HARD LOCK — image must render above overlay */
+    #lf-lightbox.active #lf-stage{
+      position:relative !important;
+      z-index:10001 !important;
+    }
+
+    #lf-lightbox.active #lf-stage #lf-image[src]{
+      position:relative !important;
+      z-index:10002 !important;
+      display:block !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      width:auto !important;
+      height:auto !important;
+      object-fit:contain !important;
+      object-position:center center !important;
+      transform:none !important;
+    }
+
 </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
@@ -3072,6 +3092,44 @@
   const SWIPE_VERTICAL_LIMIT = 70;
   const SWIPE_COOLDOWN = 45;
 
+
+
+  /* DUNGZAK.ART VIEWER RETURN + IMAGE STATE PATCH — required helper functions only */
+  function setCurrentViewerWork(work) {
+    if (!work) return;
+    const workId = work.id || (work.work && work.work.id) || (work.card && (work.card.dataset.workId || work.card.dataset.id)) || '';
+    if (!workId) return;
+    currentViewerWorkId = String(workId);
+    closeReturnWorkId = currentViewerWorkId;
+  }
+
+  function ensureWorkRendered(workId) {
+    if (!workId) return false;
+    const safe = (window.CSS && CSS.escape) ? CSS.escape(String(workId)) : String(workId).replace(/"/g, '\\"');
+    return !!document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`);
+  }
+
+  function scrollToWorkCard(workId, fallbackCard) {
+    const id = workId ? String(workId) : '';
+    const safe = (window.CSS && CSS.escape && id) ? CSS.escape(id) : id.replace(/"/g, '\\"');
+    let card = fallbackCard || (safe ? document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`) : null);
+
+    if (!card && id && typeof ensureWorkRendered === 'function') {
+      ensureWorkRendered(id);
+      card = document.querySelector(`[data-work-id="${safe}"], [data-id="${safe}"]`);
+    }
+
+    if (!card) return;
+
+    const offset = window.innerWidth <= 768 ? 72 : 96;
+    const y = card.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({
+      top: Math.max(0, y),
+      behavior: 'smooth'
+    });
+  }
+
+
   function markViewerBusy() {
     viewerIsBusy = true;
     clearTimeout(window.__viewerBusyTimer);
@@ -3211,7 +3269,10 @@
   function setLightboxSlideContent(index) {
     const lbImg = $('#lf-image');
     if (!lbImg || !lbItems[index]) return;
-    if (isViewerTransitioning) return;
+    if (isViewerTransitioning) {
+      clearTimeout(viewerTransitionTimer);
+      isViewerTransitioning = false;
+    }
 
     setViewerTransitioning(true);
     markViewerBusy();
@@ -3310,6 +3371,28 @@
     lb.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open', 'viewer-open');
     document.body.style.overflow = 'hidden';
+
+    const immediateItem = lbItems[clickedIndex];
+    if (immediateItem) {
+      const immediateWork = immediateItem.work || immediateItem;
+      const immediateSrc = (immediateWork && (immediateWork.zoom || immediateWork.image)) || immediateItem.src || '';
+      if (immediateSrc) {
+        lbImg.removeAttribute('style');
+        lbImg.style.width = 'auto';
+        lbImg.style.height = 'auto';
+        lbImg.style.maxWidth = window.matchMedia('(min-width: 769px)').matches ? 'min(92vw, 1200px)' : '94vw';
+        lbImg.style.maxHeight = window.matchMedia('(min-width: 769px)').matches ? '82vh' : '90vh';
+        lbImg.style.objectFit = 'contain';
+        lbImg.style.objectPosition = 'center center';
+        lbImg.style.transform = 'none';
+        lbImg.style.opacity = '1';
+        lbImg.style.display = 'block';
+        lbImg.style.visibility = 'visible';
+        lbImg.alt = immediateItem.alt || '';
+        lbImg.src = immediateSrc;
+      }
+    }
+
     setLightboxSlideContent(clickedIndex);
   }
 

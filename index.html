@@ -2922,10 +2922,9 @@
   let lbItems = [];
   let lbIndex = 0;
   let lbOpenFrom = null;
+  let lastLightboxScrollY = 0;
   let lastViewedWorkId = null;
   let lightboxReturnWorkId = null;
-  let viewerScopeIds = [];
-  let viewerCurrentId = null;
 
   let lbScale = 1;
   let lbX = 0;
@@ -2962,7 +2961,72 @@
   function getActiveWorksCards() {
     const activePanel = $('#works .tabpanel.active');
     if (!activePanel) return [];
-    return Array.from($$('[data-work-id]', activePanel));
+    return Array.from($$('.w-card', activePanel));
+  }
+
+  function getSectionScopedWorksCards(clickedCard) {
+    if (!clickedCard) return [];
+
+    const sectionId = String(clickedCard.dataset.sectionId || '').trim();
+    const panelKey = String(clickedCard.dataset.panel || '').trim();
+    const activePanel = clickedCard.closest('.tabpanel') || $('#works .tabpanel.active');
+    const root = activePanel || document;
+
+    let scoped = [];
+    if (sectionId) {
+      scoped = Array.from($$(`.w-card[data-section-id="${sectionId.replace(/"/g, '\\\"')}"]`, root));
+    }
+
+    if (!scoped.length && panelKey) {
+      scoped = Array.from($$(`.w-card[data-panel="${panelKey.replace(/"/g, '\\\"')}"]`, root));
+    }
+
+    if (!scoped.length) scoped = getActiveWorksCards();
+    return scoped;
+  }
+
+  function findWorkPanelKeyById(workId) {
+    const id = String(workId || '');
+    if (!id) return null;
+
+    for (const key of Object.keys(worksByPanel || {})) {
+      const list = worksByPanel[key] || [];
+      if (list.some(w => String(normalizeWorkCardItem(w)?.id || w?.id || '') === id)) return key;
+    }
+    return null;
+  }
+
+  function ensureWorkCardRenderedForReturn(workId) {
+    const id = String(workId || '');
+    if (!id) return null;
+
+    const safeId = (window.CSS && CSS.escape) ? CSS.escape(id) : id.replace(/"/g, '\\\"');
+    let existing = document.querySelector(`[data-work-id="${safeId}"]`);
+    if (existing) return existing;
+
+    const key = findWorkPanelKeyById(id);
+    if (!key || !worksByPanel[key]) return null;
+
+    const panel = $('#panel-' + key);
+    const grid = panel?.querySelector('.w-grid');
+    if (!panel || !grid) return null;
+
+    const list = (worksByPanel[key] || []).filter(item => resolveWorkPanelKey(item) === key);
+    const targetIndex = list.findIndex(w => String(normalizeWorkCardItem(w)?.id || w?.id || '') === id);
+    if (targetIndex < 0) return null;
+
+    const renderedCount = Number(panel.dataset.renderedCount || 0);
+    if (targetIndex >= renderedCount) {
+      const frag = document.createDocumentFragment();
+      for (let i = renderedCount; i <= targetIndex; i++) {
+        frag.appendChild(makeWorkCard(list[i], key, i));
+      }
+      grid.appendChild(frag);
+      panel.dataset.renderedCount = String(targetIndex + 1);
+      scheduleImageDecode(panel);
+    }
+
+    return document.querySelector(`[data-work-id="${safeId}"]`);
   }
 
   function applyLightboxTransform() {
@@ -3014,9 +3078,8 @@
     markViewerBusy();
     lbIndex = index;
     lbOpenFrom = lbItems[index].card;
-    viewerCurrentId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || viewerCurrentId;
-    lastViewedWorkId = viewerCurrentId || lastViewedWorkId;
-    lightboxReturnWorkId = viewerCurrentId || lastViewedWorkId;
+    lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
+    lightboxReturnWorkId = lastViewedWorkId;
     resetLightboxTransform();
 
     const src = lbItems[index].src;
@@ -3045,57 +3108,46 @@
   function openLightboxFromCard(card) {
     const lb = $('#lf-lightbox');
     const lbImg = $('#lf-image');
-    if (!lb || !lbImg || !card) return;
+    if (!lb || !lbImg) return;
 
-    const activePanel = $('#works .tabpanel.active');
-    const cards = activePanel ? Array.from(activePanel.querySelectorAll('[data-work-id]')) : [];
-
-    viewerScopeIds = cards
-      .map((c) => c.dataset.workId || c.dataset.id || '')
-      .filter(Boolean);
-
-    const clickedId = card.dataset.workId || card.dataset.id || '';
-    const clickedIndex = viewerScopeIds.indexOf(clickedId);
-    if (clickedIndex < 0) return;
-
-    lbItems = viewerScopeIds.map((workId) => {
-      const safeId = (window.CSS && CSS.escape) ? CSS.escape(workId) : String(workId).replace(/"/g, '\"');
-      const c = activePanel.querySelector(`[data-work-id="${safeId}"]`);
+    const cards = getSectionScopedWorksCards(card);
+    lbItems = cards.map((c) => {
       let parsed = null;
-      try { parsed = JSON.parse(c?.dataset?.work || '{}'); } catch (_) { parsed = null; }
-      const fallbackSrc = c?.querySelector('img')?.getAttribute('data-src') || c?.querySelector('img')?.src || '';
+      try { parsed = JSON.parse(c.dataset.work || '{}'); } catch (_) { parsed = null; }
+      const fallbackSrc = c.querySelector('img')?.getAttribute('data-src') || c.querySelector('img')?.src || '';
       return {
         card: c,
-        id: workId,
-        src: c?.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
-        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || workId || ''
+        id: parsed?.id || c.dataset.workId || c.dataset.id || '',
+        src: c.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
+        alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
       };
-    }).filter((item) => item && item.id && item.src);
+    });
 
-    const safeClickedIndex = lbItems.findIndex((item) => item.id === clickedId);
-    if (safeClickedIndex < 0) return;
+    const clickedIndex = cards.indexOf(card);
+    if (clickedIndex < 0) return;
 
-    viewerCurrentId = clickedId;
-    lastViewedWorkId = viewerCurrentId;
-    lightboxReturnWorkId = viewerCurrentId;
+    lastLightboxScrollY = window.scrollY || window.pageYOffset || 0;
+    lastViewedWorkId = lbItems[clickedIndex]?.id || card.dataset.workId || card.dataset.id || null;
+    lightboxReturnWorkId = lastViewedWorkId;
 
     lb.classList.add('active');
     lb.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open', 'viewer-open');
     document.body.style.overflow = 'hidden';
-    setLightboxSlideContent(safeClickedIndex);
+    setLightboxSlideContent(clickedIndex);
   }
 
-  function returnToLastViewedWork() {
-    const restoreWorkId = viewerCurrentId || lightboxReturnWorkId || lastViewedWorkId;
+  function returnToLastViewedWork(returnId) {
+    const restoreWorkId = returnId || lightboxReturnWorkId || lastViewedWorkId;
     if (!restoreWorkId) return;
 
-    const safeId = (window.CSS && CSS.escape) ? CSS.escape(restoreWorkId) : String(restoreWorkId).replace(/"/g, '\\"');
+    const safeId = (window.CSS && CSS.escape) ? CSS.escape(restoreWorkId) : String(restoreWorkId).replace(/"/g, '\"');
     const selector = `[data-work-id="${safeId}"]`;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const target = document.querySelector(selector);
+        let target = document.querySelector(selector);
+        if (!target) target = ensureWorkCardRenderedForReturn(restoreWorkId);
         if (!target) return;
 
         target.scrollIntoView({
@@ -3103,19 +3155,6 @@
           inline: "nearest",
           behavior: "auto"
         });
-
-        setTimeout(() => {
-          const again = document.querySelector(selector);
-          if (!again) return;
-
-          const rect = again.getBoundingClientRect();
-          const y = window.scrollY + rect.top - (window.innerHeight * 0.28);
-
-          window.scrollTo({
-            top: Math.max(0, y),
-            behavior: "auto"
-          });
-        }, 80);
       });
     });
   }
@@ -3124,6 +3163,8 @@
     const lb = $('#lf-lightbox');
     const lbImg = $('#lf-image');
     if (!lb) return;
+
+    const returnId = lastViewedWorkId || lightboxReturnWorkId;
 
     lb.classList.remove('active');
     lb.setAttribute('aria-hidden', 'true');
@@ -3138,12 +3179,11 @@
       lbImg.alt = '';
     }
 
-    returnToLastViewedWork();
+    returnToLastViewedWork(returnId);
 
     lbOpenFrom = null;
     lbItems = [];
     lbIndex = 0;
-    viewerScopeIds = [];
   }
 
   function onLightboxTouchStart(e) {

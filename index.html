@@ -1944,21 +1944,28 @@
 
 
 <style id="dungzak-art-swipe-pinch-final-css">
-/* DUNGZAK.ART MOBILE LIGHTBOX FINAL FIX — SWIPE + PINCH ZOOM ONLY */
+/* DUNGZAK.ART MOBILE FULLSCREEN VIEWER FINAL FIX — DARK BACKDROP + SMOOTH SWIPE + PINCH ZOOM ONLY */
 #lf-lightbox,
 .lf-lightbox{
+  background:rgba(3,6,12,.94) !important;
+  overflow:hidden !important;
   overscroll-behavior:contain !important;
   -webkit-tap-highlight-color:transparent !important;
+  backdrop-filter:blur(2px) !important;
+  -webkit-backdrop-filter:blur(2px) !important;
 }
 
-#lf-lightbox.active{
+#lf-lightbox.active,
+.lf-lightbox.active{
+  display:flex !important;
+  background:rgba(3,6,12,.94) !important;
   overflow:hidden !important;
   overscroll-behavior:contain !important;
 }
 
 #lf-stage{
-  width:100% !important;
-  height:100% !important;
+  width:100vw !important;
+  height:100dvh !important;
   overflow:hidden !important;
   display:flex !important;
   align-items:center !important;
@@ -1973,6 +1980,16 @@
 }
 
 #lf-image{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:calc(100vw - 32px) !important;
+  max-height:70dvh !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  margin:0 auto !important;
   user-select:none !important;
   -webkit-user-select:none !important;
   -webkit-user-drag:none !important;
@@ -1984,8 +2001,6 @@
   transition:none !important;
   will-change:transform !important;
   backface-visibility:hidden !important;
-  object-fit:contain !important;
-  object-position:center center !important;
 }
 
 #lf-image.is-zoomed{
@@ -1996,34 +2011,37 @@
   cursor:grabbing !important;
 }
 
-@media (max-width:768px){
-  body.viewer-open,
-  body.modal-open.viewer-open{
-    overflow:hidden !important;
-    overscroll-behavior:contain !important;
-  }
+body.viewer-open,
+body.modal-open.viewer-open{
+  overflow:hidden !important;
+  overscroll-behavior:contain !important;
+}
 
-  #lf-lightbox.active{
+@media (max-width:768px){
+  #lf-lightbox.active,
+  .lf-lightbox.active{
     width:100vw !important;
     height:100dvh !important;
     min-height:100dvh !important;
-    overflow:hidden !important;
+    background:rgba(3,6,12,.94) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
   }
 
   #lf-stage{
     width:100vw !important;
     height:100dvh !important;
+    padding:calc(56px + var(--safe-top)) calc(16px + var(--safe-right)) calc(92px + var(--safe-bot)) calc(16px + var(--safe-left)) !important;
     touch-action:none !important;
   }
 
   #lf-image{
-    width:auto !important;
-    height:auto !important;
-    max-width:94vw !important;
-    max-height:90dvh !important;
-    object-fit:contain !important;
-    display:block !important;
-    margin:0 auto !important;
+    max-width:calc(100vw - 32px) !important;
+    max-height:70dvh !important;
+  }
+
+  #lf-close{
+    z-index:10060 !important;
   }
 }
 </style>
@@ -4301,16 +4319,18 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 <script id="dungzak-art-swipe-pinch-final-js">
-/* DUNGZAK.ART MOBILE LIGHTBOX FINAL FIX — SWIPE + PINCH ZOOM ONLY */
+/* DUNGZAK.ART MOBILE FULLSCREEN VIEWER FINAL FIX — DARK BACKDROP + SMOOTH SWIPE + PINCH ZOOM ONLY */
 (function(){
   const MIN_SCALE = 1;
   const MAX_SCALE = 4;
-  const SWIPE_THRESHOLD = 54;
-  const SWIPE_VERTICAL_LIMIT = 72;
+  const SWIPE_THRESHOLD = 58;
+  const SWIPE_VERTICAL_LIMIT = 78;
+  const SWIPE_PREVIEW_LIMIT = 96;
 
   let scale = 1;
   let tx = 0;
   let ty = 0;
+  let swipeOffset = 0;
 
   let pointers = new Map();
   let mode = 'none';
@@ -4326,18 +4346,12 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   let swipeDone = false;
   let raf = 0;
   let lastSrc = '';
+  let savedScrollY = 0;
+  let locked = false;
 
-  function box(){
-    return document.getElementById('lf-lightbox');
-  }
-
-  function stage(){
-    return document.getElementById('lf-stage');
-  }
-
-  function image(){
-    return document.getElementById('lf-image');
-  }
+  function box(){ return document.getElementById('lf-lightbox'); }
+  function stage(){ return document.getElementById('lf-stage'); }
+  function image(){ return document.getElementById('lf-image'); }
 
   function isOpen(){
     const b = box();
@@ -4349,25 +4363,45 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   }
 
   function dist(a, b){
-    const dx = a.clientX - b.clientX;
-    const dy = a.clientY - b.clientY;
-    return Math.hypot(dx, dy);
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
   }
 
   function mid(a, b){
-    return {
-      x:(a.clientX + b.clientX) / 2,
-      y:(a.clientY + b.clientY) / 2
-    };
+    return { x:(a.clientX + b.clientX) / 2, y:(a.clientY + b.clientY) / 2 };
   }
 
   function stagePoint(clientX, clientY){
     const s = stage();
     const r = s.getBoundingClientRect();
-    return {
-      x: clientX - r.left - r.width / 2,
-      y: clientY - r.top - r.height / 2
-    };
+    return { x: clientX - r.left - r.width / 2, y: clientY - r.top - r.height / 2 };
+  }
+
+  function lockBody(){
+    if (locked || !isOpen()) return;
+    savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.classList.add('viewer-open');
+    document.documentElement.style.setProperty('overflow', 'hidden', 'important');
+    document.body.style.setProperty('overflow', 'hidden', 'important');
+    document.body.style.setProperty('position', 'fixed', 'important');
+    document.body.style.setProperty('top', '-' + savedScrollY + 'px', 'important');
+    document.body.style.setProperty('left', '0', 'important');
+    document.body.style.setProperty('right', '0', 'important');
+    document.body.style.setProperty('width', '100%', 'important');
+    locked = true;
+  }
+
+  function unlockBody(){
+    if (!locked) return;
+    document.body.classList.remove('viewer-open');
+    document.documentElement.style.removeProperty('overflow');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('left');
+    document.body.style.removeProperty('right');
+    document.body.style.removeProperty('width');
+    window.scrollTo(0, savedScrollY);
+    locked = false;
   }
 
   function clampTranslate(){
@@ -4378,11 +4412,16 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       return;
     }
 
-    const rect = img.getBoundingClientRect();
-    const visualW = rect.width / scale;
-    const visualH = rect.height / scale;
-    const maxX = Math.max(0, (visualW * scale - visualW) / 2);
-    const maxY = Math.max(0, (visualH * scale - visualH) / 2);
+    const naturalW = img.clientWidth || img.offsetWidth || 1;
+    const naturalH = img.clientHeight || img.offsetHeight || 1;
+    const stageEl = stage();
+    const stageRect = stageEl ? stageEl.getBoundingClientRect() : { width:window.innerWidth, height:window.innerHeight };
+
+    const scaledW = naturalW * scale;
+    const scaledH = naturalH * scale;
+
+    const maxX = Math.max(0, (scaledW - Math.min(stageRect.width, naturalW)) / 2);
+    const maxY = Math.max(0, (scaledH - Math.min(stageRect.height, naturalH)) / 2);
 
     tx = clamp(tx, -maxX, maxX);
     ty = clamp(ty, -maxY, maxY);
@@ -4398,10 +4437,14 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       ty = 0;
       img.classList.remove('is-zoomed');
     } else {
+      swipeOffset = 0;
       img.classList.add('is-zoomed');
     }
 
-    const value = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
+    const x = scale === 1 ? swipeOffset : tx;
+    const y = scale === 1 ? 0 : ty;
+    const value = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
+
     img.style.setProperty('transform', value, 'important');
     img.style.setProperty('transition', 'none', 'important');
     img.style.setProperty('transform-origin', 'center center', 'important');
@@ -4411,7 +4454,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     if (raf) return;
     raf = requestAnimationFrame(function(){
       raf = 0;
-      clampTranslate();
+      if (scale > 1) clampTranslate();
       applyNow();
     });
   }
@@ -4420,6 +4463,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     scale = 1;
     tx = 0;
     ty = 0;
+    swipeOffset = 0;
     mode = 'none';
     swipeDone = false;
     pointers.clear();
@@ -4460,6 +4504,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
     mode = 'pinch';
     swipeDone = true;
+    swipeOffset = 0;
     startDistance = Math.max(1, dist(a, b));
     startScale = scale;
     startTx = tx;
@@ -4474,11 +4519,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     const s = stage();
     try { s.setPointerCapture(e.pointerId); } catch(_){}
 
-    pointers.set(e.pointerId, {
-      pointerId:e.pointerId,
-      clientX:e.clientX,
-      clientY:e.clientY
-    });
+    pointers.set(e.pointerId, { pointerId:e.pointerId, clientX:e.clientX, clientY:e.clientY });
 
     if (pointers.size >= 2) {
       beginPinch();
@@ -4491,6 +4532,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     lastY = e.clientY;
     startTx = tx;
     startTy = ty;
+    swipeOffset = 0;
     swipeDone = false;
     mode = scale > 1 ? 'drag' : 'swipe';
   }
@@ -4499,11 +4541,9 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     if (!isOpen() || !pointers.has(e.pointerId)) return;
     hardStop(e);
 
-    pointers.set(e.pointerId, {
-      pointerId:e.pointerId,
-      clientX:e.clientX,
-      clientY:e.clientY
-    });
+    pointers.set(e.pointerId, { pointerId:e.pointerId, clientX:e.clientX, clientY:e.clientY });
+
+    if (pointers.size >= 2 && mode !== 'pinch') beginPinch();
 
     if (mode === 'pinch' && pointers.size >= 2) {
       const pts = Array.from(pointers.values());
@@ -4542,13 +4582,16 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
 
-      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
-        if (e.cancelable) e.preventDefault();
+      if (Math.abs(dx) > 7 && Math.abs(dx) > Math.abs(dy)) {
+        swipeOffset = clamp(dx * 0.28, -SWIPE_PREVIEW_LIMIT, SWIPE_PREVIEW_LIMIT);
+        scheduleApply();
       }
 
       if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dy) <= SWIPE_VERTICAL_LIMIT && Math.abs(dx) > Math.abs(dy) * 1.15) {
         swipeDone = true;
         mode = 'none';
+        swipeOffset = 0;
+        applyNow();
         if (dx < 0) goNext();
         else goPrev();
       }
@@ -4583,6 +4626,11 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       return;
     }
 
+    if (mode === 'swipe') {
+      swipeOffset = 0;
+      applyNow();
+    }
+
     if (scale <= 1.015) resetZoom();
     else {
       clampTranslate();
@@ -4599,6 +4647,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     if (!isOpen()) return;
     hardStop(e);
     pointers.delete(e.pointerId);
+    swipeOffset = 0;
     if (pointers.size === 0) {
       mode = 'none';
       swipeDone = false;
@@ -4626,7 +4675,9 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
       pointers.clear();
       mode = 'none';
       swipeDone = false;
+      swipeOffset = 0;
       if (scale <= 1.015) resetZoom();
+      else applyNow();
     }
   }
 
@@ -4666,6 +4717,9 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   const observer = new MutationObserver(function(){
     const b = box();
     const img = image();
+
+    if (isOpen()) lockBody();
+    else unlockBody();
 
     if (img && img.src && img.src !== lastSrc) {
       lastSrc = img.src;

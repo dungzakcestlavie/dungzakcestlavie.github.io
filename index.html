@@ -1944,50 +1944,76 @@
 
 
 <style id="dungzak-art-swipe-pinch-final-css">
-/* DUNGZAK.ART LIGHTBOX SWIPE + PINCH ZOOM FINAL FIX — lightbox only */
+/* DUNGZAK.ART MOBILE LIGHTBOX FINAL FIX — SWIPE + PINCH ZOOM ONLY */
 #lf-lightbox,
 .lf-lightbox{
-  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+#lf-lightbox.active{
+  overflow:hidden !important;
   overscroll-behavior:contain !important;
 }
 
 #lf-stage{
-  touch-action:pan-y pinch-zoom !important;
+  width:100% !important;
+  height:100% !important;
   overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  touch-action:none !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+  -webkit-touch-callout:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+  overscroll-behavior:contain !important;
+  contain:layout paint size !important;
 }
 
 #lf-image{
-  touch-action:none !important;
   user-select:none !important;
+  -webkit-user-select:none !important;
   -webkit-user-drag:none !important;
-  transform-origin:center center !important;
-  will-change:transform !important;
-  object-fit:contain !important;
+  -webkit-touch-callout:none !important;
   pointer-events:auto !important;
+  touch-action:none !important;
+  transform-origin:center center !important;
+  transform:translate3d(0,0,0) scale(1) !important;
+  transition:none !important;
+  will-change:transform !important;
+  backface-visibility:hidden !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+}
+
+#lf-image.is-zoomed{
+  cursor:grab !important;
+}
+
+#lf-image.is-zoomed:active{
+  cursor:grabbing !important;
 }
 
 @media (max-width:768px){
   body.viewer-open,
-  body.modal-open{
-    touch-action:pan-y !important;
+  body.modal-open.viewer-open{
+    overflow:hidden !important;
     overscroll-behavior:contain !important;
   }
 
   #lf-lightbox.active{
+    width:100vw !important;
     height:100dvh !important;
     min-height:100dvh !important;
     overflow:hidden !important;
-    touch-action:pan-y !important;
   }
 
   #lf-stage{
     width:100vw !important;
     height:100dvh !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    touch-action:pan-y pinch-zoom !important;
-    overflow:hidden !important;
+    touch-action:none !important;
   }
 
   #lf-image{
@@ -1998,7 +2024,6 @@
     object-fit:contain !important;
     display:block !important;
     margin:0 auto !important;
-    touch-action:none !important;
   }
 }
 </style>
@@ -4276,247 +4301,402 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 <script id="dungzak-art-swipe-pinch-final-js">
-/* DUNGZAK.ART LIGHTBOX SWIPE + PINCH ZOOM FINAL FIX — one gesture set */
+/* DUNGZAK.ART MOBILE LIGHTBOX FINAL FIX — SWIPE + PINCH ZOOM ONLY */
 (function(){
-  let dzScale = 1;
-  let dzTranslateX = 0;
-  let dzTranslateY = 0;
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 4;
+  const SWIPE_THRESHOLD = 54;
+  const SWIPE_VERTICAL_LIMIT = 72;
 
-  let dzIsPinching = false;
-  let dzIsDraggingImage = false;
-  let dzIsSwiping = false;
-  let dzSwipeDone = false;
+  let scale = 1;
+  let tx = 0;
+  let ty = 0;
 
-  let dzStartDistance = 0;
-  let dzStartScale = 1;
-  let dzStartX = 0;
-  let dzStartY = 0;
-  let dzLastX = 0;
-  let dzLastY = 0;
-  let dzLastTapTime = 0;
-  let dzLastTapX = 0;
-  let dzLastTapY = 0;
+  let pointers = new Map();
+  let mode = 'none';
+  let startX = 0;
+  let startY = 0;
+  let lastX = 0;
+  let lastY = 0;
+  let startTx = 0;
+  let startTy = 0;
+  let startScale = 1;
+  let startDistance = 0;
+  let startMid = { x:0, y:0 };
+  let swipeDone = false;
+  let raf = 0;
+  let lastSrc = '';
 
-  function dzBox(){
+  function box(){
     return document.getElementById('lf-lightbox');
   }
 
-  function dzMedia(){
+  function stage(){
     return document.getElementById('lf-stage');
   }
 
-  function dzImage(){
+  function image(){
     return document.getElementById('lf-image');
   }
 
-  function dzOpen(){
-    const box = dzBox();
-    return !!(box && box.classList.contains('active'));
+  function isOpen(){
+    const b = box();
+    return !!(b && b.classList.contains('active'));
   }
 
-  function dzDistance(a, b) {
+  function clamp(value, min, max){
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function dist(a, b){
     const dx = a.clientX - b.clientX;
     const dy = a.clientY - b.clientY;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
   }
 
-  function dzClamp(v, min, max) {
-    return Math.min(max, Math.max(min, v));
+  function mid(a, b){
+    return {
+      x:(a.clientX + b.clientX) / 2,
+      y:(a.clientY + b.clientY) / 2
+    };
   }
 
-  function dzApplyTransform() {
-    const imageEl = dzImage();
-    if (!imageEl) return;
-    imageEl.style.transform =
-      'translate3d(' + dzTranslateX + 'px, ' + dzTranslateY + 'px, 0) scale(' + dzScale + ')';
+  function stagePoint(clientX, clientY){
+    const s = stage();
+    const r = s.getBoundingClientRect();
+    return {
+      x: clientX - r.left - r.width / 2,
+      y: clientY - r.top - r.height / 2
+    };
   }
 
-  function dzResetZoom() {
-    dzScale = 1;
-    dzTranslateX = 0;
-    dzTranslateY = 0;
-    dzIsPinching = false;
-    dzIsDraggingImage = false;
-    dzIsSwiping = false;
-    dzSwipeDone = false;
-    dzApplyTransform();
-  }
-
-  function dzNextImage() {
-    if (typeof window.nextImage === 'function') return window.nextImage();
-    if (typeof window.nextWork === 'function') return window.nextWork();
-    if (typeof window.nextLightbox === 'function') return window.nextLightbox();
-    const next = document.getElementById('lf-next') || document.querySelector('#lf-next,.lightbox-next,.viewer-next,[data-next]');
-    if (next) next.click();
-  }
-
-  function dzPrevImage() {
-    if (typeof window.prevImage === 'function') return window.prevImage();
-    if (typeof window.prevWork === 'function') return window.prevWork();
-    if (typeof window.prevLightbox === 'function') return window.prevLightbox();
-    const prev = document.getElementById('lf-prev') || document.querySelector('#lf-prev,.lightbox-prev,.viewer-prev,[data-prev]');
-    if (prev) prev.click();
-  }
-
-  function dzTouchStart(event) {
-    if (!dzOpen()) return;
-    const mediaEl = dzMedia();
-    if (mediaEl && !mediaEl.contains(event.target)) return;
-
-    if (event.touches.length === 2) {
-      dzIsPinching = true;
-      dzIsSwiping = false;
-      dzIsDraggingImage = false;
-      dzSwipeDone = true;
-      dzStartDistance = dzDistance(event.touches[0], event.touches[1]);
-      dzStartScale = dzScale;
+  function clampTranslate(){
+    const img = image();
+    if (!img || scale <= 1) {
+      tx = 0;
+      ty = 0;
       return;
     }
 
-    if (event.touches.length !== 1) return;
+    const rect = img.getBoundingClientRect();
+    const visualW = rect.width / scale;
+    const visualH = rect.height / scale;
+    const maxX = Math.max(0, (visualW * scale - visualW) / 2);
+    const maxY = Math.max(0, (visualH * scale - visualH) / 2);
 
-    const touch = event.touches[0];
-    dzStartX = touch.clientX;
-    dzStartY = touch.clientY;
-    dzLastX = touch.clientX;
-    dzLastY = touch.clientY;
-    dzSwipeDone = false;
+    tx = clamp(tx, -maxX, maxX);
+    ty = clamp(ty, -maxY, maxY);
+  }
 
-    if (dzScale > 1) {
-      dzIsDraggingImage = true;
-      dzIsSwiping = false;
-      dzIsPinching = false;
+  function applyNow(){
+    const img = image();
+    if (!img) return;
+
+    if (scale <= 1.0001) {
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      img.classList.remove('is-zoomed');
     } else {
-      dzIsSwiping = true;
-      dzIsPinching = false;
-      dzIsDraggingImage = false;
+      img.classList.add('is-zoomed');
     }
+
+    const value = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
+    img.style.setProperty('transform', value, 'important');
+    img.style.setProperty('transition', 'none', 'important');
+    img.style.setProperty('transform-origin', 'center center', 'important');
   }
 
-  function dzTouchMove(event) {
-    if (!dzOpen()) return;
-    const mediaEl = dzMedia();
-    if (mediaEl && !mediaEl.contains(event.target)) return;
+  function scheduleApply(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){
+      raf = 0;
+      clampTranslate();
+      applyNow();
+    });
+  }
 
-    if (dzIsPinching && event.touches.length === 2) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const newDistance = dzDistance(event.touches[0], event.touches[1]);
-      if (!dzStartDistance) dzStartDistance = newDistance;
-      dzScale = dzClamp(dzStartScale * (newDistance / dzStartDistance), 1, 4);
+  function resetZoom(){
+    scale = 1;
+    tx = 0;
+    ty = 0;
+    mode = 'none';
+    swipeDone = false;
+    pointers.clear();
+    if (raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+    applyNow();
+  }
 
-      if (dzScale < 1.02) {
-        dzScale = 1;
-        dzTranslateX = 0;
-        dzTranslateY = 0;
-      }
+  function goNext(){
+    resetZoom();
+    const btn = document.getElementById('lf-next');
+    if (btn) btn.click();
+  }
 
-      dzApplyTransform();
+  function goPrev(){
+    resetZoom();
+    const btn = document.getElementById('lf-prev');
+    if (btn) btn.click();
+  }
+
+  function hardStop(e){
+    if (!isOpen()) return false;
+    const s = stage();
+    if (!s || !s.contains(e.target)) return false;
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    return true;
+  }
+
+  function beginPinch(){
+    const pts = Array.from(pointers.values());
+    if (pts.length < 2) return;
+    const a = pts[0];
+    const b = pts[1];
+
+    mode = 'pinch';
+    swipeDone = true;
+    startDistance = Math.max(1, dist(a, b));
+    startScale = scale;
+    startTx = tx;
+    startTy = ty;
+    const m = mid(a, b);
+    startMid = stagePoint(m.clientX, m.clientY);
+  }
+
+  function onPointerDown(e){
+    if (!hardStop(e)) return;
+
+    const s = stage();
+    try { s.setPointerCapture(e.pointerId); } catch(_){}
+
+    pointers.set(e.pointerId, {
+      pointerId:e.pointerId,
+      clientX:e.clientX,
+      clientY:e.clientY
+    });
+
+    if (pointers.size >= 2) {
+      beginPinch();
       return;
     }
 
-    if (dzIsDraggingImage && dzScale > 1 && event.touches.length === 1) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const touch = event.touches[0];
-      dzTranslateX += touch.clientX - dzLastX;
-      dzTranslateY += touch.clientY - dzLastY;
-      dzLastX = touch.clientX;
-      dzLastY = touch.clientY;
-      dzApplyTransform();
+    startX = e.clientX;
+    startY = e.clientY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    startTx = tx;
+    startTy = ty;
+    swipeDone = false;
+    mode = scale > 1 ? 'drag' : 'swipe';
+  }
+
+  function onPointerMove(e){
+    if (!isOpen() || !pointers.has(e.pointerId)) return;
+    hardStop(e);
+
+    pointers.set(e.pointerId, {
+      pointerId:e.pointerId,
+      clientX:e.clientX,
+      clientY:e.clientY
+    });
+
+    if (mode === 'pinch' && pointers.size >= 2) {
+      const pts = Array.from(pointers.values());
+      const a = pts[0];
+      const b = pts[1];
+      const nextDistance = Math.max(1, dist(a, b));
+      const nextScale = clamp(startScale * (nextDistance / startDistance), MIN_SCALE, MAX_SCALE);
+      const m = mid(a, b);
+      const currentMid = stagePoint(m.clientX, m.clientY);
+
+      const ratio = nextScale / Math.max(startScale, 0.0001);
+      tx = currentMid.x - (startMid.x - startTx) * ratio;
+      ty = currentMid.y - (startMid.y - startTy) * ratio;
+      scale = nextScale;
+
+      if (scale <= 1.015) {
+        scale = 1;
+        tx = 0;
+        ty = 0;
+      }
+
+      scheduleApply();
       return;
     }
 
-    if (dzIsSwiping && dzScale === 1 && event.touches.length === 1 && !dzSwipeDone) {
-      const touch = event.touches[0];
-      const dx = touch.clientX - dzStartX;
-      const dy = touch.clientY - dzStartY;
+    if (mode === 'drag' && scale > 1) {
+      tx += e.clientX - lastX;
+      ty += e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      scheduleApply();
+      return;
+    }
 
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
-        dzSwipeDone = true;
-        dzIsSwiping = false;
-        if (dx < 0) dzNextImage();
-        else dzPrevImage();
+    if (mode === 'swipe' && scale === 1 && !swipeDone) {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        if (e.cancelable) e.preventDefault();
+      }
+
+      if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dy) <= SWIPE_VERTICAL_LIMIT && Math.abs(dx) > Math.abs(dy) * 1.15) {
+        swipeDone = true;
+        mode = 'none';
+        if (dx < 0) goNext();
+        else goPrev();
       }
     }
   }
 
-  function dzTouchEnd(event) {
-    if (!dzOpen()) return;
+  function onPointerUp(e){
+    if (!isOpen()) return;
+    hardStop(e);
 
-    if (event.touches && event.touches.length > 0) {
-      if (event.touches.length < 2) dzIsPinching = false;
+    const s = stage();
+    try { s.releasePointerCapture(e.pointerId); } catch(_){}
+
+    pointers.delete(e.pointerId);
+
+    if (mode === 'pinch') {
+      if (scale <= 1.015) {
+        resetZoom();
+      } else {
+        clampTranslate();
+        applyNow();
+      }
+
+      if (pointers.size === 1) {
+        const p = Array.from(pointers.values())[0];
+        lastX = p.clientX;
+        lastY = p.clientY;
+        mode = 'drag';
+      } else {
+        mode = 'none';
+      }
       return;
     }
 
-    const changed = event.changedTouches && event.changedTouches[0];
-
-    if (changed && !dzSwipeDone && dzIsSwiping && dzScale === 1) {
-      const dx = changed.clientX - dzStartX;
-      const dy = changed.clientY - dzStartY;
-      const now = Date.now();
-
-      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-        if (now - dzLastTapTime < 300 &&
-            Math.abs(changed.clientX - dzLastTapX) < 26 &&
-            Math.abs(changed.clientY - dzLastTapY) < 26) {
-          if (dzScale === 1) {
-            dzScale = 2;
-          } else {
-            dzScale = 1;
-            dzTranslateX = 0;
-            dzTranslateY = 0;
-          }
-          dzApplyTransform();
-          dzLastTapTime = 0;
-        } else {
-          dzLastTapTime = now;
-          dzLastTapX = changed.clientX;
-          dzLastTapY = changed.clientY;
-        }
-      }
+    if (scale <= 1.015) resetZoom();
+    else {
+      clampTranslate();
+      applyNow();
     }
 
-    if (dzScale < 1.02) dzResetZoom();
-
-    dzIsPinching = false;
-    dzIsDraggingImage = false;
-    dzIsSwiping = false;
-    dzSwipeDone = false;
+    if (pointers.size === 0) {
+      mode = 'none';
+      swipeDone = false;
+    }
   }
 
-  function dzBind() {
-    const mediaEl = dzMedia();
-    if (!mediaEl || mediaEl.__dzFinalSwipePinchBound) return;
+  function onPointerCancel(e){
+    if (!isOpen()) return;
+    hardStop(e);
+    pointers.delete(e.pointerId);
+    if (pointers.size === 0) {
+      mode = 'none';
+      swipeDone = false;
+      if (scale <= 1.015) resetZoom();
+      else {
+        clampTranslate();
+        applyNow();
+      }
+    }
+  }
 
-    mediaEl.__dzFinalSwipePinchBound = true;
-    mediaEl.addEventListener('touchstart', dzTouchStart, { passive: true, capture: true });
-    mediaEl.addEventListener('touchmove', dzTouchMove, { passive: false, capture: true });
-    mediaEl.addEventListener('touchend', dzTouchEnd, { passive: true, capture: true });
-    mediaEl.addEventListener('touchcancel', dzTouchEnd, { passive: true, capture: true });
+  function onTouchMove(e){
+    if (!isOpen()) return;
+    const s = stage();
+    if (!s || !s.contains(e.target)) return;
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+  }
+
+  function onTouchCancel(e){
+    if (!isOpen()) return;
+    const s = stage();
+    if (s && s.contains(e.target)) {
+      pointers.clear();
+      mode = 'none';
+      swipeDone = false;
+      if (scale <= 1.015) resetZoom();
+    }
+  }
+
+  function onGesture(e){
+    if (!isOpen()) return;
+    const s = stage();
+    if (!s || !s.contains(e.target)) return;
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+  }
+
+  function bind(){
+    const s = stage();
+    const img = image();
+    if (!s || !img || s.__dzMobileFinalBound) return;
+
+    s.__dzMobileFinalBound = true;
+
+    s.addEventListener('pointerdown', onPointerDown, { passive:false, capture:true });
+    s.addEventListener('pointermove', onPointerMove, { passive:false, capture:true });
+    s.addEventListener('pointerup', onPointerUp, { passive:false, capture:true });
+    s.addEventListener('pointercancel', onPointerCancel, { passive:false, capture:true });
+    s.addEventListener('lostpointercapture', onPointerCancel, { passive:false, capture:true });
+
+    s.addEventListener('touchmove', onTouchMove, { passive:false, capture:true });
+    s.addEventListener('touchcancel', onTouchCancel, { passive:false, capture:true });
+
+    s.addEventListener('gesturestart', onGesture, { passive:false, capture:true });
+    s.addEventListener('gesturechange', onGesture, { passive:false, capture:true });
+    s.addEventListener('gestureend', onGesture, { passive:false, capture:true });
+
+    img.addEventListener('dragstart', function(e){ e.preventDefault(); }, { passive:false });
+    applyNow();
   }
 
   const observer = new MutationObserver(function(){
-    const imageEl = dzImage();
-    if (imageEl && imageEl.src && imageEl.src !== imageEl.__dzFinalLastSrc) {
-      imageEl.__dzFinalLastSrc = imageEl.src;
-      dzResetZoom();
+    const b = box();
+    const img = image();
+
+    if (img && img.src && img.src !== lastSrc) {
+      lastSrc = img.src;
+      resetZoom();
     }
-    dzBind();
+
+    if (b && !b.classList.contains('active')) {
+      resetZoom();
+    }
+
+    bind();
   });
 
   observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['class', 'src', 'style']
+    childList:true,
+    subtree:true,
+    attributes:true,
+    attributeFilter:['class','src']
   });
 
-  document.addEventListener('DOMContentLoaded', dzBind, { once: true });
-  window.addEventListener('load', dzBind, { once: true });
-  dzBind();
+  document.addEventListener('DOMContentLoaded', bind, { once:true });
+  window.addEventListener('load', bind, { once:true });
+  window.addEventListener('resize', function(){
+    if (scale > 1) {
+      clampTranslate();
+      applyNow();
+    }
+  }, { passive:true });
 
-  window.__dungzakLightboxFinalResetZoom = dzResetZoom;
+  bind();
+  window.__dungzakLightboxFinalResetZoom = resetZoom;
 })();
 </script>
 

@@ -1803,9 +1803,26 @@
       }
     }
 
+    /* FINAL MICRO TUNING ONLY — CLS/LCP reservation without layout redesign */
+    header .brand{ min-height: 21px; }
+    header .brand-sub{ min-height: 15px; }
+    .lang-row{ min-height: 32px; }
+    .lab-row{ min-height: 34px; }
+    #soundBar{ width: var(--orb); height: var(--orb); }
+    .w-thumb{ aspect-ratio: 4 / 5; width: 100%; height: auto; }
+    .w-card{ contain: layout paint; }
+
 </style>
 
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" /></noscript>
 </head>
 
 <body class="korean" style="background-color:#070A14;">
@@ -2633,7 +2650,7 @@
     const isDZ048 = String(item.id) === 'DZ-048';
     const imgStd = isDZ048 ? DZ048_IMAGE : item.image;
     const imgZoom = isDZ048 ? DZ048_IMAGE : (item.zoom || imgStd);
-    const priority = index < 4 ? 'high' : 'low';
+    const priority = index < 2 ? 'high' : 'auto';
 
     const card = document.createElement('article');
     card.className = isOrigin ? 'w-card w-card-origin' : 'w-card';
@@ -2669,6 +2686,8 @@
 
     const img = document.createElement('img');
     img.className = 'w-thumb';
+    img.width = 800;
+    img.height = 1000;
     img.setAttribute('data-src', imgStd);
     if (isDZ048) {
       img.setAttribute('data-fallback-src', DZ048_IMAGE);
@@ -2680,7 +2699,7 @@
       img.setAttribute('data-fallback-src', item.fallbackImage);
     }
     img.alt = item.title_en || item.title_kr || item.id || 'Artwork';
-    img.loading = index < 4 ? 'eager' : 'lazy';
+    img.loading = index < 2 ? 'eager' : 'lazy';
     img.decoding = 'async';
     img.fetchPriority = priority;
     card.appendChild(img);
@@ -2838,14 +2857,14 @@
 
     /*
       MOBILE PERFORMANCE ONLY FIX
-      - Only the first visible four thumbnails are injected immediately.
+      - Only the first visible two thumbnails are injected immediately.
       - The rest keep data-src until IntersectionObserver brings them near viewport.
     */
-    const immediate = imgs.slice(0, 4);
+    const immediate = imgs.slice(0, 2);
     for (const img of immediate) loadThumbImage(img);
 
     if (observer) {
-      for (const img of imgs.slice(4)) {
+      for (const img of imgs.slice(2)) {
         if (img.dataset.loaded === '1') continue;
         observer.observe(img);
       }
@@ -3732,7 +3751,6 @@
         bar.classList.add('is-on');
         bar.setAttribute('aria-pressed', 'true');
       } catch (err) {
-        console.warn('Audio play failed:', err);
       }
     }
 

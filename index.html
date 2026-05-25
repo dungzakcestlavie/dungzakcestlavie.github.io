@@ -1812,6 +1812,30 @@
     .w-thumb{ aspect-ratio: 4 / 5; width: 100%; height: auto; }
     .w-card{ contain: layout paint; }
 
+
+    /* DUNGZAK.ART MOBILE VIEWER INNER ZOOM + PAN STABILIZATION ONLY
+       Mobile Lightbox only. Desktop, captions, X button, data, filters and layout are untouched. */
+    @media (max-width: 768px) {
+      #lf-lightbox,
+      #lf-stage {
+        overflow: hidden !important;
+        touch-action: none !important;
+        overscroll-behavior: contain !important;
+      }
+
+      #lf-stage {
+        position: relative !important;
+      }
+
+      #lf-image {
+        user-select: none !important;
+        -webkit-user-drag: none !important;
+        touch-action: none !important;
+        transform-origin: center center !important;
+        will-change: transform !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -2955,6 +2979,9 @@
   let lbIsDragging = false;
   let lbIsZooming = false;
   let lbInitialDistance = 0;
+  let lbStartScale = 1;
+  let lbStartTranslateX = 0;
+  let lbStartTranslateY = 0;
   let lbTouchMoved = false;
   let lbLastTap = 0;
 
@@ -3048,10 +3075,43 @@
     return document.querySelector(`[data-work-id="${safeId}"]`);
   }
 
+  function clampLightboxValue(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function isMobileLightboxViewport() {
+    return isMobileViewport();
+  }
+
+  function clampLightboxImageToFrame() {
+    if (!isMobileLightboxViewport()) return;
+
+    const stage = $('#lf-stage');
+    if (!stage) return;
+
+    if (lbScale <= 1.02) {
+      lbScale = 1;
+      lbX = 0;
+      lbY = 0;
+      return;
+    }
+
+    const frame = stage.getBoundingClientRect();
+    const maxX = Math.max(0, (frame.width * lbScale - frame.width) / 2);
+    const maxY = Math.max(0, (frame.height * lbScale - frame.height) / 2);
+
+    lbX = clampLightboxValue(lbX, -maxX, maxX);
+    lbY = clampLightboxValue(lbY, -maxY, maxY);
+  }
+
   function applyLightboxTransform() {
     const lbImg = $('#lf-image');
     if (!lbImg) return;
+
+    if (isMobileLightboxViewport()) clampLightboxImageToFrame();
+
     lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+    lbImg.style.transformOrigin = 'center center';
   }
 
   function resetLightboxTransform() {
@@ -3061,6 +3121,9 @@
     lbIsDragging = false;
     lbIsZooming = false;
     lbInitialDistance = 0;
+    lbStartScale = 1;
+    lbStartTranslateX = 0;
+    lbStartTranslateY = 0;
     lbTouchMoved = false;
     applyLightboxTransform();
   }
@@ -3156,6 +3219,7 @@
   }
 
   function goNextLightboxImage() {
+    if (isMobileLightboxViewport() && (lbIsZooming || lbScale > 1.02)) return;
     if (!lbItems.length) return;
     const nextIndex = Math.min(lbIndex + 1, lbItems.length - 1);
     if (nextIndex === lbIndex) return;
@@ -3163,6 +3227,7 @@
   }
 
   function goPrevLightboxImage() {
+    if (isMobileLightboxViewport() && (lbIsZooming || lbScale > 1.02)) return;
     if (!lbItems.length) return;
     const prevIndex = Math.max(lbIndex - 1, 0);
     if (prevIndex === lbIndex) return;
@@ -3303,7 +3368,27 @@
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    if (e.touches.length === 2) {
+    const mobile = isMobileLightboxViewport();
+
+    if (mobile && e.touches.length === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      lbIsZooming = true;
+      lbIsDragging = false;
+      lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
+
+      lbInitialDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      lbStartScale = lbScale;
+      lbStartTranslateX = lbX;
+      lbStartTranslateY = lbY;
+      return;
+    }
+
+    if (!mobile && e.touches.length === 2) {
       e.preventDefault();
       lbIsZooming = true;
       lbIsDragging = false;
@@ -3324,15 +3409,51 @@
     swipeDX = 0;
     swipeDY = 0;
     swipeLocked = false;
-    lbIsDragging = true;
     lbTouchMoved = false;
+
+    if (mobile && lbScale > 1.02) {
+      e.preventDefault();
+      e.stopPropagation();
+      lbIsDragging = true;
+      lbStartTranslateX = lbX;
+      lbStartTranslateY = lbY;
+      return;
+    }
+
+    lbIsDragging = true;
   }
 
   function onLightboxTouchMove(e) {
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    if (lbIsZooming && e.touches.length === 2) {
+    const mobile = isMobileLightboxViewport();
+
+    if (mobile && lbIsZooming && e.touches.length === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const newDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      if (!lbInitialDistance) lbInitialDistance = newDistance;
+
+      const nextScale = lbStartScale * (newDistance / lbInitialDistance);
+      lbScale = Math.min(Math.max(1, nextScale), 4);
+
+      if (lbScale <= 1.02) {
+        lbScale = 1;
+        lbX = 0;
+        lbY = 0;
+      } else {
+        lbX = lbStartTranslateX;
+        lbY = lbStartTranslateY;
+      }
+
+      applyLightboxTransform();
+      markViewerBusy();
+      return;
+    }
+
+    if (!mobile && lbIsZooming && e.touches.length === 2) {
       e.preventDefault();
       const newDistance = getTouchDistance(e.touches[0], e.touches[1]);
       if (!lbInitialDistance) lbInitialDistance = newDistance;
@@ -3352,10 +3473,22 @@
     const moveX = nowX - lbStartX;
     const moveY = nowY - lbStartY;
 
+    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
+
+    if (mobile && lbScale > 1.02) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      lbX = lbStartTranslateX + moveX;
+      lbY = lbStartTranslateY + moveY;
+
+      applyLightboxTransform();
+      markViewerBusy();
+      return;
+    }
+
     swipeDX = moveX;
     swipeDY = moveY;
-
-    if (Math.abs(moveX) > 4 || Math.abs(moveY) > 4) lbTouchMoved = true;
 
     if (lbScale > 1.02) {
       e.preventDefault();
@@ -3381,7 +3514,27 @@
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    if (lbIsZooming) {
+    const mobile = isMobileLightboxViewport();
+
+    if (mobile && lbIsZooming && e.touches.length < 2) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      lbIsZooming = false;
+      lbInitialDistance = 0;
+      lbStartScale = lbScale;
+
+      if (lbScale <= 1.02) {
+        lbScale = 1;
+        lbX = 0;
+        lbY = 0;
+        applyLightboxTransform();
+      }
+
+      return;
+    }
+
+    if (!mobile && lbIsZooming) {
       e.preventDefault();
       lbIsZooming = false;
       lbInitialDistance = 0;
@@ -3389,6 +3542,19 @@
     }
 
     if (!lbIsDragging) return;
+
+    if (mobile && lbScale > 1.02) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      lbIsDragging = false;
+      lbTouchMoved = false;
+      swipeLocked = false;
+      swipeDX = 0;
+      swipeDY = 0;
+      applyLightboxTransform();
+      return;
+    }
 
     if (lbScale > 1.02) {
       lbIsDragging = false;
@@ -3441,6 +3607,9 @@
     lbIsDragging = false;
     lbIsZooming = false;
     lbInitialDistance = 0;
+    lbStartScale = lbScale;
+    lbStartTranslateX = lbX;
+    lbStartTranslateY = lbY;
     lbTouchMoved = false;
     swipeLocked = false;
     swipeDX = 0;

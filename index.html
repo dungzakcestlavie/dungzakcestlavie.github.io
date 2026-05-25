@@ -1813,32 +1813,8 @@
     .w-card{ contain: layout paint; }
 
 
-    /* DUNGZAK.ART MOBILE VIEWER INNER ZOOM + PAN STABILIZATION ONLY
-       Mobile Lightbox only. Desktop, captions, X button, data, filters and layout are untouched. */
-    @media (max-width: 768px) {
-      #lf-lightbox,
-      #lf-stage {
-        overflow: hidden !important;
-        touch-action: none !important;
-        overscroll-behavior: contain !important;
-      }
-
-      #lf-stage {
-        position: relative !important;
-      }
-
-      #lf-image {
-        user-select: none !important;
-        -webkit-user-drag: none !important;
-        touch-action: none !important;
-        transform-origin: center center !important;
-        will-change: transform !important;
-      }
-    }
-
-
-    /* DUNGZAK.ART MOBILE VIEWER LAYER FIX ONLY — X CLICK + FRAME CLIP
-       Mobile Lightbox / Viewer only. Desktop, data, filters, captions, layout untouched. */
+    /* DUNGZAK.ART MOBILE VIEWER FINAL CLIP FIX ONLY
+       Mobile Lightbox / Viewer only. Desktop, data, filters, LOAD MORE, captions, X design and layout are untouched. */
     @media (max-width: 768px) {
       #lf-lightbox,
       .lf-lightbox,
@@ -1854,7 +1830,7 @@
         height: 100dvh !important;
         min-width: 100vw !important;
         min-height: 100dvh !important;
-        background: rgba(0, 4, 8, 0.99) !important;
+        background: #00060a !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         overflow: hidden !important;
@@ -1863,6 +1839,7 @@
         z-index: 99990 !important;
         transform: none !important;
         contain: layout paint size !important;
+        isolation: isolate !important;
       }
 
       #lf-lightbox.active,
@@ -1873,7 +1850,7 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background: rgba(0, 4, 8, 0.99) !important;
+        background: #00060a !important;
       }
 
       #lf-stage,
@@ -1890,13 +1867,15 @@
         touch-action: none !important;
         overscroll-behavior: contain !important;
         transform: none !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
       }
 
       #lf-stage {
         width: 100vw !important;
         height: 100dvh !important;
-        max-width: 100vw !important;
-        max-height: 100dvh !important;
+        min-width: 100vw !important;
+        min-height: 100dvh !important;
       }
 
       #lf-image,
@@ -1904,13 +1883,17 @@
       .viewer-image,
       .lightbox-img,
       .viewer-img {
+        display: block !important;
         position: relative !important;
         z-index: 1 !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        transform-origin: center center !important;
+        will-change: transform !important;
         user-select: none !important;
         -webkit-user-drag: none !important;
         touch-action: none !important;
-        transform-origin: center center !important;
-        will-change: transform !important;
       }
 
       #lf-close,
@@ -1934,7 +1917,7 @@
         overflow: hidden !important;
         overscroll-behavior: none !important;
         touch-action: none !important;
-        background: #000408 !important;
+        background: #00060a !important;
       }
     }
 
@@ -3195,7 +3178,8 @@
     if (!isMobileLightboxViewport()) return;
 
     const stage = $('#lf-stage');
-    if (!stage) return;
+    const lbImg = $('#lf-image');
+    if (!stage || !lbImg) return;
 
     if (lbScale <= 1.02) {
       lbScale = 1;
@@ -3205,8 +3189,13 @@
     }
 
     const frame = stage.getBoundingClientRect();
-    const maxX = Math.max(0, (frame.width * lbScale - frame.width) / 2);
-    const maxY = Math.max(0, (frame.height * lbScale - frame.height) / 2);
+    const baseWidth = lbImg.offsetWidth || lbImg.getBoundingClientRect().width || frame.width;
+    const baseHeight = lbImg.offsetHeight || lbImg.getBoundingClientRect().height || frame.height;
+    const scaledWidth = baseWidth * lbScale;
+    const scaledHeight = baseHeight * lbScale;
+
+    const maxX = Math.max(0, (scaledWidth - frame.width) / 2);
+    const maxY = Math.max(0, (scaledHeight - frame.height) / 2);
 
     lbX = clampLightboxValue(lbX, -maxX, maxX);
     lbY = clampLightboxValue(lbY, -maxY, maxY);
@@ -3220,6 +3209,7 @@
 
     lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
     lbImg.style.transformOrigin = 'center center';
+    if (isMobileLightboxViewport()) lbImg.style.willChange = 'transform';
   }
 
   function resetLightboxTransform() {

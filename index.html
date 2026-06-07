@@ -2363,6 +2363,58 @@
     }
 
 
+
+    /* DUNGZAK.ART — IPAD ONLY FIRST SCREEN MICRO FIT + VIEWER CLICK ZOOM FREEZE FIX */
+    html.is-ipad .hero,
+    html.is-ipad .poem-section,
+    html.is-ipad .intro-section {
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+    }
+
+    html.is-ipad .poem-card,
+    html.is-ipad .text-card,
+    html.is-ipad .poemwrap {
+      padding-top: 22px !important;
+      padding-bottom: 22px !important;
+    }
+
+    html.is-ipad footer,
+    html.is-ipad .site-footer {
+      margin-top: 12px !important;
+      padding-bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 16px)) !important;
+    }
+
+    html.is-ipad .copyright,
+    html.is-ipad footer small {
+      display: block !important;
+      padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 10px)) !important;
+    }
+
+    html.is-ipad #lf-lightbox,
+    html.is-ipad .lightbox,
+    html.is-ipad .viewer,
+    html.is-ipad .lightbox-overlay,
+    html.is-ipad .viewer-overlay,
+    html.is-ipad #lf-stage,
+    html.is-ipad .lightbox-stage,
+    html.is-ipad .viewer-stage,
+    html.is-ipad .lightbox-content {
+      overflow: hidden !important;
+    }
+
+    html.is-ipad #lf-image,
+    html.is-ipad .lightbox img,
+    html.is-ipad .viewer img,
+    html.is-ipad .lightbox-image,
+    html.is-ipad .viewer-image {
+      max-width: 100vw !important;
+      max-height: calc(100dvh - 20px) !important;
+      object-fit: contain !important;
+      transform-origin: center center !important;
+    }
+
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3481,6 +3533,7 @@
       btnPrev.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (IS_IPAD) resetViewerZoom();
         goPrevLightboxImage();
       });
     }
@@ -3490,6 +3543,7 @@
       btnNext.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (IS_IPAD) resetViewerZoom();
         goNextLightboxImage();
       });
     }
@@ -3519,6 +3573,7 @@
   let lbLastTap = 0;
 
   let viewerIsBusy = false;
+  let viewerChanging = false;
   let swipeDX = 0;
   let swipeDY = 0;
   let swipeLocked = false;
@@ -3729,6 +3784,8 @@
       lbImg.style.transition = 'none';
       lbImg.style.transformOrigin = 'center center';
       lbImg.style.transform = 'translate3d(0px, 0px, 0px) scale(1)';
+      lbImg.style.willChange = 'transform';
+      lbImg.style.objectFit = 'contain';
     }
   }
 
@@ -3847,24 +3904,42 @@
     preloadNeighborLightboxImages();
   }
 
+  function changeLightboxImageSafely(targetIndex) {
+    if (!lbItems.length) return;
+    if (targetIndex === lbIndex) return;
+
+    if (!IS_IPAD) {
+      setLightboxSlideContent(targetIndex);
+      return;
+    }
+
+    if (viewerChanging) return;
+    viewerChanging = true;
+
+    resetViewerZoom();
+    setLightboxSlideContent(targetIndex);
+
+    requestAnimationFrame(() => {
+      resetViewerZoom();
+      window.setTimeout(() => {
+        resetViewerZoom();
+        viewerChanging = false;
+      }, 90);
+    });
+  }
+
   function goNextLightboxImage() {
     if (isTouchViewerClampViewport() && !IS_IPAD && (lbIsZooming || lbScale > 1.02)) return;
-    if (IS_IPAD && lbIsZooming) return;
     if (!lbItems.length) return;
     const nextIndex = Math.min(lbIndex + 1, lbItems.length - 1);
-    if (nextIndex === lbIndex) return;
-    if (IS_IPAD) resetViewerZoom();
-    setLightboxSlideContent(nextIndex);
+    changeLightboxImageSafely(nextIndex);
   }
 
   function goPrevLightboxImage() {
     if (isTouchViewerClampViewport() && !IS_IPAD && (lbIsZooming || lbScale > 1.02)) return;
-    if (IS_IPAD && lbIsZooming) return;
     if (!lbItems.length) return;
     const prevIndex = Math.max(lbIndex - 1, 0);
-    if (prevIndex === lbIndex) return;
-    if (IS_IPAD) resetViewerZoom();
-    setLightboxSlideContent(prevIndex);
+    changeLightboxImageSafely(prevIndex);
   }
 
   function getLightboxItemsForCard(card) {
@@ -3912,7 +3987,8 @@
     const lbImg = $('#lf-image');
     if (!lb || !lbImg || !card) return;
 
-    resetLightboxTransform();
+    if (IS_IPAD) resetViewerZoom();
+    else resetLightboxTransform();
     swipeDX = 0;
     swipeDY = 0;
     swipeLocked = false;
@@ -3979,6 +4055,7 @@
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
     viewerIsBusy = false;
+    viewerChanging = false;
     swipeDX = 0;
     swipeDY = 0;
     swipeLocked = false;

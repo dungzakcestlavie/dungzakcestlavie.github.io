@@ -2415,6 +2415,22 @@
     }
 
 
+
+
+    /* DUNGZAK.ART — MOBILE/TABLET VIEWER ARROWS REMOVE + CLEAN UNUSED ARROW PATCH CODE */
+    @media (hover: none) and (pointer: coarse) {
+      #lf-prev,
+      #lf-next,
+      .lightbox-arrow,
+      .viewer-arrow,
+      .lb-arrow,
+      [data-viewer-arrow] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+    }
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3478,22 +3494,6 @@
     }
   }
 
-  function isViewerArrowTarget(target) {
-    return !!(
-      target
-      && target.closest
-      && target.closest('#lf-prev, #lf-next, .lightbox-arrow, .viewer-arrow, .lb-arrow, [data-viewer-arrow]')
-    );
-  }
-
-  function stopIPadViewerArrowEvent(e) {
-    if (!IS_IPAD || !isViewerArrowTarget(e.target)) return false;
-    e.preventDefault();
-    e.stopPropagation();
-    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-    return true;
-  }
-
   function attachWorksLightbox() {
     const worksRoot = $('#works');
     if (!worksRoot || worksRoot.dataset.lightboxBound === '1') return;
@@ -3515,34 +3515,25 @@
       lb.dataset.bound = '1';
 
       lb.addEventListener('click', (e) => {
-        if (IS_IPAD && isViewerArrowTarget(e.target)) return;
         if (e.target === lb || e.target === stage) closeLightbox();
       });
 
       lb.addEventListener('dblclick', (e) => {
-        if (IS_IPAD && isViewerArrowTarget(e.target)) return;
         if (!lb.classList.contains('active')) return;
         e.preventDefault();
         toggleLightboxZoom();
       });
 
-      lb.addEventListener('pointerup', (e) => {
-        if (stopIPadViewerArrowEvent(e)) return;
-      }, { passive: false });
-
       lb.addEventListener('touchstart', (e) => {
-        if (stopIPadViewerArrowEvent(e)) return;
         onLightboxTouchStart(e);
       }, { passive: false });
       lb.addEventListener('touchmove', (e) => {
         onLightboxTouchMove(e);
       }, { passive: false });
       lb.addEventListener('touchend', (e) => {
-        if (stopIPadViewerArrowEvent(e)) return;
         onLightboxTouchEnd(e);
       }, { passive: false });
       lb.addEventListener('touchcancel', (e) => {
-        if (stopIPadViewerArrowEvent(e)) return;
         onLightboxTouchCancel(e);
       }, { passive: false });
     }
@@ -3561,50 +3552,21 @@
       });
     }
 
-    function bindViewerArrowButton(button, direction, fallback) {
+    function bindViewerArrowButton(button, fallback) {
       if (!button || button.dataset.bound === '1') return;
       button.dataset.bound = '1';
 
-      if (direction < 0) button.setAttribute('data-viewer-arrow', 'prev');
-      else button.setAttribute('data-viewer-arrow', 'next');
+      if (IS_TOUCH_VIEWER_DEVICE) return;
 
-      const consumeArrowEvent = (e) => {
-        if (!IS_IPAD) return false;
+      button.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-        return true;
-      };
-
-      ['click', 'touchstart', 'touchend', 'pointerdown'].forEach((type) => {
-        button.addEventListener(type, (e) => {
-          if (consumeArrowEvent(e)) return;
-        }, { passive: false });
-      });
-
-      button.addEventListener('pointerup', (e) => {
-        if (!consumeArrowEvent(e)) return;
-
-        const dir =
-          button.getAttribute('data-viewer-arrow') === 'prev'
-            ? -1
-            : 1;
-
-        changeViewerByArrowSafe(dir);
+        fallback();
       }, { passive: false });
-
-      if (!IS_IPAD) {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          fallback();
-        }, { passive: false });
-      }
     }
 
-
-    bindViewerArrowButton(btnPrev, -1, goPrevLightboxImage);
-    bindViewerArrowButton(btnNext, 1, goNextLightboxImage);
+    bindViewerArrowButton(btnPrev, goPrevLightboxImage);
+    bindViewerArrowButton(btnNext, goNextLightboxImage);
   }
 
   let lbItems = [];
@@ -3632,7 +3594,6 @@
 
   let viewerIsBusy = false;
   let viewerChanging = false;
-  let viewerArrowChanging = false;
   let swipeDX = 0;
   let swipeDY = 0;
   let swipeLocked = false;
@@ -3734,6 +3695,8 @@
     navigator.maxTouchPoints > 1
     && Math.min(window.screen.width, window.screen.height) >= 768
   );
+
+  const IS_TOUCH_VIEWER_DEVICE = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   function isIPadPortraitViewer() {
     return IS_IPAD
@@ -3988,58 +3951,6 @@
   }
 
 
-  /* DUNGZAK.ART IPAD VIEWER ARROW PREV/NEXT SAFE NAVIGATION FIX ONLY
-     iPad arrow navigation only. Swipe and pinch zoom logic are untouched. */
-  function changeViewerByArrowSafe(direction) {
-    if (!IS_IPAD) return;
-    if (!lbItems.length) return;
-    if (viewerArrowChanging) return;
-
-    const dir = direction < 0 ? -1 : 1;
-    const targetIndex = Math.min(
-      Math.max(lbIndex + dir, 0),
-      lbItems.length - 1
-    );
-
-    if (targetIndex === lbIndex) {
-      resetViewerZoom();
-      return;
-    }
-
-    viewerArrowChanging = true;
-    viewerChanging = true;
-
-    resetViewerZoom();
-
-    requestAnimationFrame(() => {
-      setLightboxSlideContent(targetIndex);
-
-      const lbImg = $('#lf-image');
-      if (lbImg) {
-        const arrowSafeResetOnLoad = () => {
-          resetViewerZoom();
-          lbImg.removeEventListener('load', arrowSafeResetOnLoad);
-        };
-        lbImg.addEventListener('load', arrowSafeResetOnLoad);
-      }
-
-      requestAnimationFrame(() => {
-        resetViewerZoom();
-
-        window.setTimeout(() => {
-          resetViewerZoom();
-          viewerChanging = false;
-          viewerArrowChanging = false;
-        }, 180);
-      });
-    });
-  }
-
-  function changeViewerByArrow(direction) {
-    changeViewerByArrowSafe(direction);
-  }
-
-
   function goNextLightboxImage() {
     if (isTouchViewerClampViewport() && !IS_IPAD && (lbIsZooming || lbScale > 1.02)) return;
     if (!lbItems.length) return;
@@ -4197,12 +4108,6 @@
   }
 
   function onLightboxTouchStart(e) {
-    if (IS_IPAD && isViewerArrowTarget(e.target)) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-      return;
-    }
     if (isLightboxCloseTarget(e)) return;
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
@@ -4263,12 +4168,6 @@
   }
 
   function onLightboxTouchMove(e) {
-    if (IS_IPAD && isViewerArrowTarget(e.target)) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-      return;
-    }
     if (isLightboxCloseTarget(e)) return;
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
@@ -4357,12 +4256,6 @@
   }
 
   function onLightboxTouchEnd(e) {
-    if (IS_IPAD && isViewerArrowTarget(e.target)) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-      return;
-    }
     if (isLightboxCloseTarget(e)) return;
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;

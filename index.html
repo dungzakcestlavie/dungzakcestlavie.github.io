@@ -2464,7 +2464,35 @@
       opacity: .72 !important;
     }
 
-  </style>
+  
+
+/* iPad portrait Viewer close button micro adjust */
+@media (orientation: portrait){
+html.is-ipad #lf-close,
+html.is-ipad .viewer-close,
+html.is-ipad .lightbox-close,
+html.is-ipad .close-btn,
+html.is-ipad [data-viewer-close]{
+width:34px !important;
+height:34px !important;
+min-width:34px !important;
+min-height:34px !important;
+top:max(8px,calc(env(safe-area-inset-top) + 4px)) !important;
+right:max(8px,calc(env(safe-area-inset-right) + 4px)) !important;
+opacity:.42 !important;
+background:rgba(0,0,0,.10) !important;
+-webkit-backdrop-filter:blur(4px) !important;
+backdrop-filter:blur(4px) !important;
+border:1px solid rgba(255,255,255,.06) !important;
+}
+html.is-ipad #lf-close svg,
+html.is-ipad .viewer-close svg,
+html.is-ipad .lightbox-close svg{
+transform:scale(.82) !important;
+}
+}
+
+</style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -2492,6 +2492,41 @@ transform:scale(.82) !important;
 }
 }
 
+
+
+/* DUNGZAK.ART — MOBILE VIEWER CLOSE BUTTON MICRO TUNING */
+@media (max-width:768px){
+  #lf-close,
+  .viewer-close,
+  .lightbox-close,
+  .close-btn,
+  [data-viewer-close]{
+    transform:scale(.82) !important;
+    opacity:.42 !important;
+    width:34px !important;
+    height:34px !important;
+    min-width:34px !important;
+    min-height:34px !important;
+    top:14px !important;
+    right:14px !important;
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+  }
+
+  #lf-close svg,
+  .viewer-close svg,
+  .lightbox-close svg,
+  .close-btn svg,
+  [data-viewer-close] svg,
+  #lf-close::before,
+  .viewer-close::before,
+  .lightbox-close::before,
+  .close-btn::before,
+  [data-viewer-close]::before{
+    stroke-width:1.5 !important;
+  }
+}
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

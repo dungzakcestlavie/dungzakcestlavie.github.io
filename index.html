@@ -3478,6 +3478,10 @@
     }
   }
 
+  function isViewerArrowTarget(target) {
+    return !!(target && target.closest && target.closest('#lf-prev, #lf-next, .lightbox-arrow, .viewer-arrow, .lb-arrow'));
+  }
+
   function attachWorksLightbox() {
     const worksRoot = $('#works');
     if (!worksRoot || worksRoot.dataset.lightboxBound === '1') return;
@@ -3499,10 +3503,12 @@
       lb.dataset.bound = '1';
 
       lb.addEventListener('click', (e) => {
+        if (IS_IPAD && isViewerArrowTarget(e.target)) return;
         if (e.target === lb || e.target === stage) closeLightbox();
       });
 
       lb.addEventListener('dblclick', (e) => {
+        if (IS_IPAD && isViewerArrowTarget(e.target)) return;
         if (!lb.classList.contains('active')) return;
         e.preventDefault();
         toggleLightboxZoom();
@@ -3528,61 +3534,60 @@
       });
     }
 
-    if (btnPrev && btnPrev.dataset.bound !== '1') {
-      btnPrev.dataset.bound = '1';
+    function bindViewerArrowButton(button, direction, fallback) {
+      if (!button || button.dataset.bound === '1') return;
+      button.dataset.bound = '1';
 
-      btnPrev.addEventListener('touchstart', (e) => {
-        if (!IS_IPAD) return;
-        e.stopPropagation();
-      }, { passive: false });
+      let lastIPadArrowTapAt = 0;
 
-      btnPrev.addEventListener('touchend', (e) => {
-        if (!IS_IPAD) return;
+      const consumeIPadArrowEvent = (e) => {
+        if (!IS_IPAD) return false;
         e.preventDefault();
         e.stopPropagation();
-        changeViewerByArrow(-1);
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        return true;
+      };
+
+      const runIPadArrowChange = () => {
+        const now = Date.now();
+        if (now - lastIPadArrowTapAt < 220) return;
+        lastIPadArrowTapAt = now;
+        changeViewerByArrow(direction);
+      };
+
+      button.addEventListener('pointerdown', (e) => {
+        consumeIPadArrowEvent(e);
       }, { passive: false });
 
-      btnPrev.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      button.addEventListener('pointerup', (e) => {
+        if (!consumeIPadArrowEvent(e)) return;
+        runIPadArrowChange();
+      }, { passive: false });
 
+      button.addEventListener('touchstart', (e) => {
+        consumeIPadArrowEvent(e);
+      }, { passive: false });
+
+      button.addEventListener('touchend', (e) => {
+        if (!consumeIPadArrowEvent(e)) return;
+        runIPadArrowChange();
+      }, { passive: false });
+
+      button.addEventListener('click', (e) => {
         if (IS_IPAD) {
-          changeViewerByArrow(-1);
+          consumeIPadArrowEvent(e);
+          runIPadArrowChange();
           return;
         }
 
-        goPrevLightboxImage();
-      });
-    }
-
-    if (btnNext && btnNext.dataset.bound !== '1') {
-      btnNext.dataset.bound = '1';
-
-      btnNext.addEventListener('touchstart', (e) => {
-        if (!IS_IPAD) return;
-        e.stopPropagation();
-      }, { passive: false });
-
-      btnNext.addEventListener('touchend', (e) => {
-        if (!IS_IPAD) return;
         e.preventDefault();
         e.stopPropagation();
-        changeViewerByArrow(1);
+        fallback();
       }, { passive: false });
-
-      btnNext.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (IS_IPAD) {
-          changeViewerByArrow(1);
-          return;
-        }
-
-        goNextLightboxImage();
-      });
     }
+
+    bindViewerArrowButton(btnPrev, -1, goPrevLightboxImage);
+    bindViewerArrowButton(btnNext, 1, goNextLightboxImage);
   }
 
   let lbItems = [];

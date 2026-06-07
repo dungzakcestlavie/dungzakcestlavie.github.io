@@ -3530,20 +3530,56 @@
 
     if (btnPrev && btnPrev.dataset.bound !== '1') {
       btnPrev.dataset.bound = '1';
+
+      btnPrev.addEventListener('touchstart', (e) => {
+        if (!IS_IPAD) return;
+        e.stopPropagation();
+      }, { passive: false });
+
+      btnPrev.addEventListener('touchend', (e) => {
+        if (!IS_IPAD) return;
+        e.preventDefault();
+        e.stopPropagation();
+        changeViewerByArrow(-1);
+      }, { passive: false });
+
       btnPrev.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (IS_IPAD) resetViewerZoom();
+
+        if (IS_IPAD) {
+          changeViewerByArrow(-1);
+          return;
+        }
+
         goPrevLightboxImage();
       });
     }
 
     if (btnNext && btnNext.dataset.bound !== '1') {
       btnNext.dataset.bound = '1';
+
+      btnNext.addEventListener('touchstart', (e) => {
+        if (!IS_IPAD) return;
+        e.stopPropagation();
+      }, { passive: false });
+
+      btnNext.addEventListener('touchend', (e) => {
+        if (!IS_IPAD) return;
+        e.preventDefault();
+        e.stopPropagation();
+        changeViewerByArrow(1);
+      }, { passive: false });
+
       btnNext.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (IS_IPAD) resetViewerZoom();
+
+        if (IS_IPAD) {
+          changeViewerByArrow(1);
+          return;
+        }
+
         goNextLightboxImage();
       });
     }
@@ -3574,6 +3610,7 @@
 
   let viewerIsBusy = false;
   let viewerChanging = false;
+  let viewerArrowChanging = false;
   let swipeDX = 0;
   let swipeDY = 0;
   let swipeLocked = false;
@@ -3925,6 +3962,56 @@
         resetViewerZoom();
         viewerChanging = false;
       }, 90);
+    });
+  }
+
+
+  /* DUNGZAK.ART IPAD VIEWER ARROW CLICK ZOOM BUG FIX ONLY
+     Arrow click/touch navigation only. Swipe and pinch zoom logic are untouched. */
+  function changeViewerByArrow(direction) {
+    if (!IS_IPAD) return;
+    if (!lbItems.length) return;
+    if (viewerArrowChanging) return;
+
+    const dir = direction < 0 ? -1 : 1;
+    const targetIndex = Math.min(
+      Math.max(lbIndex + dir, 0),
+      lbItems.length - 1
+    );
+
+    if (targetIndex === lbIndex) {
+      resetViewerZoom();
+      return;
+    }
+
+    viewerArrowChanging = true;
+    viewerChanging = true;
+
+    resetViewerZoom();
+
+    const lbImg = $('#lf-image');
+    if (lbImg) {
+      lbImg.style.transition = 'none';
+      lbImg.style.transform = 'translate3d(0px, 0px, 0px) scale(1)';
+    }
+
+    setLightboxSlideContent(targetIndex);
+
+    if (lbImg) {
+      const arrowResetOnLoad = () => {
+        resetViewerZoom();
+        lbImg.removeEventListener('load', arrowResetOnLoad);
+      };
+      lbImg.addEventListener('load', arrowResetOnLoad);
+    }
+
+    requestAnimationFrame(() => {
+      resetViewerZoom();
+      window.setTimeout(() => {
+        resetViewerZoom();
+        viewerChanging = false;
+        viewerArrowChanging = false;
+      }, 120);
     });
   }
 

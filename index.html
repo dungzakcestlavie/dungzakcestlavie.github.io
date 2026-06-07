@@ -2247,6 +2247,122 @@
       }
     }
 
+
+    /* DUNGZAK.ART — IPAD FIRST SCREEN FIT + IPAD LANDSCAPE ZOOM RESET + DESKTOP BLACK VIEWER BACKDROP ONLY */
+    html.is-ipad body,
+    html.is-ipad main {
+      min-height: 100dvh !important;
+    }
+
+    html.is-ipad .hero,
+    html.is-ipad .poem-section,
+    html.is-ipad .intro-section {
+      padding-top: 18px !important;
+      padding-bottom: 18px !important;
+    }
+
+    html.is-ipad .poemwrap,
+    html.is-ipad .poem-card,
+    html.is-ipad .text-card {
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+    }
+
+    html.is-ipad footer,
+    html.is-ipad .site-footer {
+      margin-top: 18px !important;
+      padding-bottom: max(34px, calc(env(safe-area-inset-bottom, 0px) + 26px)) !important;
+    }
+
+    html.is-ipad .copyright,
+    html.is-ipad footer small {
+      display: block !important;
+      padding-bottom: max(28px, calc(env(safe-area-inset-bottom, 0px) + 22px)) !important;
+    }
+
+    @media (orientation: landscape) {
+      html.is-ipad #lf-lightbox,
+      html.is-ipad #lf-stage,
+      html.is-ipad .lightbox,
+      html.is-ipad .viewer,
+      html.is-ipad .lightbox-overlay,
+      html.is-ipad .viewer-overlay,
+      html.is-ipad .lightbox-stage,
+      html.is-ipad .viewer-stage,
+      html.is-ipad .lightbox-content {
+        overflow: hidden !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+      }
+
+      html.is-ipad #lf-image,
+      html.is-ipad .lightbox img,
+      html.is-ipad .viewer img,
+      html.is-ipad .lightbox-image,
+      html.is-ipad .viewer-image {
+        max-width: 100vw !important;
+        max-height: calc(100dvh - 20px) !important;
+        object-fit: contain !important;
+        transform-origin: center center !important;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      html:not(.is-ipad) #lf-lightbox,
+      html:not(.is-ipad) #lf-lightbox.active,
+      html:not(.is-ipad) .lf-lightbox,
+      html:not(.is-ipad) .lf-lightbox.active,
+      html:not(.is-ipad) .lightbox,
+      html:not(.is-ipad) .viewer,
+      html:not(.is-ipad) .lightbox-overlay,
+      html:not(.is-ipad) .viewer-overlay,
+      html:not(.is-ipad) .lightbox-backdrop,
+      html:not(.is-ipad) .viewer-backdrop,
+      html:not(.is-ipad) .lightbox-stage,
+      html:not(.is-ipad) .viewer-stage,
+      html:not(.is-ipad) .lightbox-content,
+      html:not(.is-ipad) #lf-stage {
+        background: #000 !important;
+        opacity: 1 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      html:not(.is-ipad) #lf-lightbox,
+      html:not(.is-ipad) .lf-lightbox,
+      html:not(.is-ipad) .lightbox,
+      html:not(.is-ipad) .viewer,
+      html:not(.is-ipad) .lightbox-overlay,
+      html:not(.is-ipad) .viewer-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+      }
+
+      html:not(.is-ipad) body.lightbox-open,
+      html:not(.is-ipad) body.viewer-open,
+      html:not(.is-ipad).lightbox-open,
+      html:not(.is-ipad).viewer-open {
+        background: #000 !important;
+        overflow: hidden !important;
+      }
+
+      html:not(.is-ipad).lightbox-open #waveCanvas,
+      html:not(.is-ipad).viewer-open #waveCanvas,
+      html:not(.is-ipad).lightbox-open #waves,
+      html:not(.is-ipad).viewer-open #waves,
+      html:not(.is-ipad) body.lightbox-open #waveCanvas,
+      html:not(.is-ipad) body.viewer-open #waveCanvas,
+      html:not(.is-ipad) body.lightbox-open #waves,
+      html:not(.is-ipad) body.viewer-open #waves {
+        opacity: 0 !important;
+        display: none !important;
+      }
+    }
+
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3670,9 +3786,13 @@
     lastViewedWorkId = lbItems[index].id || lbOpenFrom?.dataset?.workId || lbOpenFrom?.dataset?.id || lastViewedWorkId;
     lightboxReturnWorkId = lastViewedWorkId;
 
-    /* DUNGZAK.ART DESKTOP LIGHTBOX IMAGE SCALE RESET ONLY
-       Prevents previous zoom/transform state from carrying into arrow navigation. */
-    resetLightboxTransform();
+    /* DUNGZAK.ART IPAD LANDSCAPE ZOOM RESET + DESKTOP LIGHTBOX IMAGE SCALE RESET ONLY
+       Prevents previous zoom/transform state from carrying into arrow/swipe navigation. */
+    if (IS_IPAD) {
+      resetViewerZoom();
+    } else {
+      resetLightboxTransform();
+    }
     lbScale = 1;
     lbX = 0;
     lbY = 0;
@@ -3698,12 +3818,16 @@
 
     lbImg.onload = () => {
       requestAnimationFrame(() => {
-        lbScale = 1;
-        lbX = 0;
-        lbY = 0;
-        lbImg.style.transition = 'none';
-        lbImg.style.transformOrigin = 'center center';
-        lbImg.style.transform = 'translate3d(0,0,0) scale(1)';
+        if (IS_IPAD) {
+          resetViewerZoom();
+        } else {
+          lbScale = 1;
+          lbX = 0;
+          lbY = 0;
+          lbImg.style.transition = 'none';
+          lbImg.style.transformOrigin = 'center center';
+          lbImg.style.transform = 'translate3d(0,0,0) scale(1)';
+        }
         lbImg.style.width = 'auto';
         lbImg.style.height = 'auto';
         lbImg.style.maxWidth = '92vw';

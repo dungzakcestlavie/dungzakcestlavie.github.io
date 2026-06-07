@@ -1921,6 +1921,65 @@
       }
     }
 
+
+    /* DUNGZAK.ART IPAD SAFARI PORTRAIT VIEWER FIX ONLY
+       iPad Safari portrait Lightbox / Viewer only. iPhone, Desktop, data, design, Swipe and Zoom are untouched. */
+    @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+      html.ipad-viewer-portrait #lf-lightbox.active {
+        background: #000 !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+      }
+
+      html.ipad-viewer-portrait #lf-stage {
+        width: 100vw !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+        contain: layout paint size !important;
+        background: #000 !important;
+        z-index: 20 !important;
+      }
+
+      html.ipad-viewer-portrait #lf-image {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        transform-origin: center center !important;
+        will-change: transform !important;
+        background: transparent !important;
+        z-index: 20 !important;
+      }
+
+      html.ipad-viewer-portrait body.viewer-open,
+      html.ipad-viewer-portrait.viewer-open {
+        background: #000 !important;
+        overflow: hidden !important;
+        touch-action: none !important;
+      }
+
+      html.ipad-viewer-portrait #lf-prev,
+      html.ipad-viewer-portrait #lf-next {
+        position: fixed !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 52px !important;
+        height: 96px !important;
+        z-index: 100040 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        background: rgba(0,0,0,.34) !important;
+      }
+
+      html.ipad-viewer-portrait #lf-prev {
+        left: max(12px, env(safe-area-inset-left, 0px)) !important;
+      }
+
+      html.ipad-viewer-portrait #lf-next {
+        right: max(12px, env(safe-area-inset-right, 0px)) !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -3174,8 +3233,33 @@
     return isMobileViewport();
   }
 
+  const IS_IPAD_VIEWER =
+    /iPad|Macintosh/.test(navigator.userAgent)
+    && navigator.maxTouchPoints > 1;
+
+  function isIPadPortraitViewer() {
+    return IS_IPAD_VIEWER
+      && window.matchMedia('(orientation: portrait)').matches
+      && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  }
+
+  function isTouchViewerClampViewport() {
+    return isMobileLightboxViewport() || isIPadPortraitViewer();
+  }
+
+  function syncIPadViewerClass() {
+    document.documentElement.classList.toggle(
+      'ipad-viewer-portrait',
+      isIPadPortraitViewer()
+    );
+  }
+
+  window.addEventListener('resize', syncIPadViewerClass);
+  window.addEventListener('orientationchange', syncIPadViewerClass);
+  syncIPadViewerClass();
+
   function clampLightboxImageToFrame() {
-    if (!isMobileLightboxViewport()) return;
+    if (!isTouchViewerClampViewport()) return;
 
     const stage = $('#lf-stage');
     const lbImg = $('#lf-image');
@@ -3205,11 +3289,11 @@
     const lbImg = $('#lf-image');
     if (!lbImg) return;
 
-    if (isMobileLightboxViewport()) clampLightboxImageToFrame();
+    if (isTouchViewerClampViewport()) clampLightboxImageToFrame();
 
     lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
     lbImg.style.transformOrigin = 'center center';
-    if (isMobileLightboxViewport()) lbImg.style.willChange = 'transform';
+    if (isTouchViewerClampViewport()) lbImg.style.willChange = 'transform';
   }
 
   function resetLightboxTransform() {
@@ -3317,7 +3401,7 @@
   }
 
   function goNextLightboxImage() {
-    if (isMobileLightboxViewport() && (lbIsZooming || lbScale > 1.02)) return;
+    if (isTouchViewerClampViewport() && (lbIsZooming || lbScale > 1.02)) return;
     if (!lbItems.length) return;
     const nextIndex = Math.min(lbIndex + 1, lbItems.length - 1);
     if (nextIndex === lbIndex) return;
@@ -3325,7 +3409,7 @@
   }
 
   function goPrevLightboxImage() {
-    if (isMobileLightboxViewport() && (lbIsZooming || lbScale > 1.02)) return;
+    if (isTouchViewerClampViewport() && (lbIsZooming || lbScale > 1.02)) return;
     if (!lbItems.length) return;
     const prevIndex = Math.max(lbIndex - 1, 0);
     if (prevIndex === lbIndex) return;
@@ -3473,7 +3557,7 @@
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    const mobile = isMobileLightboxViewport();
+    const mobile = isTouchViewerClampViewport();
 
     if (mobile && e.touches.length === 2) {
       e.preventDefault();
@@ -3533,7 +3617,7 @@
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    const mobile = isMobileLightboxViewport();
+    const mobile = isTouchViewerClampViewport();
 
     if (mobile && lbIsZooming && e.touches.length === 2) {
       e.preventDefault();
@@ -3621,7 +3705,7 @@
     const lb = $('#lf-lightbox');
     if (!lb || !lb.classList.contains('active')) return;
 
-    const mobile = isMobileLightboxViewport();
+    const mobile = isTouchViewerClampViewport();
 
     if (mobile && lbIsZooming && e.touches.length < 2) {
       e.preventDefault();

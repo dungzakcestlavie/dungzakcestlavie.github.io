@@ -2566,6 +2566,58 @@ transform:scale(.82) !important;
   }
 }
 
+
+
+/* DUNGZAK.ART — PHONE ONLY VIEWER CLOSE BUTTON MICRO TUNING FINAL OVERRIDE
+   Viewer close button CSS only.
+   Phone portrait: size/position kept, presence lowered.
+   Phone landscape: X button only slightly smaller and quieter.
+   iPad/tablet/desktop are excluded by html:not(.is-ipad) + coarse pointer + short side under 768px. */
+
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 767.98px){
+  html:not(.is-ipad) #lf-close,
+  html:not(.is-ipad) .viewer-close,
+  html:not(.is-ipad) .lightbox-close,
+  html:not(.is-ipad) .close-btn,
+  html:not(.is-ipad) [data-viewer-close]{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    min-height:44px !important;
+    font-size:24px !important;
+    top:calc(env(safe-area-inset-top, 0px) + 14px) !important;
+    right:calc(env(safe-area-inset-right, 0px) + 18px) !important;
+    transform:none !important;
+    opacity:.42 !important;
+    background:rgba(0,0,0,.26) !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 767.98px){
+  html:not(.is-ipad) #lf-close,
+  html:not(.is-ipad) .viewer-close,
+  html:not(.is-ipad) .lightbox-close,
+  html:not(.is-ipad) .close-btn,
+  html:not(.is-ipad) [data-viewer-close]{
+    width:39px !important;
+    height:39px !important;
+    min-width:39px !important;
+    min-height:39px !important;
+    font-size:21px !important;
+    transform:none !important;
+    opacity:.34 !important;
+    background:rgba(0,0,0,.18) !important;
+    border:1px solid rgba(255,255,255,.075) !important;
+    box-shadow:0 6px 14px rgba(0,0,0,.14) !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+  }
+}
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -2830,6 +2830,41 @@ transform:scale(.82) !important;
       }
     }
 
+
+    /* DUNGZAK.ART — PHONE LANDSCAPE USE SAME TOUCH LOCK AS PORTRAIT ONLY */
+    @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+      #lf-lightbox.active,
+      .lf-lightbox.active,
+      .viewer.active,
+      .viewer.open,
+      .lightbox.active,
+      .viewer-overlay {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #lf-stage,
+      .viewer-stage,
+      .viewer-inner,
+      .lightbox-inner,
+      .zoom-wrap,
+      .image-wrap {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #lf-image,
+      .viewer img,
+      .lightbox img,
+      .viewer-image {
+        transform-origin: center center !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -4107,6 +4142,11 @@ transform:scale(.82) !important;
   }
 
 
+  function isPhoneLandscapeFullscreen() {
+    return isPhoneLandscapeViewerActive();
+  }
+
+
   function isIPadPortraitViewer() {
     return IS_IPAD
       && window.matchMedia('(orientation: portrait)').matches
@@ -4114,7 +4154,7 @@ transform:scale(.82) !important;
   }
 
   function isTouchViewerClampViewport() {
-    return isMobileLightboxViewport() || IS_IPAD;
+    return isMobileLightboxViewport() || isPhoneLandscapeFullscreen() || IS_IPAD;
   }
 
   function syncIPadViewerClass() {
@@ -4582,7 +4622,7 @@ transform:scale(.82) !important;
     if (!lb || !lb.classList.contains('active')) return;
 
     const mobile = isTouchViewerClampViewport();
-    const phoneLandscapeViewer = isPhoneLandscapeViewerActive();
+    const phoneLandscapeViewer = isPhoneLandscapeFullscreen();
 
     if (
       phoneLandscapeViewer

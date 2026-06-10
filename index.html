@@ -2750,6 +2750,48 @@ transform:scale(.82) !important;
         will-change: transform !important;
       }
     }
+
+    /* DUNGZAK.ART — PHONE LANDSCAPE USE PORTRAIT FULLSCREEN BOUNDS ONLY
+       Mobile phone landscape fullscreen Viewer bounds only.
+       Data, JS, swipe, pinch/scale/translate logic, portrait, iPad, desktop, X button and card layout are untouched. */
+    @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+      .viewer,
+      .lightbox,
+      .viewer-overlay {
+        overflow: hidden !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      .viewer-stage,
+      .viewer-inner,
+      .lightbox-inner,
+      .zoom-wrap,
+      .image-wrap {
+        width: 100vw !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        padding-top: 72px !important;
+        padding-bottom: 18px !important;
+      }
+
+      .viewer img,
+      .lightbox img,
+      .viewer-image {
+        max-width: calc(100vw - 120px) !important;
+        max-height: calc(100dvh - 96px) !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+        transform-origin: center center !important;
+        margin: auto !important;
+        will-change: transform !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

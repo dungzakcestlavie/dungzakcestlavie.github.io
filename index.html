@@ -2618,6 +2618,62 @@ transform:scale(.82) !important;
   }
 }
 
+
+/* DUNGZAK.ART — PHONE LANDSCAPE VIEWER RATIO FIX ONLY
+   Phone landscape fullscreen Viewer CSS only.
+   Data, JS, touch logic, X button, captions, portrait, iPad and desktop are untouched. */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px){
+  html:not(.is-ipad) #lf-lightbox,
+  html:not(.is-ipad) .lf-lightbox,
+  html:not(.is-ipad) .lightbox,
+  html:not(.is-ipad) .viewer,
+  html:not(.is-ipad) .lightbox-overlay,
+  html:not(.is-ipad) .viewer-overlay{
+    overflow:hidden !important;
+  }
+
+  html:not(.is-ipad) #lf-lightbox.active,
+  html:not(.is-ipad) .lf-lightbox.active,
+  html:not(.is-ipad) .lightbox.active,
+  html:not(.is-ipad) .viewer.active,
+  html:not(.is-ipad) .viewer.open,
+  html:not(.is-ipad) #lf-stage,
+  html:not(.is-ipad) .lightbox-stage,
+  html:not(.is-ipad) .viewer-stage,
+  html:not(.is-ipad) .lightbox-content,
+  html:not(.is-ipad) .viewer-content{
+    align-items:center !important;
+    justify-content:center !important;
+  }
+
+  html:not(.is-ipad) #lf-stage,
+  html:not(.is-ipad) .lightbox-image-wrap,
+  html:not(.is-ipad) .viewer-image-wrap,
+  html:not(.is-ipad) .lightbox-img-wrap,
+  html:not(.is-ipad) .viewer-img-wrap,
+  html:not(.is-ipad) .zoom-frame,
+  html:not(.is-ipad) .viewer-frame{
+    padding-top:18px !important;
+    padding-bottom:12px !important;
+    overflow:visible !important;
+    box-sizing:border-box !important;
+  }
+
+  html:not(.is-ipad) #lf-image,
+  html:not(.is-ipad) .viewer-image,
+  html:not(.is-ipad) .lightbox-image,
+  html:not(.is-ipad) .viewer img,
+  html:not(.is-ipad) .lightbox img{
+    max-width:calc(100vw - 96px) !important;
+    max-height:calc(100dvh - 44px) !important;
+    width:auto !important;
+    height:auto !important;
+    object-fit:contain !important;
+    object-position:center center !important;
+    margin:0 auto !important;
+  }
+}
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

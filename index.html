@@ -2674,6 +2674,33 @@ transform:scale(.82) !important;
   }
 }
 
+
+    /* DUNGZAK.ART PHONE LANDSCAPE WORK CARD IMAGE HEIGHT ONLY
+       Phone landscape work-card image height only.
+       Viewer, Lightbox, JS, grid columns, card text, data and background are untouched. */
+    @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+      .work-card img,
+      .work-image img,
+      .work-thumb img,
+      .w-card img.w-thumb,
+      img.w-thumb {
+        max-height: 46vh !important;
+        width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+      }
+
+      .work-image,
+      .work-thumb {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        max-height: 46vh !important;
+        overflow: hidden !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

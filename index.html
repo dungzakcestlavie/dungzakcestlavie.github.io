@@ -2792,6 +2792,44 @@ transform:scale(.82) !important;
       }
     }
 
+
+    /* DUNGZAK.ART PHONE LANDSCAPE FULLSCREEN TOUCH BOUND FIX ONLY
+       Phone landscape fullscreen Viewer only.
+       Works data, cards, grid, portrait, iPad, desktop, X button, swipe, pinch scale and image ratio are untouched. */
+    @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+      #lf-lightbox,
+      #lf-lightbox.active,
+      .lf-lightbox,
+      .lf-lightbox.active,
+      .viewer,
+      .lightbox,
+      .viewer-overlay {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #lf-stage,
+      .viewer-stage,
+      .viewer-inner,
+      .lightbox-inner,
+      .zoom-wrap,
+      .image-wrap {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #lf-image,
+      .viewer img,
+      .lightbox img,
+      .viewer-image {
+        transform-origin: center center !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+      }
+    }
+
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -4059,6 +4097,16 @@ transform:scale(.82) !important;
 
   const IS_TOUCH_VIEWER_DEVICE = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
+  function isPhoneLandscapeViewerActive() {
+    const lb = $('#lf-lightbox');
+    return !!(
+      lb
+      && lb.classList.contains('active')
+      && window.matchMedia('(hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px)').matches
+    );
+  }
+
+
   function isIPadPortraitViewer() {
     return IS_IPAD
       && window.matchMedia('(orientation: portrait)').matches
@@ -4534,6 +4582,18 @@ transform:scale(.82) !important;
     if (!lb || !lb.classList.contains('active')) return;
 
     const mobile = isTouchViewerClampViewport();
+    const phoneLandscapeViewer = isPhoneLandscapeViewerActive();
+
+    if (
+      phoneLandscapeViewer
+      && (
+        e.touches.length === 2
+        || (lbScale > 1.02 && e.touches.length === 1)
+      )
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     if (mobile && lbIsZooming && e.touches.length === 2) {
       e.preventDefault();

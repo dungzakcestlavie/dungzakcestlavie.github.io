@@ -2701,6 +2701,55 @@ transform:scale(.82) !important;
       }
     }
 
+
+
+    /* DUNGZAK.ART — PHONE LANDSCAPE FULLSCREEN PAN BOUND FIX ONLY
+       Phone landscape fullscreen viewer CSS only.
+       No JS, no scale/translate calculation changes, no X button, no desktop/iPad/portrait changes. */
+    @media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+      .viewer,
+      .lightbox,
+      .viewer-overlay,
+      #lf-lightbox,
+      .lf-lightbox {
+        overflow: hidden !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      .viewer-stage,
+      .viewer-inner,
+      .lightbox-inner,
+      #lf-stage {
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        overscroll-behavior: none !important;
+
+        touch-action: pan-x pan-y !important;
+      }
+
+      .viewer img,
+      .lightbox img,
+      .viewer-image,
+      #lf-image {
+        transform-origin: center center !important;
+
+        max-width: calc(100vw - 120px) !important;
+        max-height: calc(100dvh - 72px) !important;
+
+        object-fit: contain !important;
+
+        margin: auto !important;
+
+        will-change: transform !important;
+      }
+    }
 </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />

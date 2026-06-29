@@ -3864,6 +3864,17 @@ transform:scale(.82) !important;
 
   let io = null;
 
+  /* THUMBNAIL AUTO-RECOVERY (raw.githubusercontent.com intermittent fetch fail fix)
+     Root cause: GitHub Raw occasionally fails a single image fetch (more
+     visible on iPhone Safari over cellular/transitioning networks). Once
+     `src` is set, the CSS rule that hides the thumbnail until loaded
+     ("img.w-thumb[data-src]:not([src])") no longer applies, so a failed
+     fetch was left showing the browser's native broken-image icon
+     permanently — fixed only by a full page refresh. This retries the
+     SAME thumbnail exactly once after a short delay with a fresh
+     cache-busting param before falling back to data-fallback-src (if any),
+     and as a last resort hides the broken image instead of showing the
+     icon, reusing the existing pre-load hidden state — no new UI. */
   function loadThumbImage(img) {
     if (!img || img.dataset.loaded === '1') return;
     const src = img.getAttribute('data-src');
@@ -3876,12 +3887,27 @@ transform:scale(.82) !important;
     }, { once: true });
 
     img.addEventListener('error', () => {
+      if (img.dataset.thumbRetried !== '1') {
+        img.dataset.thumbRetried = '1';
+        const delay = 300 + Math.floor(Math.random() * 200);
+        setTimeout(() => {
+          if (!img.isConnected) return;
+          const sep = src.indexOf('?') === -1 ? '?' : '&';
+          img.src = src + sep + '_retry=' + Date.now();
+        }, delay);
+        return;
+      }
+
       const fallback = img.getAttribute('data-fallback-src');
       if (fallback && img.src !== fallback) {
         img.removeAttribute('data-fallback-src');
         img.dataset.loaded = '1';
         img.src = fallback;
+        return;
       }
+
+      img.removeAttribute('src');
+      img.classList.remove('is-loaded');
     });
 
     img.src = src;

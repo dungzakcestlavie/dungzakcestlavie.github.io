@@ -3236,6 +3236,39 @@ transform:scale(.82) !important;
     } catch {}
   }
 
+  /*
+    MOBILE PERFORMANCE ONLY FIX — works.json Stale-While-Revalidate Cache
+    works.json is the site's primary content and was loaded with
+    safeJSONFetchFresh() (cache:'no-store', cache-busted every load), so
+    every visit — including an instant reload seconds later — paid a full
+    network round trip before a single artwork card could render. This is
+    a dedicated cache (separate from cacheGet/cacheSet's 12h TTL) that never
+    expires on its own: loadWorks() reads it for an immediate render, then
+    always re-checks the live works.json in the background and only
+    re-renders if the data actually changed. No data structure, ordering,
+    or fields are touched — this only stores the exact same array
+    loadWorks() already parses today.
+  */
+  const WORKS_CACHE_KEY = 'LF_cache_works_v1';
+  function worksCacheGet() {
+    try {
+      const raw = localStorage.getItem(WORKS_CACHE_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      return (obj && Array.isArray(obj.d)) ? obj.d : null;
+    } catch { return null; }
+  }
+  function worksCacheSet(list) {
+    try {
+      localStorage.setItem(WORKS_CACHE_KEY, JSON.stringify({ t: Date.now(), d: list }));
+    } catch {}
+  }
+  function worksSignature(list) {
+    const arr = Array.isArray(list) ? list : [];
+    const last = arr.length ? (arr[arr.length - 1] && arr[arr.length - 1].id) : '';
+    return arr.length + '::' + String(last || '');
+  }
+
   const inflight = new Map();
 
   async function safeJSONFetchCached(url, cacheKey) {
@@ -3573,12 +3606,13 @@ transform:scale(.82) !important;
     worksLoaded = true;
 
     const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+    const WORKS_URL = 'data/works.json?v=20260429-pray-archivepro-json-path-final';
 
-    try {
-      const json = await safeJSONFetchFresh('data/works.json?v=20260429-pray-archivepro-json-path-final');
-      const list = Array.isArray(json) ? json : (json.works || json.items || []);
-      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
-
+    /*
+      Shared apply+render step, used by both the instant cache path and the
+      background refresh path below, so the two can never drift out of sync.
+    */
+    function applyWorksList(list) {
       worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
 
       for (const item of list) {
@@ -3609,8 +3643,43 @@ transform:scale(.82) !important;
         - Inactive panels render only when their section tab is opened.
         - Active panel paints the first slice immediately, then appends the rest after first paint.
       */
+    }
 
+    let renderedFromCache = false;
+    let cachedSignature = '';
+
+    /* STEP 1 — instant paint from the local works.json cache, if any. */
+    try {
+      const cachedList = worksCacheGet();
+      if (Array.isArray(cachedList) && cachedList.length) {
+        applyWorksList(cachedList);
+        renderedFromCache = true;
+        cachedSignature = worksSignature(cachedList);
+      }
+    } catch (_) {}
+
+    /* STEP 2 — always confirm against the live works.json in the
+       background. If STEP 1 found nothing (first-ever visit, or the
+       cache is unavailable/cleared), this becomes the normal foreground
+       load exactly as before. */
+    try {
+      const json = await safeJSONFetchFresh(WORKS_URL);
+      const list = Array.isArray(json) ? json : (json.works || json.items || []);
+      if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
+
+      const freshSignature = worksSignature(list);
+      if (!renderedFromCache || freshSignature !== cachedSignature) {
+        applyWorksList(list);
+      }
+      worksCacheSet(list);
     } catch (err) {
+      if (renderedFromCache) {
+        /* Cached content is already correctly on screen; a failed
+           background refresh should stay silent rather than replace
+           good data with an error state. */
+        console.warn('works.json background refresh failed, keeping cached view', err);
+        return;
+      }
       console.error('works.json load error:', err);
       for (const key of panelKeys) {
         const panel = $('#panel-' + key);

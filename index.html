@@ -7,6 +7,27 @@
   <meta name="theme-color" content="#070A14" />
   <meta name="format-detection" content="telephone=no,address=no,email=no" />
 
+  <!--
+    MOBILE PERFORMANCE ONLY FIX — Resource Hints Moved Earliest in <head>
+    These were previously placed AFTER the ~2,800-line inline <style> block,
+    so the browser only discovered them once it had already parsed all of
+    that CSS. Moving them to the very top lets the font connection/request
+    and the works.json fetch start immediately, in parallel with CSS
+    parsing, instead of after it. No visual, font, or data change — timing
+    only.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="data/works.json?v=20260429-pray-archivepro-json-path-final" />
+
+
   <title>등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist</title>
 
   <meta
@@ -2867,16 +2888,8 @@ transform:scale(.82) !important;
 
 </style>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload"
-    as="style"
-    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap"
-    onload="this.onload=null;this.rel='stylesheet'"
-  />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" /></noscript>
 </head>
+
 
 <body class="korean" style="background-color:#070A14;">
   <canvas id="waveCanvas" aria-hidden="true"></canvas>
@@ -2917,7 +2930,15 @@ transform:scale(.82) !important;
   </header>
 
   <main>
-    <section id="poem" class="hero">
+    <!-- MOBILE PERFORMANCE ONLY FIX: is-active is added here directly instead
+         of waiting for JS (showSection('poem')/resetToHome()) to add it.
+         main > section defaults to display:none until .is-active is present,
+         so without this, the entire hero — the largest above-the-fold
+         content and the most likely LCP element — stayed invisible until
+         JavaScript finished parsing/executing. JS still sets this same
+         class to this same state on init, so behavior is unchanged; this
+         only removes an unnecessary JS dependency from the first paint. -->
+    <section id="poem" class="hero is-active">
       <h1 class="ko">빛 · 기억 · 존재</h1>
       <h1 class="en">Light · Memory · Being</h1>
 
@@ -3239,15 +3260,16 @@ transform:scale(.82) !important;
   /*
     MOBILE PERFORMANCE ONLY FIX — works.json Stale-While-Revalidate Cache
     works.json is the site's primary content and was loaded with
-    safeJSONFetchFresh() (cache:'no-store', cache-busted every load), so
-    every visit — including an instant reload seconds later — paid a full
-    network round trip before a single artwork card could render. This is
-    a dedicated cache (separate from cacheGet/cacheSet's 12h TTL) that never
-    expires on its own: loadWorks() reads it for an immediate render, then
-    always re-checks the live works.json in the background and only
-    re-renders if the data actually changed. No data structure, ordering,
-    or fields are touched — this only stores the exact same array
-    loadWorks() already parses today.
+    safeJSONFetchFresh() using cache:'no-store' plus a '&t=' + Date.now()
+    busted URL, so every visit — including an instant reload seconds
+    later — paid a full network round trip before a single artwork card
+    could render (see safeJSONFetchFresh() below for that follow-up fix).
+    This is a dedicated cache (separate from cacheGet/cacheSet's 12h TTL)
+    that never expires on its own: loadWorks() reads it for an immediate
+    render, then always re-checks the live works.json in the background
+    and only re-renders if the data actually changed. No data structure,
+    ordering, or fields are touched — this only stores the exact same
+    array loadWorks() already parses today.
   */
   const WORKS_CACHE_KEY = 'LF_cache_works_v1';
   function worksCacheGet() {
@@ -3292,10 +3314,22 @@ transform:scale(.82) !important;
     return p;
   }
 
+  /*
+    MOBILE PERFORMANCE ONLY FIX:
+    Previously appended '&t=' + Date.now() and used cache:'no-store', which
+    is a genuinely different URL every call — meaning the <link rel=preload
+    as=fetch> hint added in <head> (a fixed, versioned URL) could never be
+    reused, and the browser paid for two separate downloads of the same
+    file. cache:'no-cache' still forces a revalidation with the server on
+    every load (never silently serves a stale response), but on the exact
+    same URL as the preload, so the browser can reuse that in-flight/cached
+    request instead of starting a second one. Freshness is unaffected: this
+    file's own works.json cache (worksCacheGet/worksCacheSet) already
+    re-checks and re-renders on every load regardless of what the HTTP
+    layer does here.
+  */
   async function safeJSONFetchFresh(url) {
-    const sep = url.includes('?') ? '&' : '?';
-    const freshUrl = url + sep + 't=' + Date.now();
-    const res = await fetch(freshUrl, { cache: 'no-store' });
+    const res = await fetch(url, { cache: 'no-cache' });
     if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
     return res.json();
   }

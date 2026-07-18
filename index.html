@@ -3002,6 +3002,7 @@ transform:scale(.82) !important;
         <button type="button" class="tab" data-panel="rebirth">Ⅲ 정신의 재탄생 · Rebirth of Mind</button>
         <button type="button" class="tab" data-panel="exist">Ⅳ 존재의 회복 · Restoration of Being</button>
         <button type="button" class="tab" data-panel="cosmos">Ⅴ 빛의 초의식 · Metaconsciousness of Light</button>
+        <button type="button" class="tab" data-panel="wave">Ⅵ 빛의 파도 · Waves of Light</button>
       </div>
 
       <div id="panel-origin" class="tabpanel"></div>
@@ -3010,6 +3011,7 @@ transform:scale(.82) !important;
       <div id="panel-rebirth" class="tabpanel"></div>
       <div id="panel-exist" class="tabpanel"></div>
       <div id="panel-cosmos" class="tabpanel"></div>
+      <div id="panel-wave" class="tabpanel"></div>
     </section>
 
     <section id="reports">
@@ -3343,7 +3345,7 @@ transform:scale(.82) !important;
     return 'kr';
   };
 
-  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+  let worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[], wave:[] };
   let worksLoaded = false;
   let reportsLoaded = false;
   let reportsInitialized = false;
@@ -3432,7 +3434,7 @@ transform:scale(.82) !important;
     const worksRoot = $('#works');
     if (!worksRoot) return;
 
-    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos'];
+    const panelIds = ['origin', 'pray', 'human', 'rebirth', 'exist', 'cosmos', 'wave'];
 
     const tabs = $('.tabs', worksRoot);
     if (tabs) {
@@ -3470,12 +3472,13 @@ transform:scale(.82) !important;
     2: { kr: "II 인간", en: "Human Being" },
     3: { kr: "III 정신의 재탄생", en: "Rebirth of Mind" },
     4: { kr: "IV 존재의 회복", en: "Restoration of Being" },
-    5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" }
+    5: { kr: "V 빛의 초의식", en: "Metaconsciousness of Light" },
+    6: { kr: "VI 빛의 파도", en: "Waves of Light" }
   };
 
   function normalizeSectionId(work) {
     const n = Number(work?.section_id);
-    if (Number.isInteger(n) && n >= 0 && n <= 5) return n;
+    if (Number.isInteger(n) && n >= 0 && n <= 6) return n;
     return -1;
   }
 
@@ -3483,7 +3486,7 @@ transform:scale(.82) !important;
     return String(v ?? '')
       .toLowerCase()
       .normalize('NFKC')
-      .replace(/[ⅠⅡⅢⅣⅤ]/g, (m) => ({ 'Ⅰ':'i', 'Ⅱ':'ii', 'Ⅲ':'iii', 'Ⅳ':'iv', 'Ⅴ':'v' }[m] || m))
+      .replace(/[ⅠⅡⅢⅣⅤⅥ]/g, (m) => ({ 'Ⅰ':'i', 'Ⅱ':'ii', 'Ⅲ':'iii', 'Ⅳ':'iv', 'Ⅴ':'v', 'Ⅵ':'vi' }[m] || m))
       .replace(/[·ㆍ•]/g, ' ')
       .replace(/[\s_\-–—]+/g, ' ')
       .trim();
@@ -3496,7 +3499,8 @@ transform:scale(.82) !important;
       2: 'human',
       3: 'rebirth',
       4: 'exist',
-      5: 'cosmos'
+      5: 'cosmos',
+      6: 'wave'
     };
 
     /*
@@ -3541,6 +3545,12 @@ transform:scale(.82) !important;
         label.includes('metaconsciousness of light') ||
         label.includes('metaconsciousness')
       ) return 'cosmos';
+
+      if (
+        label.includes('빛의 파도') ||
+        label.includes('waves of light') ||
+        label.includes('wave of light')
+      ) return 'wave';
 
       if (
         label.includes('인간') ||
@@ -3641,7 +3651,7 @@ transform:scale(.82) !important;
 
     worksLoaded = true;
 
-    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos'];
+    const panelKeys = ['origin','pray','human','rebirth','exist','cosmos','wave'];
     const WORKS_URL = 'data/works.json?v=20260429-pray-archivepro-json-path-final';
 
     /*
@@ -3649,7 +3659,7 @@ transform:scale(.82) !important;
       background refresh path below, so the two can never drift out of sync.
     */
     function applyWorksList(list) {
-      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[] };
+      worksByPanel = { origin:[], pray:[], human:[], rebirth:[], exist:[], cosmos:[], wave:[] };
 
       for (const item of list) {
         const key = resolveWorkPanelKey(item);

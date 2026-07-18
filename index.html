@@ -3910,6 +3910,18 @@ transform:scale(.82) !important;
     const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
 
     if (!validItems.length) {
+      /*
+        VI 빛의 파도 · Waves of Light — EMPTY STATE EXCEPTION
+        This section intentionally shows nothing (no message box, no
+        placeholder, no "Coming Soon" / "0 Works" text) while it has no
+        works yet. Just leave the panel empty. All other sections keep
+        the standard empty-state message below, unchanged.
+        Once a work with section_id 6 exists, validItems.length > 0 and
+        this branch is skipped entirely — the normal grid renders with
+        no further code changes needed.
+      */
+      if (key === 'wave') return;
+
       const msg = document.createElement('div');
       msg.className = 'w-msg';
       msg.innerHTML = `

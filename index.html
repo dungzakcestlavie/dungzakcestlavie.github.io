@@ -959,6 +959,8 @@
       touch-action: none;
       user-select: none;
     }
+    #lf-stage.is-zoomed{ cursor: grab; }
+    #lf-stage.is-zoomed.is-dragging{ cursor: grabbing; }
 
     #lf-image{
       max-width: 92vw;
@@ -4162,6 +4164,32 @@ transform:scale(.82) !important;
         applyLightboxTransform();
         markViewerBusy();
       }, { passive: false });
+
+      // Mouse drag-to-pan when zoomed (desktop). Cursor becomes a hand via
+      // the .is-zoomed/.is-dragging classes toggled in applyLightboxTransform().
+      lb.addEventListener('mousedown', (e) => {
+        if (!lb.classList.contains('active') || lbScale <= 1.02 || e.button !== 0) return;
+        e.preventDefault();
+        lbMouseDragging = true;
+        lbMouseLastX = e.clientX;
+        lbMouseLastY = e.clientY;
+        if (stage) stage.classList.add('is-dragging');
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!lbMouseDragging || lbScale <= 1.02) return;
+        lbX += e.clientX - lbMouseLastX;
+        lbY += e.clientY - lbMouseLastY;
+        lbMouseLastX = e.clientX;
+        lbMouseLastY = e.clientY;
+        applyLightboxTransform();
+        markViewerBusy();
+      });
+
+      document.addEventListener('mouseup', () => {
+        lbMouseDragging = false;
+        if (stage) stage.classList.remove('is-dragging');
+      });
     }
 
     if (btnX && btnX.dataset.bound !== '1') {
@@ -4225,6 +4253,10 @@ transform:scale(.82) !important;
   let swipeLocked = false;
   let swipeRAF = null;
   let lastSwipeTime = 0;
+
+  let lbMouseDragging = false;
+  let lbMouseLastX = 0;
+  let lbMouseLastY = 0;
 
   const SWIPE_THRESHOLD = 45;
   const SWIPE_VERTICAL_LIMIT = 70;
@@ -4407,6 +4439,9 @@ transform:scale(.82) !important;
     lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
     lbImg.style.transformOrigin = 'center center';
     if (isTouchViewerClampViewport()) lbImg.style.willChange = 'transform';
+
+    const stageEl = $('#lf-stage');
+    if (stageEl) stageEl.classList.toggle('is-zoomed', lbScale > 1.02);
   }
 
   function resetLightboxTransform() {

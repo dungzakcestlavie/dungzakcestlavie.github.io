@@ -21,10 +21,10 @@
   <link
     rel="preload"
     as="style"
-    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&family=Cinzel:wght@500;600&display=swap"
     onload="this.onload=null;this.rel='stylesheet'"
   />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" /></noscript>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet" /></noscript>
   <link rel="preload" as="fetch" crossorigin="anonymous" href="data/works.json?v=20260429-pray-archivepro-json-path-final" />
 
 
@@ -235,6 +235,29 @@
       text-shadow:
         0 1px 0 rgba(0,0,0,.78),
         0 2px 8px rgba(0,0,0,.34);
+    }
+
+    /* BRAND LOGOTYPE — full font replacement for KR + Hanja + EN, unified as one logo.
+       KR/Hanja: Noto Serif KR (sharp, high-contrast Mingjo/Serif strokes).
+       EN: Cinzel — classic uppercase-optimized Roman serif with thin, restrained
+       stroke contrast, chosen to sit visually level with the CJK serif rather
+       than the previous Georgia/Times fallback. Only this brand line changes;
+       nothing else on the page is affected. */
+    header .brand .brand-kr,
+    header .brand .brand-hanja{
+      font-family: "Noto Serif KR", serif;
+      font-weight: 600;
+      letter-spacing: inherit;
+      vertical-align: baseline;
+    }
+
+    header .brand .brand-en{
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      font-size: .90em;
+      letter-spacing: .05em;
+      vertical-align: baseline;
+      text-transform: uppercase;
     }
 
     header .brand-sub{
@@ -2895,7 +2918,7 @@ transform:scale(.82) !important;
   <canvas id="waveCanvas" aria-hidden="true"></canvas>
 
   <header>
-    <div id="siteResetBrand" class="brand" role="button" tabindex="0">등작 燈酌 DUNGZAK CESTLAVIE</div>
+    <div id="siteResetBrand" class="brand" role="button" tabindex="0"><span class="brand-kr">등작</span> <span class="brand-hanja">燈酌</span> <span class="brand-en">DUNGZAK CESTLAVIE</span></div>
     <div class="brand-sub">LIGHTFLOW · LIGHT · MEMORY · BEING</div>
 
     <nav class="primary" aria-label="Primary">

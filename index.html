@@ -4150,6 +4150,18 @@ transform:scale(.82) !important;
       lb.addEventListener('touchcancel', (e) => {
         onLightboxTouchCancel(e);
       }, { passive: false });
+
+      // Mouse wheel / trackpad zoom (desktop) — added to match jskim.art's
+      // viewer engine. Touch pinch-zoom above is unaffected.
+      lb.addEventListener('wheel', (e) => {
+        if (!lb.classList.contains('active')) return;
+        e.preventDefault();
+        const delta = -e.deltaY * 0.0015;
+        lbScale = Math.min(Math.max(1, lbScale + delta * lbScale), 4);
+        if (lbScale <= 1.02) { lbScale = 1; lbX = 0; lbY = 0; }
+        applyLightboxTransform();
+        markViewerBusy();
+      }, { passive: false });
     }
 
     if (btnX && btnX.dataset.bound !== '1') {

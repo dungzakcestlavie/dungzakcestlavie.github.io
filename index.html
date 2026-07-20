@@ -4404,8 +4404,6 @@ transform:scale(.82) !important;
   });
 
   function clampLightboxImageToFrame() {
-    if (!isTouchViewerClampViewport()) return;
-
     const stage = $('#lf-stage');
     const lbImg = $('#lf-image');
     if (!stage || !lbImg) return;
@@ -4434,11 +4432,11 @@ transform:scale(.82) !important;
     const lbImg = $('#lf-image');
     if (!lbImg) return;
 
-    if (isTouchViewerClampViewport()) clampLightboxImageToFrame();
+    clampLightboxImageToFrame();
 
     lbImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
     lbImg.style.transformOrigin = 'center center';
-    if (isTouchViewerClampViewport()) lbImg.style.willChange = 'transform';
+    lbImg.style.willChange = 'transform';
 
     const stageEl = $('#lf-stage');
     if (stageEl) stageEl.classList.toggle('is-zoomed', lbScale > 1.02);

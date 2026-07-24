@@ -978,15 +978,16 @@
 
     #lf-close{
       position: absolute;
-      top: calc(20px + var(--safe-top));
-      right: calc(20px + var(--safe-right));
-      width: 44px;
-      height: 44px;
+      top: calc(32px + var(--safe-top));
+      right: calc(34px + var(--safe-right));
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.20);
-      background: rgba(0,0,0,.50);
-      color: #fff;
-      font-size: 24px;
+      border: 1px solid rgba(216,183,119,.18);
+      background: rgba(0,0,0,.18);
+      color: var(--gold);
+      opacity: .55;
+      font-size: 22px;
       line-height: 1;
       cursor: pointer;
       z-index: 10000;
@@ -994,6 +995,17 @@
       -webkit-backdrop-filter: blur(6px);
       touch-action: manipulation;
       box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      transition: opacity .18s ease;
+    }
+    #lf-close:hover{ opacity: .85; }
+    #lf-close:active{ opacity: 1; }
+
+    /* 2026-07-24 — Lightbox 컨트롤 최종 마감: 기기별 X 크기 미세 단계 */
+    @media (min-width: 1024px) and (max-width: 1439.98px){
+      #lf-close{ font-size: 20px; width: 39px; height: 39px; } /* Notebook: 약 12% 축소 */
+    }
+    @media (min-width: 769px) and (max-width: 1023.98px){
+      #lf-close{ font-size: 19px; width: 37px; height: 37px; } /* Tablet: 약 15% 축소 */
     }
 
     @media (max-width: 768px){
@@ -1005,8 +1017,9 @@
       #lf-close{
         top: calc(14px + var(--safe-top));
         right: calc(14px + var(--safe-right));
-        width: 44px;
-        height: 44px;
+        width: 40px;   /* Mobile: 약 8% 축소 */
+        height: 40px;
+        font-size: 18px;
       }
     }
 
@@ -1811,12 +1824,13 @@
         top:50% !important;
         transform:translateY(-50%) !important;
         z-index:10040 !important;
-        width:52px !important;
-        height:72px !important;
+        width:47px !important;
+        height:65px !important;
         border-radius:999px !important;
         border:1px solid rgba(215,184,106,.30) !important;
         background:rgba(7,10,20,.48) !important;
         color:rgba(233,213,155,.92) !important;
+        opacity:.36 !important;
         display:flex !important;
         align-items:center !important;
         justify-content:center !important;
@@ -1828,21 +1842,27 @@
         text-shadow:0 1px 0 rgba(0,0,0,.72) !important;
         touch-action:manipulation !important;
         -webkit-tap-highlight-color:transparent !important;
+        transition:opacity .18s ease !important;
       }
 
       #lf-prev{
-        left:calc(16px + var(--safe-left)) !important;
+        left:calc(30px + var(--safe-left)) !important;
       }
 
       #lf-next{
-        right:calc(16px + var(--safe-right)) !important;
+        right:calc(30px + var(--safe-right)) !important;
       }
 
       #lf-prev:hover,
       #lf-next:hover{
+        opacity:.82 !important;
         background:rgba(7,10,20,.68) !important;
         border-color:rgba(215,184,106,.54) !important;
         color:rgba(233,213,155,1) !important;
+      }
+      #lf-prev:active,
+      #lf-next:active{
+        opacity:1 !important;
       }
     }
 
@@ -1851,6 +1871,14 @@
       #lf-next{
         display:none !important;
       }
+    }
+
+    /* 2026-07-24 — Notebook/Tablet 화살표 크기 세분화 (Desktop 대비 -12%/-15%) */
+    @media (min-width: 1024px) and (max-width: 1439.98px){
+      #lf-prev, #lf-next{ width:46px !important; height:63px !important; }
+    }
+    @media (min-width: 769px) and (max-width: 1023.98px){
+      #lf-prev, #lf-next{ width:44px !important; height:60px !important; }
     }
 
     /* FINAL MICRO TUNING ONLY — CLS/LCP reservation without layout redesign */
@@ -2915,6 +2943,43 @@ transform:scale(.82) !important;
       }
     }
 
+/* ============================================================
+   2026-07-24 — Lightbox 컨트롤 최종 마감: 색상 통합 오버라이드
+   위쪽에 기기·방향별로 흩어진 X/화살표 버튼 규칙들은 크기·위치·투명도를
+   각자 그대로 유지하되, 색상만 전부 Archive Pro 골드 톤으로 통일한다.
+   (작품 렌더링·확대·스와이프·드래그·캡션·키보드·터치 제스처는 전혀
+   변경하지 않음 — 아래는 color/border-color 두 속성만 다룬다.)
+   ============================================================ */
+#lf-close,
+.lightbox-close,
+.viewer-close,
+.modal-close,
+.close-btn,
+[data-viewer-close],
+html.is-ipad #lf-close,
+html.is-ipad .lightbox-close,
+html.is-ipad .viewer-close,
+html.is-ipad .close-btn,
+html.is-ipad [data-viewer-close],
+html:not(.is-ipad) #lf-close,
+html:not(.is-ipad) .viewer-close,
+html:not(.is-ipad) .lightbox-close,
+html:not(.is-ipad) .close-btn,
+html:not(.is-ipad) [data-viewer-close]{
+  color: var(--gold) !important;
+  border-color: rgba(216,183,119,.18) !important;
+}
+
+#lf-prev, #lf-next,
+.lightbox-arrow, .lb-arrow{
+  color: var(--gold) !important;
+  border-color: rgba(216,183,119,.30) !important;
+}
+#lf-prev:hover, #lf-next:hover,
+.lightbox-arrow:hover, .lb-arrow:hover{
+  color: var(--gold2) !important;
+  border-color: rgba(216,183,119,.54) !important;
+}
 </style>
 
 </head>

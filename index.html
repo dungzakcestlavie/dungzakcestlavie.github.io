@@ -3020,7 +3020,16 @@ html:not(.is-ipad) [data-viewer-close]{
       }
     }
 
-</style>
+
+    /* DUNGZAK.ART — ARTIST BIO MOBILE/TABLET PINCH ZOOM RESTORE ONLY */
+    .bio-zoom-content{--bio-zoom:1;zoom:var(--bio-zoom);transform-origin:top center;}
+    @media (hover:none) and (pointer:coarse){
+      #bio-modal,#bio-modal .bio-card{touch-action:pan-y pinch-zoom !important;overscroll-behavior:contain;}
+      #bio-modal .bio-zoom-content{touch-action:pan-y pinch-zoom !important;transform-origin:top center;-webkit-user-select:text;user-select:text;}
+      #bio-modal .bio-head,#bio-modal .bio-close,#bio-modal .bio-lang,#bio-modal .bio-lang button{touch-action:manipulation !important;}
+    }
+
+  </style>
 
 </head>
 
@@ -3187,22 +3196,24 @@ html:not(.is-ipad) [data-viewer-close]{
         <button class="bio-close" aria-label="Close">✕</button>
       </div>
 
+      <div class="bio-zoom-content" id="bioZoomContent">
       <div class="bio-body ko">
         <p>등작 燈酌 DUNGZAK CESTLAVIE는 ‘빛 · 기억 · 존재’를 중심 개념으로 회화를 통해 빛과 기억, 존재의 관계를 탐구하는 한국의 현대 예술가이다.</p>
         <p>등작에게 회화는 대상을 재현하는 매체가 아니라 존재를 사유하고 기억을 탐구하는 사유의 장이다. 그의 화면은 감정과 시간, 침묵과 움직임이 교차하는 공간으로 전개되며, 반복되는 선과 흐름, 응축과 여백은 생성과 소멸, 상처와 회복이 순환하는 과정을 드러낸다. 화면 속 빛은 형태를 비추는 요소가 아니라 기억을 매개하고 존재를 드러내는 원리로 작동하며, 회화는 인간 경험이 남긴 흔적을 자신만의 시각 언어로 재구성하는 과정이 된다.</p>
         <p>그에게 빛은 자연현상이 아니라 존재를 드러내는 조건이며, 기억은 과거를 보존하는 저장소가 아니라 현재를 끊임없이 재구성하는 능동적인 구조이다. 이러한 인식은 개별 작품을 독립된 결과물이 아닌, 서로 연결되고 축적되는 하나의 예술 체계로 이해하게 한다. 회화와 텍스트, 사운드, 영상, 디지털 아카이브는 서로 다른 매체가 아니라 하나의 세계를 구성하는 언어로 기능하며, 작품과 기록, 감상과 연구는 하나의 연속된 경험 안에서 유기적으로 연결된다.</p>
-        <p>서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등에서 회화와 다매체 프로젝트를 발표해 왔으며, 최근에는 「기원」, 「빛의 메타의식」, 「빛의 파도」 연작을 통해 빛과 기억, 존재의 관계를 더욱 깊이 있는 화면 언어로 탐구하고 있다. 이 연작들은 추상과 서사, 감각과 사유를 하나의 화면 안에서 결합하며, 시간의 흐름과 기억의 축적, 생성과 소멸을 하나의 시각적 질서로 통합한다.</p>
+        <p>서울을 기반으로 베를린, 파리, 암스테르담, 바르샤바, 모스크바 등에서 회화와 다매체 프로젝트를 발표해 왔으며, 최근에는 「A 기원」, 「V 빛의 초의식」, 「VI 빛의 파도」 연작을 통해 빛과 기억, 존재의 관계를 더욱 깊이 있는 화면 언어로 탐구하고 있다. 이 연작들은 추상과 서사, 감각과 사유를 하나의 화면 안에서 결합하며, 시간의 흐름과 기억의 축적, 생성과 소멸을 하나의 시각적 질서로 통합한다.</p>
         <p>등작은 디지털 아카이브를 예술 실천의 중요한 영역으로 확장하며 작품과 연구, 기록, 감상을 하나의 구조 안에서 연결하는 아카이브 프로젝트를 구축하고 있다. 이를 통해 회화를 전시장 안에 머무는 대상으로 한정하지 않고, 지속적으로 축적되고 해석되며 새로운 관계를 생성하는 예술 환경으로 확장한다. 그의 아카이브는 단순한 데이터베이스가 아니라 회화와 동일한 철학을 공유하는 또 하나의 창작 공간이자 연구 기반으로 기능한다.</p>
         <p>등작의 예술 세계는 빛을 통해 존재를 사유하고, 기억을 통해 시간을 새롭게 이해하며, 회화를 통해 인간 경험을 끊임없이 다시 해석하는 과정이라 할 수 있다. 그의 작업은 개별 작품의 제작을 넘어 회화와 기록, 언어, 디지털 아카이브를 하나의 통합된 예술 체계로 연결하며, 기억과 존재에 대한 탐구를 이어가고 있다.</p>
       </div>
 
       <div class="bio-body en">
+        <p><strong>DUNGZAK CESTLAVIE</strong></p>
         <p>DUNGZAK CESTLAVIE is a contemporary Korean artist whose practice explores the relationship between light, memory, and existence through painting, centered on the core concept of “Light · Memory · Existence.”</p>
-        <p>For DUNGZAK, painting is not a medium for representing objects but a space for contemplating existence and exploring memory. His canvases unfold as spaces where emotion and time, silence and movement intersect; repeated lines and flows, condensation and emptiness reveal the cyclical processes of creation and dissolution, wound and recovery. Light within the picture plane functions not as an element that illuminates form, but as a principle that mediates memory and reveals existence. Painting thus becomes a process of reconstructing the traces of human experience through a distinctive visual language.</p>
-        <p>To DUNGZAK, light is not a natural phenomenon but a condition that reveals existence, while memory is not a repository that preserves the past but an active structure that continually reconstructs the present. This perspective understands individual works not as isolated outcomes but as components of an interconnected and evolving artistic system. Painting, text, sound, video, and the digital archive function not as separate media but as languages that constitute a single artistic world, where works and records, viewing and research are organically connected within one continuous experience.</p>
-        <p>Based in Seoul, DUNGZAK has presented paintings and multimedia projects in Berlin, Paris, Amsterdam, Warsaw, Moscow, and other international venues. More recently, through the series Origins, Metaconsciousness of Light, and Waves of Light, he has explored the relationship between light, memory, and existence through an increasingly refined visual language. These series bring together abstraction and narrative, sensation and contemplation within a single picture plane, integrating the flow of time, the accumulation of memory, and the cycles of creation and dissolution into a unified visual order.</p>
-        <p>DUNGZAK has also expanded the digital archive into a significant dimension of his artistic practice, developing an archive project that connects artworks, research, documentation, and audience engagement within a single framework. Through this project, painting extends beyond the physical exhibition space into an artistic environment that continually accumulates, evolves through interpretation, and generates new relationships. His archive functions not merely as a database but as an additional creative space and research platform grounded in the same philosophy as his painting.</p>
-        <p>DUNGZAK's artistic world may be understood as an ongoing process of contemplating existence through light, rethinking time through memory, and continually reinterpreting human experience through painting. His practice extends beyond the creation of individual works, connecting painting, documentation, language, and the digital archive into an integrated artistic system while continuing his inquiry into memory and existence.</p>
+        <p>For DUNGZAK CESTLAVIE, painting is not a medium for representing objects but a space for contemplating existence and exploring memory. His canvases unfold as spaces where emotion and time, silence and movement intersect; repeated lines and flows, condensation and emptiness reveal the cyclical processes of creation and dissolution, wound and recovery. Light within the picture plane functions not as an element that illuminates form, but as a principle that mediates memory and reveals existence. Painting thus becomes a process of reconstructing the traces of human experience through a distinctive visual language.</p>
+        <p>To him, light is not a natural phenomenon but a condition that reveals existence, while memory is not a repository that preserves the past but an active structure that continually reconstructs the present. This perspective understands individual works not as isolated outcomes but as components of an interconnected and evolving artistic system. Painting, text, sound, video, and the digital archive function not as separate media but as languages that constitute a single artistic world, where works and records, viewing and research are organically connected within one continuous experience.</p>
+        <p>Based in Seoul, DUNGZAK CESTLAVIE has presented paintings and multimedia projects in Berlin, Paris, Amsterdam, Warsaw, Moscow, and other international venues. More recently, through the series A Origins, V Metaconsciousness of Light, and VI Waves of Light, he has explored the relationship between light, memory, and existence through an increasingly refined visual language. These series bring together abstraction and narrative, sensation and contemplation within a single picture plane, integrating the flow of time, the accumulation of memory, and the cycles of creation and dissolution into a unified visual order.</p>
+        <p>He has also expanded the digital archive into a significant dimension of his artistic practice, developing an archive project that connects artworks, research, documentation, and audience engagement within a single framework. Through this project, painting extends beyond the physical exhibition space into an artistic environment that continually accumulates, evolves through interpretation, and generates new relationships. His archive functions not merely as a database but as an additional creative space and research platform grounded in the same philosophy as his painting.</p>
+        <p>His artistic world may be understood as an ongoing process of contemplating existence through light, rethinking time through memory, and continually reinterpreting human experience through painting. His practice extends beyond the creation of individual works, connecting painting, documentation, language, and the digital archive into an integrated artistic system while continuing his inquiry into memory and existence.</p>
       </div>
 
       <button class="expo-kicker" id="expoToggle" aria-expanded="false">
@@ -3326,6 +3337,7 @@ html:not(.is-ipad) [data-viewer-close]{
           <p>In 2016, before the court in Warsaw, Poland, he was officially recognized as an “ocean energy businessman”, based on twelve years of work between Europe and Korea and supporting testimony from European partners.</p>
         </div>
       </div>
+      </div><!-- /.bio-zoom-content -->
     </div>
   </div>
 
@@ -5349,6 +5361,7 @@ html:not(.is-ipad) [data-viewer-close]{
 
     const card = modal.querySelector('.bio-card');
     if (card) card.scrollTop = 0;
+    modal.dispatchEvent(new CustomEvent('biozoomreset'));
   }
 
   function closeBioModal() {
@@ -5397,6 +5410,28 @@ html:not(.is-ipad) [data-viewer-close]{
         expoBtn.setAttribute('aria-expanded', (!isOpen) ? 'true' : 'false');
       }, { passive:true });
     }
+
+
+    initBioPinchZoom();
+  }
+
+
+  function initBioPinchZoom(){
+    const modal=document.getElementById('bio-modal');
+    const card=modal&&modal.querySelector('.bio-card');
+    const content=modal&&modal.querySelector('#bioZoomContent');
+    if(!modal||!card||!content||content.dataset.pinchReady==='true')return;
+    content.dataset.pinchReady='true';
+    const MIN=1,MAX=2.6;let zoom=1,startZoom=1,startDistance=0,pinching=false,lastTapAt=0;
+    const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+    const dist=(a,b)=>Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+    const apply=v=>{zoom=clamp(v,MIN,MAX);content.style.setProperty('--bio-zoom',zoom.toFixed(3));};
+    const reset=()=>{apply(1);card.scrollLeft=0;};
+    content.addEventListener('touchstart',e=>{if(e.touches.length===2){pinching=true;startZoom=zoom;startDistance=dist(e.touches[0],e.touches[1]);}},{passive:true});
+    content.addEventListener('touchmove',e=>{if(!pinching||e.touches.length!==2||startDistance<=0)return;apply(startZoom*(dist(e.touches[0],e.touches[1])/startDistance));e.preventDefault();},{passive:false});
+    content.addEventListener('touchend',e=>{if(e.touches.length<2)pinching=false;if(e.changedTouches.length===1&&e.touches.length===0){const now=Date.now();if(now-lastTapAt<320)reset();lastTapAt=now;}},{passive:true});
+    content.addEventListener('touchcancel',()=>{pinching=false;},{passive:true});
+    modal.addEventListener('biozoomreset',reset);
   }
 
   function initSound() {

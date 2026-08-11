@@ -487,10 +487,13 @@
       const LABEL_IDLE_EN = 'Save & Share';
       const LABEL_BUSY_KR = '이미지 생성 중...';
       const LABEL_BUSY_EN = 'Generating...';
+      const LABEL_READY_KR = '다시 탭하여 공유';
+      const LABEL_READY_EN = 'Tap again to share';
 
-      function setBusyLabel(isBusy){
-        saveBtnKr.textContent = isBusy ? LABEL_BUSY_KR : LABEL_IDLE_KR;
-        saveBtnEn.textContent = isBusy ? LABEL_BUSY_EN : LABEL_IDLE_EN;
+      function setLabel(state){
+        if (state === 'busy') { saveBtnKr.textContent = LABEL_BUSY_KR; saveBtnEn.textContent = LABEL_BUSY_EN; }
+        else if (state === 'ready') { saveBtnKr.textContent = LABEL_READY_KR; saveBtnEn.textContent = LABEL_READY_EN; }
+        else { saveBtnKr.textContent = LABEL_IDLE_KR; saveBtnEn.textContent = LABEL_IDLE_EN; }
       }
 
       function showToast(msg){
@@ -500,15 +503,6 @@
         toastTimer = setTimeout(function(){
           toastEl.classList.remove('show');
         }, 2600);
-      }
-
-      // Detect touch-capable phones/tablets (including iPadOS, which reports
-      // as "Macintosh" in the UA string but exposes multi-touch points).
-      function isTouchDevice(){
-        const ua = navigator.userAgent || '';
-        const isPhoneOrTabletUA = /iPhone|iPad|iPod|Android/i.test(ua);
-        const isIPadDesktopMode = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
-        return isPhoneOrTabletUA || isIPadDesktopMode;
       }
 
       function blobToPromise(canvas){
@@ -545,11 +539,48 @@
         }
       }
 
+      // Holds a prepared image while we wait for a second, fresh tap. Strict
+      // browsers (iOS/iPadOS Safari especially) only allow navigator.share()
+      // to run as a direct, synchronous continuation of a user gesture — any
+      // async delay beforehand (like rendering the canvas) causes it to
+      // silently fail. Splitting into two taps guarantees the actual
+      // share() call happens inside a brand-new, untouched click event.
+      let pendingShare = null;
+      let pendingShareTimer = null;
+
+      function clearPendingShare(){
+        pendingShare = null;
+        clearTimeout(pendingShareTimer);
+        saveBtn.classList.remove('busy');
+        setLabel('idle');
+      }
+
       saveBtn.addEventListener('click', async function(e){
         e.stopPropagation();
+
+        // Second tap: image is already prepared — call share() immediately,
+        // synchronously within this fresh click, before any await happens.
+        if (pendingShare) {
+          const data = pendingShare;
+          clearPendingShare();
+          try {
+            await navigator.share({
+              files: [data.file],
+              title: '등작 燈酌 DUNGZAK CESTLAVIE',
+              text: data.shareText,
+              url: data.cardUrl
+            });
+          } catch(err) {
+            if (!(err && err.name === 'AbortError')) {
+              downloadBlob(data.blob, data.fileName);
+            }
+          }
+          return;
+        }
+
         if (saveBtn.classList.contains('busy')) return;
         saveBtn.classList.add('busy');
-        setBusyLabel(true);
+        setLabel('busy');
 
         try {
           const activeFace = card.classList.contains('flipped')
@@ -584,43 +615,37 @@
           if (!blob) {
             showToast('이미지 생성에 실패했습니다 · Couldn\u2019t generate image');
             saveBtn.classList.remove('busy');
-            setBusyLabel(false);
+            setLabel('idle');
             return;
           }
 
           const fileName = 'dungzak-card-' + (card.classList.contains('flipped') ? 'back' : 'front') + '.png';
           const file = new File([blob], fileName, { type: 'image/png' });
+          const cardUrl = 'https://dungzak.art/card';
+          const shareText = '등작 燈酌 DUNGZAK CESTLAVIE — Digital Card\n' + cardUrl;
 
-          // Always guarantee the image is saved to disk first — this works
-          // reliably on every device (phone, tablet, laptop, desktop).
-          downloadBlob(blob, fileName);
-
-          // Then, if the device also supports the Web Share API with files,
-          // additionally offer the native share sheet (works on phones,
-          // tablets, and increasingly on desktop browsers with configured
-          // share targets like Mail, Nearby Share, WhatsApp, etc.).
           const canUseShare = navigator.canShare && navigator.share &&
             (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
 
           if (canUseShare) {
-            try {
-              await navigator.share({
-                files: [file],
-                title: 'DUNGZAK CESTLAVIE',
-                text: '등작 燈酌 — Digital Card'
-              });
-            } catch(err) {
-              // Silently ignore — the file is already safely downloaded above,
-              // so a cancelled or unsupported share isn't an error worth
-              // surfacing to the person.
-            }
+            // Don't call share() yet — wait for the next tap so the call is
+            // a fresh, synchronous user gesture (required by iOS/iPadOS
+            // Safari; harmless everywhere else).
+            pendingShare = { blob, fileName, file, shareText, cardUrl };
+            saveBtn.classList.remove('busy');
+            setLabel('ready');
+            showToast('다시 탭하면 공유창이 열립니다 · Tap again to open share');
+            pendingShareTimer = setTimeout(clearPendingShare, 20000);
+          } else {
+            downloadBlob(blob, fileName);
+            saveBtn.classList.remove('busy');
+            setLabel('idle');
           }
 
         } catch(err) {
           showToast('오류가 발생했습니다 · Something went wrong');
-        } finally {
           saveBtn.classList.remove('busy');
-          setBusyLabel(false);
+          setLabel('idle');
         }
       });
     })();

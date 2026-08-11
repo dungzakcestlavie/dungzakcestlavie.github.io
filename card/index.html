@@ -541,22 +541,30 @@
         fitResizeTimer = setTimeout(fitCardHeight, 80);
       }
 
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(fitCardHeight);
-      }
       window.addEventListener('load', fitCardHeight);
       window.addEventListener('resize', scheduleFit);
       window.addEventListener('orientationchange', scheduleFit);
       fitCardHeight();
 
-      // Safety net: some mobile browsers (notably Safari) can resolve
-      // document.fonts.ready before the linked web fonts have actually
-      // swapped in, so the very first measurement can be based on the
-      // fallback font's (shorter) metrics. Re-measuring a couple more times
-      // shortly after load catches that late reflow.
-      setTimeout(fitCardHeight, 300);
-      setTimeout(fitCardHeight, 800);
-      setTimeout(fitCardHeight, 1500);
+      // Actively load and confirm the exact font faces used, then re-fit.
+      // This resolves as soon as the fonts are genuinely ready — no blind
+      // fixed delays, no guessing. Some browsers (notably Safari) can
+      // resolve document.fonts.ready slightly before a web font has fully
+      // swapped in, so we explicitly request each face used and refit once
+      // they're confirmed loaded.
+      if (document.fonts && document.fonts.load) {
+        Promise.all([
+          document.fonts.load('600 16px "Cormorant Garamond"'),
+          document.fonts.load('800 16px "Cormorant Garamond"'),
+          document.fonts.load('italic 600 16px "Cormorant Garamond"'),
+          document.fonts.load('400 16px "Noto Sans KR"'),
+          document.fonts.load('500 16px "Noto Sans KR"'),
+          document.fonts.load('600 16px "Noto Sans KR"')
+        ]).then(fitCardHeight).catch(fitCardHeight);
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitCardHeight);
+      }
 
       const saveImgBtn = document.getElementById('saveImgBtn');
       const saveImgBtnKr = document.getElementById('saveImgBtnKr');

@@ -246,6 +246,38 @@
     letter-spacing:0.06em;
   }
 
+  /* ---------- FLIP HINT ---------- */
+
+  .flip-hint{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    letter-spacing:0.04em;
+  }
+
+  .flip-hint-kr{
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink);
+    opacity:0.42;
+  }
+
+  .flip-hint-divider{
+    font-size:10px;
+    opacity:0.25;
+  }
+
+  .flip-hint-en{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:11.5px;
+    color:var(--ink);
+    opacity:0.42;
+  }
+
   /* ---------- SAVE / SHARE ---------- */
 
   .wrap{
@@ -262,9 +294,6 @@
     background:none;
     border:none;
     padding:6px 10px;
-    font-family:'Cormorant Garamond', serif;
-    font-style:italic;
-    font-size:12.5px;
     letter-spacing:0.04em;
     color:var(--ink);
     opacity:0.55;
@@ -285,6 +314,29 @@
   .save-btn.busy{
     opacity:0.3;
     pointer-events:none;
+  }
+
+  .save-btn-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .save-btn-kr{
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:12px;
+    font-weight:400;
+  }
+
+  .save-btn-divider{
+    font-size:11px;
+    opacity:0.6;
+  }
+
+  .save-btn-en{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:12.5px;
   }
 
   .toast{
@@ -363,13 +415,23 @@
     </div>
   </div>
 
+  <div class="flip-hint">
+    <span class="flip-hint-kr">카드를 탭하여 앞뒤로 넘겨보세요</span>
+    <span class="flip-hint-divider">·</span>
+    <span class="flip-hint-en">Tap the card to flip</span>
+  </div>
+
   <button class="save-btn" id="saveBtn" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 3v12"/>
       <path d="M7 10l5 5 5-5"/>
       <path d="M5 19h14"/>
     </svg>
-    <span id="saveBtnLabel">이미지 저장 · 공유</span>
+    <span class="save-btn-label">
+      <span class="save-btn-kr" id="saveBtnKr">이미지 저장 · 공유</span>
+      <span class="save-btn-divider">·</span>
+      <span class="save-btn-en" id="saveBtnEn">Save &amp; Share</span>
+    </span>
   </button>
   </div>
 
@@ -384,9 +446,20 @@
       });
 
       const saveBtn = document.getElementById('saveBtn');
-      const saveBtnLabel = document.getElementById('saveBtnLabel');
+      const saveBtnKr = document.getElementById('saveBtnKr');
+      const saveBtnEn = document.getElementById('saveBtnEn');
       const toastEl = document.getElementById('toast');
       let toastTimer = null;
+
+      const LABEL_IDLE_KR = '이미지 저장 · 공유';
+      const LABEL_IDLE_EN = 'Save & Share';
+      const LABEL_BUSY_KR = '이미지 생성 중...';
+      const LABEL_BUSY_EN = 'Generating...';
+
+      function setBusyLabel(isBusy){
+        saveBtnKr.textContent = isBusy ? LABEL_BUSY_KR : LABEL_IDLE_KR;
+        saveBtnEn.textContent = isBusy ? LABEL_BUSY_EN : LABEL_IDLE_EN;
+      }
 
       function showToast(msg){
         toastEl.textContent = msg;
@@ -394,15 +467,57 @@
         clearTimeout(toastTimer);
         toastTimer = setTimeout(function(){
           toastEl.classList.remove('show');
-        }, 2200);
+        }, 2600);
+      }
+
+      // Detect touch-capable phones/tablets (including iPadOS, which reports
+      // as "Macintosh" in the UA string but exposes multi-touch points).
+      function isTouchDevice(){
+        const ua = navigator.userAgent || '';
+        const isPhoneOrTabletUA = /iPhone|iPad|iPod|Android/i.test(ua);
+        const isIPadDesktopMode = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+        return isPhoneOrTabletUA || isIPadDesktopMode;
+      }
+
+      function blobToPromise(canvas){
+        return new Promise(function(resolve){
+          canvas.toBlob(function(blob){ resolve(blob); }, 'image/png');
+        });
+      }
+
+      // Universal fallback: force a direct file download. Works reliably on
+      // desktop/laptop browsers (Chrome, Edge, Firefox, Safari) and modern
+      // mobile browsers alike.
+      function downloadBlob(blob, fileName){
+        try {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+          showToast('이미지가 저장되었습니다 · Image saved');
+          return true;
+        } catch(err) {
+          try {
+            const url2 = URL.createObjectURL(blob);
+            window.open(url2, '_blank');
+            showToast('길게 눌러 이미지를 저장하세요 · Long-press the image to save');
+            return true;
+          } catch(err2) {
+            showToast('저장에 실패했습니다 · Save failed');
+            return false;
+          }
+        }
       }
 
       saveBtn.addEventListener('click', async function(e){
         e.stopPropagation();
         if (saveBtn.classList.contains('busy')) return;
         saveBtn.classList.add('busy');
-        const originalLabel = saveBtnLabel.textContent;
-        saveBtnLabel.textContent = '이미지 생성 중...';
+        setBusyLabel(true);
 
         try {
           const activeFace = card.classList.contains('flipped')
@@ -420,53 +535,51 @@
             }
           });
 
-          canvas.toBlob(async function(blob){
-            if (!blob) {
-              showToast('이미지 생성에 실패했습니다');
-              saveBtn.classList.remove('busy');
-              saveBtnLabel.textContent = originalLabel;
-              return;
-            }
+          const blob = await blobToPromise(canvas);
 
-            const fileName = 'dungzak-card-' + (card.classList.contains('flipped') ? 'back' : 'front') + '.png';
-            const file = new File([blob], fileName, { type: 'image/png' });
-
-            const canUseShare = navigator.canShare && navigator.share &&
-              (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
-
-            if (canUseShare) {
-              try {
-                await navigator.share({
-                  files: [file],
-                  title: 'DUNGZAK CESTLAVIE',
-                  text: '등작 燈酌 — Digital Card'
-                });
-                showToast('공유 완료');
-              } catch(err) {
-                if (err && err.name !== 'AbortError') {
-                  showToast('공유가 취소되었습니다');
-                }
-              }
-            } else {
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = fileName;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
-              showToast('이미지가 저장되었습니다');
-            }
-
+          if (!blob) {
+            showToast('이미지 생성에 실패했습니다 · Couldn\u2019t generate image');
             saveBtn.classList.remove('busy');
-            saveBtnLabel.textContent = originalLabel;
-          }, 'image/png');
+            setBusyLabel(false);
+            return;
+          }
+
+          const fileName = 'dungzak-card-' + (card.classList.contains('flipped') ? 'back' : 'front') + '.png';
+          const file = new File([blob], fileName, { type: 'image/png' });
+
+          // Prefer the native share sheet only on phones/tablets, where it
+          // typically offers a direct "Save Image" option (Photos/Gallery).
+          // On laptops/desktops the OS share dialog rarely offers a plain
+          // save-to-disk action, so we skip straight to a direct download.
+          const canUseShare = isTouchDevice() && navigator.canShare && navigator.share &&
+            (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
+
+          if (canUseShare) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'DUNGZAK CESTLAVIE',
+                text: '등작 燈酌 — Digital Card'
+              });
+              showToast('공유 완료 · Shared');
+            } catch(err) {
+              if (err && err.name === 'AbortError') {
+                // User cancelled the share sheet on purpose — do nothing further.
+              } else {
+                // Share failed for another reason — fall back to a direct download
+                // so the image is still saved no matter what.
+                downloadBlob(blob, fileName);
+              }
+            }
+          } else {
+            downloadBlob(blob, fileName);
+          }
 
         } catch(err) {
-          showToast('오류가 발생했습니다');
+          showToast('오류가 발생했습니다 · Something went wrong');
+        } finally {
           saveBtn.classList.remove('busy');
-          saveBtnLabel.textContent = originalLabel;
+          setBusyLabel(false);
         }
       });
     })();

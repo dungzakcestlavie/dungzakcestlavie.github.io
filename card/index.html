@@ -573,9 +573,9 @@
               url: data.cardUrl
             });
           } catch(err) {
-            if (!(err && err.name === 'AbortError')) {
-              downloadBlob(data.blob, data.fileName);
-            }
+            // The image was already downloaded during the first tap, so a
+            // cancelled or failed share here isn't a problem worth
+            // surfacing — the person already has the file either way.
           }
           return;
         }
@@ -626,20 +626,24 @@
           const cardUrl = 'https://dungzak.art/card';
           const shareText = '등작 燈酌 DUNGZAK CESTLAVIE — Digital Card\n' + cardUrl;
 
+          // Always save the image to disk first, on every device — this is
+          // the guaranteed part of "Save & Share".
+          downloadBlob(blob, fileName);
+
           const canUseShare = navigator.canShare && navigator.share &&
             (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
 
           if (canUseShare) {
             // Don't call share() yet — wait for the next tap so the call is
             // a fresh, synchronous user gesture (required by iOS/iPadOS
-            // Safari; harmless everywhere else).
+            // Safari; harmless everywhere else). The download above has
+            // already happened regardless of whether this second tap occurs.
             pendingShare = { blob, fileName, file, shareText, cardUrl };
             saveBtn.classList.remove('busy');
             setLabel('ready');
             showToast('다시 탭하면 공유창이 열립니다 · Tap again to open share');
             pendingShareTimer = setTimeout(clearPendingShare, 20000);
           } else {
-            downloadBlob(blob, fileName);
             saveBtn.classList.remove('busy');
             setLabel('idle');
           }

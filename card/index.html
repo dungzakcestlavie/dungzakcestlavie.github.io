@@ -93,19 +93,21 @@
   .mark-kr{
     font-family:'Noto Sans KR', sans-serif;
     font-weight:600;
-    font-size:28.5px;
+    font-size:clamp(18px, 5.6vw, 28.5px);
     letter-spacing:0.02em;
     color:var(--ink);
+    white-space:nowrap;
   }
 
   .mark-en{
     font-family:'Cormorant Garamond', serif;
     font-weight:600;
-    font-size:30px;
-    letter-spacing:0.1em;
+    font-size:clamp(15px, 5.9vw, 30px);
+    letter-spacing:0.08em;
     color:var(--ink);
     opacity:0.88;
     text-transform:uppercase;
+    white-space:nowrap;
   }
 
   .tagline{
@@ -119,7 +121,7 @@
   .tagline-kr{
     font-family:'Noto Sans KR', sans-serif;
     font-weight:500;
-    font-size:23px;
+    font-size:clamp(15px, 4.5vw, 23px);
     color:var(--ink);
     letter-spacing:0.01em;
   }
@@ -129,10 +131,11 @@
     font-family:'Cormorant Garamond', serif;
     font-style:italic;
     font-weight:600;
-    font-size:22px;
+    font-size:clamp(14px, 4.3vw, 22px);
     color:var(--ink);
     opacity:0.92;
     letter-spacing:0.03em;
+    white-space:nowrap;
   }
 
   .front-bottom{
@@ -154,7 +157,7 @@
 
   .contact-label{
     font-family:'Cormorant Garamond', serif;
-    font-size:15px;
+    font-size:clamp(10px, 2.9vw, 15px);
     font-weight:600;
     letter-spacing:0.16em;
     opacity:0.72;
@@ -167,7 +170,7 @@
   .contact-row a{
     color:var(--ink);
     text-decoration:none;
-    font-size:20px;
+    font-size:clamp(13px, 3.9vw, 20px);
     font-weight:500;
     letter-spacing:0.01em;
     border-bottom:1px solid transparent;

@@ -561,7 +561,19 @@
             scale: 3,
             useCORS: true,
             onclone: function(clonedDoc, el){
+              // The back face carries its own compensating rotateY(180deg) so it
+              // reads correctly once the parent .card is also flipped 180deg.
+              // When capturing it in isolation we must neutralize BOTH the
+              // face's own transform AND the parent card's transform — resetting
+              // only the face left the card's rotation in effect on its own,
+              // which mirrored the text in the saved image.
+              const clonedCard = clonedDoc.getElementById('card');
+              if (clonedCard) {
+                clonedCard.style.transform = 'none';
+                clonedCard.style.webkitTransform = 'none';
+              }
               el.style.transform = 'none';
+              el.style.webkitTransform = 'none';
               el.style.position = 'static';
               el.style.boxShadow = 'none';
             }
@@ -579,11 +591,15 @@
           const fileName = 'dungzak-card-' + (card.classList.contains('flipped') ? 'back' : 'front') + '.png';
           const file = new File([blob], fileName, { type: 'image/png' });
 
-          // Prefer the native share sheet only on phones/tablets, where it
-          // typically offers a direct "Save Image" option (Photos/Gallery).
-          // On laptops/desktops the OS share dialog rarely offers a plain
-          // save-to-disk action, so we skip straight to a direct download.
-          const canUseShare = isTouchDevice() && navigator.canShare && navigator.share &&
+          // Always guarantee the image is saved to disk first — this works
+          // reliably on every device (phone, tablet, laptop, desktop).
+          downloadBlob(blob, fileName);
+
+          // Then, if the device also supports the Web Share API with files,
+          // additionally offer the native share sheet (works on phones,
+          // tablets, and increasingly on desktop browsers with configured
+          // share targets like Mail, Nearby Share, WhatsApp, etc.).
+          const canUseShare = navigator.canShare && navigator.share &&
             (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
 
           if (canUseShare) {
@@ -593,18 +609,11 @@
                 title: 'DUNGZAK CESTLAVIE',
                 text: '등작 燈酌 — Digital Card'
               });
-              showToast('공유 완료 · Shared');
             } catch(err) {
-              if (err && err.name === 'AbortError') {
-                // User cancelled the share sheet on purpose — do nothing further.
-              } else {
-                // Share failed for another reason — fall back to a direct download
-                // so the image is still saved no matter what.
-                downloadBlob(blob, fileName);
-              }
+              // Silently ignore — the file is already safely downloaded above,
+              // so a cancelled or unsupported share isn't an error worth
+              // surfacing to the person.
             }
-          } else {
-            downloadBlob(blob, fileName);
           }
 
         } catch(err) {

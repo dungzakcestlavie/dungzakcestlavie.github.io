@@ -537,7 +537,7 @@
         backFace.style.visibility = prevBackVis;
         backFace.style.transform = prevBackTransform;
 
-        const needed = Math.max(frontH, backH) + 4; // small safety buffer
+        const needed = Math.max(frontH, backH) + 6; // small safety buffer
         const aspectHeight = stage.getBoundingClientRect().width / 1.6;
 
         stage.style.height = Math.max(needed, aspectHeight) + 'px';
@@ -556,6 +556,15 @@
       window.addEventListener('resize', scheduleFit);
       window.addEventListener('orientationchange', scheduleFit);
       fitCardHeight();
+
+      // Safety net: some mobile browsers (notably Safari) can resolve
+      // document.fonts.ready before the @import'd web fonts have actually
+      // swapped in, so the very first measurement can be based on the
+      // fallback font's (shorter) metrics. Re-measuring a couple more times
+      // shortly after load catches that late reflow.
+      setTimeout(fitCardHeight, 300);
+      setTimeout(fitCardHeight, 800);
+      setTimeout(fitCardHeight, 1500);
 
       const saveImgBtn = document.getElementById('saveImgBtn');
       const saveImgBtnKr = document.getElementById('saveImgBtnKr');

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>DUNGZAK CESTLAVIE — 등작 燈酌</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+  :root{
+    --bg:#e9e7e2;
+    --card:#fbfaf8;
+    --ink:#141414;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif;
+  }
+
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    overflow:hidden;
+  }
+
+  .stage{
+    width:340px;
+    max-width:90vw;
+    aspect-ratio: 1.6 / 1;
+    perspective: 1400px;
+  }
+
+  .card{
+    position:relative;
+    width:100%;
+    height:100%;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    cursor:pointer;
+  }
+
+  .card.flipped{
+    transform: rotateY(180deg);
+  }
+
+  .face{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    background:var(--card);
+    border-radius:6px;
+    box-shadow:
+      0 1px 2px rgba(20,20,20,0.06),
+      0 12px 28px rgba(20,20,20,0.14),
+      0 2px 6px rgba(20,20,20,0.08);
+    padding:26px 28px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .face.back{
+    transform: rotateY(180deg);
+  }
+
+  /* ---------- FRONT ---------- */
+
+  .front-top{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .mark-kr{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:600;
+    font-size:19px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+  }
+
+  .mark-en{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:14px;
+    letter-spacing:0.14em;
+    color:var(--ink);
+    opacity:0.72;
+    text-transform:uppercase;
+  }
+
+  .tagline{
+    margin-top:auto;
+    padding-top:18px;
+    text-align:right;
+    align-self:flex-end;
+    width:100%;
+  }
+
+  .tagline-kr{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:500;
+    font-size:15px;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+
+  .tagline-en{
+    margin-top:3px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--ink);
+    opacity:0.6;
+    letter-spacing:0.03em;
+  }
+
+  .front-bottom{
+    margin-top:auto;
+    padding-top:20px;
+    border-top:1px solid rgba(20,20,20,0.12);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .contact-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-family:'Noto Sans KR', sans-serif;
+  }
+
+  .contact-label{
+    font-family:'Cormorant Garamond', serif;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.16em;
+    opacity:0.5;
+    width:56px;
+    flex-shrink:0;
+    text-transform:uppercase;
+  }
+
+  .contact-row a{
+    color:var(--ink);
+    text-decoration:none;
+    font-size:13px;
+    font-weight:400;
+    letter-spacing:0.01em;
+    border-bottom:1px solid transparent;
+    transition:border-color 0.2s ease;
+    word-break:break-all;
+  }
+
+  .contact-row a:active{
+    border-bottom-color: rgba(20,20,20,0.4);
+  }
+
+  /* ---------- BACK ---------- */
+
+  .back{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+
+  .qr-block{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .qr-block.bottom-right{
+    align-self:flex-end;
+    flex-direction:row-reverse;
+    text-align:right;
+  }
+
+  .qr-block img{
+    width:64px;
+    height:64px;
+    display:block;
+    border-radius:2px;
+  }
+
+  .qr-text{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+    padding-top:2px;
+  }
+
+  .qr-label{
+    font-family:'Cormorant Garamond', serif;
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.16em;
+    opacity:0.5;
+    text-transform:uppercase;
+  }
+
+  .qr-sublabel{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:10.5px;
+    font-weight:400;
+    opacity:0.55;
+  }
+
+  .qr-url{
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+    margin-top:1px;
+  }
+
+  .qr-url:active{
+    border-bottom-color: rgba(20,20,20,0.4);
+  }
+
+  .back-hint{
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:10px;
+    opacity:0.32;
+    letter-spacing:0.06em;
+  }
+
+  /* ---------- SAVE / SHARE ---------- */
+
+  .wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+
+  .save-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    padding:6px 10px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:12.5px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+    opacity:0.55;
+    cursor:pointer;
+    transition:opacity 0.2s ease;
+  }
+
+  .save-btn:active{
+    opacity:0.9;
+  }
+
+  .save-btn svg{
+    width:13px;
+    height:13px;
+    flex-shrink:0;
+  }
+
+  .save-btn.busy{
+    opacity:0.3;
+    pointer-events:none;
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:36px;
+    transform:translateX(-50%) translateY(12px);
+    background:var(--ink);
+    color:var(--card);
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:20px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    white-space:nowrap;
+  }
+
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+  <div class="stage">
+    <div class="card" id="card">
+
+      <!-- FRONT -->
+      <div class="face front">
+        <div class="front-top">
+          <span class="mark-kr">등작 燈酌</span>
+          <span class="mark-en">DUNGZAK CESTLAVIE</span>
+        </div>
+
+        <div class="tagline">
+          <div class="tagline-kr">존재는 증명하지 않는다</div>
+          <div class="tagline-en">Existence Needs No Proof</div>
+        </div>
+
+        <div class="front-bottom">
+          <div class="contact-row">
+            <span class="contact-label">Mobile</span>
+            <a href="tel:+821034269915" onclick="event.stopPropagation()">+82 10 3426 9915</a>
+          </div>
+          <div class="contact-row">
+            <span class="contact-label">Email</span>
+            <a href="mailto:dungzakcestlavie@gmail.com" onclick="event.stopPropagation()">dungzakcestlavie@gmail.com</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK -->
+      <div class="face back">
+        <div class="qr-block top-left">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiCAIAAADS3EjhAAAFAklEQVR4nO3dQW4cNxBA0SjQJRLk/icL7CsI0iY3ICLQ30X2vLc1ptXdMx9cuEC+fX1+/AGU/py+AXg+mUFOZpCTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBjmZQU5mkHvf+fBff//zq+7jED9//Lv41+55u7+7vnLn1X4ba1YzyMkMcjKDnMwgJzPIyQxyMoOczCAnM8htTYGsTc0frE1NJ0zNeayv3H127dV+G1YzyMkMcjKDnMwgJzPIyQxyMoOczCAnM8iFUyBrU/tqdLqpiPW76uY8pjzvt2E1g5zMICczyMkMcjKDnMwgJzPIyQxyMoPc2BTIjW6cqFh73hOdyWoGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBjlTIN8wtUdFdzILv4fVDHIyg5zMICczyMkMcjKDnMwgJzPIyQxyY1MgN84udDtndHMeN06QnHlXO6xmkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpALp0Ced57IzkTF1GfP9LzfxprVDHIyg5zMICczyMkMcjKDnMwgJzPIyQxyb1+fH9P3wJVTETdOn0yxmkFOZpCTGeRkBjmZQU5mkJMZ5GQGOZlBbmsKZOock+c588yXnW9h6om6X87OE1nNICczyMkMcjKDnMwgJzPIyQxyMoOczCAX7gVy43TCmVe+0Y1vo9vdxGoGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBrmxKZDOzvzB1IzI2pmzKa/2nu0FAkeTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQe9/58JlzHt1nd668M2Fw474aa92MyJlvw2oGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBrlDT4S5cb6kc+PeGFP3vMNeIHAxmUFOZpCTGeRkBjmZQU5mkJMZ5GQGua0pkOdNCXRzAFNX7vgW/j+rGeRkBjmZQU5mkJMZ5GQGOZlBTmaQkxnktk6EWZuaTni1nTPWunNqpiYqundlLxC4mMwgJzPIyQxyMoOczCAnM8jJDHIyg1w4BdLNPXRzHmfuUDJ15TP35Djz21+zmkFOZpCTGeRkBjmZQU5mkJMZ5GQGOZlBLpwC6Uydn3LjBMnUzhndlXe+BSfCwGPJDHIyg5zMICczyMkMcjKDnMwgJzPIvX19fkzfwzWmzrjp3Hjmy42zOFYzyMkMcjKDnMwgJzPIyQxyMoOczCAnM8ht7QXyalMR3ZWn5i06U080dU7NmtUMcjKDnMwgJzPIyQxyMoOczCAnM8jJDHLhiTBnzi6cObnSzYhMPe+N3769QOBiMoOczCAnM8jJDHIyg5zMICczyMkMcuEUyFo3nfBq8wdTcx5nztOsTe3IYjWDnMwgJzPIyQxyMoOczCAnM8jJDHIyg9zYFMir2ZkhOPOUk50pkKlJnanJFasZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeRMgXzD1NkrZ05yrJ15V1OsZpCTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQG5sCOfPcls7OJMfUuzpzkmNqFmeH1QxyMoOczCAnM8jJDHIyg5zMICczyMkMcuEUyJn/H79jZ5JjaqeQtZ17nppcuXFnFKsZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeTevj4/pu8BHs5qBjmZQU5mkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQ+w+/44fEBBednwAAAABJRU5ErkJggg==" alt="dungzak.art QR code">
+          <div class="qr-text">
+            <span class="qr-label">Official Website</span>
+            <a class="qr-url" href="https://dungzak.art" target="_blank" rel="noopener" onclick="event.stopPropagation()">dungzak.art</a>
+          </div>
+        </div>
+
+        <div class="qr-block bottom-right">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiCAIAAADS3EjhAAAFHklEQVR4nO3dQW5bRxRFwSjIJhJk/ysLki0I0iQ7aMB+PnjNz6qpQZmUdNADXfT/+P76/A0o/b79BuD5ZAY5mUFOZpCTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBjmZQe6PyYv//OvvX/U+LvHfv/8c/vX8eSev3XJ+zxN3ft6JyffKaQY5mUFOZpCTGeRkBjmZQU5mkJMZ5GQGudEK5KxbGEy82zph8nknq5ezd/vdcJpBTmaQkxnkZAY5mUFOZpCTGeRkBjmZQS5cgZx1f3G/c2FwNnnPz7uh5Hm/G04zyMkMcjKDnMwgJzPIyQxyMoOczCAnM8itrUBeUXf7Rbd7eN5G5BU5zSAnM8jJDHIyg5zMICczyMkMcjKDnMwgZwXyAyariFdckPCrOM0gJzPIyQxyMoOczCAnM8jJDHIyg5zMILe2Annec1u6jci77Txe8XfjzGkGOZlBTmaQkxnkZAY5mUFOZpCTGeRkBrlwBfK87UL3dJV3uynkznfVcZpBTmaQkxnkZAY5mUFOZpCTGeRkBjmZQe7j++tz+z08RLcR6WwtV96N0wxyMoOczCAnM8jJDHIyg5zMICczyMkMcqO7QLqVwPPuiuieF9P9v5Ov3L3nrT3N5BM5zSAnM8jJDHIyg5zMICczyMkMcjKDnMwgt/ZEmO4mia07Krqdx/P2FluvPet+c5xmkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpAbPRHmzjsb7vSK25Szbrly570p7gKBq8kMcjKDnMwgJzPIyQxyMoOczCAnM8iN7gLZ2gF0i4o77/PY+m50uu/GnesipxnkZAY5mUFOZpCTGeRkBjmZQU5mkJMZ5EYrkG6dcOeiYrI/2NpqdHdjbLlzA3TmNIOczCAnM8jJDHIyg5zMICczyMkMcjKD3GgFcra1IdhaY9z5zJet5/Lc+WSWrd8NpxnkZAY5mUFOZpCTGeRkBjmZQU5mkJMZ5MIVyET3l/47n/kysfWVX/GpPZOvPPlETjPIyQxyMoOczCAnM8jJDHIyg5zMICczyIUrkDufrrJ1N8adm4mtncfW/SVbP32nGeRkBjmZQU5mkJMZ5GQGOZlBTmaQkxnkPr6/Pn/6xVsrgbNu2fCKq4it3UNnayMy4TSDnMwgJzPIyQxyMoOczCAnM8jJDHIyg9xoBfJu7lwYnN25ejm786aQCacZ5GQGOZlBTmaQkxnkZAY5mUFOZpCTGeRGT4R5xZskzu7cakzc+Ym6d7V1I8uZ0wxyMoOczCAnM8jJDHIyg5zMICczyMkMcqMVyNnW/uDszr1Fd7/F1lLnzp/+mbtA4IXJDHIyg5zMICczyMkMcjKDnMwgJzPIhSuQszvXGHfaevZK99p34zSDnMwgJzPIyQxyMoOczCAnM8jJDHIyg9zaCuR5Js8T6V571j0/pft/J7bes9MMcjKDnMwgJzPIyQxyMoOczCAnM8jJDHJWID9gssa488ksd97I8rxbRpxmkJMZ5GQGOZlBTmaQkxnkZAY5mUFOZpBbW4E877ktnXe7KeRsa9cy4TSDnMwgJzPIyQxyMoOczCAnM8jJDHIyg1y4Arnz7/ETkzXG5CtPdO/q/JW7lc8r/hScZpCTGeRkBjmZQU5mkJMZ5GQGOZlBTmaQ+/j++tx+D/BwTjPIyQxyMoOczCAnM8jJDHIyg5zMICczyMkMcjKDnMwgJzPIyQxyMoOczCAnM8jJDHIyg9z/fdeAQkI3tqQAAAAASUVORK5CYII=" alt="dungzaklab.art/app QR code">
+          <div class="qr-text">
+            <span class="qr-label">Archive Pro App</span>
+            <span class="qr-sublabel">Original Artist Edition</span>
+            <a class="qr-url" href="https://dungzaklab.art/app" target="_blank" rel="noopener" onclick="event.stopPropagation()">dungzaklab.art/app</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12"/>
+      <path d="M7 10l5 5 5-5"/>
+      <path d="M5 19h14"/>
+    </svg>
+    <span id="saveBtnLabel">이미지 저장 · 공유</span>
+  </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    (function(){
+      const card = document.getElementById('card');
+      card.addEventListener('click', function(){
+        card.classList.toggle('flipped');
+      });
+
+      const saveBtn = document.getElementById('saveBtn');
+      const saveBtnLabel = document.getElementById('saveBtnLabel');
+      const toastEl = document.getElementById('toast');
+      let toastTimer = null;
+
+      function showToast(msg){
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){
+          toastEl.classList.remove('show');
+        }, 2200);
+      }
+
+      saveBtn.addEventListener('click', async function(e){
+        e.stopPropagation();
+        if (saveBtn.classList.contains('busy')) return;
+        saveBtn.classList.add('busy');
+        const originalLabel = saveBtnLabel.textContent;
+        saveBtnLabel.textContent = '이미지 생성 중...';
+
+        try {
+          const activeFace = card.classList.contains('flipped')
+            ? card.querySelector('.face.back')
+            : card.querySelector('.face.front');
+
+          const canvas = await html2canvas(activeFace, {
+            backgroundColor: '#fbfaf8',
+            scale: 3,
+            useCORS: true,
+            onclone: function(clonedDoc, el){
+              el.style.transform = 'none';
+              el.style.position = 'static';
+              el.style.boxShadow = 'none';
+            }
+          });
+
+          canvas.toBlob(async function(blob){
+            if (!blob) {
+              showToast('이미지 생성에 실패했습니다');
+              saveBtn.classList.remove('busy');
+              saveBtnLabel.textContent = originalLabel;
+              return;
+            }
+
+            const fileName = 'dungzak-card-' + (card.classList.contains('flipped') ? 'back' : 'front') + '.png';
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            const canUseShare = navigator.canShare && navigator.share &&
+              (function(){ try { return navigator.canShare({ files: [file] }); } catch(err){ return false; } })();
+
+            if (canUseShare) {
+              try {
+                await navigator.share({
+                  files: [file],
+                  title: 'DUNGZAK CESTLAVIE',
+                  text: '등작 燈酌 — Digital Card'
+                });
+                showToast('공유 완료');
+              } catch(err) {
+                if (err && err.name !== 'AbortError') {
+                  showToast('공유가 취소되었습니다');
+                }
+              }
+            } else {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = fileName;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+              showToast('이미지가 저장되었습니다');
+            }
+
+            saveBtn.classList.remove('busy');
+            saveBtnLabel.textContent = originalLabel;
+          }, 'image/png');
+
+        } catch(err) {
+          showToast('오류가 발생했습니다');
+          saveBtn.classList.remove('busy');
+          saveBtnLabel.textContent = originalLabel;
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

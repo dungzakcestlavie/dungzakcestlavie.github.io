@@ -502,9 +502,60 @@
   <script>
     (function(){
       const card = document.getElementById('card');
+      const stage = document.querySelector('.stage');
+      const frontFace = document.querySelector('.face.front');
+      const backFace = document.querySelector('.face.back');
+
       card.addEventListener('click', function(){
         card.classList.toggle('flipped');
       });
+
+      // Measure how tall the front and back content actually need to be at
+      // the CURRENT screen width, and size the card to fit the taller one —
+      // with a small safety buffer. This replaces guessing at clamp()
+      // values by hand, which kept being slightly wrong on some phones and
+      // letting text spill past the card's bottom edge.
+      function fitCardHeight(){
+        const prevFrontPos = frontFace.style.position;
+        const prevBackPos = backFace.style.position;
+        const prevFrontVis = frontFace.style.visibility;
+        const prevBackVis = backFace.style.visibility;
+        const prevBackTransform = backFace.style.transform;
+
+        frontFace.style.position = 'static';
+        frontFace.style.visibility = 'hidden';
+        backFace.style.position = 'static';
+        backFace.style.visibility = 'hidden';
+        backFace.style.transform = 'none';
+
+        const frontH = frontFace.offsetHeight;
+        const backH = backFace.offsetHeight;
+
+        frontFace.style.position = prevFrontPos;
+        frontFace.style.visibility = prevFrontVis;
+        backFace.style.position = prevBackPos;
+        backFace.style.visibility = prevBackVis;
+        backFace.style.transform = prevBackTransform;
+
+        const needed = Math.max(frontH, backH) + 4; // small safety buffer
+        const aspectHeight = stage.getBoundingClientRect().width / 1.6;
+
+        stage.style.height = Math.max(needed, aspectHeight) + 'px';
+      }
+
+      let fitResizeTimer = null;
+      function scheduleFit(){
+        clearTimeout(fitResizeTimer);
+        fitResizeTimer = setTimeout(fitCardHeight, 80);
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitCardHeight);
+      }
+      window.addEventListener('load', fitCardHeight);
+      window.addEventListener('resize', scheduleFit);
+      window.addEventListener('orientationchange', scheduleFit);
+      fitCardHeight();
 
       const saveImgBtn = document.getElementById('saveImgBtn');
       const saveImgBtnKr = document.getElementById('saveImgBtnKr');

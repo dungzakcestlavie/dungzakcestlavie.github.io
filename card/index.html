@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
 <title>DUNGZAK CESTLAVIE — 등작 燈酌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,600;0,800;1,600&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&display=swap');
 
   :root{
     --bg:#e9e7e2;
@@ -265,15 +267,6 @@
     border-bottom-color: rgba(20,20,20,0.4);
   }
 
-  .back-hint{
-    text-align:center;
-    font-family:'Cormorant Garamond', serif;
-    font-style:italic;
-    font-size:15px;
-    opacity:0.32;
-    letter-spacing:0.06em;
-  }
-
   /* ---------- FLIP HINT ---------- */
 
   .flip-hint{
@@ -498,7 +491,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     (function(){
       const card = document.getElementById('card');
@@ -558,7 +550,7 @@
       fitCardHeight();
 
       // Safety net: some mobile browsers (notably Safari) can resolve
-      // document.fonts.ready before the @import'd web fonts have actually
+      // document.fonts.ready before the linked web fonts have actually
       // swapped in, so the very first measurement can be based on the
       // fallback font's (shorter) metrics. Re-measuring a couple more times
       // shortly after load catches that late reflow.
@@ -620,7 +612,25 @@
         }
       }
 
+      // Load html2canvas only when someone actually taps Save/Share, instead
+      // of on every single page visit — most people just view the card and
+      // never touch these buttons, so this keeps the initial page fast.
+      let html2canvasLoadPromise = null;
+      function ensureHtml2Canvas(){
+        if (window.html2canvas) return Promise.resolve();
+        if (html2canvasLoadPromise) return html2canvasLoadPromise;
+        html2canvasLoadPromise = new Promise(function(resolve, reject){
+          const s = document.createElement('script');
+          s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+        return html2canvasLoadPromise;
+      }
+
       async function renderActiveFaceToBlob(){
+        await ensureHtml2Canvas();
         const activeFace = card.classList.contains('flipped')
           ? card.querySelector('.face.back')
           : card.querySelector('.face.front');

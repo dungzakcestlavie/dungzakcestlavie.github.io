@@ -32669,6 +32669,21 @@
   "year": "",
   "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/OR-2178.jpg",
   "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/OR-2178.jpg"
+},
+{
+  "id": "OR-2179",
+  "section_id": 0,
+  "section_kr": "A 기원",
+  "section_en": "Origins",
+  "title_kr": "",
+  "title_en": "",
+  "material_kr": "",
+  "material_en": "",
+  "size_kr": "",
+  "size_en": "",
+  "year": "",
+  "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/OR-2179.jpg",
+  "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/OR-2179.jpg"
 },    
     {
       "id": "DZ-001",
@@ -35186,6 +35201,22 @@
       "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/wl07.jpg",
       "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/wl07.jpg",
       "status": "available"
-    }
+    },
+ {
+  "id": "wl08",
+  "section_id": 6,
+  "section_kr": "VI 빛의 파도",
+  "section_en": "VI Waves of Light",
+  "title_kr": "우리 마음의 빛깔",
+  "title_en": "The Hues of Our Hearts",
+  "material_kr": "캔버스에 아크릴",
+  "material_en": "Acrylic on canvas",
+  "size_kr": "162.2 × 130.3 cm",
+  "size_en": "162.2 × 130.3 cm",
+  "year": 2026,
+  "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/wl08.jpg",
+  "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/wl08.jpg",
+  "status": "available"
+}   
   ]
 }

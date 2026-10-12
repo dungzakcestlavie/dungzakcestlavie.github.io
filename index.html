@@ -3052,31 +3052,28 @@ html:not(.is-ipad) [data-viewer-close]{
       #bio-modal .bio-head,#bio-modal .bio-close,#bio-modal .bio-lang,#bio-modal .bio-lang button{touch-action:manipulation !important;}
     }
 
-  
-    /* Works-only native document scrollbar. Desktop mouse/trackpad only.
-       Keep the existing document scroll; never introduce a second scroll area. */
-    @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
-      /* Standards-based scrollbar styling (modern Chrome, Edge, Firefox). */
-      html:has(body #works.is-active) {
-        scrollbar-width: thin;
-        scrollbar-color: #D7B86A rgba(7, 10, 20, .72);
+
+    /* DZ WORKS PC SCROLLBAR — visual overlay; native document scroll stays intact. */
+    #dz-works-scrollbar { display:none; }
+    @media (min-width:1024px) and (hover:hover) and (pointer:fine) {
+      #dz-works-scrollbar.is-visible {
+        display:block; position:fixed; z-index:19;
+        right:4px; top:104px; bottom:18px; width:12px;
+        border-radius:999px; background:rgba(7,10,20,.78);
+        box-shadow:inset 0 0 0 1px rgba(215,184,106,.25);
+        cursor:pointer; touch-action:none; user-select:none;
       }
-      /* WebKit/Blink implementation where vendor pseudo-elements apply. */
-      html:has(body #works.is-active)::-webkit-scrollbar {
-        width: 6px;
-        background: rgba(7, 10, 20, .72);
+      #dz-works-scrollbar-thumb {
+        position:absolute; left:3px; top:0; width:6px; min-height:36px;
+        border-radius:999px; background:rgba(215,184,106,.92);
+        transition:background-color .16s ease;
+        pointer-events:none;
       }
-      html:has(body #works.is-active)::-webkit-scrollbar-track {
-        background: rgba(7, 10, 20, .72);
-        border-radius: 999px;
+      #dz-works-scrollbar:hover #dz-works-scrollbar-thumb,
+      #dz-works-scrollbar.is-dragging #dz-works-scrollbar-thumb {
+        background:#E9D59B;
       }
-      html:has(body #works.is-active)::-webkit-scrollbar-thumb {
-        background: #D7B86A;
-        border-radius: 999px;
-      }
-      html:has(body #works.is-active)::-webkit-scrollbar-thumb:hover {
-        background: #E9D59B;
-      }
+      #dz-works-scrollbar:focus-visible { outline:2px solid #E9D59B; outline-offset:2px; }
     }
   </style>
 
@@ -5863,5 +5860,118 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 })();
 </script>
 
+
+<script>
+/* DZ WORKS PC: draggable visible scrollbar controlling the existing PAGE scroll. */
+(() => {
+  'use strict';
+  const works = document.getElementById('works');
+  if (!works) return;
+  const mq = window.matchMedia('(min-width:1024px) and (hover:hover) and (pointer:fine)');
+  const track = document.createElement('div');
+  track.id = 'dz-works-scrollbar';
+  track.setAttribute('role', 'scrollbar');
+  track.setAttribute('aria-label', 'Works 작품 목록 스크롤');
+  track.setAttribute('aria-orientation', 'vertical');
+  track.setAttribute('aria-valuemin', '0');
+  track.setAttribute('aria-valuemax', '100');
+  track.tabIndex = 0;
+  const thumb = document.createElement('div');
+  thumb.id = 'dz-works-scrollbar-thumb';
+  track.appendChild(thumb);
+  document.body.appendChild(track);
+
+  let scheduled = false, dragId = null, dragOffset = 0;
+  const scroller = () => document.scrollingElement || document.documentElement;
+  function hiddenByOverlay() {
+    return document.body.classList.contains('modal-open') ||
+      document.body.classList.contains('viewer-open') ||
+      !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
+  }
+  function measure() {
+    const page = scroller();
+    const max = Math.max(0, page.scrollHeight - page.clientHeight);
+    const visible = mq.matches && works.classList.contains('is-active') &&
+      !hiddenByOverlay() && max > 1;
+    track.classList.toggle('is-visible', visible);
+    track.setAttribute('aria-hidden', String(!visible));
+    track.tabIndex = visible ? 0 : -1;
+    if (!visible) return null;
+    const h = track.clientHeight;
+    if (h <= 0) return null;
+    const thumbH = Math.min(h, Math.max(36, h * page.clientHeight / page.scrollHeight));
+    const travel = Math.max(0, h - thumbH);
+    thumb.style.height = thumbH + 'px';
+    thumb.style.transform = `translateY(${travel * page.scrollTop / max}px)`;
+    track.setAttribute('aria-valuenow', String(Math.round(100 * page.scrollTop / max)));
+    return {page, max, thumbH, travel};
+  }
+  function update() { scheduled = false; measure(); }
+  function requestUpdate() {
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
+  }
+  function scrollToThumb(top, metrics) {
+    if (!metrics || metrics.travel <= 0) return;
+    metrics.page.scrollTop = Math.max(0, Math.min(metrics.travel, top)) / metrics.travel * metrics.max;
+    requestUpdate();
+  }
+  track.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || !track.classList.contains('is-visible')) return;
+    const m = measure();
+    if (!m) return;
+    e.preventDefault();
+    const rect = track.getBoundingClientRect();
+    const currentThumbTop = m.max ? m.travel * m.page.scrollTop / m.max : 0;
+    const y = e.clientY - rect.top;
+    // Clicking the thumb preserves the grab offset; clicking the track jumps to that position.
+    dragOffset = (y >= currentThumbTop && y <= currentThumbTop + m.thumbH)
+      ? y - currentThumbTop : m.thumbH / 2;
+    dragId = e.pointerId;
+    track.classList.add('is-dragging');
+    track.setPointerCapture(e.pointerId);
+    scrollToThumb(y - dragOffset, m);
+  });
+  track.addEventListener('pointermove', e => {
+    if (e.pointerId !== dragId) return;
+    const m = measure();
+    if (!m) return;
+    scrollToThumb(e.clientY - track.getBoundingClientRect().top - dragOffset, m);
+  });
+  function stopDrag(e) {
+    if (e.pointerId !== dragId) return;
+    dragId = null;
+    track.classList.remove('is-dragging');
+    if (track.hasPointerCapture(e.pointerId)) track.releasePointerCapture(e.pointerId);
+  }
+  track.addEventListener('pointerup', stopDrag);
+  track.addEventListener('pointercancel', stopDrag);
+  track.addEventListener('lostpointercapture', e => {
+    if (e.pointerId === dragId) { dragId = null; track.classList.remove('is-dragging'); }
+  });
+  track.addEventListener('keydown', e => {
+    if (!track.classList.contains('is-visible')) return;
+    const m = measure(); if (!m) return;
+    const small = 48, big = Math.max(100, m.page.clientHeight * .85);
+    const steps = {ArrowDown:small, ArrowUp:-small, PageDown:big, PageUp:-big};
+    if (e.key in steps) { e.preventDefault(); m.page.scrollTop += steps[e.key]; }
+    else if (e.key === 'Home') { e.preventDefault(); m.page.scrollTop = 0; }
+    else if (e.key === 'End') { e.preventDefault(); m.page.scrollTop = m.max; }
+    requestUpdate();
+  });
+  window.addEventListener('scroll', requestUpdate, {passive:true});
+  window.addEventListener('resize', requestUpdate, {passive:true});
+  if (mq.addEventListener) mq.addEventListener('change', requestUpdate);
+  else if (mq.addListener) mq.addListener(requestUpdate);
+  new MutationObserver(requestUpdate).observe(works, {attributes:true, attributeFilter:['class']});
+  new MutationObserver(requestUpdate).observe(document.body, {attributes:true, attributeFilter:['class']});
+  // Grid changes after lazy loading; watch sizes without affecting layout.
+  if ('ResizeObserver' in window) {
+    const observer = new ResizeObserver(requestUpdate);
+    observer.observe(document.documentElement);
+    observer.observe(works);
+  }
+  requestUpdate();
+})();
+</script>
 </body>
 </html>

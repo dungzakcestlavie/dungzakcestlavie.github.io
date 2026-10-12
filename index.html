@@ -3053,7 +3053,7 @@ html:not(.is-ipad) [data-viewer-close]{
     }
 
   
-/* DZ WORKS + REPORTS PC SCROLLBAR v5 — one shared rail, native scrolling retained. */
+/* DZ WORKS + REPORTS PC SCROLLBAR v6 — one shared rail, native scrolling retained. */
 #dz-works-scrollbar { display: none; }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   #dz-works-scrollbar[data-visible="true"] {
@@ -3071,6 +3071,13 @@ html:not(.is-ipad) [data-viewer-close]{
     user-select: none;
     touch-action: none;
   }
+  #dz-works-scrollbar[data-scrollable="false"] {
+    cursor: default;
+    background: rgba(12, 15, 24, .27);
+  }
+  #dz-works-scrollbar[data-scrollable="false"] .dz-works-scrollbar-thumb {
+    background: rgba(215, 184, 106, .30);
+  }
   #dz-works-scrollbar .dz-works-scrollbar-thumb {
     position: absolute;
     top: 0;
@@ -3081,7 +3088,7 @@ html:not(.is-ipad) [data-viewer-close]{
     background: rgba(215, 184, 106, .53);
     pointer-events: none;
   }
-  #dz-works-scrollbar:hover .dz-works-scrollbar-thumb,
+  #dz-works-scrollbar[data-scrollable="true"]:hover .dz-works-scrollbar-thumb,
   #dz-works-scrollbar[data-dragging="true"] .dz-works-scrollbar-thumb {
     background: rgba(215, 184, 106, .78);
   }
@@ -5890,8 +5897,10 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   const desktop = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
   const rail = document.createElement('div');
   rail.id = 'dz-works-scrollbar';
-  rail.dataset.revision = '20261013-v5-works-reports';
+  rail.dataset.revision = '20261013-v6-reports-visible';
   rail.dataset.visible = 'false';
+  rail.dataset.scrollable = 'false';
+  rail.setAttribute('aria-disabled', 'true');
   rail.setAttribute('role', 'scrollbar');
   rail.setAttribute('aria-label', 'Works 작품 목록 스크롤');
   rail.setAttribute('aria-orientation', 'vertical');
@@ -5938,23 +5947,35 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     const reportsActive = reports.classList.contains('is-active');
     const active = desktop.matches && (worksActive || reportsActive) && !blocked();
     const m = active ? geometry(host()) : null;
-    const visible = !!m && m.max > 2;
+    const scrollable = !!m && m.max > 2;
+    // Reports needs a visible rail even on short pages, otherwise it appears
+    // "missing" after navigation. A short-page indicator is explicitly disabled.
+    const visible = !!m && (scrollable || reportsActive);
     rail.dataset.visible = String(visible);
+    rail.dataset.scrollable = String(scrollable);
     rail.setAttribute('aria-hidden', String(!visible));
-    rail.tabIndex = visible ? 0 : -1;
-    if (visible) rail.setAttribute('aria-label', reportsActive ? 'Reports 보고서 목록 스크롤' : 'Works 작품 목록 스크롤');
+    rail.setAttribute('aria-disabled', String(!scrollable));
+    rail.tabIndex = scrollable ? 0 : -1;
     if (!visible) return null;
+    rail.setAttribute('aria-label', reportsActive ? 'Reports 보고서 목록 스크롤' : 'Works 작품 목록 스크롤');
+    rail.title = scrollable ? '' : '현재 화면에서 스크롤할 내용이 없습니다';
     const railHeight = rail.clientHeight;
     if (railHeight <= 0) return null;
-    // Genuine scrollbar thumb: page viewport / total content, minimum 42px.
-    const thumbHeight = clamp(railHeight * m.viewport / m.content, 42, railHeight);
-    const travel = Math.max(0, railHeight - thumbHeight);
-    const top = clamp(m.scroller.scrollTop, 0, m.max);
+    // Use true viewport/document geometry for scrollable pages.
+    // With no overflow, show a small muted, disabled indicator instead of
+    // a misleading full-height bright thumb; never create artificial scrolling.
+    const thumbHeight = scrollable
+      ? clamp(railHeight * m.viewport / m.content, 42, railHeight)
+      : 48;
+    const travel = scrollable ? Math.max(0, railHeight - thumbHeight) : 0;
+    const top = scrollable ? clamp(m.scroller.scrollTop, 0, m.max) : 0;
+    const thumbY = scrollable && m.max > 0 ? travel * top / m.max : 0;
     thumb.style.height = thumbHeight + 'px';
-    thumb.style.transform = `translate3d(0, ${travel * top / m.max}px, 0)`;
+    thumb.style.transform = `translate3d(0, ${thumbY}px, 0)`;
     rail.setAttribute('aria-valuemax', String(Math.round(m.max)));
     rail.setAttribute('aria-valuenow', String(Math.round(top)));
     rail.dataset.scrollHost = m.scroller === document.body ? 'body' : 'root';
+    if (!scrollable) return null;
     return {...m, railHeight, thumbHeight, travel, top};
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(update); }
@@ -6018,6 +6039,8 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   document.addEventListener('scroll', schedule, {passive:true, capture:true});
   window.addEventListener('scroll', schedule, {passive:true});
   window.addEventListener('resize', schedule, {passive:true});
+  window.addEventListener('load', schedule, {passive:true});
+  window.addEventListener('pageshow', schedule, {passive:true});
   if (desktop.addEventListener) desktop.addEventListener('change', schedule);
   else desktop.addListener(schedule);
   new MutationObserver(schedule).observe(works, {attributes:true, attributeFilter:['class']});

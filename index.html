@@ -5897,7 +5897,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   const desktop = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
   const rail = document.createElement('div');
   rail.id = 'dz-works-scrollbar';
-  rail.dataset.revision = '20261013-v6-reports-visible';
+  rail.dataset.revision = '20261013-v7-origin-precision';
   rail.dataset.visible = 'false';
   rail.dataset.scrollable = 'false';
   rail.setAttribute('aria-disabled', 'true');
@@ -5917,6 +5917,13 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   let pointerId = null;
   let pointerOffset = 0;
   let dragHost = null;
+  let originPointerY = null;
+  // Origins only: a long archive needs fine control when dragging its thumb.
+  // Wheel/trackpad, keyboard and other Works panels keep their existing behavior.
+  const ORIGIN_DRAG_FACTOR = .18;
+  const ORIGIN_MAX_PX_PER_POINTER_PX = 36;
+  const originsActive = () => works.classList.contains('is-active') &&
+    document.getElementById('panel-origin')?.classList.contains('active');
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   const viewportHeight = () => document.documentElement.clientHeight || innerHeight;
 
@@ -5999,18 +6006,42 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     dragHost = m.scroller;
     rail.dataset.dragging = 'true';
     rail.setPointerCapture(event.pointerId);
-    seek(localY - pointerOffset, m);
+    if (originsActive()) {
+      originPointerY = event.clientY;
+      // Track clicks move by one viewing step, not hundreds of artworks.
+      if (localY < thumbY || localY > thumbY + m.thumbHeight) {
+        const direction = localY < thumbY ? -1 : 1;
+        m.scroller.scrollTop = clamp(m.top + direction * m.viewport * .85, 0, m.max);
+        schedule();
+      }
+    } else {
+      originPointerY = null;
+      seek(localY - pointerOffset, m);
+    }
   });
   rail.addEventListener('pointermove', event => {
     if (event.pointerId !== pointerId) return;
     const m = update();
     if (!m || m.scroller !== dragHost) return;
-    seek(event.clientY - rail.getBoundingClientRect().top - pointerOffset, m);
+    if (originsActive()) {
+      // Incremental relative drag remains precise even while Origins cards
+      // are being added and the document height grows dynamically.
+      const deltaY = event.clientY - (originPointerY ?? event.clientY);
+      originPointerY = event.clientY;
+      const normalPixels = m.max / Math.max(1, m.travel);
+      const finePixels = Math.max(1, Math.min(
+        normalPixels * ORIGIN_DRAG_FACTOR, ORIGIN_MAX_PX_PER_POINTER_PX));
+      m.scroller.scrollTop = clamp(m.top + deltaY * finePixels, 0, m.max);
+      schedule();
+    } else {
+      seek(event.clientY - rail.getBoundingClientRect().top - pointerOffset, m);
+    }
   });
   function release(event) {
     if (event.pointerId !== pointerId) return;
     pointerId = null;
     dragHost = null;
+    originPointerY = null;
     delete rail.dataset.dragging;
     if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
   }
@@ -6020,6 +6051,7 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
     if (event.pointerId === pointerId) {
       pointerId = null;
       dragHost = null;
+      originPointerY = null;
       delete rail.dataset.dragging;
     }
   });

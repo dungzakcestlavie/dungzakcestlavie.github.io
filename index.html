@@ -3052,6 +3052,33 @@ html:not(.is-ipad) [data-viewer-close]{
       #bio-modal .bio-head,#bio-modal .bio-close,#bio-modal .bio-lang,#bio-modal .bio-lang button{touch-action:manipulation !important;}
     }
 
+  
+    /* DUNGZAK.ART — Works document scrollbar, desktop pointer only.
+       No extra scroll container, layout, JS or mobile UI modifications.
+       Native OS scrollbar auto-hide settings may override visibility. */
+    @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+      html:has(#works.is-active)::-webkit-scrollbar {
+        width: 6px;
+      }
+      html:has(#works.is-active)::-webkit-scrollbar-track {
+        background: rgba(7, 10, 20, .72);
+        border-radius: 999px;
+      }
+      html:has(#works.is-active)::-webkit-scrollbar-thumb {
+        background: rgba(215, 184, 106, .82);
+        border-radius: 999px;
+      }
+      html:has(#works.is-active)::-webkit-scrollbar-thumb:hover {
+        background: rgba(233, 213, 155, .96);
+      }
+      /* Firefox supports a native thin scrollbar rather than exact pixel width. */
+      @supports (-moz-appearance: none) {
+        html:has(#works.is-active) {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(215, 184, 106, .82) rgba(7, 10, 20, .72);
+        }
+      }
+    }
   </style>
 
 </head>

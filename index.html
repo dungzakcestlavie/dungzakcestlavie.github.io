@@ -3053,38 +3053,43 @@ html:not(.is-ipad) [data-viewer-close]{
     }
 
   
-/* DUNGZAK WORKS: desktop-only visible draggable document-scroll control. */
-#dz-desktop-works-rail { display:none !important; }
-@media (min-width:1024px) and (pointer:fine) {
-  #dz-desktop-works-rail[data-open="true"] {
-    display:block !important;
-    position:fixed !important;
-    z-index:2147480000 !important;
-    right:6px !important;
-    top:105px !important;
-    bottom:20px !important;
-    width:12px !important;
-    box-sizing:border-box !important;
-    border-radius:9px !important;
-    background:rgba(7,10,20,.76) !important;
-    box-shadow:inset 0 0 0 1px rgba(215,184,106,.3) !important;
-    cursor:pointer !important;
-    user-select:none !important;
-    touch-action:none !important;
+/* DZ WORKS SCROLLBAR v3 — only desktop Works; no change to document overflow. */
+#dz-works-scrollbar { display: none; }
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  #dz-works-scrollbar[data-visible="true"] {
+    position: fixed;
+    display: block;
+    top: 108px;
+    bottom: 96px; /* Avoid the existing sound orb at lower-right. */
+    right: 8px;
+    width: 13px;
+    z-index: 80; /* Below existing lightbox (9999). */
+    border-radius: 9px;
+    background: rgba(8, 11, 21, .86);
+    box-shadow: inset 0 0 0 1px rgba(215, 184, 106, .40);
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
   }
-  #dz-desktop-works-rail .dz-scroll-thumb {
-    display:block !important;
-    position:absolute !important;
-    top:0; left:3px; width:6px; min-height:36px;
-    border-radius:8px;
-    background:#D7B86A;
-    box-shadow:0 0 0 1px rgba(0,0,0,.35);
-    pointer-events:none;
-    will-change:transform;
+  #dz-works-scrollbar .dz-works-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 3px;
+    width: 7px;
+    min-height: 44px;
+    border-radius: 8px;
+    background: #D7B86A;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.30);
+    pointer-events: none;
   }
-  #dz-desktop-works-rail:hover .dz-scroll-thumb,
-  #dz-desktop-works-rail[data-dragging="true"] .dz-scroll-thumb {background:#E9D59B;}
-  #dz-desktop-works-rail:focus-visible {outline:2px solid #E9D59B;outline-offset:2px;}
+  #dz-works-scrollbar:hover .dz-works-scrollbar-thumb,
+  #dz-works-scrollbar[data-dragging="true"] .dz-works-scrollbar-thumb {
+    background: #E9D59B;
+  }
+  #dz-works-scrollbar:focus-visible {
+    outline: 2px solid #E9D59B;
+    outline-offset: 2px;
+  }
 }
 </style>
 
@@ -5872,96 +5877,140 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 </script>
 
 
+
 <script>
-/* DZ: Standalone PC Works scrollbar; controls document.scrollingElement only. */
+/* DZ WORKS SCROLLBAR v3 — single owner. The actual scroll host may be BODY,
+   even when document.scrollingElement reports HTML (overflow-x:hidden + 100% height). */
 (() => {
   'use strict';
   const works = document.getElementById('works');
-  if (!works || document.getElementById('dz-desktop-works-rail')) return;
-  const mq = window.matchMedia('(min-width:1024px) and (pointer:fine)');
+  if (!works || document.getElementById('dz-works-scrollbar')) return;
+  const pc = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
   const rail = document.createElement('div');
-  rail.id = 'dz-desktop-works-rail';
-  rail.setAttribute('role','scrollbar');
-  rail.setAttribute('aria-label','작품 아카이브 스크롤');
-  rail.setAttribute('aria-orientation','vertical');
-  rail.setAttribute('aria-valuemin','0');
-  rail.setAttribute('aria-valuemax','100');
-  rail.dataset.open = 'false';
+  rail.id = 'dz-works-scrollbar';
+  rail.dataset.revision = '20261013-v3';
+  rail.dataset.visible = 'false';
+  rail.setAttribute('role', 'scrollbar');
+  rail.setAttribute('aria-label', 'Works 작품 목록 스크롤');
+  rail.setAttribute('aria-orientation', 'vertical');
+  rail.setAttribute('aria-valuemin', '0');
+  rail.setAttribute('aria-hidden', 'true');
   rail.tabIndex = -1;
   const thumb = document.createElement('div');
-  thumb.className = 'dz-scroll-thumb';
+  thumb.className = 'dz-works-scrollbar-thumb';
+  thumb.setAttribute('aria-hidden', 'true');
   rail.appendChild(thumb);
   document.body.appendChild(rail);
-  let frame = 0, grabbed = null, offset = 0;
-  const scrollElement = () => document.scrollingElement || document.documentElement;
-  const blocked = () => document.body.classList.contains('viewer-open') ||
-    document.body.classList.contains('modal-open') ||
-    !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
-  function measure() {
-    const visible = mq.matches && works.classList.contains('is-active') && !blocked();
-    rail.dataset.open = String(visible);
-    rail.setAttribute('aria-hidden',String(!visible));
+
+  let pending = 0, draggingId = null, dragOffset = 0;
+  const maxScroll = el => Math.max(0, el.scrollHeight - el.clientHeight);
+  function scrollHost() {
+    const body = document.body;
+    const root = document.scrollingElement || document.documentElement;
+    // Prefer whichever element is actually moving, not simply scrollingElement.
+    if (body.scrollTop > 0 && maxScroll(body) > 1) return body;
+    if (root.scrollTop > 0 && maxScroll(root) > 1) return root;
+    // This site's BODY is an independent scroll container on PC.
+    const by = getComputedStyle(body).overflowY;
+    if (maxScroll(body) > 1 && /^(auto|scroll|overlay)$/.test(by)) return body;
+    if (maxScroll(root) > 1) return root;
+    return maxScroll(body) > 1 ? body : root;
+  }
+  function blocked() {
+    return document.body.classList.contains('modal-open') ||
+      document.body.classList.contains('viewer-open') ||
+      !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
+  }
+  function sync() {
+    pending = 0;
+    const eligible = pc.matches && works.classList.contains('is-active') && !blocked();
+    const el = eligible ? scrollHost() : null;
+    const max = el ? maxScroll(el) : 0;
+    const visible = eligible && max > 1;
+    rail.dataset.visible = String(visible);
+    rail.setAttribute('aria-hidden', String(!visible));
     rail.tabIndex = visible ? 0 : -1;
     if (!visible) return null;
-    const sc = scrollElement();
-    const max = Math.max(0, sc.scrollHeight - sc.clientHeight);
-    const height = rail.getBoundingClientRect().height;
+    const height = rail.clientHeight;
     if (!height) return null;
-    const size = max ? Math.min(height,Math.max(36,height*sc.clientHeight/sc.scrollHeight)) : height;
-    const travel = Math.max(0,height-size);
-    thumb.style.height = size+'px';
-    thumb.style.transform='translate3d(0,'+(max ? travel*Math.min(max,sc.scrollTop)/max : 0)+'px,0)';
-    rail.setAttribute('aria-valuenow',String(max ? Math.round(100*sc.scrollTop/max) : 0));
-    return {sc,max,travel,size};
+    const thumbHeight = Math.min(height, Math.max(44, height * el.clientHeight / el.scrollHeight));
+    const travel = Math.max(0, height - thumbHeight);
+    thumb.style.height = thumbHeight + 'px';
+    thumb.style.transform = 'translateY(' + (travel * Math.min(max, Math.max(0, el.scrollTop)) / max) + 'px)';
+    rail.setAttribute('aria-valuemax', String(Math.round(max)));
+    rail.setAttribute('aria-valuenow', String(Math.round(el.scrollTop)));
+    return { el, max, travel, thumbHeight };
   }
-  function update(){frame=0;measure();}
-  function refresh(){if(!frame) frame=requestAnimationFrame(update);}
-  function move(y, m){if(!m || !m.travel)return;
-    m.sc.scrollTop=Math.max(0,Math.min(m.travel,y))/m.travel*m.max;refresh();}
-  rail.addEventListener('pointerdown',e=>{
-    if(e.button!==0 || rail.dataset.open!=='true')return;
-    const m=measure();if(!m)return;
-    e.preventDefault();
-    const y=e.clientY-rail.getBoundingClientRect().top;
-    const current=m.max ? m.travel*m.sc.scrollTop/m.max : 0;
-    offset=(y>=current && y<=current+m.size)? y-current : m.size/2;
-    grabbed=e.pointerId;
-    rail.dataset.dragging='true';
-    rail.setPointerCapture(e.pointerId);
-    move(y-offset,m);
+  function schedule() {
+    if (!pending) pending = requestAnimationFrame(sync);
+  }
+  function seek(pixel, m) {
+    if (!m || !m.travel) return;
+    m.el.scrollTop = Math.max(0, Math.min(m.travel, pixel)) / m.travel * m.max;
+    schedule();
+  }
+  rail.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || rail.dataset.visible !== 'true') return;
+    const m = sync();
+    if (!m) return;
+    event.preventDefault();
+    const localY = event.clientY - rail.getBoundingClientRect().top;
+    const current = m.travel * m.el.scrollTop / m.max;
+    dragOffset = localY >= current && localY <= current + m.thumbHeight
+      ? localY - current : m.thumbHeight / 2;
+    draggingId = event.pointerId;
+    rail.dataset.dragging = 'true';
+    rail.setPointerCapture(event.pointerId);
+    seek(localY - dragOffset, m);
   });
-  rail.addEventListener('pointermove',e=>{
-    if(grabbed!==e.pointerId)return;
-    move(e.clientY-rail.getBoundingClientRect().top-offset,measure());
+  rail.addEventListener('pointermove', event => {
+    if (draggingId !== event.pointerId) return;
+    const m = sync();
+    seek(event.clientY - rail.getBoundingClientRect().top - dragOffset, m);
   });
-  function end(e){if(e.pointerId!==grabbed)return;
-    grabbed=null;delete rail.dataset.dragging;
-    if(rail.hasPointerCapture(e.pointerId))rail.releasePointerCapture(e.pointerId);}
-  rail.addEventListener('pointerup',end);
-  rail.addEventListener('pointercancel',end);
-  rail.addEventListener('lostpointercapture',e=>{
-    if(grabbed===e.pointerId){grabbed=null;delete rail.dataset.dragging;}});
-  rail.addEventListener('keydown',e=>{
-    if(rail.dataset.open!=='true')return;
-    const m=measure();if(!m)return;
-    const delta={ArrowUp:-50,ArrowDown:50,PageUp:-m.sc.clientHeight*.9,PageDown:m.sc.clientHeight*.9};
-    if(Object.hasOwn(delta,e.key)){e.preventDefault();m.sc.scrollTop+=delta[e.key];}
-    else if(e.key==='Home'){e.preventDefault();m.sc.scrollTop=0;}
-    else if(e.key==='End'){e.preventDefault();m.sc.scrollTop=m.max;}
-    refresh();
+  function release(event) {
+    if (draggingId !== event.pointerId) return;
+    draggingId = null;
+    delete rail.dataset.dragging;
+    if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
+  }
+  rail.addEventListener('pointerup', release);
+  rail.addEventListener('pointercancel', release);
+  rail.addEventListener('lostpointercapture', event => {
+    if (draggingId === event.pointerId) {
+      draggingId = null;
+      delete rail.dataset.dragging;
+    }
   });
-  window.addEventListener('scroll',refresh,{passive:true});
-  window.addEventListener('resize',refresh,{passive:true});
-  if(mq.addEventListener)mq.addEventListener('change',refresh);
-  else mq.addListener(refresh);
-  const classes={attributes:true,attributeFilter:['class']};
-  new MutationObserver(refresh).observe(works,classes);
-  new MutationObserver(refresh).observe(document.body,classes);
-  if('ResizeObserver' in window){const ro=new ResizeObserver(refresh);ro.observe(document.documentElement);ro.observe(works);}
-  // Watch asynchronously injected artwork without changing the layout.
-  new MutationObserver(refresh).observe(works,{childList:true,subtree:true});
-  document.addEventListener('visibilitychange',refresh);
-  refresh();
+  rail.addEventListener('keydown', event => {
+    const m = sync();
+    if (!m) return;
+    const moves = {
+      ArrowUp: -50, ArrowDown: 50,
+      PageUp: -m.el.clientHeight * .9, PageDown: m.el.clientHeight * .9,
+      Home: -m.el.scrollTop, End: m.max - m.el.scrollTop
+    };
+    if (!Object.prototype.hasOwnProperty.call(moves, event.key)) return;
+    event.preventDefault();
+    m.el.scrollTop += moves[event.key];
+    schedule();
+  });
+  // BODY can scroll without window.scrollY or window's scroll event changing.
+  document.addEventListener('scroll', schedule, { passive: true, capture: true });
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  if (pc.addEventListener) pc.addEventListener('change', schedule);
+  else pc.addListener(schedule);
+  new MutationObserver(schedule).observe(works, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(schedule).observe(works, { childList: true, subtree: true });
+  new MutationObserver(schedule).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(schedule);
+    ro.observe(document.body);
+    ro.observe(works);
+  }
+  document.addEventListener('visibilitychange', schedule);
+  schedule();
 })();
 </script>
 </body>

@@ -3053,30 +3053,29 @@ html:not(.is-ipad) [data-viewer-close]{
     }
 
   
-    /* DUNGZAK.ART — Works document scrollbar, desktop pointer only.
-       No extra scroll container, layout, JS or mobile UI modifications.
-       Native OS scrollbar auto-hide settings may override visibility. */
+    /* Works-only native document scrollbar. Desktop mouse/trackpad only.
+       Keep the existing document scroll; never introduce a second scroll area. */
     @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
-      html:has(#works.is-active)::-webkit-scrollbar {
-        width: 6px;
+      /* Standards-based scrollbar styling (modern Chrome, Edge, Firefox). */
+      html:has(body #works.is-active) {
+        scrollbar-width: thin;
+        scrollbar-color: #D7B86A rgba(7, 10, 20, .72);
       }
-      html:has(#works.is-active)::-webkit-scrollbar-track {
+      /* WebKit/Blink implementation where vendor pseudo-elements apply. */
+      html:has(body #works.is-active)::-webkit-scrollbar {
+        width: 6px;
+        background: rgba(7, 10, 20, .72);
+      }
+      html:has(body #works.is-active)::-webkit-scrollbar-track {
         background: rgba(7, 10, 20, .72);
         border-radius: 999px;
       }
-      html:has(#works.is-active)::-webkit-scrollbar-thumb {
-        background: rgba(215, 184, 106, .82);
+      html:has(body #works.is-active)::-webkit-scrollbar-thumb {
+        background: #D7B86A;
         border-radius: 999px;
       }
-      html:has(#works.is-active)::-webkit-scrollbar-thumb:hover {
-        background: rgba(233, 213, 155, .96);
-      }
-      /* Firefox supports a native thin scrollbar rather than exact pixel width. */
-      @supports (-moz-appearance: none) {
-        html:has(#works.is-active) {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(215, 184, 106, .82) rgba(7, 10, 20, .72);
-        }
+      html:has(body #works.is-active)::-webkit-scrollbar-thumb:hover {
+        background: #E9D59B;
       }
     }
   </style>

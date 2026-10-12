@@ -3052,30 +3052,41 @@ html:not(.is-ipad) [data-viewer-close]{
       #bio-modal .bio-head,#bio-modal .bio-close,#bio-modal .bio-lang,#bio-modal .bio-lang button{touch-action:manipulation !important;}
     }
 
-
-    /* DZ WORKS PC SCROLLBAR — visual overlay; native document scroll stays intact. */
-    #dz-works-scrollbar { display:none; }
-    @media (min-width:1024px) and (hover:hover) and (pointer:fine) {
-      #dz-works-scrollbar.is-visible {
-        display:block; position:fixed; z-index:19;
-        right:4px; top:104px; bottom:18px; width:12px;
-        border-radius:999px; background:rgba(7,10,20,.78);
-        box-shadow:inset 0 0 0 1px rgba(215,184,106,.25);
-        cursor:pointer; touch-action:none; user-select:none;
-      }
-      #dz-works-scrollbar-thumb {
-        position:absolute; left:3px; top:0; width:6px; min-height:36px;
-        border-radius:999px; background:rgba(215,184,106,.92);
-        transition:background-color .16s ease;
-        pointer-events:none;
-      }
-      #dz-works-scrollbar:hover #dz-works-scrollbar-thumb,
-      #dz-works-scrollbar.is-dragging #dz-works-scrollbar-thumb {
-        background:#E9D59B;
-      }
-      #dz-works-scrollbar:focus-visible { outline:2px solid #E9D59B; outline-offset:2px; }
-    }
-  </style>
+  
+/* DUNGZAK WORKS: desktop-only visible draggable document-scroll control. */
+#dz-desktop-works-rail { display:none !important; }
+@media (min-width:1024px) and (pointer:fine) {
+  #dz-desktop-works-rail[data-open="true"] {
+    display:block !important;
+    position:fixed !important;
+    z-index:2147480000 !important;
+    right:6px !important;
+    top:105px !important;
+    bottom:20px !important;
+    width:12px !important;
+    box-sizing:border-box !important;
+    border-radius:9px !important;
+    background:rgba(7,10,20,.76) !important;
+    box-shadow:inset 0 0 0 1px rgba(215,184,106,.3) !important;
+    cursor:pointer !important;
+    user-select:none !important;
+    touch-action:none !important;
+  }
+  #dz-desktop-works-rail .dz-scroll-thumb {
+    display:block !important;
+    position:absolute !important;
+    top:0; left:3px; width:6px; min-height:36px;
+    border-radius:8px;
+    background:#D7B86A;
+    box-shadow:0 0 0 1px rgba(0,0,0,.35);
+    pointer-events:none;
+    will-change:transform;
+  }
+  #dz-desktop-works-rail:hover .dz-scroll-thumb,
+  #dz-desktop-works-rail[data-dragging="true"] .dz-scroll-thumb {background:#E9D59B;}
+  #dz-desktop-works-rail:focus-visible {outline:2px solid #E9D59B;outline-offset:2px;}
+}
+</style>
 
 </head>
 
@@ -5862,115 +5873,95 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 <script>
-/* DZ WORKS PC: draggable visible scrollbar controlling the existing PAGE scroll. */
+/* DZ: Standalone PC Works scrollbar; controls document.scrollingElement only. */
 (() => {
   'use strict';
   const works = document.getElementById('works');
-  if (!works) return;
-  const mq = window.matchMedia('(min-width:1024px) and (hover:hover) and (pointer:fine)');
-  const track = document.createElement('div');
-  track.id = 'dz-works-scrollbar';
-  track.setAttribute('role', 'scrollbar');
-  track.setAttribute('aria-label', 'Works 작품 목록 스크롤');
-  track.setAttribute('aria-orientation', 'vertical');
-  track.setAttribute('aria-valuemin', '0');
-  track.setAttribute('aria-valuemax', '100');
-  track.tabIndex = 0;
+  if (!works || document.getElementById('dz-desktop-works-rail')) return;
+  const mq = window.matchMedia('(min-width:1024px) and (pointer:fine)');
+  const rail = document.createElement('div');
+  rail.id = 'dz-desktop-works-rail';
+  rail.setAttribute('role','scrollbar');
+  rail.setAttribute('aria-label','작품 아카이브 스크롤');
+  rail.setAttribute('aria-orientation','vertical');
+  rail.setAttribute('aria-valuemin','0');
+  rail.setAttribute('aria-valuemax','100');
+  rail.dataset.open = 'false';
+  rail.tabIndex = -1;
   const thumb = document.createElement('div');
-  thumb.id = 'dz-works-scrollbar-thumb';
-  track.appendChild(thumb);
-  document.body.appendChild(track);
-
-  let scheduled = false, dragId = null, dragOffset = 0;
-  const scroller = () => document.scrollingElement || document.documentElement;
-  function hiddenByOverlay() {
-    return document.body.classList.contains('modal-open') ||
-      document.body.classList.contains('viewer-open') ||
-      !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
-  }
+  thumb.className = 'dz-scroll-thumb';
+  rail.appendChild(thumb);
+  document.body.appendChild(rail);
+  let frame = 0, grabbed = null, offset = 0;
+  const scrollElement = () => document.scrollingElement || document.documentElement;
+  const blocked = () => document.body.classList.contains('viewer-open') ||
+    document.body.classList.contains('modal-open') ||
+    !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
   function measure() {
-    const page = scroller();
-    const max = Math.max(0, page.scrollHeight - page.clientHeight);
-    const visible = mq.matches && works.classList.contains('is-active') &&
-      !hiddenByOverlay() && max > 1;
-    track.classList.toggle('is-visible', visible);
-    track.setAttribute('aria-hidden', String(!visible));
-    track.tabIndex = visible ? 0 : -1;
+    const visible = mq.matches && works.classList.contains('is-active') && !blocked();
+    rail.dataset.open = String(visible);
+    rail.setAttribute('aria-hidden',String(!visible));
+    rail.tabIndex = visible ? 0 : -1;
     if (!visible) return null;
-    const h = track.clientHeight;
-    if (h <= 0) return null;
-    const thumbH = Math.min(h, Math.max(36, h * page.clientHeight / page.scrollHeight));
-    const travel = Math.max(0, h - thumbH);
-    thumb.style.height = thumbH + 'px';
-    thumb.style.transform = `translateY(${travel * page.scrollTop / max}px)`;
-    track.setAttribute('aria-valuenow', String(Math.round(100 * page.scrollTop / max)));
-    return {page, max, thumbH, travel};
+    const sc = scrollElement();
+    const max = Math.max(0, sc.scrollHeight - sc.clientHeight);
+    const height = rail.getBoundingClientRect().height;
+    if (!height) return null;
+    const size = max ? Math.min(height,Math.max(36,height*sc.clientHeight/sc.scrollHeight)) : height;
+    const travel = Math.max(0,height-size);
+    thumb.style.height = size+'px';
+    thumb.style.transform='translate3d(0,'+(max ? travel*Math.min(max,sc.scrollTop)/max : 0)+'px,0)';
+    rail.setAttribute('aria-valuenow',String(max ? Math.round(100*sc.scrollTop/max) : 0));
+    return {sc,max,travel,size};
   }
-  function update() { scheduled = false; measure(); }
-  function requestUpdate() {
-    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
-  }
-  function scrollToThumb(top, metrics) {
-    if (!metrics || metrics.travel <= 0) return;
-    metrics.page.scrollTop = Math.max(0, Math.min(metrics.travel, top)) / metrics.travel * metrics.max;
-    requestUpdate();
-  }
-  track.addEventListener('pointerdown', e => {
-    if (e.button !== 0 || !track.classList.contains('is-visible')) return;
-    const m = measure();
-    if (!m) return;
+  function update(){frame=0;measure();}
+  function refresh(){if(!frame) frame=requestAnimationFrame(update);}
+  function move(y, m){if(!m || !m.travel)return;
+    m.sc.scrollTop=Math.max(0,Math.min(m.travel,y))/m.travel*m.max;refresh();}
+  rail.addEventListener('pointerdown',e=>{
+    if(e.button!==0 || rail.dataset.open!=='true')return;
+    const m=measure();if(!m)return;
     e.preventDefault();
-    const rect = track.getBoundingClientRect();
-    const currentThumbTop = m.max ? m.travel * m.page.scrollTop / m.max : 0;
-    const y = e.clientY - rect.top;
-    // Clicking the thumb preserves the grab offset; clicking the track jumps to that position.
-    dragOffset = (y >= currentThumbTop && y <= currentThumbTop + m.thumbH)
-      ? y - currentThumbTop : m.thumbH / 2;
-    dragId = e.pointerId;
-    track.classList.add('is-dragging');
-    track.setPointerCapture(e.pointerId);
-    scrollToThumb(y - dragOffset, m);
+    const y=e.clientY-rail.getBoundingClientRect().top;
+    const current=m.max ? m.travel*m.sc.scrollTop/m.max : 0;
+    offset=(y>=current && y<=current+m.size)? y-current : m.size/2;
+    grabbed=e.pointerId;
+    rail.dataset.dragging='true';
+    rail.setPointerCapture(e.pointerId);
+    move(y-offset,m);
   });
-  track.addEventListener('pointermove', e => {
-    if (e.pointerId !== dragId) return;
-    const m = measure();
-    if (!m) return;
-    scrollToThumb(e.clientY - track.getBoundingClientRect().top - dragOffset, m);
+  rail.addEventListener('pointermove',e=>{
+    if(grabbed!==e.pointerId)return;
+    move(e.clientY-rail.getBoundingClientRect().top-offset,measure());
   });
-  function stopDrag(e) {
-    if (e.pointerId !== dragId) return;
-    dragId = null;
-    track.classList.remove('is-dragging');
-    if (track.hasPointerCapture(e.pointerId)) track.releasePointerCapture(e.pointerId);
-  }
-  track.addEventListener('pointerup', stopDrag);
-  track.addEventListener('pointercancel', stopDrag);
-  track.addEventListener('lostpointercapture', e => {
-    if (e.pointerId === dragId) { dragId = null; track.classList.remove('is-dragging'); }
+  function end(e){if(e.pointerId!==grabbed)return;
+    grabbed=null;delete rail.dataset.dragging;
+    if(rail.hasPointerCapture(e.pointerId))rail.releasePointerCapture(e.pointerId);}
+  rail.addEventListener('pointerup',end);
+  rail.addEventListener('pointercancel',end);
+  rail.addEventListener('lostpointercapture',e=>{
+    if(grabbed===e.pointerId){grabbed=null;delete rail.dataset.dragging;}});
+  rail.addEventListener('keydown',e=>{
+    if(rail.dataset.open!=='true')return;
+    const m=measure();if(!m)return;
+    const delta={ArrowUp:-50,ArrowDown:50,PageUp:-m.sc.clientHeight*.9,PageDown:m.sc.clientHeight*.9};
+    if(Object.hasOwn(delta,e.key)){e.preventDefault();m.sc.scrollTop+=delta[e.key];}
+    else if(e.key==='Home'){e.preventDefault();m.sc.scrollTop=0;}
+    else if(e.key==='End'){e.preventDefault();m.sc.scrollTop=m.max;}
+    refresh();
   });
-  track.addEventListener('keydown', e => {
-    if (!track.classList.contains('is-visible')) return;
-    const m = measure(); if (!m) return;
-    const small = 48, big = Math.max(100, m.page.clientHeight * .85);
-    const steps = {ArrowDown:small, ArrowUp:-small, PageDown:big, PageUp:-big};
-    if (e.key in steps) { e.preventDefault(); m.page.scrollTop += steps[e.key]; }
-    else if (e.key === 'Home') { e.preventDefault(); m.page.scrollTop = 0; }
-    else if (e.key === 'End') { e.preventDefault(); m.page.scrollTop = m.max; }
-    requestUpdate();
-  });
-  window.addEventListener('scroll', requestUpdate, {passive:true});
-  window.addEventListener('resize', requestUpdate, {passive:true});
-  if (mq.addEventListener) mq.addEventListener('change', requestUpdate);
-  else if (mq.addListener) mq.addListener(requestUpdate);
-  new MutationObserver(requestUpdate).observe(works, {attributes:true, attributeFilter:['class']});
-  new MutationObserver(requestUpdate).observe(document.body, {attributes:true, attributeFilter:['class']});
-  // Grid changes after lazy loading; watch sizes without affecting layout.
-  if ('ResizeObserver' in window) {
-    const observer = new ResizeObserver(requestUpdate);
-    observer.observe(document.documentElement);
-    observer.observe(works);
-  }
-  requestUpdate();
+  window.addEventListener('scroll',refresh,{passive:true});
+  window.addEventListener('resize',refresh,{passive:true});
+  if(mq.addEventListener)mq.addEventListener('change',refresh);
+  else mq.addListener(refresh);
+  const classes={attributes:true,attributeFilter:['class']};
+  new MutationObserver(refresh).observe(works,classes);
+  new MutationObserver(refresh).observe(document.body,classes);
+  if('ResizeObserver' in window){const ro=new ResizeObserver(refresh);ro.observe(document.documentElement);ro.observe(works);}
+  // Watch asynchronously injected artwork without changing the layout.
+  new MutationObserver(refresh).observe(works,{childList:true,subtree:true});
+  document.addEventListener('visibilitychange',refresh);
+  refresh();
 })();
 </script>
 </body>

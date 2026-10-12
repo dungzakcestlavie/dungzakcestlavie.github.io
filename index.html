@@ -3053,20 +3053,20 @@ html:not(.is-ipad) [data-viewer-close]{
     }
 
   
-/* DZ WORKS SCROLLBAR v3 — only desktop Works; no change to document overflow. */
+/* DZ WORKS PC SCROLLBAR v4 — one subtle rail, native document scrolling retained. */
 #dz-works-scrollbar { display: none; }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   #dz-works-scrollbar[data-visible="true"] {
     position: fixed;
     display: block;
     top: 108px;
-    bottom: 96px; /* Avoid the existing sound orb at lower-right. */
-    right: 8px;
-    width: 13px;
-    z-index: 80; /* Below existing lightbox (9999). */
-    border-radius: 9px;
-    background: rgba(8, 11, 21, .86);
-    box-shadow: inset 0 0 0 1px rgba(215, 184, 106, .40);
+    bottom: 78px;
+    right: 6px;
+    width: 12px;
+    z-index: 80;
+    border-radius: 12px;
+    background: rgba(12, 15, 24, .34);
+    box-shadow: inset 0 0 0 1px rgba(215, 184, 106, .10);
     cursor: pointer;
     user-select: none;
     touch-action: none;
@@ -3075,19 +3075,18 @@ html:not(.is-ipad) [data-viewer-close]{
     position: absolute;
     top: 0;
     left: 3px;
-    width: 7px;
-    min-height: 44px;
+    width: 6px;
+    min-height: 42px;
     border-radius: 8px;
-    background: #D7B86A;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.30);
+    background: rgba(215, 184, 106, .53);
     pointer-events: none;
   }
   #dz-works-scrollbar:hover .dz-works-scrollbar-thumb,
   #dz-works-scrollbar[data-dragging="true"] .dz-works-scrollbar-thumb {
-    background: #E9D59B;
+    background: rgba(215, 184, 106, .78);
   }
   #dz-works-scrollbar:focus-visible {
-    outline: 2px solid #E9D59B;
+    outline: 1px solid rgba(215, 184, 106, .65);
     outline-offset: 2px;
   }
 }
@@ -5878,17 +5877,19 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 
+
 <script>
-/* DZ WORKS SCROLLBAR v3 — single owner. The actual scroll host may be BODY,
-   even when document.scrollingElement reports HTML (overflow-x:hidden + 100% height). */
+/* DZ WORKS PC SCROLLBAR v4 — scroll geometry uses VIEWPORT HEIGHT, not
+   body.clientHeight (which can be almost document-height on this page).
+   The BODY remains the same scroll host used by the mouse wheel. */
 (() => {
   'use strict';
   const works = document.getElementById('works');
   if (!works || document.getElementById('dz-works-scrollbar')) return;
-  const pc = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+  const desktop = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
   const rail = document.createElement('div');
   rail.id = 'dz-works-scrollbar';
-  rail.dataset.revision = '20261013-v3';
+  rail.dataset.revision = '20261013-v4';
   rail.dataset.visible = 'false';
   rail.setAttribute('role', 'scrollbar');
   rail.setAttribute('aria-label', 'Works 작품 목록 스크롤');
@@ -5902,112 +5903,126 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   rail.appendChild(thumb);
   document.body.appendChild(rail);
 
-  let pending = 0, draggingId = null, dragOffset = 0;
-  const maxScroll = el => Math.max(0, el.scrollHeight - el.clientHeight);
-  function scrollHost() {
+  let frame = 0;
+  let pointerId = null;
+  let pointerOffset = 0;
+  let dragHost = null;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const viewportHeight = () => document.documentElement.clientHeight || innerHeight;
+
+  function host() {
     const body = document.body;
-    const root = document.scrollingElement || document.documentElement;
-    // Prefer whichever element is actually moving, not simply scrollingElement.
-    if (body.scrollTop > 0 && maxScroll(body) > 1) return body;
-    if (root.scrollTop > 0 && maxScroll(root) > 1) return root;
-    // This site's BODY is an independent scroll container on PC.
-    const by = getComputedStyle(body).overflowY;
-    if (maxScroll(body) > 1 && /^(auto|scroll|overlay)$/.test(by)) return body;
-    if (maxScroll(root) > 1) return root;
-    return maxScroll(body) > 1 ? body : root;
+    const root = document.documentElement;
+    const viewport = viewportHeight();
+    // HTML may report a small independent range while BODY is the real scroller.
+    // BODY is intentionally preferred whenever its content exceeds the viewport.
+    if (body.scrollHeight > viewport + 2 &&
+        getComputedStyle(body).overflowY !== 'hidden') return body;
+    return document.scrollingElement || root;
+  }
+  function geometry(scroller) {
+    const viewport = viewportHeight();
+    // For BODY, .clientHeight is NOT always viewport height (root cause in v3).
+    const content = Math.max(scroller.scrollHeight, viewport);
+    return {scroller, viewport, content, max: Math.max(0, content - viewport)};
   }
   function blocked() {
     return document.body.classList.contains('modal-open') ||
       document.body.classList.contains('viewer-open') ||
       !!document.querySelector('.lf-lightbox.active, #bio-modal:not([hidden])');
   }
-  function sync() {
-    pending = 0;
-    const eligible = pc.matches && works.classList.contains('is-active') && !blocked();
-    const el = eligible ? scrollHost() : null;
-    const max = el ? maxScroll(el) : 0;
-    const visible = eligible && max > 1;
+  function update() {
+    frame = 0;
+    const active = desktop.matches && works.classList.contains('is-active') && !blocked();
+    const m = active ? geometry(host()) : null;
+    const visible = !!m && m.max > 2;
     rail.dataset.visible = String(visible);
     rail.setAttribute('aria-hidden', String(!visible));
     rail.tabIndex = visible ? 0 : -1;
     if (!visible) return null;
-    const height = rail.clientHeight;
-    if (!height) return null;
-    const thumbHeight = Math.min(height, Math.max(44, height * el.clientHeight / el.scrollHeight));
-    const travel = Math.max(0, height - thumbHeight);
+    const railHeight = rail.clientHeight;
+    if (railHeight <= 0) return null;
+    // Genuine scrollbar thumb: page viewport / total content, minimum 42px.
+    const thumbHeight = clamp(railHeight * m.viewport / m.content, 42, railHeight);
+    const travel = Math.max(0, railHeight - thumbHeight);
+    const top = clamp(m.scroller.scrollTop, 0, m.max);
     thumb.style.height = thumbHeight + 'px';
-    thumb.style.transform = 'translateY(' + (travel * Math.min(max, Math.max(0, el.scrollTop)) / max) + 'px)';
-    rail.setAttribute('aria-valuemax', String(Math.round(max)));
-    rail.setAttribute('aria-valuenow', String(Math.round(el.scrollTop)));
-    return { el, max, travel, thumbHeight };
+    thumb.style.transform = `translate3d(0, ${travel * top / m.max}px, 0)`;
+    rail.setAttribute('aria-valuemax', String(Math.round(m.max)));
+    rail.setAttribute('aria-valuenow', String(Math.round(top)));
+    rail.dataset.scrollHost = m.scroller === document.body ? 'body' : 'root';
+    return {...m, railHeight, thumbHeight, travel, top};
   }
-  function schedule() {
-    if (!pending) pending = requestAnimationFrame(sync);
-  }
-  function seek(pixel, m) {
-    if (!m || !m.travel) return;
-    m.el.scrollTop = Math.max(0, Math.min(m.travel, pixel)) / m.travel * m.max;
+  function schedule() { if (!frame) frame = requestAnimationFrame(update); }
+  function seek(localY, m) {
+    if (!m || m.travel <= 0) return;
+    const scrollTo = clamp(localY, 0, m.travel) / m.travel * m.max;
+    m.scroller.scrollTop = scrollTo;
+    // Keep indicator in sync immediately, even on browsers that delay scroll events.
     schedule();
   }
   rail.addEventListener('pointerdown', event => {
     if (event.button !== 0 || rail.dataset.visible !== 'true') return;
-    const m = sync();
+    const m = update();
     if (!m) return;
     event.preventDefault();
     const localY = event.clientY - rail.getBoundingClientRect().top;
-    const current = m.travel * m.el.scrollTop / m.max;
-    dragOffset = localY >= current && localY <= current + m.thumbHeight
-      ? localY - current : m.thumbHeight / 2;
-    draggingId = event.pointerId;
+    const thumbY = m.travel * m.top / m.max;
+    pointerOffset = localY >= thumbY && localY <= thumbY + m.thumbHeight
+      ? localY - thumbY : m.thumbHeight / 2;
+    pointerId = event.pointerId;
+    dragHost = m.scroller;
     rail.dataset.dragging = 'true';
     rail.setPointerCapture(event.pointerId);
-    seek(localY - dragOffset, m);
+    seek(localY - pointerOffset, m);
   });
   rail.addEventListener('pointermove', event => {
-    if (draggingId !== event.pointerId) return;
-    const m = sync();
-    seek(event.clientY - rail.getBoundingClientRect().top - dragOffset, m);
+    if (event.pointerId !== pointerId) return;
+    const m = update();
+    if (!m || m.scroller !== dragHost) return;
+    seek(event.clientY - rail.getBoundingClientRect().top - pointerOffset, m);
   });
   function release(event) {
-    if (draggingId !== event.pointerId) return;
-    draggingId = null;
+    if (event.pointerId !== pointerId) return;
+    pointerId = null;
+    dragHost = null;
     delete rail.dataset.dragging;
     if (rail.hasPointerCapture(event.pointerId)) rail.releasePointerCapture(event.pointerId);
   }
   rail.addEventListener('pointerup', release);
   rail.addEventListener('pointercancel', release);
   rail.addEventListener('lostpointercapture', event => {
-    if (draggingId === event.pointerId) {
-      draggingId = null;
+    if (event.pointerId === pointerId) {
+      pointerId = null;
+      dragHost = null;
       delete rail.dataset.dragging;
     }
   });
   rail.addEventListener('keydown', event => {
-    const m = sync();
+    const m = update();
     if (!m) return;
-    const moves = {
-      ArrowUp: -50, ArrowDown: 50,
-      PageUp: -m.el.clientHeight * .9, PageDown: m.el.clientHeight * .9,
-      Home: -m.el.scrollTop, End: m.max - m.el.scrollTop
+    const delta = {
+      ArrowUp: -48, ArrowDown: 48,
+      PageUp: -m.viewport * .9, PageDown: m.viewport * .9,
+      Home: -m.top, End: m.max - m.top
     };
-    if (!Object.prototype.hasOwnProperty.call(moves, event.key)) return;
+    if (!Object.prototype.hasOwnProperty.call(delta, event.key)) return;
     event.preventDefault();
-    m.el.scrollTop += moves[event.key];
+    m.scroller.scrollTop = m.top + delta[event.key];
     schedule();
   });
-  // BODY can scroll without window.scrollY or window's scroll event changing.
-  document.addEventListener('scroll', schedule, { passive: true, capture: true });
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule, { passive: true });
-  if (pc.addEventListener) pc.addEventListener('change', schedule);
-  else pc.addListener(schedule);
-  new MutationObserver(schedule).observe(works, { attributes: true, attributeFilter: ['class'] });
-  new MutationObserver(schedule).observe(works, { childList: true, subtree: true });
-  new MutationObserver(schedule).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('scroll', schedule, {passive:true, capture:true});
+  window.addEventListener('scroll', schedule, {passive:true});
+  window.addEventListener('resize', schedule, {passive:true});
+  if (desktop.addEventListener) desktop.addEventListener('change', schedule);
+  else desktop.addListener(schedule);
+  new MutationObserver(schedule).observe(works, {attributes:true, attributeFilter:['class']});
+  new MutationObserver(schedule).observe(works, {childList:true, subtree:true});
+  new MutationObserver(schedule).observe(document.body, {attributes:true, attributeFilter:['class']});
   if ('ResizeObserver' in window) {
-    const ro = new ResizeObserver(schedule);
-    ro.observe(document.body);
-    ro.observe(works);
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    observer.observe(works);
   }
   document.addEventListener('visibilitychange', schedule);
   schedule();

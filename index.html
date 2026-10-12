@@ -3053,7 +3053,7 @@ html:not(.is-ipad) [data-viewer-close]{
     }
 
   
-/* DZ WORKS PC SCROLLBAR v4 — one subtle rail, native document scrolling retained. */
+/* DZ WORKS + REPORTS PC SCROLLBAR v5 — one shared rail, native scrolling retained. */
 #dz-works-scrollbar { display: none; }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   #dz-works-scrollbar[data-visible="true"] {
@@ -5879,17 +5879,18 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 
 
 <script>
-/* DZ WORKS PC SCROLLBAR v4 — scroll geometry uses VIEWPORT HEIGHT, not
+/* DZ WORKS + REPORTS PC SCROLLBAR v5 — geometry uses VIEWPORT HEIGHT, not
    body.clientHeight (which can be almost document-height on this page).
    The BODY remains the same scroll host used by the mouse wheel. */
 (() => {
   'use strict';
   const works = document.getElementById('works');
-  if (!works || document.getElementById('dz-works-scrollbar')) return;
+  const reports = document.getElementById('reports');
+  if (!works || !reports || document.getElementById('dz-works-scrollbar')) return;
   const desktop = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
   const rail = document.createElement('div');
   rail.id = 'dz-works-scrollbar';
-  rail.dataset.revision = '20261013-v4';
+  rail.dataset.revision = '20261013-v5-works-reports';
   rail.dataset.visible = 'false';
   rail.setAttribute('role', 'scrollbar');
   rail.setAttribute('aria-label', 'Works 작품 목록 스크롤');
@@ -5933,12 +5934,15 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   }
   function update() {
     frame = 0;
-    const active = desktop.matches && works.classList.contains('is-active') && !blocked();
+    const worksActive = works.classList.contains('is-active');
+    const reportsActive = reports.classList.contains('is-active');
+    const active = desktop.matches && (worksActive || reportsActive) && !blocked();
     const m = active ? geometry(host()) : null;
     const visible = !!m && m.max > 2;
     rail.dataset.visible = String(visible);
     rail.setAttribute('aria-hidden', String(!visible));
     rail.tabIndex = visible ? 0 : -1;
+    if (visible) rail.setAttribute('aria-label', reportsActive ? 'Reports 보고서 목록 스크롤' : 'Works 작품 목록 스크롤');
     if (!visible) return null;
     const railHeight = rail.clientHeight;
     if (railHeight <= 0) return null;
@@ -6017,12 +6021,15 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
   if (desktop.addEventListener) desktop.addEventListener('change', schedule);
   else desktop.addListener(schedule);
   new MutationObserver(schedule).observe(works, {attributes:true, attributeFilter:['class']});
+  new MutationObserver(schedule).observe(reports, {attributes:true, attributeFilter:['class']});
   new MutationObserver(schedule).observe(works, {childList:true, subtree:true});
+  new MutationObserver(schedule).observe(reports, {childList:true, subtree:true});
   new MutationObserver(schedule).observe(document.body, {attributes:true, attributeFilter:['class']});
   if ('ResizeObserver' in window) {
     const observer = new ResizeObserver(schedule);
     observer.observe(document.body);
     observer.observe(works);
+    observer.observe(reports);
   }
   document.addEventListener('visibilitychange', schedule);
   schedule();

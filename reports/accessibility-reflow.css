@@ -1,0 +1,33 @@
+/* DCAR accessible reading: responsive text reflow for reports 01–33 and later.
+   Typography, source content, report URLs and the existing 100–400% controls remain unchanged. */
+html, body { min-width: 0; }
+main, article, .paper-head, .report-text, .section, .passage,
+.section > div, .references, .references li { min-width: 0; }
+.paper-head h1, .passage, .report-text, .section, .section p,
+.section li, .section div.kr, .section div.en, .references li,
+.ref-link, a { overflow-wrap: anywhere; word-break: normal; }
+.passage { white-space: pre-wrap; hyphens: auto; }
+.section div.kr, .section div.en, .report-text { max-width: 100%; }
+pre, code { max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+img, svg, video, canvas, iframe { max-width: 100%; height: auto; }
+table { display: block; max-width: 100%; overflow-x: auto; }
+.toolbar { min-width: 0; max-width: 100%; max-height: 50dvh;
+  overflow-y: auto; overscroll-behavior: contain; }
+.toolbar button { min-height: 44px; touch-action: manipulation; }
+@media (max-width: 660px) {
+  main { min-width: 0; margin: 0; border: 0; padding: 18px 16px; }
+  .toolbar { justify-content: flex-start; gap: 6px; padding: .6rem 12px; }
+  .toolbar .toolname { flex-basis: 100%; }
+  .toolbar button { padding: .4rem .6rem; font-size: .8rem; }
+}
+@media (max-width: 360px) {
+  .toolbar { gap: 5px; }
+  .toolbar button { padding-inline: .45rem; font-size: .78rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+@media print {
+  .toolbar { display: none; }
+  table { overflow: visible; }
+}

@@ -56,13 +56,16 @@ Accessibility does not diminish the artwork by simplifying it; it expands the ro
 </div></section></article></main><script>
 (function(){
 'use strict';
-const PREF_KEY='dcar-accessibility-v1';
+// v2 resets legacy zoom once to 100% while preserving language/contrast.
+const PREF_KEY='dcar-accessibility-v2';
+const LEGACY_PREF_KEY='dcar-accessibility-v1';
 const paper=document.getElementById('paper');
 const prefs={lang:'both',size:'1',contrast:false};
 try{
-  const s=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
+  const saved=localStorage.getItem(PREF_KEY);
+  const s=JSON.parse(saved||localStorage.getItem(LEGACY_PREF_KEY)||'{}');
   if(['both','ko','en'].includes(s.lang))prefs.lang=s.lang;
-  if(['1','1.5','2','3','4'].includes(String(s.size)))prefs.size=String(s.size);
+  if(saved&&['1','1.5','2','3','4'].includes(String(s.size)))prefs.size=String(s.size);
   if(typeof s.contrast==='boolean')prefs.contrast=s.contrast;
 }catch(e){}
 function save(){try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){}}
@@ -78,5 +81,6 @@ document.querySelectorAll('[data-choose-lang]').forEach(b=>b.addEventListener('c
 document.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{prefs.size=b.dataset.size;apply();save();}));
 document.getElementById('contrast').addEventListener('click',()=>{prefs.contrast=!prefs.contrast;apply();save();});
 apply();
+save(); // persist the one-time baseline migration
 })();
 </script></body></html>

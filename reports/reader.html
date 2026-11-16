@@ -128,7 +128,7 @@ function addTextLinks(node,text){
 function renderMarkdown(raw){
   content.replaceChildren();
   var lines=raw.replace(/\r\n?/g,'\n').split('\n');
-  var buffer=[],currentLang='';
+  var buffer=[],currentLang='',inReferences=false;
   function flush(){
     if(!buffer.length)return;
     var p=document.createElement('p');
@@ -142,9 +142,13 @@ function renderMarkdown(raw){
     var t=line.trim();
     if(!t){flush();return;}
     if(/^(?:⸻+|─{4,}|-{3,}|—{1,3})$/.test(t)){flush();var hr=document.createElement('hr');hr.className='separator';content.appendChild(hr);return;}
-    var detected=languageOf(t);
-    if(detected&&currentLang&&detected!==currentLang)flush();
-    if(detected)currentLang=detected;
+    // Bibliographic sources remain available regardless of language selection.
+    if(!inReferences && t.length<100 && /^(?:참고문헌|References\b|Bibliography\b)/i.test(t)){
+      flush();inReferences=true;currentLang='';
+    }
+    // Script-neutral equations, arrows, numbers and dividers remain available in every mode.
+    var detected=inReferences?'':languageOf(t);
+    if(detected!==currentLang){flush();currentLang=detected;}
     if(/^\s*#{1,6}\s+/.test(line))line=line.replace(/^\s*#{1,6}\s+/,'');
     buffer.push(line.trimEnd());
   });

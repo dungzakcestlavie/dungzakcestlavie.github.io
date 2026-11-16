@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>DCAR — Accessible Report Reader</title>
+<meta name="description" content="등작 DUNGZAK CESTLAVIE · DCAR 연구 리포트. 한국어, English, KR+EN, 100–400% 텍스트 확대 및 고대비 접근성 리더.">
+<style>
+:root{--bg:#f5f5f2;--fg:#171717;--muted:#505050;--border:#c8c8c5;--paper:#fff;--scale:1;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;max-width:100%}
+body{margin:0;min-width:0;max-width:100%;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.75}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:12px;top:12px;padding:8px;background:#fff;color:#000;z-index:15}
+.toolbar{position:sticky;top:0;z-index:5;background:#f8f8f7f2;border-bottom:1px solid var(--border);padding:.7rem max(12px,calc((100vw - 960px)/2));display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-start;backdrop-filter:blur(12px);max-height:50dvh;overflow-y:auto;overscroll-behavior:contain}
+.toolname{font-size:.75rem;font-weight:650;color:var(--muted);letter-spacing:.04em;flex-basis:100%}
+button{font:inherit;font-size:.86rem;background:transparent;border:1px solid #b0b0b0;padding:.45rem .75rem;min-height:44px;border-radius:5px;color:var(--fg);cursor:pointer}
+button[aria-pressed="true"]{background:#21252b;color:#fff;border-color:#21252b}
+button:focus-visible,a:focus-visible{outline:3px solid #567cc9;outline-offset:3px}
+main{width:min(960px,100%);min-width:0;margin:20px auto;padding:clamp(20px,4vw,60px);background:var(--paper);border:1px solid var(--border);overflow-wrap:anywhere}
+.paper-head{border-bottom:2px solid var(--fg);padding:1rem 0 1.5rem;min-width:0}
+.over{letter-spacing:.12em;font-size:.75rem;color:var(--muted);font-weight:700}
+.paper-head h1{font-size:clamp(1.35rem,3.5vw,2.1rem);line-height:1.4;letter-spacing:-.025em;margin:.65rem 0;overflow-wrap:anywhere}
+.paper-head h1.en{font-size:clamp(1.15rem,2.8vw,1.45rem);font-weight:580;letter-spacing:-.01em}
+.authors{font-size:.9rem;color:var(--muted)}
+.report-text{min-width:0;padding:1.5rem 0}
+.passage{min-width:0;margin:0 0 .8em;font-size:calc(1rem * var(--scale));line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+.passage.en{color:#353535}
+.separator{border:0;border-top:1px solid var(--border);margin:1.6rem 0}
+.report-text a{color:#164ca3;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+article[data-lang="ko"] .en,article[data-lang="en"] .kr{display:none!important}
+article[data-lang="both"] .passage.en{border-left:2px solid #c4c4c4;padding-left:.8rem}
+.status{font-size:.95rem;line-height:1.6}
+.back{font-size:.86rem;margin:1.25rem 0 0}
+.back a{color:#164ca3}
+body.contrast{--bg:#000;--fg:#fff;--muted:#eee;--border:#fff;--paper:#000}
+.contrast .toolbar{background:#000}
+.contrast button{color:#fff;border-color:#fff}
+.contrast button[aria-pressed="true"]{background:#fff;color:#000}
+.contrast .passage.en{color:#fff}
+.contrast .report-text a,.contrast .back a{color:#a5c7ff}
+@media(max-width:660px){main{margin:0;border:0;padding:18px 16px}.toolbar{gap:6px;padding:.6rem 12px}.toolbar button{padding:.4rem .6rem;font-size:.8rem}.paper-head h1{font-size:1.5rem}.paper-head h1.en{font-size:1.2rem}.passage{line-height:1.7}}
+@media print{body{background:white;color:black}main{margin:0;padding:0;border:0;width:100%}.toolbar,.skip,.back{display:none}.passage{color:black!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#paper">본문으로 이동 / Skip to report</a>
+<div class="toolbar" role="group" aria-label="언어 및 글자 크기 / Language and text size">
+<span class="toolname">언어 · Language</span>
+<button type="button" data-choose-lang="both" aria-pressed="true">KR+EN</button>
+<button type="button" data-choose-lang="ko" aria-pressed="false">한국어</button>
+<button type="button" data-choose-lang="en" aria-pressed="false">English</button>
+<span class="toolname">글자 크기 · Text size</span>
+<button type="button" data-size="1" aria-pressed="true">100%</button>
+<button type="button" data-size="1.5" aria-pressed="false">150%</button>
+<button type="button" data-size="2" aria-pressed="false">200%</button>
+<button type="button" data-size="3" aria-pressed="false">300%</button>
+<button type="button" data-size="4" aria-pressed="false">400%</button>
+<button type="button" id="contrast" aria-pressed="false">고대비 · Contrast</button>
+</div>
+<main>
+<article id="paper" data-lang="both" aria-busy="true">
+<header class="paper-head">
+<p class="over" id="report-number">DCAR — RESEARCH</p>
+<h1 class="kr" lang="ko" id="title-ko">연구 리포트</h1>
+<h1 class="en" lang="en" id="title-en">Research Report</h1>
+<p class="authors">등작 燈酌 / DUNGZAK CESTLAVIE</p>
+</header>
+<div id="status" class="status" role="status" aria-live="polite">리포트를 불러오는 중입니다. / Loading report…</div>
+<div id="report-text" class="report-text"></div>
+<p class="back"><a href="../index.html">← 전체 리포트 목록 / All reports</a></p>
+</article>
+</main>
+<script>
+(function(){
+'use strict';
+var PREF_KEY='dcar-accessibility-v1';
+var paper=document.getElementById('paper');
+var status=document.getElementById('status');
+var content=document.getElementById('report-text');
+var prefs={lang:'both',size:'1',contrast:false};
+try{
+  var stored=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
+  if(['both','ko','en'].includes(stored.lang))prefs.lang=stored.lang;
+  if(['1','1.5','2','3','4'].includes(String(stored.size)))prefs.size=String(stored.size);
+  if(typeof stored.contrast==='boolean')prefs.contrast=stored.contrast;
+}catch(e){}
+function save(){try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){}}
+function apply(){
+  paper.dataset.lang=prefs.lang;
+  document.documentElement.style.setProperty('--scale',prefs.size);
+  document.body.classList.toggle('contrast',prefs.contrast);
+  document.querySelectorAll('[data-choose-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.chooseLang===prefs.lang));});
+  document.querySelectorAll('[data-size]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.size===prefs.size));});
+  document.getElementById('contrast').setAttribute('aria-pressed',String(prefs.contrast));
+}
+document.querySelectorAll('[data-choose-lang]').forEach(function(b){b.addEventListener('click',function(){prefs.lang=b.dataset.chooseLang;apply();save();});});
+document.querySelectorAll('[data-size]').forEach(function(b){b.addEventListener('click',function(){prefs.size=b.dataset.size;apply();save();});});
+document.getElementById('contrast').addEventListener('click',function(){prefs.contrast=!prefs.contrast;apply();save();});
+apply();
+
+function languageOf(line){
+  if(/[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/.test(line))return 'kr';
+  if(/[A-Za-z]/.test(line))return 'en';
+  return '';
+}
+function addTextLinks(node,text){
+  var re=/https?:\/\/[^\s<>]+/g;
+  var pos=0,match;
+  while((match=re.exec(text))!==null){
+    if(match.index>pos)node.appendChild(document.createTextNode(text.slice(pos,match.index)));
+    var original=match[0],url=original.replace(/[.,;)\]]+$/,'');
+    var trailing=original.slice(url.length);
+    try{
+      var parsed=new URL(url);
+      if(parsed.protocol!=='https:'&&parsed.protocol!=='http:')throw Error('unsupported link');
+      var a=document.createElement('a');
+      a.href=parsed.href;
+      a.target='_blank';a.rel='noopener noreferrer';a.textContent=url;
+      node.appendChild(a);
+    }catch(e){node.appendChild(document.createTextNode(url));}
+    if(trailing)node.appendChild(document.createTextNode(trailing));
+    pos=match.index+original.length;
+  }
+  if(pos<text.length)node.appendChild(document.createTextNode(text.slice(pos)));
+}
+function renderMarkdown(raw){
+  content.replaceChildren();
+  var lines=raw.replace(/\r\n?/g,'\n').split('\n');
+  var buffer=[],currentLang='';
+  function flush(){
+    if(!buffer.length)return;
+    var p=document.createElement('p');
+    p.className='passage'+(currentLang?' '+currentLang:'');
+    if(currentLang)p.lang=currentLang==='kr'?'ko':'en';
+    addTextLinks(p,buffer.join('\n'));
+    content.appendChild(p);
+    buffer=[];
+  }
+  lines.forEach(function(line){
+    var t=line.trim();
+    if(!t){flush();return;}
+    if(/^(?:⸻+|─{4,}|-{3,}|—{1,3})$/.test(t)){flush();var hr=document.createElement('hr');hr.className='separator';content.appendChild(hr);return;}
+    var detected=languageOf(t);
+    if(detected&&currentLang&&detected!==currentLang)flush();
+    if(detected)currentLang=detected;
+    if(/^\s*#{1,6}\s+/.test(line))line=line.replace(/^\s*#{1,6}\s+/,'');
+    buffer.push(line.trimEnd());
+  });
+  flush();
+}
+function error(message){
+  status.textContent=message;
+  paper.setAttribute('aria-busy','false');
+}
+var id=new URLSearchParams(location.search).get('report')||'';
+if(!/^DCAR-\d{2}-20\d{2}$/.test(id)){
+  error('리포트 주소가 올바르지 않습니다. / Invalid report address.');
+  return;
+}
+fetch('../data/reports.json',{cache:'no-cache'})
+.then(function(r){if(!r.ok)throw Error('Report index: HTTP '+r.status);return r.json();})
+.then(function(data){
+  var entry=Array.isArray(data.reports)&&data.reports.find(function(d){return d.id===id;});
+  if(!entry||typeof entry.md_path!=='string'||!/^reports\/DCAR-\d{2}-20\d{2}\.md$/.test(entry.md_path)||entry.md_path!=='reports/'+id+'.md')throw Error('Report not listed: '+id);
+  document.getElementById('report-number').textContent=id+' · '+entry.year+' · '+(entry.category||'Research');
+  document.getElementById('title-ko').textContent=entry.title_ko||entry.title_kr||id;
+  document.getElementById('title-en').textContent=entry.title_en||id;
+  document.title=id+' · '+(entry.title_ko||id)+' / '+(entry.title_en||'DCAR');
+  var canonical=document.createElement('link');canonical.rel='canonical';canonical.href=location.origin+'/reports/reader.html?report='+encodeURIComponent(id);document.head.appendChild(canonical);
+  return fetch('../'+entry.md_path,{cache:'no-cache'});
+})
+.then(function(r){if(!r.ok)throw Error('Report text: HTTP '+r.status);return r.text();})
+.then(function(raw){if(!raw.trim())throw Error('Report text is empty');renderMarkdown(raw);status.hidden=true;paper.setAttribute('aria-busy','false');})
+.catch(function(e){console.error('DCAR accessible reader',e);error('리포트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요. / Unable to load this report. Please try again.');});
+})();
+</script>
+</body>
+</html>

@@ -5372,7 +5372,7 @@ html:not(.is-ipad) [data-viewer-close]{
       const titleEn   = escHTML(item.title_en || '');
       const summaryKr = escHTML(item.summary_ko || item.summary_kr || '');
       const summaryEn = escHTML(item.summary_en || '');
-      const href      = escAttr(item.html_path || item.md_path || '#');
+      const href      = escAttr(item.html_path || (/^DCAR-\d{2}-20\d{2}$/.test(String(item.id || '')) ? 'reports/reader.html?report=' + encodeURIComponent(item.id) : (item.md_path || '#')));
 
       html += `
         <article class="r-item" data-category="${category}">

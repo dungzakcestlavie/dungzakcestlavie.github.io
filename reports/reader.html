@@ -76,15 +76,19 @@ body.contrast{--bg:#000;--fg:#fff;--muted:#eee;--border:#fff;--paper:#000}
 <script>
 (function(){
 'use strict';
-var PREF_KEY='dcar-accessibility-v1';
+// v2 resets legacy text zoom once to the 100% baseline across all reports.
+// Language and contrast migrate; subsequent user-chosen zoom is remembered.
+var PREF_KEY='dcar-accessibility-v2';
+var LEGACY_PREF_KEY='dcar-accessibility-v1';
 var paper=document.getElementById('paper');
 var status=document.getElementById('status');
 var content=document.getElementById('report-text');
 var prefs={lang:'both',size:'1',contrast:false};
 try{
-  var stored=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
+  var saved=localStorage.getItem(PREF_KEY);
+  var stored=JSON.parse(saved||localStorage.getItem(LEGACY_PREF_KEY)||'{}');
   if(['both','ko','en'].includes(stored.lang))prefs.lang=stored.lang;
-  if(['1','1.5','2','3','4'].includes(String(stored.size)))prefs.size=String(stored.size);
+  if(saved&&['1','1.5','2','3','4'].includes(String(stored.size)))prefs.size=String(stored.size);
   if(typeof stored.contrast==='boolean')prefs.contrast=stored.contrast;
 }catch(e){}
 function save(){try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){}}
@@ -100,6 +104,7 @@ document.querySelectorAll('[data-choose-lang]').forEach(function(b){b.addEventLi
 document.querySelectorAll('[data-size]').forEach(function(b){b.addEventListener('click',function(){prefs.size=b.dataset.size;apply();save();});});
 document.getElementById('contrast').addEventListener('click',function(){prefs.contrast=!prefs.contrast;apply();save();});
 apply();
+save(); // persist the one-time baseline migration
 
 function languageOf(line){
   if(/[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/.test(line))return 'kr';

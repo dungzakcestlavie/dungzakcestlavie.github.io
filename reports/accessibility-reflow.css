@@ -31,3 +31,54 @@ table { display: block; max-width: 100%; overflow-x: auto; }
   .toolbar { display: none; }
   table { overflow: visible; }
 }
+
+/* Complete DCAR report-text magnification.
+   Scale the entire document reading surface (including front matter), not the
+   language/size controls. Keep 100% typography and the mobile reflow intact. */
+#paper .paper-head .over {
+  font-size: calc(.75rem * var(--scale));
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+#paper .paper-head h1 {
+  font-size: clamp(calc(1.4rem * var(--scale)), calc(3.5vw * var(--scale)), calc(2.1rem * var(--scale)));
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+#paper .paper-head h1.en {
+  font-size: calc(1.45rem * var(--scale));
+}
+#paper .paper-head .authors {
+  font-size: calc(.9rem * var(--scale));
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+#paper .paper-head .authors strong {
+  font-size: calc(1rem * var(--scale));
+  overflow-wrap: anywhere;
+}
+#paper .section h2 {
+  font-size: clamp(calc(1.1rem * var(--scale)), calc(1.7vw * var(--scale)), calc(1.35rem * var(--scale)));
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+#paper .section > p, #paper .section > ul > li, #paper .section > ol > li {
+  font-size: calc(1rem * var(--scale));
+  overflow-wrap: anywhere;
+}
+#paper .section.references li {
+  font-size: calc(.9rem * var(--scale));
+}
+#paper .status { font-size: calc(.95rem * var(--scale)); }
+#paper .back { font-size: calc(.86rem * var(--scale)); }
+@media (max-width: 660px) {
+  #paper .paper-head h1 { font-size: calc(1.5rem * var(--scale)); }
+  #paper:has(.section) .paper-head h1 { font-size: calc(1.4rem * var(--scale)); }
+  #paper .paper-head h1.en { font-size: calc(1.2rem * var(--scale)); }
+}
+/* Printed copies keep the original designed text proportions. */
+@media print {
+  #paper { --scale: 1; }
+}

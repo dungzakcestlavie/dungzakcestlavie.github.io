@@ -3102,6 +3102,7 @@ html:not(.is-ipad) [data-viewer-close]{
   <!-- 2026-11-22 (a11y-bio1): Artist Bio 저시력 접근성(글자 100~400%·고대비·KR+EN·초점). 이 줄과 <script src="/a11y/bio-a11y.js?v=20261122-1" defer></script>
 </body> 앞 1줄을 지우면 이전 상태 -->
   <link rel="stylesheet" href="/a11y/bio-a11y.css?v=20261122-1" />
+  <link rel="stylesheet" href="/a11y/dcar-home-display.css?v=20261122-r1" />
 </head>
 
 
@@ -3231,6 +3232,43 @@ html:not(.is-ipad) [data-viewer-close]{
     <section id="reports">
       <h2 class="ko">미학 보고서 (DCAR Series)</h2>
       <h2 class="en">Aesthetic Reports (DCAR Series)</h2>
+
+      <!-- Accessible display control: directly below the DCAR section title. -->
+      <div class="dcar-view-wrap">
+        <button type="button" class="dcar-view-trigger" id="reportsDisplaySettings" aria-controls="reportsDisplayPanel" aria-expanded="false">
+          <span class="dcar-view-aa" aria-hidden="true">Aa</span>
+          <span class="dcar-view-text">
+            <strong><span class="ko" lang="ko">보기 설정</span><span class="en" lang="en">Display settings</span></strong>
+            <small><span class="ko" lang="ko">글자 크기 · 고대비</span><span class="en" lang="en">Text size · High contrast</span></small>
+          </span>
+          <span class="dcar-view-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div id="reportsDisplayPanel" class="dcar-view-panel" role="group" aria-labelledby="reportsDisplayHeading" hidden>
+          <h3 id="reportsDisplayHeading" tabindex="-1"><span class="ko" lang="ko">보고서 보기 설정</span><span class="en" lang="en">Report display settings</span></h3>
+          <div class="dcar-view-group" role="group" aria-labelledby="reportsDisplaySizeLabel">
+            <p id="reportsDisplaySizeLabel"><span class="ko" lang="ko">글자 크기</span><span class="en" lang="en">Text size</span></p>
+            <div class="dcar-view-options">
+              <button type="button" data-dcar-size="1" aria-pressed="true">100%</button>
+              <button type="button" data-dcar-size="1.5" aria-pressed="false">150%</button>
+              <button type="button" data-dcar-size="2" aria-pressed="false">200%</button>
+              <button type="button" data-dcar-size="3" aria-pressed="false">300%</button>
+              <button type="button" data-dcar-size="4" aria-pressed="false">400%</button>
+            </div>
+          </div>
+          <div class="dcar-view-group" role="group" aria-labelledby="reportsDisplayContrastLabel">
+            <p id="reportsDisplayContrastLabel"><span class="ko" lang="ko">화면 대비</span><span class="en" lang="en">Contrast</span></p>
+            <div class="dcar-view-options">
+              <button type="button" data-dcar-contrast="off" aria-pressed="true"><span class="ko" lang="ko">기본</span><span class="en" lang="en">Standard</span></button>
+              <button type="button" data-dcar-contrast="on" aria-pressed="false"><span class="ko" lang="ko">고대비</span><span class="en" lang="en">High contrast</span></button>
+            </div>
+          </div>
+          <div class="dcar-view-actions">
+            <button type="button" id="reportsDisplayReset"><span class="ko" lang="ko">설정 초기화</span><span class="en" lang="en">Reset settings</span></button>
+            <button type="button" id="reportsDisplayClose"><span class="ko" lang="ko">닫기</span><span class="en" lang="en">Close</span></button>
+          </div>
+          <p class="dcar-view-status" role="status" aria-live="polite" id="reportsDisplayStatus"></p>
+        </div>
+      </div>
 
       <div class="reports-omega">
         <div class="r-head">
@@ -6094,5 +6132,6 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 })();
 </script>
 <script src="/a11y/bio-a11y.js?v=20261122-1" defer></script>
+<script src="/a11y/dcar-home-display.js?v=20261122-r1" defer></script>
 </body>
 </html>

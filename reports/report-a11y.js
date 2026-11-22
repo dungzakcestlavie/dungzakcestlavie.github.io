@@ -99,7 +99,7 @@
     fitT = 0;
     var els = paper.querySelectorAll('.paper-head h1, .paper-head .over, .paper-head .authors, h2, .dz-toc summary, .dz-toc li');
     for (var i = 0; i < els.length; i++) { els[i].style.removeProperty('font-size'); els[i].removeAttribute('data-dz-fit'); }
-    var sc = scale(); root.classList.toggle('dz-big', sc >= 2); if (sc <= 1) return;
+    var sc = scale(); root.classList.toggle('dz-report-enlarged', sc > 1); root.classList.toggle('dz-big', sc >= 2); if (sc <= 1) return;
     for (var j = 0; j < els.length; j++) for (var p = 0; p < 6; p++) if (!fitOnce(els[j], sc)) break;
   }
   function later() { if (fitT) clearTimeout(fitT); fitT = setTimeout(fit, 120); }

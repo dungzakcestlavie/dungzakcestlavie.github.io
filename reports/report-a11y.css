@@ -65,3 +65,69 @@ article[data-lang="ko"] .dz-toc .en, article[data-lang="en"] .dz-toc .kr { displ
 .contrast .toolbar .dz-tb-toggle { color: #fff; border-color: #fff; }
 
 @media print { .dz-toc, .dz-tb-toggle { display: none !important; } }
+
+
+/* 2026-11-22 · whole-article readable enlargement (DCAR reader + standalone).
+   Uses the already selected --scale; never transform/zoom the document. */
+html.dz-report-enlarged body{min-width:0;overflow-x:hidden}
+html.dz-report-enlarged main{
+  box-sizing:border-box;width:100%;max-width:960px;min-width:0;
+  margin:0 auto;padding:clamp(14px,3.5vw,42px);
+}
+html.dz-report-enlarged #paper,html.dz-report-enlarged #paper .paper-head,
+html.dz-report-enlarged #paper .report-text,html.dz-report-enlarged #paper .section,
+html.dz-report-enlarged #paper .passage{
+  box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere;
+}
+html.dz-report-enlarged #paper .paper-head{padding-bottom:clamp(18px,4vw,40px)}
+html.dz-report-enlarged #paper .paper-head .authors{
+  display:flex;flex-wrap:wrap;align-items:flex-start;
+  row-gap:1em;column-gap:1.25em;line-height:1.65;
+}
+html.dz-report-enlarged #paper .paper-head .authors small{
+  font-size:calc(.82rem * var(--scale));line-height:1.55;
+}
+html.dz-report-enlarged #paper .section{
+  padding:clamp(22px,4vw,48px) 0;
+}
+html.dz-report-enlarged #paper .section > div,
+html.dz-report-enlarged #paper .section p,
+html.dz-report-enlarged #paper .report-text .passage{
+  min-width:0;max-width:100%;line-height:1.85;
+  overflow-wrap:anywhere;word-break:normal;
+}
+html.dz-report-enlarged #paper .section div.en,
+html.dz-report-enlarged #paper .passage.en{
+  -webkit-hyphens:auto;hyphens:auto;
+}
+html.dz-report-enlarged #paper .section ol,
+html.dz-report-enlarged #paper .section ul,
+html.dz-report-enlarged #paper .references ol{
+  max-width:100%;min-width:0;padding-inline-start:1.35em;
+}
+html.dz-report-enlarged #paper li{overflow-wrap:anywhere;line-height:1.8}
+html.dz-report-enlarged #paper a{overflow-wrap:anywhere}
+html.dz-report-enlarged .toolbar{
+  box-sizing:border-box;max-width:100%;max-height:45dvh;
+  overflow-y:auto;overscroll-behavior:contain;
+}
+html.dz-report-enlarged .toolbar button{
+  min-width:44px;min-height:44px;max-width:100%;
+  line-height:1.4;white-space:normal;overflow-wrap:anywhere;
+}
+html.dz-report-enlarged .dz-toc{
+  box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere;
+}
+html.dz-report-enlarged .dz-toc li{
+  min-width:0;max-width:100%;overflow-wrap:anywhere;line-height:1.65;
+}
+@media(max-width:640px){
+  html.dz-report-enlarged main{padding:clamp(12px,3.5vw,20px)}
+  html.dz-report-enlarged #paper .section{padding:22px 0}
+  html.dz-report-enlarged #paper .section ol,
+  html.dz-report-enlarged #paper .references ol{padding-inline-start:1.2em}
+}
+@media print{
+  html.dz-report-enlarged main{width:auto;max-width:none;padding:0}
+  html.dz-report-enlarged #paper{--scale:1}
+}

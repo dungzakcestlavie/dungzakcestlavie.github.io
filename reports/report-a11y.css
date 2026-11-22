@@ -26,7 +26,10 @@
 
 /* 긴 영문 제목·본문: 단어 중간을 아무 데나 자르지 않고 하이픈으로 자연스럽게 */
 /* 하이픈 줄바꿈은 200% 이상 확대했을 때만(100%의 기존 줄바꿈은 그대로) */
-.dz-big #paper h1[lang="en"], .dz-big #paper h2 [lang="en"], .dz-big #paper h2.en, .dz-big #paper .en, .dz-big .dz-toc [lang="en"] { -webkit-hyphens: auto; hyphens: auto; }
+.dz-big #paper .passage.en, .dz-big #paper .section div.en { -webkit-hyphens: auto; hyphens: auto; }
+/* 제목·목차는 하이픈으로 쪼개지 않고 단어째 줄바꿈(긴 단어는 제목 맞춤으로 줄여 한 줄에 넣는다) */
+#paper h1, #paper h2, #paper h2 span, .dz-toc a, .dz-toc span { -webkit-hyphens: manual !important; hyphens: manual !important; }
+.dz-toc .kr, .dz-toc summary .kr { word-break: keep-all; }
 #paper .paper-head h1, #paper .report-text h2, #paper .section h2 { overflow-wrap: break-word; }
 #paper .paper-head h1.kr, #paper h2.kr, #paper h2.dz-sec span.kr { word-break: keep-all; }
 

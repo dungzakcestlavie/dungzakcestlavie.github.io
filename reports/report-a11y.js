@@ -97,7 +97,7 @@
   var fitT = 0;
   function fit() {
     fitT = 0;
-    var els = paper.querySelectorAll('.paper-head h1, .paper-head .over, .paper-head .authors, h2, .dz-toc summary');
+    var els = paper.querySelectorAll('.paper-head h1, .paper-head .over, .paper-head .authors, h2, .dz-toc summary, .dz-toc li');
     for (var i = 0; i < els.length; i++) { els[i].style.removeProperty('font-size'); els[i].removeAttribute('data-dz-fit'); }
     var sc = scale(); root.classList.toggle('dz-big', sc >= 2); if (sc <= 1) return;
     for (var j = 0; j < els.length; j++) for (var p = 0; p < 6; p++) if (!fitOnce(els[j], sc)) break;
@@ -143,15 +143,39 @@
       el.setAttribute('aria-hidden', 'true'); // 머리글(제목)과 같은 줄 — 낭독 중복 방지, 화면 표시는 그대로
     }
   }
+  // 화면 회전·창 크기 변경: 읽던 문단을 같은 자리로 되돌린다
+  var anchor = null, anchorTop = 0, restoring = false;
+  function pickAnchor() {
+    if (restoring) return;
+    var tb = document.querySelector('.toolbar'), top = tb && getComputedStyle(tb).position === 'sticky' ? tb.getBoundingClientRect().bottom : 0;
+    // 읽는 줄(보기 설정 막대 바로 아래)에 실제로 있는 문단·제목
+    var x = paper.getBoundingClientRect().left + Math.min(40, paper.clientWidth / 3);
+    for (var dy = 8; dy < 200; dy += 24) {
+      var hit = document.elementFromPoint(x, top + dy), el = hit && hit.closest && hit.closest('.passage, h2, h1, p, li');
+      if (el && paper.contains(el)) { anchor = el; anchorTop = el.getBoundingClientRect().top - top; return; }
+    }
+  }
+  var pickT = 0;
+  window.addEventListener('scroll', function () { if (!pickT) pickT = setTimeout(function () { pickT = 0; pickAnchor(); }, 150); }, { passive: true });
+  function restoreAnchor() {
+    restoring = true;
+    if (!anchor || !document.contains(anchor) || window.pageYOffset < 40) { setTimeout(function () { restoring = false; }, 200); return; }
+    var tb = document.querySelector('.toolbar'), top = tb && getComputedStyle(tb).position === 'sticky' ? tb.getBoundingClientRect().bottom : 0;
+    var r = anchor.getBoundingClientRect();
+    window.scrollTo({ top: Math.max(0, r.top + window.pageYOffset - top - Math.max(0, anchorTop)), behavior: 'instant' });
+    setTimeout(function () { restoring = false; }, 200);
+  }
+  var resT = 0;
+  function onResize() { restoring = true; /* 크기가 바뀌는 동안 생기는 스크롤로 읽던 문단을 바꾸지 않는다 */ if (resT) clearTimeout(resT); resT = setTimeout(function () { resT = 0; fit(); restoreAnchor(); setTimeout(restoreAnchor, 160); }, 180); }
   function ready() {
-    quietDupHead();
+    quietDupHead(); pickAnchor();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
     buildToc(); toolbar(); fit(); tbHeight();
     try { new ResizeObserver(tbHeight).observe(document.querySelector('.toolbar')); } catch (e) {}
     // 글자 크기·언어·고대비가 바뀌거나 화면 크기가 바뀌면 다시 맞춘다
     try { new MutationObserver(later).observe(root, { attributes: true, attributeFilter: ['style'] }); } catch (e) {}
     try { new MutationObserver(later).observe(paper, { attributes: true, attributeFilter: ['data-lang'] }); } catch (e) {}
-    window.addEventListener('resize', later);
-    window.addEventListener('orientationchange', later);
     if (location.hash) { var t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(function () { t.scrollIntoView({ block: 'start' }); }, 60); }
   }
   if (paper.getAttribute('aria-busy') === 'true') {

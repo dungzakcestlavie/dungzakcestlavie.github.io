@@ -1,0 +1,102 @@
+/* DUNGZAK.ART · DCAR reports entry accessibility, 2026-11-22.
+   Golden Baseline: the existing reports list is unchanged at 100%/standard.
+   Settings are scoped to #reports, never the Works/gallery or Artist Bio. */
+#reports{--dcar-home-scale:1}
+#reports .dcar-view-wrap{margin:16px 0 14px;min-width:0}
+#reports .dcar-view-trigger{
+  appearance:none;-webkit-appearance:none;box-sizing:border-box;
+  width:min(100%,560px);min-height:72px;padding:12px 18px;
+  display:flex;align-items:center;gap:14px;
+  border:1.5px solid rgba(215,184,106,.8);border-radius:16px;
+  background:linear-gradient(150deg,rgba(215,184,106,.14),rgba(255,255,255,.025));
+  color:#F2DFA7;font:inherit;cursor:pointer;text-align:left;
+  box-shadow:0 12px 27px rgba(0,0,0,.25);
+  overflow-wrap:anywhere;touch-action:manipulation;
+}
+#reports .dcar-view-trigger:hover,#reports .dcar-view-trigger[aria-expanded="true"]{background:rgba(215,184,106,.16);border-color:#F2DFA7}
+#reports .dcar-view-trigger:focus-visible,#reports .dcar-view-panel button:focus-visible{outline:3px solid #9CC8FF;outline-offset:3px}
+#reports .dcar-view-aa{
+  flex:0 0 54px;min-height:54px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(215,184,106,.65);border-radius:12px;
+  color:#F2DFA7;font:700 28px Georgia,"Times New Roman",serif;
+}
+#reports .dcar-view-text{flex:1 1 auto;min-width:0;line-height:1.4}
+#reports .dcar-view-text strong{display:block;font-size:21px;line-height:1.35}
+#reports .dcar-view-text small{display:block;margin-top:3px;font-size:14px;line-height:1.45;color:#E9D59B}
+#reports .dcar-view-arrow{flex:0 0 auto;font-size:28px;line-height:1}
+#reports .dcar-view-trigger[aria-expanded="true"] .dcar-view-arrow{transform:rotate(180deg)}
+#reports .dcar-view-panel{
+  box-sizing:border-box;width:min(100%,720px);min-width:0;
+  padding:18px;margin-top:10px;border:1px solid rgba(215,184,106,.7);
+  border-radius:16px;background:#0C1220;color:#F2DFA7;
+  overflow-wrap:anywhere;
+}
+#reports .dcar-view-panel[hidden]{display:none!important}
+#reports .dcar-view-panel h3{margin:0 0 14px;color:#F2DFA7;font-size:19px;line-height:1.4}
+#reports .dcar-view-panel h3:focus{outline:none}
+#reports .dcar-view-group{margin:0 0 17px;min-width:0}
+#reports .dcar-view-group p{margin:0 0 8px;font-size:16px;font-weight:700;line-height:1.4}
+#reports .dcar-view-options,#reports .dcar-view-actions{display:flex;flex-wrap:wrap;gap:8px}
+#reports .dcar-view-panel button{
+  appearance:none;-webkit-appearance:none;box-sizing:border-box;
+  min-width:64px;min-height:48px;max-width:100%;padding:9px 13px;
+  border:1px solid #B8963E;border-radius:12px;background:#111827;color:#F2DFA7;
+  font:700 16px/1.45 inherit;cursor:pointer;text-align:center;
+  white-space:normal;overflow-wrap:anywhere;touch-action:manipulation;
+}
+#reports .dcar-view-panel button[aria-pressed="true"]{background:#F2DFA7;border-color:#F2DFA7;color:#070A14;text-decoration:underline;text-underline-offset:3px}
+#reports .dcar-view-panel button[aria-pressed="true"]::before{content:"✓ "}
+#reports .dcar-view-actions button{flex:1 1 175px;min-height:52px}
+#reports .dcar-view-status{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+@media(max-width:480px){
+  #reports .dcar-view-trigger{width:100%;min-height:72px;padding:12px;gap:10px}
+  #reports .dcar-view-aa{flex-basis:48px;min-height:48px;font-size:25px}
+  #reports .dcar-view-panel{padding:14px}
+}
+/* Natural whole-section reflow: scale readable typography and reshape the
+   cards/controls, not the entire page with transform or CSS zoom. */
+#reports.dcar-zoom{min-width:0;overflow-wrap:anywhere}
+#reports.dcar-zoom h2{font-size:calc(25px * var(--dcar-home-scale));line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+#reports.dcar-zoom .r-head{display:flex;flex-direction:column;align-items:stretch;gap:12px;min-width:0}
+#reports.dcar-zoom .r-tabs{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:9px}
+#reports.dcar-zoom .r-tab,#reports.dcar-zoom .r-toggle{
+  min-width:0;min-height:48px;font-size:calc(13px * var(--dcar-home-scale));
+  line-height:1.4;padding:.6em .8em;text-align:center;white-space:normal;overflow-wrap:anywhere
+}
+#reports.dcar-zoom .r-toggle{width:100%}
+#reports.dcar-zoom .r-grid{grid-template-columns:minmax(0,1fr)}
+#reports.dcar-zoom .r-item{min-width:0;overflow:visible;white-space:normal}
+#reports.dcar-zoom .r-item .t{font-size:calc(16px * var(--dcar-home-scale));line-height:1.5;overflow-wrap:anywhere}
+#reports.dcar-zoom .r-item .m{font-size:calc(12px * var(--dcar-home-scale));line-height:1.5;overflow-wrap:anywhere}
+#reports.dcar-zoom .r-item .s{font-size:calc(13px * var(--dcar-home-scale));line-height:1.7;white-space:normal;overflow-wrap:anywhere}
+#reports.dcar-zoom .r-open{
+  min-height:48px;max-width:100%;padding:.65em .85em;
+  font-size:calc(13px * var(--dcar-home-scale));line-height:1.45;
+  white-space:normal;overflow-wrap:anywhere
+}
+#reports.dcar-zoom .dcar-view-text strong{font-size:calc(21px * min(var(--dcar-home-scale),2))}
+#reports.dcar-zoom .dcar-view-text small{font-size:calc(14px * min(var(--dcar-home-scale),2))}
+#reports.dcar-zoom .dcar-view-panel{font-size:calc(16px * min(var(--dcar-home-scale),2))}
+#reports.dcar-zoom .dcar-view-panel button{font-size:inherit;line-height:1.45}
+@media(max-width:600px){
+  #reports.dcar-zoom .r-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #reports.dcar-zoom[data-dcar-scale="3"] .r-tabs,
+  #reports.dcar-zoom[data-dcar-scale="4"] .r-tabs{grid-template-columns:minmax(0,1fr)}
+}
+@media(min-width:1100px){
+  #reports.dcar-zoom[data-dcar-scale="1.5"] .r-grid,
+  #reports.dcar-zoom[data-dcar-scale="2"] .r-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/* High contrast is local to the reports listing, not the rest of the site. */
+#reports.dcar-high-contrast{background:#000!important;color:#fff!important;border-color:#FFD75E!important}
+#reports.dcar-high-contrast h2,
+#reports.dcar-high-contrast .r-item .t,#reports.dcar-high-contrast .r-item .s,#reports.dcar-high-contrast .r-item .m{color:#fff!important;text-shadow:none!important}
+#reports.dcar-high-contrast .r-head,#reports.dcar-high-contrast .r-item,#reports.dcar-high-contrast .dcar-view-panel{background:#000!important;color:#fff!important;border-color:#FFD75E!important;box-shadow:none!important}
+#reports.dcar-high-contrast .r-tab,#reports.dcar-high-contrast .r-toggle,
+#reports.dcar-high-contrast .r-open,#reports.dcar-high-contrast .dcar-view-trigger,
+#reports.dcar-high-contrast .dcar-view-panel button{background:#000!important;color:#fff!important;border-color:#FFD75E!important;text-shadow:none!important}
+#reports.dcar-high-contrast .r-tab.is-active,#reports.dcar-high-contrast .dcar-view-panel button[aria-pressed="true"]{background:#FFD75E!important;color:#000!important}
+#reports.dcar-high-contrast .dcar-view-aa,#reports.dcar-high-contrast .dcar-view-text strong,
+#reports.dcar-high-contrast .dcar-view-text small,#reports.dcar-high-contrast .dcar-view-panel h3,
+#reports.dcar-high-contrast .dcar-view-group p{color:#FFD75E!important;border-color:#FFD75E!important}
+@media print{#reports .dcar-view-wrap{display:none!important}}

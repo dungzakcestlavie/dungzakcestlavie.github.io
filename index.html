@@ -5443,7 +5443,7 @@ html:not(.is-ipad) [data-viewer-close]{
 
   async function loadReportsIntoGrid(grid) {
     try {
-      const raw = await safeJSONFetchCached('data/reports.json?v=20261117-a11y-v1', 'LF_cache_reports_20261117_a11y_v1');
+      const raw = await safeJSONFetchCached('data/reports.json?v=20261123-dcar34', 'LF_cache_reports_20261123_dcar34');
       const nextReports = getSafeReportsArray(raw);
 
       if (nextReports.length > 0) {

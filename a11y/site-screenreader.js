@@ -138,9 +138,20 @@
           el.inert = true; back.push(el);
         });
         var close = one('#lf-close', box);
-        if (close) setTimeout(function () {
-          if (active()) close.focus({ preventScroll: true });
-        }, 30);
+        if (close) {
+          // Some touch-enabled WebKit configurations restore body focus after
+          // overlay activation. Keep the first available dialog control focused
+          // unless the user has already navigated to a different dialog control.
+          close.setAttribute('tabindex', '0');
+          var focusInitial = function () {
+            if (active() && !box.contains(doc.activeElement)) {
+              try { close.focus({ preventScroll: true }); }
+              catch (e) { close.focus(); }
+            }
+          };
+          setTimeout(focusInitial, 30);
+          setTimeout(focusInitial, 250);
+        }
       } else {
         back.forEach(function (el) { el.inert = false; }); back = [];
         var target = restore;

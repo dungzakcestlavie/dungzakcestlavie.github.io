@@ -33,10 +33,10 @@ for(const [dev,width,height] of widths){
  });
  await check(dev,'language-select',async()=>{
   await page.locator('#enBtn').click();
-  await attr(page.locator('#enBtn'),'aria-pressed','true');
+  await page.waitForFunction(()=>document.querySelector('#enBtn').getAttribute('aria-pressed')==='true',null,{timeout:1600});
   await attr(page.locator('html'),'lang','en');
   await page.locator('#koBtn').click();
-  await attr(page.locator('#koBtn'),'aria-pressed','true');
+  await page.waitForFunction(()=>document.querySelector('#koBtn').getAttribute('aria-pressed')==='true',null,{timeout:1600});
  });
  await check(dev,'works-tabs',async()=>{
   await page.locator('nav.primary [data-target="works"]').click();
@@ -86,7 +86,7 @@ for(const [dev,width,height] of widths){
   await page.locator('#works .tabs [data-panel="pray"]').click();
   const first=page.locator('#works #panel-pray .w-card').first();
   await first.waitFor({state:'visible',timeout:12000});
-  await attr(first,'role','button');
+  await first.locator('xpath=self::*[@role="button"]').waitFor({state:'attached',timeout:1800});
   await first.focus();
   await page.keyboard.press('Enter');
   await page.locator('#lf-lightbox.active').waitFor({timeout:8000});

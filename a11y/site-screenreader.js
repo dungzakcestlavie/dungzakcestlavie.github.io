@@ -172,7 +172,7 @@
     var main = one('main');
     main.id = main.id || 'dz-main';
     var skip = doc.createElement('a');
-    skip.href = '#' + main.id; skip.className = 'dz-sr-skip';
+    skip.href = '#' + main.id; skip.id = 'dz-sr-skip'; skip.className = 'dz-sr-skip';
     skip.textContent = '본문으로 이동 / Skip to content';
     skip.addEventListener('click', function (e) {
       e.preventDefault();

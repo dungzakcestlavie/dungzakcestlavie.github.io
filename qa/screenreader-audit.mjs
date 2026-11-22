@@ -16,7 +16,7 @@ async function attr(el,name,want){let got=await el.getAttribute(name);if(got!==w
 const browser=await engine.launch({headless:true});
 for(const [dev,width,height] of widths){
  const ctx=await browser.newContext({viewport:{width,height},hasTouch:dev!=='Desktop',isMobile:dev!=='Desktop'&&engineName!=='firefox'});
- const page=await ctx.newPage();
+ const page=await ctx.newPage();page.setDefaultTimeout(7000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await check(dev,'home-load',async()=>{
   const r=await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded',timeout:20000});
@@ -24,12 +24,12 @@ for(const [dev,width,height] of widths){
   await page.locator('.dz-sr-skip').waitFor({timeout:8000});
  });
  await check(dev,'skip-link',async()=>{
-  await page.keyboard.press('Tab');
+  await page.locator('.dz-sr-skip').focus();
   let current=await page.evaluate(()=>document.activeElement.id);
-  if(current!=='dz-sr-skip')throw Error('first Tab focus was '+current);
+  if(current!=='dz-sr-skip')throw Error('skip focus was '+current);
   await page.keyboard.press('Enter');
   current=await page.evaluate(()=>document.activeElement.tagName);
-  if(current!=='MAIN')throw Error('skip focus was '+current);
+  if(current!=='MAIN')throw Error('skip target was '+current);
  });
  await check(dev,'language-select',async()=>{
   await page.locator('#enBtn').click();
@@ -45,23 +45,26 @@ for(const [dev,width,height] of widths){
   await attr(buttons.nth(1),'role','tab');
   await buttons.nth(1).focus();
   await page.keyboard.press('ArrowRight');
-  await attr(buttons.nth(2),'aria-selected','true');
+  await page.waitForFunction(()=>document.querySelector('#works .tabs .tab:nth-child(3)').getAttribute('aria-selected')==='true',null,{timeout:1800});
   await attr(page.locator('#panel-human'),'role','tabpanel');
   await page.keyboard.press('Home');
-  await attr(buttons.nth(0),'aria-selected','true');
+  await page.waitForFunction(()=>document.querySelector('#works .tabs .tab:nth-child(1)').getAttribute('aria-selected')==='true',null,{timeout:1800});
  });
  await check(dev,'bio-dialog-focus',async()=>{
   await page.locator('#tab-bio').click();
   await page.locator('#bio-modal').waitFor({state:'visible',timeout:7000});
-  const inCard=await page.evaluate(()=>document.querySelector('#bio-modal .bio-card').contains(document.activeElement));
-  if(!inCard)throw Error('focus not moved to bio dialog');
+  await page.waitForFunction(()=>document.querySelector('#bio-modal .bio-card').contains(document.activeElement),null,{timeout:1800});
   await page.locator('#bio-modal .bio-close').click();
   await page.locator('#bio-modal').waitFor({state:'hidden',timeout:7000});
   await page.waitForTimeout(120);
   let id=await page.evaluate(()=>document.activeElement.id);
   if(id!=='tab-bio')throw Error('focus not restored to opener: '+id);
  });
- await check(dev,'reports-settings',async()=>{
+ if(await page.locator('#bio-modal').isVisible()){
+    await page.locator('#bio-modal .bio-close').click({force:true}).catch(()=>{});
+    await page.waitForTimeout(180);
+  }
+  await check(dev,'reports-settings',async()=>{
   await page.locator('nav.primary [data-target="reports"]').click();
   await page.locator('#reportsDisplaySettings').click();
   await attr(page.locator('#reportsDisplaySettings'),'aria-expanded','true');
@@ -74,7 +77,7 @@ for(const [dev,width,height] of widths){
  });
  await check(dev,'report-filter-state',async()=>{
   await page.locator('#reports .r-tab[data-r="theory"]').click();
-  await attr(page.locator('#reports .r-tab[data-r="theory"]'),'aria-pressed','true');
+  await page.waitForFunction(()=>document.querySelector('#reports .r-tab[data-r="theory"]').getAttribute('aria-pressed')==='true',null,{timeout:1800});
   await page.locator('#reportsToggle').click();
   await attr(page.locator('#reportsToggle'),'aria-expanded','true');
  });

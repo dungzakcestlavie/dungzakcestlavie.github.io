@@ -1,0 +1,17 @@
+/* Keyboard and screen-reader affordances. Existing visual styling unchanged
+   except while focus is intentionally on an interactive element. */
+.dz-sr-skip{
+  position:fixed;z-index:100000;top:max(8px,env(safe-area-inset-top));left:12px;
+  background:#070A14;color:#F2DFA7;border:2px solid #FFD75E;
+  border-radius:12px;padding:12px 16px;max-width:calc(100vw - 24px);
+  transform:translateY(-200%);font:700 16px/1.4 system-ui,sans-serif;
+}
+.dz-sr-skip:focus,.dz-sr-skip:focus-visible{transform:none;outline:3px solid #9CC8FF;outline-offset:2px}
+#dz-main:focus{outline:none}
+#works .w-card[role="button"]:focus-visible,
+#works .tabs .tab:focus-visible,
+#reports button:focus-visible,
+#soundBar:focus-visible{
+  outline:3px solid #9CC8FF!important;outline-offset:3px!important;
+}
+#works .w-card[role="button"]{cursor:pointer}

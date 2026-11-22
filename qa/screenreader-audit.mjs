@@ -92,7 +92,16 @@ for(const [dev,width,height] of widths){
   await page.locator('#lf-lightbox.active').waitFor({timeout:8000});
   await page.waitForTimeout(150);
   let id=await page.evaluate(()=>document.activeElement.id);
-  if(id!=='lf-close')throw Error('viewer focus went '+id);
+  if(id!=='lf-close'){
+    const diag=await page.evaluate(()=>{
+      const box=document.getElementById('lf-lightbox'),b=document.getElementById('lf-close');
+      return {focused:document.activeElement?.outerHTML?.slice(0,400),closeRect:b?.getBoundingClientRect().toJSON(),
+        closeTabIndex:b?.tabIndex,closeInert:b?.inert,boxInert:box?.inert,boxActive:box?.classList.contains('active'),
+        boxHidden:box?.getAttribute('aria-hidden'),closeVisibility:getComputedStyle(b).visibility,
+        closeDisplay:getComputedStyle(b).display,docHasFocus:document.hasFocus()};
+    });
+    throw Error('viewer focus went '+id+' '+JSON.stringify(diag));
+  }
   await page.locator('#lf-close').click();
   await page.waitForTimeout(180);
   const restored=await first.evaluate(el=>document.activeElement===el);

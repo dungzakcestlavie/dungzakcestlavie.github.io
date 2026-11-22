@@ -395,6 +395,18 @@
       "summary_en": "Proposes a personalized adaptive haptic interface (FSTPR) that responds to individual tactile differences and supports independent fingertip exploration of a painting’s lines, forms, and spatial relationships.",
       "md_path": "reports/DCAR-33-2026.md",
       "html_path": "reports/DCAR-33-2026.html"
+    },
+    {
+      "id": "DCAR-34-2026",
+      "slug": "DCAR-34-2026",
+      "year": "2026",
+      "category": "Theory",
+      "title_ko": "유체압을 이용한 회화의 촉각적 재구성 — 평면에서 입체 감각으로",
+      "title_en": "Hydraulic Tactile Reconstruction of Painting: From Two-Dimensional Images to Three-Dimensional Sensation",
+      "summary_ko": "해양 파력의 유압 제어 원리와 미세유체 촉각 연구를 검토하며, 감각의 차이를 존중하는 회화 감상권과 개인 적응형 촉각 재구성의 가능성을 제안하는 개념 논문.",
+      "summary_en": "A conceptual study connecting hydraulic wave-energy principles and fluidic haptics with the right to appreciate painting through diverse, personally adaptable sensory experiences.",
+      "md_path": "reports/DCAR-34-2026.md",
+      "html_path": "reports/DCAR-34-2026.html"
     }
   ]
 }

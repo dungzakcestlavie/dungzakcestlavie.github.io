@@ -1,0 +1,64 @@
+/* DCAR 리포트 접근성 고도화 (2026-11-22 a11y-report1)
+   흰 바탕·검정 본문·연구 문서 형식 유지. 금빛 포인트는 흰 바탕 대비 4.5:1 이상인 색만 쓴다.
+   - 연구번호·절 제목: #6B4F0F(7.6:1)·#7A5A12(6.4:1) / 구분선·머리 밑줄: 장식용 금빛
+   - 고대비: 검정 바탕 + #FFD75E(15:1)
+   이 파일과 report-a11y.js 연결 2줄을 지우면 이전 상태. */
+:root { --dz-gold-ink: #6B4F0F; --dz-gold-ink2: #7A5A12; --dz-gold-line: #B8963E; }
+
+/* 금빛 포인트: 연구번호·제목 구분 */
+#paper .paper-head .over { color: var(--dz-gold-ink2); }
+#paper .paper-head { border-bottom-color: var(--dz-gold-line); }
+#paper .separator { border-top-color: #d9c79a; }
+
+/* 절 제목(리더에서 만든 h2 / DCAR-33의 h2) */
+#paper .report-text h2.dz-sec {
+  font-size: calc(1.15rem * var(--scale, 1));
+  line-height: 1.5; font-weight: 700; color: var(--dz-gold-ink);
+  margin: 1.4em 0 .7em; padding-left: .7em; border-left: 3px solid var(--dz-gold-line);
+  overflow-wrap: break-word; word-break: keep-all;
+  scroll-margin-top: calc(var(--dz-tb-h, 0px) + 1rem);
+}
+#paper .report-text h2.dz-sec span { display: block; }
+#paper .report-text h2.dz-sec span.en { font-weight: 600; color: #3d3d3d; font-size: .92em; margin-top: .2em; }
+#paper .section h2, #paper .section { scroll-margin-top: calc(var(--dz-tb-h, 0px) + 1rem); }
+#paper .section h2 { color: var(--dz-gold-ink); }
+#paper .section h2.en { color: #3d3d3d; }
+
+/* 긴 영문 제목·본문: 단어 중간을 아무 데나 자르지 않고 하이픈으로 자연스럽게 */
+/* 하이픈 줄바꿈은 200% 이상 확대했을 때만(100%의 기존 줄바꿈은 그대로) */
+.dz-big #paper h1[lang="en"], .dz-big #paper h2 [lang="en"], .dz-big #paper h2.en, .dz-big #paper .en, .dz-big .dz-toc [lang="en"] { -webkit-hyphens: auto; hyphens: auto; }
+#paper .paper-head h1, #paper .report-text h2, #paper .section h2 { overflow-wrap: break-word; }
+#paper .paper-head h1.kr, #paper h2.kr, #paper h2.dz-sec span.kr { word-break: keep-all; }
+
+/* 목차 */
+.dz-toc { margin: 1.2rem 0 0; border: 1px solid var(--border); border-left: 3px solid var(--dz-gold-line); background: #fbfaf6; }
+.dz-toc summary { cursor: pointer; padding: .7rem 1rem; min-height: 44px; font-weight: 700; color: var(--dz-gold-ink); font-size: calc(.95rem * var(--scale, 1)); line-height: 1.5; list-style-position: inside; }
+.dz-toc ol { margin: 0; padding: 0 1rem .9rem 1.4rem; list-style: none; } /* 절 제목에 이미 번호가 있으므로 목록 번호는 쓰지 않는다 */
+.dz-toc li { margin: .35rem 0; font-size: calc(.92rem * var(--scale, 1)); line-height: 1.55; overflow-wrap: break-word; }
+.dz-toc a { color: #164ca3; text-underline-offset: 2px; display: inline-block; padding: .2rem 0; min-height: 24px; }
+.dz-toc a span { display: block; }
+.dz-toc a span.en { color: #3d3d3d; font-size: .95em; }
+article[data-lang="ko"] .dz-toc .en, article[data-lang="en"] .dz-toc .kr { display: none !important; }
+
+/* 보기 설정 접기·펴기 */
+.toolbar .dz-tb-toggle { flex-basis: 100%; text-align: left; font-weight: 650; border-style: dashed; }
+.toolbar.dz-collapsed > :not(.dz-tb-toggle):not(.lab-top) { display: none !important; }
+.toolbar.dz-collapsed { max-height: none; }
+.toolbar.dz-collapsed .dz-tb-toggle { border-style: solid; }
+
+/* 고대비 */
+.contrast #paper .paper-head .over,
+.contrast #paper .report-text h2.dz-sec,
+.contrast #paper .section h2,
+.contrast .dz-toc summary { color: #FFD75E; }
+.contrast #paper .report-text h2.dz-sec span.en,
+.contrast #paper .section h2.en,
+.contrast .dz-toc a span.en { color: #fff; }
+.contrast #paper .paper-head { border-bottom-color: #FFD75E; }
+.contrast #paper .report-text h2.dz-sec { border-left-color: #FFD75E; }
+.contrast #paper .separator { border-top-color: #fff; }
+.contrast .dz-toc { background: #000; border-color: #fff; border-left-color: #FFD75E; }
+.contrast .dz-toc a { color: #a5c7ff; }
+.contrast .toolbar .dz-tb-toggle { color: #fff; border-color: #fff; }
+
+@media print { .dz-toc, .dz-tb-toggle { display: none !important; } }

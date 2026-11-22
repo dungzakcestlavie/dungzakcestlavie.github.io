@@ -44,6 +44,8 @@ body.contrast{--bg:#000;--fg:#fff;--muted:#eee;--border:#fff;--paper:#000}
 @media print{body{background:white;color:black}main{margin:0;padding:0;border:0;width:100%}.toolbar,.skip,.back{display:none}.passage{color:black!important}}
 </style>
 <link rel="stylesheet" href="./accessibility-reflow.css?v=20261117-2">
+<!-- 2026-11-22 (a11y-report1): 절 제목·목차·금빛 포인트·큰 글자 제목 맞춤·보기 설정 접기. 이 2줄을 지우면 이전 상태 -->
+<link rel="stylesheet" href="./report-a11y.css?v=20261122-1">
 </head>
 <body>
 <a class="skip" href="#paper">본문으로 이동 / Skip to report</a>
@@ -144,10 +146,31 @@ function renderMarkdown(raw){
     content.appendChild(p);
     buffer=[];
   }
-  lines.forEach(function(line){
+  // 2026-11-22 (a11y-report1): 구분선 다음의 짧은 절 제목 줄을 문서 제목(h2)으로 — 글자는 그대로, 화면 읽기 도구의 제목 단위 이동용
+  var afterSep=true,pendingH=null;
+  var HEAD_RE=/^(?:\d{1,2}\.(?:\d{1,2}\.?)?\s+\S|[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ]+\.\s+\S|(?:초록|요약|서론|서문|결론|맺음말|에필로그|프롤로그|부록|주제어|키워드|참고문헌|Abstract|Introduction|Prologue|Epilogue|Conclusion|Appendix|Keywords|References|Bibliography)(?:\s|$|[\/·:—-]))/;
+  function isHead(t){return t.length<=70&&HEAD_RE.test(t)&&!/[,，]$/.test(t)&&!/(?:은|는|을|를|의|와|과|며)$/.test(t);}
+  function addHead(t,lg){
+    var h=document.createElement('h2');h.className='dz-sec'+(lg==='en'?' en':(lg==='kr'?' kr':''));
+    var s=document.createElement('span');s.className=lg==='en'?'en':'kr';s.lang=lg==='en'?'en':'ko';s.textContent=t.replace(/\t+/g,' ');
+    h.appendChild(s);content.appendChild(h);return h;
+  }
+  var SEP_RE=/^(?:⸻+|─{4,}|-{3,}|—{1,3})$/;
+  function sepSoon(idx){ // 다음 1~2개의 내용 줄 안에 구분선이 오면(제목 → (영문 제목) → 구분선 형식)
+    var seen=0;for(var k=idx+1;k<lines.length&&seen<3;k++){var u=lines[k].trim();if(!u)continue;if(SEP_RE.test(u))return true;seen++;if(seen>1&&!/^\(.*\)$/.test(u))return false;}
+    return false;
+  }
+  lines.forEach(function(line,idx){
     var t=line.trim();
     if(!t){flush();return;}
-    if(/^(?:⸻+|─{4,}|-{3,}|—{1,3})$/.test(t)){flush();var hr=document.createElement('hr');hr.className='separator';content.appendChild(hr);return;}
+    if(SEP_RE.test(t)){flush();var hr=document.createElement('hr');hr.className='separator';content.appendChild(hr);afterSep=true;pendingH=null;return;}
+    var lgH=languageOf(t);
+    if((afterSep||sepSoon(idx))&&!inReferences&&isHead(t)){flush();pendingH=addHead(t,lgH);pendingH._lg=lgH;currentLang='';afterSep=false;if(/^(?:참고문헌|References\b|Bibliography\b)/i.test(t))inReferences=true;return;}
+    // 한국어 절 제목 바로 다음 줄의 짧은 영어 제목은 같은 제목으로 묶는다
+    if(pendingH&&pendingH._lg==='kr'&&lgH==='en'&&t.length<=100&&!/[.!?]$/.test(t)){
+      var se=document.createElement('span');se.className='en';se.lang='en';se.textContent=t;pendingH.appendChild(se);pendingH.className='dz-sec';pendingH=null;return;
+    }
+    pendingH=null;afterSep=false;
     // Bibliographic sources remain available regardless of language selection.
     if(!inReferences && t.length<100 && /^(?:참고문헌|References\b|Bibliography\b)/i.test(t)){
       flush();inReferences=true;currentLang='';
@@ -186,5 +209,6 @@ fetch('../data/reports.json',{cache:'no-cache'})
 .catch(function(e){console.error('DCAR accessible reader',e);error('리포트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요. / Unable to load this report. Please try again.');});
 })();
 </script>
+<script src="./report-a11y.js?v=20261122-1"></script>
 </body>
 </html>

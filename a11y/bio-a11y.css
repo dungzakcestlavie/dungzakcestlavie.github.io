@@ -1,0 +1,53 @@
+/* DUNGZAK.ART — Artist Bio 저시력 접근성 (2026-11-22 a11y-bio1)
+   어두운 바탕·금빛 글자 유지. 글자 100~400%, 기본/고대비, KR/EN/KR+EN, 긴 글 읽기용 행간·단락·줄 길이.
+   금빛 대비(#070A14 바탕): 본문 #E9D59B 13.6:1, 제목 #F2DFA7 15:1 / 고대비(#000): 본문 #FFF1C9 18.7:1, 제목 #FFD75E 15:1
+   index.html의 연결 2줄을 지우면 이전 상태. */
+#bio-modal { --bio-s: 1; --bio-base: 13.4px; }
+@media (min-width: 900px) { #bio-modal { --bio-base: 14px; } }
+@media (max-height: 740px) { #bio-modal { --bio-base: 13px; } }
+
+/* 머리(제목·언어·닫기): 카드를 내려도 늘 보이게 */
+#bio-modal .bio-head { position: sticky; top: 0; z-index: 3; flex-wrap: wrap; row-gap: 8px; background: rgba(7, 10, 20, .97); }
+#bio-modal .bio-head h2 { font-size: calc(15px * var(--bio-sh, 1)); line-height: 1.35; word-break: keep-all; overflow-wrap: break-word; min-width: 0; flex: 1 1 auto; color: #F2DFA7; }
+#bio-modal .bio-lang { flex-wrap: wrap; }
+#bio-modal .bio-lang .lang { min-height: 44px; min-width: 44px; font-size: 13px; padding: 6px 12px; }
+#bio-modal .bio-lang .lang[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+#bio-modal .bio-close { width: 44px; height: 44px; flex: 0 0 auto; }
+
+/* 본문: 밝은 금빛, 넉넉한 행간·단락, 읽기 좋은 줄 길이 */
+#bio-modal .bio-body { font-size: calc(var(--bio-base) * var(--bio-s)) !important; line-height: 1.85 !important; color: #E9D59B; max-width: 46em; margin-left: auto; margin-right: auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+#bio-modal .bio-body p { margin: 0 0 .95em !important; }
+#bio-modal .bio-body.ko { word-break: keep-all; overflow-wrap: break-word; }
+#bio-modal .bio-body.en { overflow-wrap: break-word; }
+#bio-modal.bio-big .bio-body.en, #bio-modal.bio-big .bio-head h2.en { -webkit-hyphens: auto; hyphens: auto; }
+#bio-modal .bio-body strong { color: #F2DFA7; }
+#bio-modal .expo-kicker { font-size: calc(var(--bio-base) * var(--bio-s)); line-height: 1.5; min-height: 44px; word-break: keep-all; overflow-wrap: break-word; }
+
+/* 보기 설정(글자 크기·고대비) */
+#bio-modal .bio-a11y { border-bottom: 1px solid rgba(255, 255, 255, .06); padding: 8px max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left)); }
+#bio-modal .bio-a11y-toggle { appearance: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(215, 184, 106, .45); background: rgba(255, 255, 255, .03); color: #F2DFA7; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; text-align: left; max-width: 100%; }
+#bio-modal .bio-a11y-toggle .aa { font-family: Georgia, "Times New Roman", serif; font-size: 16px; }
+#bio-modal .bio-a11y-panel { padding: 10px 0 4px; }
+#bio-modal .bio-a11y-panel[hidden] { display: none; }
+#bio-modal .bio-a11y-label { margin: 8px 0 6px; color: #E9D59B; font-size: 13px; font-weight: 700; }
+#bio-modal .bio-a11y-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+#bio-modal .bio-a11y-chips button { appearance: none; min-height: 44px; min-width: 64px; padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(215, 184, 106, .45); background: transparent; color: #F2DFA7; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+#bio-modal .bio-a11y-chips button[aria-pressed="true"] { background: #E9D59B; color: #070A14; border-color: #E9D59B; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+#bio-modal .bio-a11y-chips button[aria-pressed="true"]::before { content: "✓ "; }
+#bio-modal button:focus-visible { outline: 3px solid #79A7FF !important; outline-offset: 2px !important; }
+
+/* 고대비 */
+#bio-modal.bio-hc, #bio-modal.bio-hc .bio-backdrop { background: #000 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+#bio-modal.bio-hc .bio-card { background: #000 !important; border-color: #FFD75E; box-shadow: none; }
+#bio-modal.bio-hc .bio-head { background: #000; border-bottom-color: #FFD75E; }
+#bio-modal.bio-hc .bio-head h2 { color: #FFD75E; text-shadow: none; -webkit-text-stroke: 0; }
+#bio-modal.bio-hc .bio-body { color: #FFF1C9; text-shadow: none; }
+#bio-modal.bio-hc .bio-body strong, #bio-modal.bio-hc .expo-kicker { color: #FFD75E; text-shadow: none; }
+#bio-modal.bio-hc .bio-lang .lang, #bio-modal.bio-hc .bio-close, #bio-modal.bio-hc .bio-a11y-toggle, #bio-modal.bio-hc .bio-a11y-chips button { color: #fff; border-color: #fff; background: #000; text-shadow: none; box-shadow: none; }
+#bio-modal.bio-hc .bio-lang .lang[aria-pressed="true"], #bio-modal.bio-hc .bio-a11y-chips button[aria-pressed="true"] { background: #FFD75E; color: #000; border-color: #FFD75E; }
+#bio-modal.bio-hc .bio-a11y-label { color: #fff; }
+#bio-modal.bio-hc .expo-kicker, #bio-modal.bio-hc .slide-wrap, #bio-modal.bio-hc .bio-a11y { border-color: #fff; background: #000; }
+/* Bio를 읽는 동안 오른쪽 아래 소리 버튼(원)이 본문 글자를 가리지 않게 숨긴다(소리는 계속, 닫으면 다시 보임) */
+body.modal-open #soundBar { visibility: hidden !important; }
+/* 열 때 초점이 가는 제목은 눌러 쓰는 요소가 아니므로 테두리를 그리지 않는다 */
+#bio-modal h2[tabindex="-1"]:focus, #bio-modal h2[tabindex="-1"]:focus-visible { outline: none !important; }

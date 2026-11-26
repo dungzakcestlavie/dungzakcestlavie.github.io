@@ -25,7 +25,6 @@
     onload="this.onload=null;this.rel='stylesheet'"
   />
   <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet" /></noscript>
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="data/works.json?v=20260429-pray-archivepro-json-path-final" />
 
 
   <title>등작 燈酌 DUNGZAK CESTLAVIE — Contemporary Artist</title>
@@ -3104,6 +3103,13 @@ html:not(.is-ipad) [data-viewer-close]{
   <link rel="stylesheet" href="/a11y/bio-a11y.css?v=20261122-1" />
   <link rel="stylesheet" href="/a11y/dcar-home-display.css?v=20261122-r1" />
   <link rel="stylesheet" href="/a11y/site-screenreader.css?v=20261122-sr1" />
+  <style>
+    @media (max-width: 440px) {
+      #poem .poem {
+        padding-inline-end: calc(var(--orb) + 2px + env(safe-area-inset-right, 0px));
+      }
+    }
+  </style>
 </head>
 
 
@@ -3549,15 +3555,10 @@ html:not(.is-ipad) [data-viewer-close]{
       return (obj && Array.isArray(obj.d)) ? obj.d : null;
     } catch { return null; }
   }
-  function worksCacheSet(list) {
+  function worksCacheSet(serializedList) {
     try {
-      localStorage.setItem(WORKS_CACHE_KEY, JSON.stringify({ t: Date.now(), d: list }));
+      localStorage.setItem(WORKS_CACHE_KEY, '{"d":' + serializedList + '}');
     } catch {}
-  }
-  function worksSignature(list) {
-    const arr = Array.isArray(list) ? list : [];
-    const last = arr.length ? (arr[arr.length - 1] && arr[arr.length - 1].id) : '';
-    return arr.length + '::' + String(last || '');
   }
 
   const inflight = new Map();
@@ -3583,20 +3584,6 @@ html:not(.is-ipad) [data-viewer-close]{
     return p;
   }
 
-  /*
-    MOBILE PERFORMANCE ONLY FIX:
-    Previously appended '&t=' + Date.now() and used cache:'no-store', which
-    is a genuinely different URL every call — meaning the <link rel=preload
-    as=fetch> hint added in <head> (a fixed, versioned URL) could never be
-    reused, and the browser paid for two separate downloads of the same
-    file. cache:'no-cache' still forces a revalidation with the server on
-    every load (never silently serves a stale response), but on the exact
-    same URL as the preload, so the browser can reuse that in-flight/cached
-    request instead of starting a second one. Freshness is unaffected: this
-    file's own works.json cache (worksCacheGet/worksCacheSet) already
-    re-checks and re-renders on every load regardless of what the HTTP
-    layer does here.
-  */
   async function safeJSONFetchFresh(url) {
     const res = await fetch(url, { cache: 'no-cache' });
     if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
@@ -3722,7 +3709,6 @@ html:not(.is-ipad) [data-viewer-close]{
           if (panel) {
             renderWorksPanel(panel, worksByPanel[key], key);
             panel.dataset.rendered = '1';
-            scheduleImageDecode(panel);
           }
         }
       }, { passive: true });
@@ -3828,8 +3814,10 @@ html:not(.is-ipad) [data-viewer-close]{
     return Object.prototype.hasOwnProperty.call(idMap, n) ? idMap[n] : null;
   }
 
+  const workIdCollator = new Intl.Collator('ko', { numeric: true, sensitivity: 'base' });
+
   function naturalIdCompare(a, b) {
-    return String(a?.id || '').localeCompare(String(b?.id || ''), 'ko', { numeric: true, sensitivity: 'base' });
+    return workIdCollator.compare(String(a?.id || ''), String(b?.id || ''));
   }
 
   function parseWorkYear(work) {
@@ -3837,14 +3825,14 @@ html:not(.is-ipad) [data-viewer-close]{
     return m ? Number(m[0]) : null;
   }
 
-  function sortWorksForSection(items, sectionKey) {
+  function sortWorksForSection(items) {
     /*
       DUNGZAK.ART ALL SECTION FINAL RULE
       - section label decides placement first; section_id is fallback only.
       - each section keeps natural ID order.
       - no title, year, material, image path, or ID prefix can move a work between sections.
     */
-    return (Array.isArray(items) ? items.slice() : []).sort(naturalIdCompare);
+    return items.sort(naturalIdCompare);
   }
 
 
@@ -3948,10 +3936,11 @@ html:not(.is-ipad) [data-viewer-close]{
       }
 
       for (const key of panelKeys) {
-        worksByPanel[key] = sortWorksForSection(worksByPanel[key], key);
+        worksByPanel[key] = sortWorksForSection(worksByPanel[key]);
         const panel = $('#panel-' + key);
         if (panel) {
-          panel.innerHTML = '';
+          releaseWorksPanel(panel);
+          panel.replaceChildren();
           delete panel.dataset.rendered;
         }
       }
@@ -3961,7 +3950,6 @@ html:not(.is-ipad) [data-viewer-close]{
       if (activePanel) {
         renderWorksPanel(activePanel, worksByPanel[activeKey], activeKey);
         activePanel.dataset.rendered = '1';
-        scheduleImageDecode(activePanel);
       }
 
       /*
@@ -3981,7 +3969,7 @@ html:not(.is-ipad) [data-viewer-close]{
       if (Array.isArray(cachedList) && cachedList.length) {
         applyWorksList(cachedList);
         renderedFromCache = true;
-        cachedSignature = worksSignature(cachedList);
+        cachedSignature = JSON.stringify(cachedList);
       }
     } catch (_) {}
 
@@ -3994,11 +3982,11 @@ html:not(.is-ipad) [data-viewer-close]{
       const list = Array.isArray(json) ? json : (json.works || json.items || []);
       if (!Array.isArray(list)) throw new Error('Invalid works.json structure');
 
-      const freshSignature = worksSignature(list);
+      const freshSignature = JSON.stringify(list);
       if (!renderedFromCache || freshSignature !== cachedSignature) {
         applyWorksList(list);
       }
-      worksCacheSet(list);
+      if (freshSignature !== cachedSignature) worksCacheSet(freshSignature);
     } catch (err) {
       if (renderedFromCache) {
         /* Cached content is already correctly on screen; a failed
@@ -4185,10 +4173,11 @@ html:not(.is-ipad) [data-viewer-close]{
 
   function renderWorksPanel(panel, items, key) {
     if (!panel) return;
+    releaseWorksPanel(panel);
     panel.replaceChildren();
     panel.dataset.panelKey = key;
 
-    const validItems = (Array.isArray(items) ? items : []).filter(item => resolveWorkPanelKey(item) === key);
+    const validItems = items;
 
     if (!validItems.length) {
       /*
@@ -4217,60 +4206,78 @@ html:not(.is-ipad) [data-viewer-close]{
     grid.className = 'w-grid';
     panel.appendChild(grid);
 
-    const firstCount = Math.min(getInitialWorksCount(), validItems.length);
-    for (let i = 0; i < firstCount; i++) {
-      grid.appendChild(makeWorkCard(validItems[i], key, i));
-    }
-
     panel.dataset.totalCount = String(validItems.length);
-    panel.dataset.renderedCount = String(firstCount);
-
-    if (firstCount < validItems.length) {
-      const appendRest = () => appendRemainingWorks(panel, validItems, key);
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(appendRest, { timeout: 1500 });
-      } else {
-        setTimeout(appendRest, 260);
-      }
-    }
+    panel.dataset.renderedCount = '0';
+    appendWorkCards(panel, grid, validItems, key, getInitialWorksCount());
+    watchWorksEnd(panel, grid, validItems, key);
   }
 
-  function appendRemainingWorks(panel, validItems, key) {
-    if (!panel || !panel.isConnected) return;
-    const grid = panel.querySelector('.w-grid');
-    if (!grid) return;
-
-    let start = Number(panel.dataset.renderedCount || 0);
-    const total = validItems.length;
-    const chunk = getWorksChunkCount();
-
-    function step() {
-      if (!panel.isConnected) return;
-      const end = Math.min(start + chunk, total);
-      const frag = document.createDocumentFragment();
-
-      for (let i = start; i < end; i++) {
-        frag.appendChild(makeWorkCard(validItems[i], key, i));
-      }
-
-      grid.appendChild(frag);
-      panel.dataset.renderedCount = String(end);
-      scheduleImageDecode(panel);
-
-      start = end;
-      if (start < total) {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(step, { timeout: 1500 });
-        } else {
-          setTimeout(step, 120);
-        }
-      }
+  function appendWorkCards(panel, grid, items, key, limit) {
+    const start = Number(panel.dataset.renderedCount || 0);
+    const end = Math.min(limit, items.length);
+    const fragment = document.createDocumentFragment();
+    for (let index = start; index < end; index++) {
+      fragment.appendChild(makeWorkCard(items[index], key, index));
     }
-
-    step();
+    const images = Array.from(fragment.querySelectorAll('img.w-thumb[data-src]'));
+    grid.appendChild(fragment);
+    panel.dataset.renderedCount = String(end);
+    scheduleImageDecode(images, start);
   }
 
   let io = null;
+  let worksEndObserver;
+  const worksEndCallbacks = new WeakMap();
+
+  function releaseWorksPanel(panel) {
+    for (const image of panel.querySelectorAll('img.w-thumb[data-src]')) io?.unobserve(image);
+    const end = panel.querySelector('.works-end');
+    if (end) worksEndObserver?.unobserve(end);
+  }
+
+  function watchWorksEnd(panel, grid, items, key) {
+    if (Number(panel.dataset.renderedCount) >= items.length) return;
+    const end = document.createElement('div');
+    end.className = 'works-end';
+    end.setAttribute('aria-hidden', 'true');
+    end.style.height = '1px';
+    panel.appendChild(end);
+
+    function loadNext() {
+      if (!grid.isConnected) return;
+      const count = Number(panel.dataset.renderedCount);
+      if (count < items.length) appendWorkCards(panel, grid, items, key, count + getWorksChunkCount());
+      if (Number(panel.dataset.renderedCount) < items.length) {
+        if (worksEndObserver) {
+          worksEndObserver.unobserve(end);
+          worksEndObserver.observe(end);
+        } else setTimeout(loadNext, 120);
+      } else {
+        worksEndObserver?.unobserve(end);
+        grid.removeEventListener('focusin', extendForKeyboard);
+        end.remove();
+      }
+    }
+
+    function extendForKeyboard(event) {
+      if (grid.lastElementChild?.contains(event.target)) loadNext();
+    }
+
+    grid.addEventListener('focusin', extendForKeyboard);
+    if (!('IntersectionObserver' in window)) {
+      setTimeout(loadNext, 120);
+      return;
+    }
+    if (!worksEndObserver) {
+      worksEndObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) worksEndCallbacks.get(entry.target)?.();
+        }
+      }, { rootMargin: '700px 0px' });
+    }
+    worksEndCallbacks.set(end, loadNext);
+    worksEndObserver.observe(end);
+  }
 
   /* THUMBNAIL AUTO-RECOVERY (raw.githubusercontent.com intermittent fetch fail fix)
      Root cause: GitHub Raw occasionally fails a single image fetch (more
@@ -4337,28 +4344,11 @@ html:not(.is-ipad) [data-viewer-close]{
     return io;
   }
 
-  function scheduleImageDecode(root) {
-    const scope = root || document;
-    const imgs = Array.from($$('img.w-thumb[data-src]', scope));
+  function scheduleImageDecode(images, start) {
     const observer = ensureIO();
-
-    /*
-      MOBILE PERFORMANCE ONLY FIX
-      - Only the first visible two thumbnails are injected immediately.
-      - The rest keep data-src until IntersectionObserver brings them near viewport.
-    */
-    const immediate = imgs.slice(0, 2);
-    for (const img of immediate) loadThumbImage(img);
-
-    if (observer) {
-      for (const img of imgs.slice(2)) {
-        if (img.dataset.loaded === '1') continue;
-        observer.observe(img);
-      }
-    } else {
-      runIdle(() => {
-        for (const img of imgs.slice(4)) loadThumbImage(img);
-      });
+    for (const [index, img] of images.entries()) {
+      if (start + index < 2 || !observer) loadThumbImage(img);
+      else observer.observe(img);
     }
   }
 
@@ -4575,19 +4565,13 @@ html:not(.is-ipad) [data-viewer-close]{
     const grid = panel?.querySelector('.w-grid');
     if (!panel || !grid) return null;
 
-    const list = (worksByPanel[key] || []).filter(item => resolveWorkPanelKey(item) === key);
+    const list = worksByPanel[key];
     const targetIndex = list.findIndex(w => String(normalizeWorkCardItem(w)?.id || w?.id || '') === id);
     if (targetIndex < 0) return null;
 
     const renderedCount = Number(panel.dataset.renderedCount || 0);
     if (targetIndex >= renderedCount) {
-      const frag = document.createDocumentFragment();
-      for (let i = renderedCount; i <= targetIndex; i++) {
-        frag.appendChild(makeWorkCard(list[i], key, i));
-      }
-      grid.appendChild(frag);
-      panel.dataset.renderedCount = String(targetIndex + 1);
-      scheduleImageDecode(panel);
+      appendWorkCards(panel, grid, list, key, targetIndex + 1);
     }
 
     return document.querySelector(`[data-work-id="${safeId}"]`);
@@ -4841,6 +4825,11 @@ html:not(.is-ipad) [data-viewer-close]{
       });
     };
 
+    const standardSrc = lbItems[index].standardSrc;
+    lbImg.onerror = () => {
+      lbImg.onerror = null;
+      if (standardSrc && standardSrc !== src) lbImg.src = standardSrc;
+    };
     lbImg.style.opacity = '1';
     lbImg.src = src;
     lbImg.alt = lbItems[index].alt || '';
@@ -4895,15 +4884,18 @@ html:not(.is-ipad) [data-viewer-close]{
     const activePanel = card?.closest('.tabpanel') || $('#works .tabpanel.active');
     const key = String(card?.dataset?.panel || activePanel?.dataset?.panelKey || '').trim();
     const panelList = key && worksByPanel && Array.isArray(worksByPanel[key])
-      ? worksByPanel[key].filter(item => resolveWorkPanelKey(item) === key)
+      ? worksByPanel[key]
       : [];
 
     if (panelList.length) {
+      const cardsById = new Map();
+      for (const card of activePanel?.querySelectorAll('.w-card') || []) {
+        if (!cardsById.has(card.dataset.workId)) cardsById.set(card.dataset.workId, card);
+      }
       return panelList.map((raw, index) => {
         const item = normalizeWorkCardItem(raw);
         const id = String(item.id || '').trim();
-        const safeId = (window.CSS && CSS.escape) ? CSS.escape(id) : id.replace(/"/g, '\"');
-        const renderedCard = id ? activePanel?.querySelector(`[data-work-id="${safeId}"]`) : null;
+        const renderedCard = cardsById.get(id);
         const isDZ048 = id === 'DZ-048';
         const imgStd = isDZ048 ? DZ048_IMAGE : item.image;
         const imgZoom = isDZ048 ? DZ048_IMAGE : (item.zoom || imgStd);
@@ -4912,6 +4904,7 @@ html:not(.is-ipad) [data-viewer-close]{
           card: renderedCard,
           id,
           src: imgZoom || imgStd,
+          standardSrc: imgStd,
           alt: item.title_kr || item.title_en || id || `Artwork ${index + 1}`
         };
       });
@@ -4926,6 +4919,7 @@ html:not(.is-ipad) [data-viewer-close]{
         card: c,
         id: parsed?.id || c.dataset.workId || c.dataset.id || '',
         src: c.getAttribute('data-img') || parsed?.zoom || parsed?.image || fallbackSrc,
+        standardSrc: parsed?.image || fallbackSrc,
         alt: parsed?.title_kr || parsed?.title_en || parsed?.id || c.dataset.id || ''
       };
     });
@@ -5018,6 +5012,7 @@ html:not(.is-ipad) [data-viewer-close]{
     if (lbImg) {
       lbImg.style.transform = '';
       lbImg.style.willChange = '';
+      lbImg.onerror = null;
       lbImg.removeAttribute('src');
       lbImg.alt = '';
     }
@@ -5683,12 +5678,16 @@ html:not(.is-ipad) [data-viewer-close]{
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
 
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
     resizeWave();
-    window.addEventListener("resize", resizeWave, { passive: true });
+    window.addEventListener("resize", () => {
+      resizeWave();
+      if (!document.hidden && motion.matches) paintWave();
+    }, { passive: true });
 
     let t = 0;
 
-    function drawWave() {
+    function paintWave() {
       const w = window.innerWidth;
       const h = window.innerHeight;
 
@@ -5731,11 +5730,25 @@ html:not(.is-ipad) [data-viewer-close]{
         ctx.stroke();
       }
 
-      t += 0.007;
-      waveRaf = requestAnimationFrame(drawWave);
     }
 
-    drawWave();
+    function animateWave() {
+      paintWave();
+      t += 0.007;
+      waveRaf = requestAnimationFrame(animateWave);
+    }
+
+    function updateWave() {
+      if (waveRaf !== null) cancelAnimationFrame(waveRaf);
+      waveRaf = null;
+      if (document.hidden) return;
+      if (motion.matches) paintWave();
+      else waveRaf = requestAnimationFrame(animateWave);
+    }
+
+    document.addEventListener('visibilitychange', updateWave);
+    motion.addEventListener('change', updateWave);
+    updateWave();
   }
 
   function initWaves() {
@@ -6134,6 +6147,6 @@ try { initGlobalKeys(); } catch (e) { console.error(e); }
 </script>
 <script src="/a11y/bio-a11y.js?v=20261122-1" defer></script>
 <script src="/a11y/dcar-home-display.js?v=20261122-r1" defer></script>
-<script src="/a11y/site-screenreader.js?v=20261122-sr1" defer></script>
+<script src="/a11y/site-screenreader.js?v=20261127-art1" defer></script>
 </body>
 </html>

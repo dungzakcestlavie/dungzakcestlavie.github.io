@@ -93,7 +93,7 @@
 
     <article class="card" id="artwork-card" hidden>
       <div class="imagebox">
-        <img id="art-image" src="" alt="" loading="eager" />
+        <img id="art-image" alt="" loading="eager" decoding="async" fetchpriority="high" />
       </div>
       <div class="meta">
         <h1 id="title">Artwork</h1>
@@ -133,14 +133,17 @@
     (async function () {
       const params = new URLSearchParams(location.search);
       const id = params.get("id");
+      const section = params.get("section");
 
       if (!id) return;
 
       try {
-        const res = await fetch("/data/works.json", { cache: "no-store" });
+        const res = await fetch("/data/works.json", { cache: "no-cache" });
+        if (!res.ok) return;
         const data = await res.json();
         const works = Array.isArray(data) ? data : (data.works || []);
-        const work = works.find(item => String(item.id).toUpperCase() === id.toUpperCase());
+        const matching = works.filter(item => String(item.id).toUpperCase() === id.toUpperCase());
+        const work = section === null ? matching[0] : matching.find(item => String(item.section_id) === section);
 
         if (!work) return;
 
@@ -160,10 +163,11 @@
           [work.section_kr, work.section_en].filter(Boolean).join(" / ");
 
         const yearText = work.year || "-";
-        const pageUrl = `https://dungzak.art/work.html?id=${encodeURIComponent(work.id)}`;
-        const imagePath = (work.image || work.zoom || "").replace(/^\/+/, "");
-        const zoomPath = (work.zoom || work.image || "").replace(/^\/+/, "");
-        const imageUrl = imagePath ? `https://dungzak.art/${imagePath}` : "";
+        const pageUrl = new URL("https://dungzak.art/work.html");
+        pageUrl.searchParams.set("id", work.id);
+        if (matching.length > 1) pageUrl.searchParams.set("section", String(work.section_id));
+        const imagePath = work.image || work.zoom;
+        const imageUrl = imagePath ? new URL(imagePath, "https://dungzak.art/").href : "";
 
         document.title = `${titleText} | DUNGZAK CESTLAVIE`;
         document.querySelector('meta[name="description"]').setAttribute(
@@ -215,7 +219,7 @@
           },
           "artMedium": materialText,
           "dateCreated": String(yearText),
-          "url": pageUrl,
+          "url": pageUrl.href,
           "image": imageUrl,
           "artform": "Painting"
         };

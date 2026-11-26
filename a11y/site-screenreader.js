@@ -21,6 +21,7 @@
       el.setAttribute('lang', el.classList.contains('en') ? 'en' : 'ko');
     });
   }
+  var lastMode;
   function syncSite() {
     var m = mode();
     doc.documentElement.lang = m === 'en' ? 'en' : 'ko';
@@ -69,7 +70,10 @@
     if (sound) title(sound, txt('배경 소리 켜기 또는 끄기', 'Toggle ambient sound'));
     syncLangText(doc);
     syncWorkTabs();
-    syncCards();
+    if (lastMode !== m) {
+      lastMode = m;
+      syncCards(all('#works .w-card'));
+    }
   }
 
   function syncWorkTabs() {
@@ -95,9 +99,9 @@
     });
   }
 
-  function syncCards() {
+  function syncCards(cards) {
     var m = mode();
-    all('#works .w-card').forEach(function (card) {
+    cards.forEach(function (card) {
       if (card.getAttribute('data-dz-sr-ready') !== '1') {
         card.setAttribute('data-dz-sr-ready', '1');
         card.setAttribute('role', 'button');
@@ -219,10 +223,25 @@
         tabs[next].click(); tabs[next].focus();
         setTimeout(syncWorkTabs, 0);
       });
-      var job = 0;
-      new MutationObserver(function () {
-        if (job) return;
-        job = setTimeout(function () { job = 0; syncWorkTabs(); syncCards(); }, 75);
+      new MutationObserver(function (records) {
+        var cards = [];
+        var tabsChanged = false;
+        records.forEach(function (record) {
+          if (record.type === 'attributes') {
+            if (record.target.matches('.tabs .tab')) tabsChanged = true;
+            return;
+          }
+          Array.prototype.forEach.call(record.addedNodes, function (node) {
+            if (node.nodeType !== 1) return;
+            if (node.matches('.w-card')) cards.push(node);
+            else if (node.matches('.w-grid, .tabpanel')) cards.push.apply(cards, all('.w-card', node));
+          });
+        });
+        if (tabsChanged) syncWorkTabs();
+        if (cards.length) {
+          cards.forEach(syncLangText);
+          syncCards(cards);
+        }
       }).observe(works, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     }
     var reports = one('#reports');

@@ -201,7 +201,7 @@ fetch('../data/reports.json',{cache:'no-cache'})
   document.getElementById('title-ko').textContent=entry.title_ko||entry.title_kr||id;
   document.getElementById('title-en').textContent=entry.title_en||id;
   document.title=id+' · '+(entry.title_ko||id)+' / '+(entry.title_en||'DCAR');
-  var canonical=document.createElement('link');canonical.rel='canonical';canonical.href=location.origin+'/reports/reader.html?report='+encodeURIComponent(id);document.head.appendChild(canonical);
+  var canonical=document.createElement('link');canonical.rel='canonical';canonical.href=location.origin+'/reports/dcar-'+id.slice(5,7)+'/'; /* 2026-11-27 검색 정본 = 정적 페이지 */document.head.appendChild(canonical);
   return fetch('../'+entry.md_path,{cache:'no-cache'});
 })
 .then(function(r){if(!r.ok)throw Error('Report text: HTTP '+r.status);return r.text();})

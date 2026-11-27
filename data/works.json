@@ -38156,7 +38156,6 @@
   "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/wl15.jpg",
   "status": "available"
 },
-
 {
   "id": "wl16",
   "section_id": 6,
@@ -38171,6 +38170,22 @@
   "year": 2026,
   "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/wl16.jpg",
   "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/wl16.jpg",
+  "status": "available"
+},
+{
+  "id": "wl17",
+  "section_id": 6,
+  "section_kr": "VI 빛의 파도",
+  "section_en": "VI Waves of Light",
+  "title_kr": "색채가 마음에 스며들었다",
+  "title_en": "Colour Has Found Its Way into the Heart",
+  "material_kr": "캔버스에 아크릴",
+  "material_en": "Acrylic on canvas",
+  "size_kr": "116.8 × 91 cm",
+  "size_en": "116.8 × 91 cm",
+  "year": 2026,
+  "image": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/standard/wl17.jpg",
+  "zoom": "https://raw.githubusercontent.com/dungzakcestlavie/dungzaklab-images/main/archivepro/zoom/wl17.jpg",
   "status": "available"
 }    
   ]

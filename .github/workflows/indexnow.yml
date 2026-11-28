@@ -1,0 +1,41 @@
+name: IndexNow after GitHub Pages deployment
+on:
+  push:
+    branches: [main]
+  deployment_status:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: read
+
+concurrency:
+  group: indexnow-production
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: >-
+      (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')) ||
+      (github.event_name == 'deployment_status' && github.event.deployment.environment == 'github-pages' &&
+      github.event.deployment.ref == 'main' && github.event.deployment_status.state == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify deployed URLs and send changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SITE_HOST: dungzak.art
+          INDEXNOW_BASELINE: 8fc60d089d962bb08db84484a2c3b951c1d2b908
+          INDEXNOW_KEY_FILE: 7eb2bda9c94d30fda0c488cccf23ba11.txt
+        run: node .github/indexnow.mjs

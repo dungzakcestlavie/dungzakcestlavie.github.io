@@ -6,6 +6,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 const { SITE_HOST: host, INDEXNOW_BASELINE: baseline, INDEXNOW_KEY_FILE: keyFile, GITHUB_REPOSITORY: repo, GH_TOKEN: token, GITHUB_EVENT_NAME: event, GITHUB_SHA: eventSha } = process.env;
 const origin = `https://${host}`;
 const stateBranch = 'indexnow-state';
+const artistRepository = 'dungzakcestlavie/dungzakcestlavie.github.io';
+const initialWorksDigest = '28d2c1825539495d398026dc2e3d142894137716c6d3058e3b636b1120a6c06f';
 const message = 'Record IndexNow deployment receipt';
 const allowedHost = new Set(['dungzak.art', 'dungzaklab.art']);
 const restricted = /(?:^|\/)(?:app|admin|account|delete-account|log[-_]?in|sign[-_]?(?:in|up)|private|dashboard|subscribe|subscription|checkout|billing|auth|members?|reports\/(?:reader|print)[^/]*)(?:[/.\-_]|$)/i;
@@ -71,7 +73,8 @@ function artworkInventory(text) {
   for (const { id } of works) if (typeof id === 'string') counts.set(id.toUpperCase(), (counts.get(id.toUpperCase()) ?? 0) + 1);
   const published = new Map();
   for (const work of works) {
-    if (typeof work.id !== 'string' || !/^[\w-]+$/.test(work.id) || work.private === true || work.published === false || work.noindex === true) continue;
+    if (typeof work.id !== 'string' || !/^[\w-]+$/.test(work.id) || work.private === true || work.published === false || work.noindex === true
+      || /^(private|draft|hidden|unlisted|비공개)$/i.test(String(work.status ?? '').trim())) continue;
     const url = new URL('/work.html', origin);
     url.searchParams.set('id', work.id);
     if (counts.get(work.id.toUpperCase()) > 1) {
@@ -132,10 +135,10 @@ function allowedByRobots(robots, path) {
 
 const request = (url, options = {}) => fetch(url, { ...options, signal: AbortSignal.timeout(15000) });
 
-async function api(path, method = 'GET', body, allowMissing = false) {
-  const result = await request(`https://api.github.com/repos/${repo}/${path}`, {
+async function api(path, method = 'GET', body, allowMissing = false, repository = repo) {
+  const result = await request(`https://api.github.com/repos/${repository}/${path}`, {
     method,
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+    headers: { ...(repository === repo ? { Authorization: `Bearer ${token}` } : {}), Accept: 'application/vnd.github+json' },
     body: body && JSON.stringify(body),
   });
   if (allowMissing && result.status === 404) return null;
@@ -143,14 +146,33 @@ async function api(path, method = 'GET', body, allowMissing = false) {
   return result.json();
 }
 
-async function latestDeployment() {
-  const deployments = await api('deployments?environment=github-pages&per_page=30');
+async function latestDeployment(site = host, repository = repo) {
+  const read = path => api(path, 'GET', undefined, false, repository);
+  const deployments = await read('deployments?environment=github-pages&per_page=30');
   for (const deployment of deployments) {
     if (deployment.ref !== 'main') continue;
-    const [status] = await api(`deployments/${deployment.id}/statuses?per_page=1`);
-    if (status?.state === 'success' && status.environment_url && new URL(status.environment_url).hostname === host) return deployment.sha;
+    const [status] = await read(`deployments/${deployment.id}/statuses?per_page=1`);
+    if (status?.state === 'success' && status.environment_url && new URL(status.environment_url).hostname === site) return deployment.sha;
   }
-  throw new Error(`No successful main deployment found for ${host}`);
+  throw new Error(`No successful main deployment found for ${site}`);
+}
+
+async function publishedArtistWorks(previous) {
+  const sha = await latestDeployment('dungzak.art', artistRepository);
+  if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Invalid artist deployment commit');
+  if (previous.artistWorks?.sha === sha) return previous.artistWorks;
+  const read = async url => {
+    const response = await request(url, { redirect: 'manual' });
+    if (!response.ok) throw new Error(`Artwork source ${new URL(url).hostname} returned HTTP ${response.status}`);
+    return digest(Buffer.from(await response.arrayBuffer()));
+  };
+  const [expected, live, archiveSource] = await Promise.all([
+    read(`https://raw.githubusercontent.com/${artistRepository}/${sha}/data/works.json`),
+    read(`https://dungzak.art/data/works.json?_indexnow=${sha}`),
+    read(`https://raw.githubusercontent.com/${artistRepository}/main/data/works.json`),
+  ]);
+  if (expected !== live || expected !== archiveSource) throw new Error('The shared artwork source is still propagating');
+  return { sha, digest: expected };
 }
 
 async function loadState() {
@@ -159,8 +181,8 @@ async function loadState() {
   return { ...JSON.parse(Buffer.from(file.content, 'base64').toString('utf8')), blob: file.sha };
 }
 
-async function saveState(previous, deployed, urls, status) {
-  const content = JSON.stringify({ deployed, count: urls.length, batch: digest(JSON.stringify(urls)), status, recordedAt: new Date().toISOString() }, null, 2) + '\n';
+async function saveState(previous, deployed, urls, status, artistWorks) {
+  const content = JSON.stringify({ deployed, count: urls.length, batch: digest(JSON.stringify(urls)), status, artistWorks, recordedAt: new Date().toISOString() }, null, 2) + '\n';
   if (previous.blob) {
     await api('contents/receipt.json', 'PUT', { branch: stateBranch, message, sha: previous.blob, content: Buffer.from(content).toString('base64') });
     return;
@@ -238,7 +260,12 @@ if (event === 'push') {
     deployed = await latestDeployment();
   }
 }
-if (previous.deployed === deployed) {
+let artistWorks = previous.artistWorks;
+if (host === 'dungzaklab.art') {
+  try { artistWorks = await publishedArtistWorks(previous); }
+  catch (error) { console.warn(`Shared artwork changes deferred: ${error.message}`); }
+}
+if (previous.deployed === deployed && previous.artistWorks?.sha === artistWorks?.sha) {
   console.log(`Deployment ${deployed} already processed`);
   process.exit(0);
 }
@@ -247,6 +274,9 @@ for (const sha of [previous.deployed, deployed]) {
 }
 git('merge-base', '--is-ancestor', previous.deployed, deployed);
 const changes = candidates(previous.deployed, deployed);
+const archive = `${origin}/archivepro/`;
+if (artistWorks && artistWorks.digest !== (previous.artistWorks?.digest ?? initialWorksDigest)
+  && !changes.some(([url]) => url === archive) && inventory(deployed).has(archive)) changes.push([archive, 'updated']);
 const base = new URL(`/${keyFile}`, origin);
 const key = readFileSync(keyFile, 'utf8').trim();
 if (!/^[a-f0-9]{32}$/.test(key) || keyFile !== `${key}.txt`) throw new Error('Invalid public IndexNow key file');
@@ -271,5 +301,5 @@ for (const [url, operation] of changes) {
 if (urlList.length > 10000) throw new Error('Submission exceeds the IndexNow limit of 10,000 URLs');
 if (await latestDeployment() !== deployed) throw new Error('A newer Pages deployment completed during verification');
 const status = urlList.length ? await submit({ host, key, keyLocation: base.href, urlList }) : null;
-await saveState(previous, deployed, urlList, status);
+await saveState(previous, deployed, urlList, status, artistWorks);
 console.log(`${deployed}: ${urlList.length} submitted; ${status === 202 ? 'key validation pending' : status === 200 ? 'accepted' : 'no eligible changes'}`);

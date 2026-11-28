@@ -1,7 +1,8 @@
 {
-  "deployed": "6ceb243889a1cbb0d0b387b90a254716a3b31391",
-  "count": 1,
-  "batch": "5f9731dd68726c891bdd8d05d345b865ae5711d4119daac5a24f4d9bd78e0444",
-  "status": 202,
-  "recordedAt": "2026-11-28T17:16:00.477Z"
+  "deployed": "4bf1791809f9e8ff177c55cc710dc6bab532ee1a",
+  "count": 2,
+  "batch": "4f249fd9185d5b6b6e642c913f69e1b6c574baa0b207db5674fabe75d1e0bbda",
+  "status": 200,
+  "artworkAssets": "4bf1791809f9e8ff177c55cc710dc6bab532ee1a",
+  "recordedAt": "2026-11-28T17:23:45.775Z"
 }

@@ -87,7 +87,21 @@ function artworkInventory(text) {
   return published;
 }
 
-function candidates(previous, deployed) {
+function changedArtworkAsset(record, paths) {
+  const work = JSON.parse(record);
+  return [work.image, work.zoom].some(value => {
+    if (!value) return false;
+    try {
+      const url = new URL(value, origin);
+      const path = decodeURIComponent(url.pathname);
+      if (url.origin === origin) return paths.has(path.slice(1));
+      const prefix = `/${artistRepository}/main/`;
+      return url.origin === 'https://raw.githubusercontent.com' && path.startsWith(prefix) && paths.has(path.slice(prefix.length));
+    } catch { return false; }
+  });
+}
+
+function candidates(previous, deployed, assetBaseline = previous) {
   const before = inventory(previous);
   const after = inventory(deployed);
   const diff = git('diff', '--no-renames', '--name-only', '-z', previous, deployed).split('\0');
@@ -97,10 +111,18 @@ function candidates(previous, deployed) {
   const removed = [...before].filter(([url, path]) => !after.has(url) && changes.has(path)
     && (!readAt(deployed, path) || metadata(readAt(deployed, path)).refresh))
     .map(([url]) => [url, 'removed']);
-  if (host === 'dungzak.art' && changes.has('data/works.json') && readAt(deployed, 'work.html')) {
+  const assetPaths = host === 'dungzak.art' ? new Set(git('diff', '--no-renames', '--name-only', '-z', assetBaseline, deployed)
+    .split('\0').filter(path => /^(images\/(?:zoom|standard)\/|assets\/artworks\/|public\/thumbs\/)/.test(path))) : new Set();
+  if (host === 'dungzak.art' && (changes.has('data/works.json') || assetPaths.size) && readAt(deployed, 'work.html')) {
     const oldWorks = artworkInventory(readAt(previous, 'data/works.json'));
     const newWorks = artworkInventory(readAt(deployed, 'data/works.json'));
-    for (const [url, record] of newWorks) if (oldWorks.get(url) !== record) updated.push([url, 'artwork']);
+    let artworkAssetChanged = false;
+    for (const [url, record] of newWorks) {
+      const assetChanged = changedArtworkAsset(record, assetPaths);
+      artworkAssetChanged ||= assetChanged;
+      if (oldWorks.get(url) !== record || assetChanged) updated.push([url, 'artwork']);
+    }
+    if (artworkAssetChanged && after.has(`${origin}/`) && !updated.some(([url]) => url === `${origin}/`)) updated.push([`${origin}/`, 'updated']);
     // The static artwork viewer still returns 200 for unknown IDs. Submit removals only for routes serving a real redirect or 404/410.
     for (const url of oldWorks.keys()) if (!newWorks.has(url)) removed.push([url, 'removed']);
   }
@@ -182,7 +204,8 @@ async function loadState() {
 }
 
 async function saveState(previous, deployed, urls, status, artistWorks) {
-  const content = JSON.stringify({ deployed, count: urls.length, batch: digest(JSON.stringify(urls)), status, artistWorks, recordedAt: new Date().toISOString() }, null, 2) + '\n';
+  const content = JSON.stringify({ deployed, count: urls.length, batch: digest(JSON.stringify(urls)), status, artistWorks,
+    artworkAssets: host === 'dungzak.art' ? deployed : undefined, recordedAt: new Date().toISOString() }, null, 2) + '\n';
   if (previous.blob) {
     await api('contents/receipt.json', 'PUT', { branch: stateBranch, message, sha: previous.blob, content: Buffer.from(content).toString('base64') });
     return;
@@ -265,7 +288,8 @@ if (host === 'dungzaklab.art') {
   try { artistWorks = await publishedArtistWorks(previous); }
   catch (error) { console.warn(`Shared artwork changes deferred: ${error.message}`); }
 }
-if (previous.deployed === deployed && previous.artistWorks?.sha === artistWorks?.sha) {
+const assetBaseline = host === 'dungzak.art' ? previous.artworkAssets ?? baseline : previous.deployed;
+if (previous.deployed === deployed && previous.artistWorks?.sha === artistWorks?.sha && assetBaseline === deployed) {
   console.log(`Deployment ${deployed} already processed`);
   process.exit(0);
 }
@@ -273,7 +297,7 @@ for (const sha of [previous.deployed, deployed]) {
   if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Invalid deployment commit');
 }
 git('merge-base', '--is-ancestor', previous.deployed, deployed);
-const changes = candidates(previous.deployed, deployed);
+const changes = candidates(previous.deployed, deployed, assetBaseline);
 const archive = `${origin}/archivepro/`;
 if (artistWorks && artistWorks.digest !== (previous.artistWorks?.digest ?? initialWorksDigest)
   && !changes.some(([url]) => url === archive) && inventory(deployed).has(archive)) changes.push([archive, 'updated']);
